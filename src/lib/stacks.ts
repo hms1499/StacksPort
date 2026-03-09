@@ -153,22 +153,36 @@ export async function getPortfolioHistory(
   try {
     const geckoIds = [...new Set(portfolio.geckoTokens.map((t) => t.geckoId))];
 
+    const intervalParam = days === 1 ? "" : "&interval=daily";
+
     // Fetch price histories + transaction history in parallel
     const [stxRes, ...rest] = await Promise.allSettled([
-      fetch(`${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${days}&interval=daily`),
+      fetch(`${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${days}${intervalParam}`),
       ...geckoIds.map((id) =>
-        fetch(`${COINGECKO_API}/coins/${id}/market_chart?vs_currency=usd&days=${days}&interval=daily`)
+        fetch(`${COINGECKO_API}/coins/${id}/market_chart?vs_currency=usd&days=${days}${intervalParam}`)
       ),
       fetchTransactionsInWindow(address, days),
     ]);
 
     if (stxRes.status !== "fulfilled" || !stxRes.value.ok) return [];
-    const stxPrices: [number, number][] = (await stxRes.value.json()).prices ?? [];
+    const rawStxPrices: [number, number][] = (await stxRes.value.json()).prices ?? [];
+
+    // For 1D: deduplicate to one point per 4-hour bucket
+    const sample4h = (prices: [number, number][]): [number, number][] => {
+      const seen = new Set<number>();
+      return prices.filter(([ts]) => {
+        const bucket = Math.floor(new Date(ts).getHours() / 4);
+        if (seen.has(bucket)) return false;
+        seen.add(bucket);
+        return true;
+      });
+    };
+    const stxPrices = days === 1 ? sample4h(rawStxPrices) : rawStxPrices;
 
     // Parse token price maps (date → price)
     const tokenPriceMaps = new Map<string, Map<string, number>>();
     for (let i = 0; i < geckoIds.length; i++) {
-      const res = rest[i];
+      const res = rest[i] as PromiseSettledResult<Response>;
       if (res.status !== "fulfilled" || !res.value.ok) continue;
       const map = new Map<string, number>();
       for (const [ts, price] of (await res.value.json()).prices as [number, number][]) {
@@ -260,7 +274,9 @@ export async function getPortfolioHistory(
       }
 
       return {
-        date: new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        date: days === 1
+          ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: undefined, hour12: true })
+          : new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
         value: Math.round(total * 100) / 100,
       };
     });
@@ -291,7 +307,7 @@ export async function getTrendingTokens(): Promise<TrendingToken[]> {
     return (data as CoinMarket[])
       .filter((t) => t.price_change_percentage_24h != null)
       .sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h)
-      .slice(0, 3)
+      .slice(0, 5)
       .map((t) => ({
         id: t.id,
         symbol: t.symbol.toUpperCase(),
@@ -339,13 +355,317 @@ export async function getFungibleTokens(address: string) {
   return res.json();
 }
 
-export async function getTransactions(address: string, limit = 10) {
+export async function getTransactions(address: string, limit = 10, offset = 0) {
   const res = await fetch(
-    `${HIRO_API_BASE}/extended/v2/addresses/${address}/transactions?limit=${limit}`,
+    `${HIRO_API_BASE}/extended/v2/addresses/${address}/transactions?limit=${limit}&offset=${offset}`,
     { next: { revalidate: 30 } }
   );
   if (!res.ok) throw new Error("Failed to fetch transactions");
   return res.json();
+}
+
+// ─── sBTC ─────────────────────────────────────────────────────────────────────
+
+const SBTC_CONTRACT_NAME = "sbtc-token";
+
+export interface SBTCPegStatus {
+  btcPrice: number;
+  sbtcPrice: number;
+  deviation: number;
+  status: "pegged" | "slight" | "depegged";
+}
+
+export interface SBTCBridgeTx {
+  txId: string;
+  direction: "deposit" | "withdrawal" | "transfer";
+  amount: number;
+  timestamp: number;
+  txStatus: "success" | "pending" | "failed";
+  counterpart?: string;
+  fnName?: string;
+}
+
+export interface SBTCData {
+  balance: number;
+  valueUsd: number;
+  peg: SBTCPegStatus;
+  bridgeHistory: SBTCBridgeTx[];
+}
+
+export async function getSBTCData(address: string): Promise<SBTCData> {
+  const [balanceData, priceData, txData] = await Promise.all([
+    getFungibleTokens(address),
+    fetch(
+      `${COINGECKO_API}/simple/price?ids=bitcoin,sbtc-2&vs_currencies=usd`,
+      { next: { revalidate: 60 } }
+    ).then((r) => r.json()),
+    fetch(
+      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=50`
+    ).then((r) => r.json()),
+  ]);
+
+  // Balance
+  const sbtcEntry = Object.entries(
+    (balanceData.fungible_tokens as Record<string, { balance: string }>) ?? {}
+  ).find(([id]) => id.split(".")[1]?.split("::")[0] === SBTC_CONTRACT_NAME);
+  const balanceSats = sbtcEntry ? Number(sbtcEntry[1].balance) : 0;
+  const balance = balanceSats / 1e8;
+
+  // Peg
+  const btcPrice: number = priceData?.bitcoin?.usd ?? 0;
+  const sbtcPrice: number = priceData?.["sbtc-2"]?.usd ?? btcPrice;
+  const deviation = btcPrice > 0 ? ((sbtcPrice - btcPrice) / btcPrice) * 100 : 0;
+  const pegStatus: SBTCPegStatus["status"] =
+    Math.abs(deviation) < 0.5 ? "pegged" : Math.abs(deviation) < 2 ? "slight" : "depegged";
+
+  // Bridge history
+  const bridgeHistory: SBTCBridgeTx[] = [];
+  for (const item of (txData.results ?? []) as Record<string, unknown>[]) {
+    const tx = (item.tx ?? item) as Record<string, unknown>;
+    const ftTransfers = (item.ft_transfers ?? []) as Record<string, unknown>[];
+    const sbtcFTs = ftTransfers.filter((ft) =>
+      (ft.asset_identifier as string)?.includes(SBTC_CONTRACT_NAME)
+    );
+    if (sbtcFTs.length === 0) continue;
+
+    const fnName = ((tx.contract_call as Record<string, string>)?.function_name ?? "").toLowerCase();
+    const txStatus =
+      tx.tx_status === "success" ? "success" : tx.tx_status === "pending" ? "pending" : "failed";
+
+    for (const ft of sbtcFTs) {
+      const amount = Number(ft.amount as string) / 1e8;
+      const senderIsContract = (ft.sender as string)?.includes(".");
+      const recipientIsContract = (ft.recipient as string)?.includes(".");
+
+      let direction: SBTCBridgeTx["direction"];
+      if (fnName.includes("deposit") || fnName.includes("complete")) {
+        direction = "deposit";
+      } else if (fnName.includes("withdraw") || fnName.includes("initiate")) {
+        direction = "withdrawal";
+      } else if (senderIsContract && !recipientIsContract) {
+        direction = "deposit";
+      } else if (!senderIsContract && recipientIsContract) {
+        direction = "withdrawal";
+      } else {
+        direction = "transfer";
+      }
+
+      bridgeHistory.push({
+        txId: tx.tx_id as string,
+        direction,
+        amount,
+        timestamp: (tx.block_time as number) ?? 0,
+        txStatus: txStatus as SBTCBridgeTx["txStatus"],
+        counterpart:
+          ft.sender === address ? (ft.recipient as string) : (ft.sender as string),
+        fnName: (tx.contract_call as Record<string, string>)?.function_name,
+      });
+    }
+  }
+
+  return {
+    balance,
+    valueUsd: balance * (sbtcPrice || btcPrice),
+    peg: { btcPrice, sbtcPrice, deviation, status: pegStatus },
+    bridgeHistory,
+  };
+}
+
+// ─── Stacking ─────────────────────────────────────────────────────────────────
+
+export interface StackingStatus {
+  isStacking: boolean;
+  lockedSTX: number;
+  lockedUstx: number;
+  lockedUsd: number;
+  burnchainUnlockHeight: number;
+  blocksUntilUnlock: number;
+  estimatedUnlockDays: number;
+  cyclesRemaining: number;
+  currentCycleId: number;
+  cycleProgress: number;
+  blocksUntilCycleEnd: number;
+  rewardPhaseLength: number;
+  totalStackedUstx: number;
+  networkShare: number;
+  minThresholdSTX: number;
+  blocksUntilNextCycle: number;
+  lockTxId: string;
+}
+
+export async function getStackingStatus(address: string): Promise<StackingStatus> {
+  const [balanceData, poxData, stxPrice] = await Promise.all([
+    getFungibleTokens(address),
+    fetch(`${HIRO_API_BASE}/v2/pox`).then((r) => r.json()),
+    getSTXPrice(),
+  ]);
+
+  const stx = balanceData.stx ?? {};
+  const lockedUstx = Number(stx.locked ?? 0);
+  const burnchainUnlockHeight = stx.burnchain_unlock_height ?? 0;
+  const lockTxId = stx.lock_tx_id ?? "";
+
+  const currentBlock: number = poxData.current_burnchain_block_height;
+  const rewardPhaseLength: number = poxData.reward_phase_block_length;
+  const preparePhaseLength: number = poxData.prepare_phase_block_length;
+  const cycleLength = rewardPhaseLength + preparePhaseLength;
+  const currentCycleId: number = poxData.current_cycle.id;
+  const totalStackedUstx: number = poxData.current_cycle.stacked_ustx;
+  const blocksUntilCycleEnd: number = poxData.next_cycle.blocks_until_prepare_phase;
+  const blocksUntilNextCycle: number = poxData.next_cycle.blocks_until_reward_phase;
+  const minThresholdSTX = (poxData.current_cycle.min_threshold_ustx ?? 0) / 1_000_000;
+
+  const lockedSTX = lockedUstx / 1_000_000;
+  const lockedUsd = lockedSTX * stxPrice.usd;
+  const blocksUntilUnlock = Math.max(0, burnchainUnlockHeight - currentBlock);
+  const estimatedUnlockDays = Math.round((blocksUntilUnlock * 10) / (60 * 24));
+  const cyclesRemaining = blocksUntilUnlock > 0 ? Math.ceil(blocksUntilUnlock / cycleLength) : 0;
+  const cycleProgress = Math.max(
+    0,
+    Math.min(100, ((rewardPhaseLength - blocksUntilCycleEnd) / rewardPhaseLength) * 100)
+  );
+  const networkShare = totalStackedUstx > 0 ? (lockedUstx / totalStackedUstx) * 100 : 0;
+
+  return {
+    isStacking: lockedUstx > 0,
+    lockedSTX,
+    lockedUstx,
+    lockedUsd,
+    burnchainUnlockHeight,
+    blocksUntilUnlock,
+    estimatedUnlockDays,
+    cyclesRemaining,
+    currentCycleId,
+    cycleProgress,
+    blocksUntilCycleEnd,
+    rewardPhaseLength,
+    totalStackedUstx,
+    networkShare,
+    minThresholdSTX,
+    blocksUntilNextCycle,
+    lockTxId,
+  };
+}
+
+export interface TokenWithValue {
+  contractId: string;
+  symbol: string;
+  name: string;
+  balance: number;
+  decimals: number;
+  imageUri?: string;
+  priceUsd: number;
+  valueUsd: number;
+  change24h: number | null;
+  warning?: "unverified" | "suspicious";
+}
+
+export async function getTokensWithValues(address: string): Promise<{
+  stx: TokenWithValue;
+  tokens: TokenWithValue[];
+  totalUsd: number;
+}> {
+  const STX_IMAGE =
+    "https://assets.coingecko.com/coins/images/2069/small/Stacks_logo_full.png";
+
+  const [balanceData, stxPrice] = await Promise.all([
+    getFungibleTokens(address),
+    getSTXPrice(),
+  ]);
+
+  const stxHumanBalance = Number(balanceData.stx?.balance ?? 0) / 1_000_000;
+  const stxUsd = stxHumanBalance * stxPrice.usd;
+
+  const rawTokens = Object.entries(
+    (balanceData.fungible_tokens as Record<string, { balance: string }>) ?? {}
+  )
+    .map(([contractId, info]) => ({ contractId, rawBalance: Number(info.balance) }))
+    .filter((t) => t.rawBalance > 0);
+
+  const metadataResults = await Promise.allSettled(
+    rawTokens.map((t) => getTokenMetadata(t.contractId))
+  );
+
+  const geckoIds = new Set<string>();
+  for (const { contractId } of rawTokens) {
+    const contractName = contractId.split(".")[1]?.split("::")[0];
+    const known = contractName ? CONTRACT_NAME_TO_GECKO[contractName] : null;
+    if (known?.geckoId) geckoIds.add(known.geckoId);
+  }
+
+  let geckoPrices: Record<string, { usd: number; usd_24h_change: number }> = {};
+  if (geckoIds.size > 0) {
+    try {
+      const res = await fetch(
+        `${COINGECKO_API}/simple/price?ids=${[...geckoIds].join(",")}&vs_currencies=usd&include_24hr_change=true`,
+        { next: { revalidate: 60 } }
+      );
+      if (res.ok) geckoPrices = await res.json();
+    } catch { /* ignore */ }
+  }
+
+  let otherUsd = 0;
+  const tokens: TokenWithValue[] = rawTokens
+    .map((t, i) => {
+      const meta =
+        metadataResults[i].status === "fulfilled" ? metadataResults[i].value : null;
+      const contractName = t.contractId.split(".")[1]?.split("::")[0] ?? "";
+      const known = contractName ? CONTRACT_NAME_TO_GECKO[contractName] : null;
+      const decimals = meta?.decimals ?? known?.decimals ?? 6;
+      const humanBalance = t.rawBalance / Math.pow(10, decimals);
+
+      let priceUsd = 0;
+      let change24h: number | null = null;
+      if (known?.fixedUsdPrice != null) {
+        priceUsd = known.fixedUsdPrice;
+      } else if (known?.geckoId && geckoPrices[known.geckoId]) {
+        priceUsd = geckoPrices[known.geckoId].usd ?? 0;
+        change24h = geckoPrices[known.geckoId].usd_24h_change ?? null;
+      }
+
+      const valueUsd = humanBalance * priceUsd;
+      otherUsd += valueUsd;
+
+      // Warning detection
+      // "suspicious": no Hiro metadata (likely spam airdrop) OR has metadata but no image + no price
+      // "unverified": has metadata + image but not in our known list (no price)
+      let warning: TokenWithValue["warning"];
+      if (!known) {
+        if (!meta || (!meta.image_uri && priceUsd === 0)) {
+          warning = "suspicious";
+        } else if (priceUsd === 0) {
+          warning = "unverified";
+        }
+      }
+
+      return {
+        contractId: t.contractId,
+        symbol: (meta?.symbol ?? contractName).toUpperCase().slice(0, 8),
+        name: meta?.name ?? contractName,
+        balance: humanBalance,
+        decimals,
+        imageUri: meta?.image_uri ?? undefined,
+        priceUsd,
+        valueUsd,
+        change24h,
+        warning,
+      };
+    })
+    .sort((a, b) => b.valueUsd - a.valueUsd);
+
+  const stxToken: TokenWithValue = {
+    contractId: "",
+    symbol: "STX",
+    name: "Stacks",
+    balance: stxHumanBalance,
+    decimals: 6,
+    imageUri: STX_IMAGE,
+    priceUsd: stxPrice.usd,
+    valueUsd: stxUsd,
+    change24h: stxPrice.usd_24h_change,
+  };
+
+  return { stx: stxToken, tokens, totalUsd: stxUsd + otherUsd };
 }
 
 export async function getSTXPrice(): Promise<{ usd: number; usd_24h_change: number }> {
@@ -365,7 +685,39 @@ export async function getSTXPrice(): Promise<{ usd: number; usd_24h_change: numb
   }
 }
 
-export async function getSTXPriceHistory(days = 7): Promise<{ date: string; value: number }[]> {
+export interface STXMarketStats {
+  price: number;
+  change24h: number;
+  marketCap: number;
+  volume24h: number;
+}
+
+export async function getSTXMarketStats(): Promise<STXMarketStats> {
+  try {
+    const res = await fetch(
+      `${COINGECKO_API}/coins/blockstack?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`,
+      { next: { revalidate: 60 } }
+    );
+    if (!res.ok) throw new Error("CoinGecko error");
+    const data = await res.json();
+    return {
+      price: data.market_data?.current_price?.usd ?? 0,
+      change24h: data.market_data?.price_change_percentage_24h ?? 0,
+      marketCap: data.market_data?.market_cap?.usd ?? 0,
+      volume24h: data.market_data?.total_volume?.usd ?? 0,
+    };
+  } catch {
+    return { price: 0, change24h: 0, marketCap: 0, volume24h: 0 };
+  }
+}
+
+export interface STXMarketHistory {
+  prices: number[];
+  marketCaps: number[];
+  volumes: number[];
+}
+
+export async function getSTXMarketHistory(days = 7): Promise<STXMarketHistory> {
   try {
     const res = await fetch(
       `${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${days}&interval=daily`,
@@ -373,11 +725,275 @@ export async function getSTXPriceHistory(days = 7): Promise<{ date: string; valu
     );
     if (!res.ok) throw new Error("CoinGecko history error");
     const data = await res.json();
-    return (data.prices as [number, number][]).map(([timestamp, price]) => ({
-      date: new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    return {
+      prices: (data.prices as [number, number][]).map(([, v]) => v),
+      marketCaps: (data.market_caps as [number, number][]).map(([, v]) => v),
+      volumes: (data.total_volumes as [number, number][]).map(([, v]) => v),
+    };
+  } catch {
+    return { prices: [], marketCaps: [], volumes: [] };
+  }
+}
+
+export async function getSTXPriceHistory(days = 7): Promise<{ date: string; value: number }[]> {
+  try {
+    const intervalParam = days === 1 ? "" : "&interval=daily";
+    const res = await fetch(
+      `${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${days}${intervalParam}`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!res.ok) throw new Error("CoinGecko history error");
+    const data = await res.json();
+    const rawPrices: [number, number][] = data.prices ?? [];
+
+    const prices = days === 1
+      ? (() => {
+          const seen = new Set<number>();
+          return rawPrices.filter(([ts]) => {
+            const bucket = Math.floor(new Date(ts).getHours() / 4);
+            if (seen.has(bucket)) return false;
+            seen.add(bucket);
+            return true;
+          });
+        })()
+      : rawPrices;
+
+    return prices.map(([timestamp, price]) => ({
+      date: days === 1
+        ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
+        : new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
       value: price,
     }));
   } catch {
     return [];
   }
+}
+
+// ─── PnL Tracker ──────────────────────────────────────────────────────────────
+
+export interface PnLEntry {
+  contractId: string;
+  symbol: string;
+  name: string;
+  imageUri?: string;
+  currentBalance: number;
+  currentPrice: number;
+  currentValue: number;
+  avgCostBasis: number;
+  totalCost: number;
+  unrealizedPnL: number;
+  unrealizedPct: number;
+  realizedPnL: number;
+  totalPnL: number;
+}
+
+export interface PnLData {
+  entries: PnLEntry[];
+  totalUnrealized: number;
+  totalRealized: number;
+  totalPnL: number;
+}
+
+async function fetchAllTransactions(address: string): Promise<TxWithTransfers[]> {
+  const MAX_PAGES = 20;
+  const LIMIT = 50;
+  const all: TxWithTransfers[] = [];
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const res = await fetch(
+      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=${LIMIT}&offset=${page * LIMIT}`
+    );
+    if (!res.ok) break;
+    const data = await res.json();
+    const results: TxWithTransfers[] = data.results ?? [];
+    if (results.length === 0) break;
+    for (const item of results) {
+      if (item.tx.tx_status === "success") all.push(item);
+    }
+    if (results.length < LIMIT) break;
+  }
+
+  return all;
+}
+
+export async function getPnLData(address: string): Promise<PnLData> {
+  const [txList, holdings] = await Promise.all([
+    fetchAllTransactions(address),
+    getTokensWithValues(address),
+  ]);
+
+  // Collect geckoIds to fetch price history for
+  const geckoIds: string[] = ["blockstack"]; // STX always included
+  for (const token of holdings.tokens) {
+    const contractName = token.contractId.split("::")[0].split(".")[1];
+    const known = contractName ? CONTRACT_NAME_TO_GECKO[contractName] : null;
+    if (known?.geckoId && !geckoIds.includes(known.geckoId)) {
+      geckoIds.push(known.geckoId);
+    }
+  }
+
+  // Fetch 365-day daily price history for each token
+  const priceHistoryResults = await Promise.allSettled(
+    geckoIds.map((id) =>
+      fetch(`${COINGECKO_API}/coins/${id}/market_chart?vs_currency=usd&days=365&interval=daily`)
+        .then((r) => r.json())
+    )
+  );
+
+  // Build Map<geckoId, Map<"YYYY-MM-DD", price>>
+  const priceByDate = new Map<string, Map<string, number>>();
+  for (let i = 0; i < geckoIds.length; i++) {
+    const result = priceHistoryResults[i];
+    if (result.status !== "fulfilled") continue;
+    const map = new Map<string, number>();
+    for (const [ts, price] of (result.value?.prices ?? []) as [number, number][]) {
+      map.set(new Date(ts).toISOString().slice(0, 10), price);
+    }
+    priceByDate.set(geckoIds[i], map);
+  }
+
+  function getPriceAt(geckoId: string, blockTimeSec: number): number {
+    const map = priceByDate.get(geckoId);
+    if (!map) return 0;
+    for (let delta = 0; delta <= 3; delta++) {
+      const dateKey = new Date((blockTimeSec - delta * 86400) * 1000).toISOString().slice(0, 10);
+      const p = map.get(dateKey);
+      if (p) return p;
+    }
+    return 0;
+  }
+
+  // Per-token WAC state (key = normalized contractId without "::" suffix)
+  interface TokenState {
+    geckoId: string;
+    totalUnits: number;
+    totalCostBasis: number;
+    realizedPnL: number;
+  }
+  const stateMap = new Map<string, TokenState>();
+  stateMap.set("stx", { geckoId: "blockstack", totalUnits: 0, totalCostBasis: 0, realizedPnL: 0 });
+
+  for (const token of holdings.tokens) {
+    const normalizedId = token.contractId.split("::")[0];
+    const contractName = normalizedId.split(".")[1];
+    const known = contractName ? CONTRACT_NAME_TO_GECKO[contractName] : null;
+    if (!known?.geckoId) continue;
+    stateMap.set(normalizedId, { geckoId: known.geckoId, totalUnits: 0, totalCostBasis: 0, realizedPnL: 0 });
+  }
+
+  // Process transactions chronologically (oldest first)
+  const sorted = [...txList].sort((a, b) => (a.tx.block_time ?? 0) - (b.tx.block_time ?? 0));
+
+  for (const item of sorted) {
+    const blockTime = item.tx.block_time ?? 0;
+
+    // STX
+    const stxReceived = Number(item.stx_received) / 1_000_000;
+    const stxSent = Number(item.stx_sent) / 1_000_000;
+    const stxNet = stxReceived - stxSent;
+    if (stxNet !== 0) {
+      const s = stateMap.get("stx")!;
+      const price = getPriceAt("blockstack", blockTime);
+      if (stxNet > 0) {
+        s.totalCostBasis += stxNet * price;
+        s.totalUnits += stxNet;
+      } else {
+        const sellUnits = Math.abs(stxNet);
+        if (s.totalUnits > 0) {
+          const avgCost = s.totalCostBasis / s.totalUnits;
+          s.realizedPnL += sellUnits * (price - avgCost);
+          s.totalCostBasis -= sellUnits * avgCost;
+          s.totalUnits = Math.max(0, s.totalUnits - sellUnits);
+        }
+      }
+    }
+
+    // FT transfers
+    for (const ft of item.ft_transfers ?? []) {
+      const normalizedId = ft.asset_identifier.split("::")[0];
+      const contractName = normalizedId.split(".")[1];
+      const known = contractName ? CONTRACT_NAME_TO_GECKO[contractName] : null;
+      if (!known?.geckoId) continue;
+
+      const s = stateMap.get(normalizedId);
+      if (!s) continue;
+
+      const humanAmount = Number(ft.amount) / Math.pow(10, known.decimals);
+      const price = getPriceAt(known.geckoId, blockTime);
+
+      if (ft.recipient === address) {
+        s.totalCostBasis += humanAmount * price;
+        s.totalUnits += humanAmount;
+      } else if (ft.sender === address) {
+        if (s.totalUnits > 0) {
+          const avgCost = s.totalCostBasis / s.totalUnits;
+          s.realizedPnL += humanAmount * (price - avgCost);
+          s.totalCostBasis -= humanAmount * avgCost;
+          s.totalUnits = Math.max(0, s.totalUnits - humanAmount);
+        }
+      }
+    }
+  }
+
+  // Build PnLEntry[]
+  const entries: PnLEntry[] = [];
+
+  // STX
+  const stxState = stateMap.get("stx")!;
+  const stxBalance = holdings.stx.balance;
+  const stxAvgCost = stxState.totalUnits > 0 ? stxState.totalCostBasis / stxState.totalUnits : 0;
+  const stxTotalCost = stxBalance * stxAvgCost;
+  const stxUnrealized = holdings.stx.valueUsd - stxTotalCost;
+  entries.push({
+    contractId: "",
+    symbol: "STX",
+    name: "Stacks",
+    imageUri: holdings.stx.imageUri,
+    currentBalance: stxBalance,
+    currentPrice: holdings.stx.priceUsd,
+    currentValue: holdings.stx.valueUsd,
+    avgCostBasis: stxAvgCost,
+    totalCost: stxTotalCost,
+    unrealizedPnL: stxUnrealized,
+    unrealizedPct: stxTotalCost > 0 ? (stxUnrealized / stxTotalCost) * 100 : 0,
+    realizedPnL: stxState.realizedPnL,
+    totalPnL: stxUnrealized + stxState.realizedPnL,
+  });
+
+  // Other tokens
+  for (const token of holdings.tokens) {
+    const normalizedId = token.contractId.split("::")[0];
+    const contractName = normalizedId.split(".")[1];
+    const known = contractName ? CONTRACT_NAME_TO_GECKO[contractName] : null;
+    if (!known?.geckoId) continue;
+
+    const s = stateMap.get(normalizedId);
+    if (!s) continue;
+
+    const avgCost = s.totalUnits > 0 ? s.totalCostBasis / s.totalUnits : 0;
+    const totalCost = token.balance * avgCost;
+    const unrealized = token.valueUsd - totalCost;
+    entries.push({
+      contractId: token.contractId,
+      symbol: token.symbol,
+      name: token.name,
+      imageUri: token.imageUri,
+      currentBalance: token.balance,
+      currentPrice: token.priceUsd,
+      currentValue: token.valueUsd,
+      avgCostBasis: avgCost,
+      totalCost,
+      unrealizedPnL: unrealized,
+      unrealizedPct: totalCost > 0 ? (unrealized / totalCost) * 100 : 0,
+      realizedPnL: s.realizedPnL,
+      totalPnL: unrealized + s.realizedPnL,
+    });
+  }
+
+  entries.sort((a, b) => b.currentValue - a.currentValue);
+
+  const totalUnrealized = entries.reduce((s, e) => s + e.unrealizedPnL, 0);
+  const totalRealized = entries.reduce((s, e) => s + e.realizedPnL, 0);
+
+  return { entries, totalUnrealized, totalRealized, totalPnL: totalUnrealized + totalRealized };
 }

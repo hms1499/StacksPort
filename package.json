@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@bitflowlabs/core-sdk": "^3.0.0",
     "@stacks/blockchain-api-client": "^8.14.1",
     "@stacks/connect": "^8.2.5",
     "@stacks/network": "^7.3.1",

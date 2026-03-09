@@ -156,8 +156,8 @@ export default function TrendingTokens() {
       {/* Token rows */}
       <div className="divide-y divide-gray-50">
         {loading
-          ? [...Array(3)].map((_, i) => <SkeletonRow key={i} />)
-          : tokens.slice(0, 3).map((token) => <TokenRow key={token.id} token={token} />)}
+          ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
+          : tokens.slice(0, 5).map((token) => <TokenRow key={token.id} token={token} />)}
       </div>
     </div>
   );

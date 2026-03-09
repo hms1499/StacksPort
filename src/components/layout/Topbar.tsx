@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, Moon, ChevronLeft, Loader2 } from "lucide-react";
+import { Bell, Moon, ChevronLeft, Loader2 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { shortenAddress, cn } from "@/lib/utils";
 import { connect as stacksConnect } from "@stacks/connect";
@@ -37,25 +37,22 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
   }
 
   return (
-    <header className="h-14 bg-white border-b border-gray-100 flex items-center px-6 gap-4 sticky top-0 z-30">
+    <header className="h-14 bg-white border-b border-gray-100 flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
       {/* Title */}
       <div className="flex items-center gap-2 flex-1">
-        <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+        <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors hidden md:flex">
           <ChevronLeft size={18} className="text-gray-500" />
         </button>
-        <h1 className="font-semibold text-gray-900">{title}</h1>
+        <h1 className="font-semibold text-gray-900 text-base">{title}</h1>
       </div>
 
       {/* Right actions */}
-      <div className="flex items-center gap-2">
-        <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-          <Search size={18} className="text-gray-500" />
-        </button>
+      <div className="flex items-center gap-1.5">
         <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors relative">
           <Bell size={18} className="text-gray-500" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
         </button>
-        <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+        <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors hidden md:flex">
           <Moon size={18} className="text-gray-500" />
         </button>
 
@@ -74,7 +71,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
             {dropdownOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                <div className="absolute right-0 mt-2 w-48 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
                   <div className="px-3 py-2 border-b border-gray-100">
                     <p className="text-xs text-gray-500">Connected</p>
                     <p className="text-sm font-medium text-gray-900 truncate">{stxAddress}</p>

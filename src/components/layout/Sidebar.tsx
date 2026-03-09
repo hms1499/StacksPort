@@ -11,7 +11,6 @@ import {
   BarChart2,
   Sparkles,
   Crown,
-  Settings,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -20,11 +19,10 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/assets", label: "My assets", icon: Wallet },
-  { href: "/notifications", label: "Notification", icon: Bell },
-  { href: "/trade", label: "Trade", icon: BarChart2 },
-  { href: "/ai", label: "Stacks AI", icon: Sparkles },
-  { href: "/premium", label: "Premium", icon: Crown },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/trade", label: "Swap", icon: BarChart2 },
+  { href: "/notifications", label: "Notification", icon: Bell, soon: true },
+  { href: "/ai", label: "Stacks AI", icon: Sparkles, soon: true },
+  { href: "/premium", label: "Premium", icon: Crown, soon: true },
 ];
 
 export default function Sidebar() {
@@ -56,8 +54,29 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-2 py-4 space-y-1">
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, label, icon: Icon, soon }) => {
           const active = pathname === href;
+
+          if (soon) {
+            return (
+              <div
+                key={href}
+                title={collapsed ? `${label} — Coming Soon` : undefined}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 cursor-not-allowed select-none"
+              >
+                <Icon size={18} className="flex-shrink-0" />
+                {!collapsed && (
+                  <>
+                    <span>{label}</span>
+                    <span className="ml-auto text-[10px] font-semibold tracking-wide uppercase bg-gray-100 text-gray-400 rounded-full px-2 py-0.5">
+                      Soon
+                    </span>
+                  </>
+                )}
+              </div>
+            );
+          }
+
           return (
             <Link
               key={href}

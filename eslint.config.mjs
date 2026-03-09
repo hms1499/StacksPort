@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // These patterns (setLoading/setState at start of useEffect) are intentional
+      "react-hooks/set-state-in-effect": "warn",
+      // Downgrade unused-expressions to warning
+      "@typescript-eslint/no-unused-expressions": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

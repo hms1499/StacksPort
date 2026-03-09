@@ -81,7 +81,7 @@ function WarningBanner({ suspicious, unverified }: { suspicious: number; unverif
   const hasSuspicious = suspicious > 0;
 
   return (
-    <div className={`flex items-start gap-2.5 px-6 py-3 border-b ${hasSuspicious ? "bg-red-50 border-red-100" : "bg-yellow-50 border-yellow-100"}`}>
+    <div className={`flex items-start gap-2.5 px-3 md:px-6 py-3 border-b ${hasSuspicious ? "bg-red-50 border-red-100" : "bg-yellow-50 border-yellow-100"}`}>
       {hasSuspicious
         ? <ShieldAlert size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
         : <AlertTriangle size={14} className="text-yellow-500 flex-shrink-0 mt-0.5" />
@@ -140,12 +140,12 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
 
     return (
       <div
-        className={`grid grid-cols-[2fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3.5 transition-colors group items-center ${
+        className={`grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center ${
           isFlagged ? "bg-gray-50/50 hover:bg-gray-50" : "hover:bg-gray-50"
         }`}
       >
         {/* Token info */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           <TokenAvatar symbol={t.symbol} imageUri={t.imageUri} warning={t.warning} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -156,7 +156,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
             </div>
             <p className="text-xs text-gray-400 truncate">{t.name}</p>
           </div>
-          {/* Portfolio % bar — only for trusted tokens with value */}
+          {/* Portfolio % bar — desktop xl only */}
           {!isFlagged && (
             <div className="hidden xl:flex items-center gap-1.5 ml-2">
               <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
@@ -167,13 +167,13 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
           )}
         </div>
 
-        {/* Balance */}
-        <p className={`text-sm text-right font-medium ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
+        {/* Balance — desktop only */}
+        <p className={`hidden md:block text-sm text-right font-medium ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
           {formatBalance(t.balance)}
         </p>
 
-        {/* Price */}
-        <p className={`text-sm text-right ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
+        {/* Price — desktop only */}
+        <p className={`hidden md:block text-sm text-right ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
           {formatPrice(t.priceUsd)}
         </p>
 
@@ -183,7 +183,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         </p>
 
         {/* 24h + actions */}
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-1.5">
           {t.change24h !== null ? (
             <span className={`text-xs font-medium ${isPositive ? "text-green-500" : "text-red-500"}`}>
               {isPositive ? "+" : ""}
@@ -193,7 +193,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
             <span className="text-xs text-gray-300">—</span>
           )}
 
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="hidden md:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => openSend(t)}
               title="Send"
@@ -241,10 +241,10 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         )}
 
         {/* Table header */}
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_80px] gap-4 px-6 py-2.5 bg-gray-50 text-xs font-medium text-gray-400 uppercase tracking-wide">
+        <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-2.5 bg-gray-50 text-xs font-medium text-gray-400 uppercase tracking-wide">
           <span>Token</span>
-          <span className="text-right">Balance</span>
-          <span className="text-right">Price</span>
+          <span className="hidden md:block text-right">Balance</span>
+          <span className="hidden md:block text-right">Price</span>
           <span className="text-right">Value</span>
           <span className="text-right">24h</span>
         </div>
@@ -253,16 +253,16 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         <div className="divide-y divide-gray-50">
           {loading ? (
             [...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-[2fr_1fr_1fr_1fr_80px] gap-4 px-6 py-3.5 animate-pulse">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gray-100" />
+              <div key={i} className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 animate-pulse">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-gray-100 flex-shrink-0" />
                   <div className="space-y-1.5">
                     <div className="h-3 bg-gray-100 rounded w-16" />
                     <div className="h-3 bg-gray-100 rounded w-10" />
                   </div>
                 </div>
-                <div className="h-3 bg-gray-100 rounded w-20 ml-auto self-center" />
-                <div className="h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
+                <div className="hidden md:block h-3 bg-gray-100 rounded w-20 ml-auto self-center" />
+                <div className="hidden md:block h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
                 <div className="h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
                 <div className="h-3 bg-gray-100 rounded w-10 ml-auto self-center" />
               </div>

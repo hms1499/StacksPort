@@ -1,12 +1,13 @@
 import Topbar from "@/components/layout/Topbar";
 import SwapWidget from "@/components/trade/SwapWidget";
-import { ArrowLeftRight, Zap, Shield } from "lucide-react";
+import MigrationWidget from "@/components/trade/MigrationWidget";
+import { ArrowLeftRight, Zap, Shield, RefreshCw } from "lucide-react";
 
 export default function TradePage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Topbar title="Trade" />
-      <div className="flex-1 p-6 max-w-2xl mx-auto w-full space-y-5">
+      <div className="flex-1 p-4 md:p-6 max-w-2xl mx-auto w-full space-y-4 md:space-y-5">
 
         {/* Swap Widget — full width */}
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
@@ -17,6 +18,20 @@ export default function TradePage() {
             <h2 className="font-semibold text-gray-700">Swap</h2>
           </div>
           <SwapWidget />
+        </div>
+
+        {/* aeUSDC ↔ USDCx Migration Widget */}
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2.5 mb-5">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <RefreshCw size={15} className="text-blue-500" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-gray-700">aeUSDC → USDCx Migration</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Upgrade to native Circle USDC on Stacks</p>
+            </div>
+          </div>
+          <MigrationWidget />
         </div>
 
         {/* Info panels — side by side below */}

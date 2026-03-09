@@ -9,6 +9,9 @@ const geist = Geist({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "StacksPort — Portfolio Manager",
   description: "Manage your Stacks blockchain portfolio",
+  other: {
+    "talentapp:project_verification": "027544986f44d93d97a520378aecdbf1c0e6cd627c71e3c58bc45e77e7257c9ed9d05c8d2989f06a68d50aa3aa85da14511ffabc33a12715269e3c3f07ad37d2",
+  },
 };
 
 export const viewport: Viewport = {

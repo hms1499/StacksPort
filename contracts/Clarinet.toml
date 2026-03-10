@@ -1,0 +1,10 @@
+[project]
+name = 'stacksport-dca'
+description = 'DCA Vault contract for StacksPort'
+authors = []
+telemetry = false
+
+[contracts.dca-vault-v2]
+path = 'dca-vault.clar'
+clarity_version = 3
+epoch = '3.0'

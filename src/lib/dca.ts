@@ -1,0 +1,341 @@
+import {
+  uintCV,
+  standardPrincipalCV,
+  contractPrincipalCV,
+  serializeCV,
+  hexToCV,
+  ClarityType,
+  noneCV,
+  type ClarityValue,
+} from "@stacks/transactions";
+import { openContractCall } from "@stacks/connect";
+
+export const DCA_CONTRACT_ADDRESS =
+  "ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0";
+export const DCA_CONTRACT_NAME = "dca-vault-v2";
+
+// USDx on Stacks testnet
+export const USDX_CONTRACT_ADDRESS = "ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEMOKNC6C";
+export const USDX_CONTRACT_NAME = "usdcx";
+export const USDX_DECIMALS = 6;
+
+export const SOURCE_TOKENS = [
+  {
+    label: "USDx",
+    symbol: "USDx",
+    address: USDX_CONTRACT_ADDRESS,
+    name: USDX_CONTRACT_NAME,
+    decimals: 6,
+  },
+] as const;
+
+const HIRO_TESTNET = "https://api.testnet.hiro.so";
+const DUMMY_SENDER = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
+
+export const INTERVALS = {
+  Daily: 144,
+  Weekly: 1008,
+  Monthly: 4320,
+} as const;
+
+export function blocksToInterval(blocks: number): string {
+  if (blocks === 144) return "Daily";
+  if (blocks === 1008) return "Weekly";
+  if (blocks === 4320) return "Monthly";
+  return `${blocks} blocks`;
+}
+
+export function microToToken(micro: number, decimals = 6): number {
+  return micro / Math.pow(10, decimals);
+}
+
+export function tokenToMicro(amount: number, decimals = 6): number {
+  return Math.floor(amount * Math.pow(10, decimals));
+}
+
+// Keep microToSTX alias for STX display elsewhere
+export const microToSTX = (n: number) => microToToken(n, 6);
+export const stxToMicro = (n: number) => tokenToMicro(n, 6);
+
+// ─── Clarity helpers ──────────────────────────────────────────────────────────
+
+function cvHex(cv: ClarityValue): string {
+  const bytes = serializeCV(cv);
+  return "0x" + Buffer.from(bytes).toString("hex");
+}
+
+function principalCV(contractId: string): ClarityValue {
+  const parts = contractId.split(".");
+  if (parts.length === 2) return contractPrincipalCV(parts[0], parts[1]);
+  return standardPrincipalCV(contractId);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseCV(cv: ClarityValue): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = cv as unknown as any;
+  switch (cv.type) {
+    case ClarityType.UInt:
+    case ClarityType.Int:
+      return Number(raw.value);
+    case ClarityType.BoolTrue:
+      return true;
+    case ClarityType.BoolFalse:
+      return false;
+    case ClarityType.ResponseOk:
+      return parseCV(raw.value);
+    case ClarityType.ResponseErr:
+      throw new Error("Contract returned error");
+    case ClarityType.OptionalNone:
+      return null;
+    case ClarityType.OptionalSome:
+      return parseCV(raw.value);
+    case ClarityType.Tuple: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: Record<string, any> = {};
+      const data: Record<string, ClarityValue> = raw.data ?? raw.value ?? {};
+      for (const [k, v] of Object.entries(data)) {
+        result[k] = parseCV(v);
+      }
+      return result;
+    }
+    case ClarityType.PrincipalStandard:
+    case ClarityType.PrincipalContract: {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { addressToString } = require("@stacks/transactions");
+        const addr = addressToString(raw.address ?? raw.value);
+        const name: string = raw.contractName?.content ?? "";
+        return name ? `${addr}.${name}` : addr;
+      } catch {
+        return String(raw.contractName?.content ?? raw.address ?? "unknown");
+      }
+    }
+    case ClarityType.List: {
+      const list: ClarityValue[] = raw.list ?? raw.value ?? [];
+      return list.map((item: ClarityValue) => parseCV(item));
+    }
+    default:
+      return null;
+  }
+}
+
+async function readOnly(fn: string, args: string[] = []): Promise<ClarityValue> {
+  const res = await fetch(
+    `${HIRO_TESTNET}/v2/contracts/call-read/${DCA_CONTRACT_ADDRESS}/${DCA_CONTRACT_NAME}/${fn}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: DUMMY_SENDER, arguments: args }),
+    }
+  );
+  const json = await res.json();
+  if (!json.okay) throw new Error(json.cause ?? "Read-only call failed");
+  return hexToCV(json.result);
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface DCAStats {
+  totalPlans: number;
+  totalVolume: number;
+  totalExecuted: number;
+}
+
+export interface DCAPlan {
+  id: number;
+  owner: string;
+  src: string;   // source token contract (e.g. USDx)
+  token: string; // target token contract
+  amt: number;   // source token units per swap (micro)
+  ivl: number;   // interval in blocks
+  leb: number;   // last executed block
+  bal: number;   // source token balance remaining (micro)
+  tsd: number;   // total swaps done
+  tss: number;   // total source tokens spent
+  active: boolean;
+  cat: number;   // created at block
+}
+
+// ─── Read functions ───────────────────────────────────────────────────────────
+
+export async function getDCAStats(): Promise<DCAStats> {
+  const cv = await readOnly("get-stats");
+  const val = parseCV(cv) as {
+    "total-plans": number;
+    "total-volume": number;
+    "total-executed": number;
+  };
+  return {
+    totalPlans: val["total-plans"],
+    totalVolume: val["total-volume"],
+    totalExecuted: val["total-executed"],
+  };
+}
+
+export async function getUserPlanIds(address: string): Promise<number[]> {
+  const cv = await readOnly("get-user-plans", [cvHex(standardPrincipalCV(address))]);
+  return parseCV(cv) as number[];
+}
+
+export async function getPlan(planId: number): Promise<DCAPlan | null> {
+  const cv = await readOnly("get-plan", [cvHex(uintCV(planId))]);
+  const val = parseCV(cv);
+  if (!val) return null;
+  return {
+    id: planId,
+    owner: val.owner ?? "",
+    src: val.src ?? "",
+    token: val.token ?? "",
+    amt: Number(val.amt ?? 0),
+    ivl: Number(val.ivl ?? 0),
+    leb: Number(val.leb ?? 0),
+    bal: Number(val.bal ?? 0),
+    tsd: Number(val.tsd ?? 0),
+    tss: Number(val.tss ?? 0),
+    active: Boolean(val.active),
+    cat: Number(val.cat ?? 0),
+  };
+}
+
+export async function getUserPlans(address: string): Promise<DCAPlan[]> {
+  const ids = await getUserPlanIds(address);
+  if (ids.length === 0) return [];
+  const plans = await Promise.all(ids.map(getPlan));
+  return plans.filter(Boolean) as DCAPlan[];
+}
+
+export async function getNextExecutionBlock(planId: number): Promise<number | null> {
+  try {
+    const cv = await readOnly("next-execution-block", [cvHex(uintCV(planId))]);
+    return parseCV(cv) as number;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Write functions ──────────────────────────────────────────────────────────
+
+export function createPlan(
+  sourceToken: { address: string; name: string },
+  targetToken: string,
+  amountPerInterval: number,
+  intervalBlocks: number,
+  initialDeposit: number,
+  onFinish: (data: { txId: string }) => void,
+  onCancel?: () => void
+) {
+  const [tAddr, tName] = targetToken.split(".");
+  openContractCall({
+    contractAddress: DCA_CONTRACT_ADDRESS,
+    contractName: DCA_CONTRACT_NAME,
+    functionName: "create-plan",
+    functionArgs: [
+      contractPrincipalCV(sourceToken.address, sourceToken.name),
+      contractPrincipalCV(tAddr, tName),
+      uintCV(amountPerInterval),
+      uintCV(intervalBlocks),
+      uintCV(initialDeposit),
+    ],
+    network: "testnet",
+    postConditionMode: 1,
+    onFinish,
+    onCancel,
+  });
+}
+
+export function depositToPlan(
+  planId: number,
+  sourceToken: { address: string; name: string },
+  amount: number,
+  onFinish: (data: { txId: string }) => void,
+  onCancel?: () => void
+) {
+  openContractCall({
+    contractAddress: DCA_CONTRACT_ADDRESS,
+    contractName: DCA_CONTRACT_NAME,
+    functionName: "deposit",
+    functionArgs: [
+      uintCV(planId),
+      contractPrincipalCV(sourceToken.address, sourceToken.name),
+      uintCV(amount),
+    ],
+    network: "testnet",
+    postConditionMode: 1,
+    onFinish,
+    onCancel,
+  });
+}
+
+export function cancelPlan(
+  planId: number,
+  sourceToken: { address: string; name: string },
+  onFinish: (data: { txId: string }) => void,
+  onCancel?: () => void
+) {
+  openContractCall({
+    contractAddress: DCA_CONTRACT_ADDRESS,
+    contractName: DCA_CONTRACT_NAME,
+    functionName: "cancel-plan",
+    functionArgs: [
+      uintCV(planId),
+      contractPrincipalCV(sourceToken.address, sourceToken.name),
+    ],
+    network: "testnet",
+    postConditionMode: 1,
+    onFinish,
+    onCancel,
+  });
+}
+
+export function pausePlan(
+  planId: number,
+  onFinish: (data: { txId: string }) => void,
+  onCancel?: () => void
+) {
+  openContractCall({
+    contractAddress: DCA_CONTRACT_ADDRESS,
+    contractName: DCA_CONTRACT_NAME,
+    functionName: "pause-plan",
+    functionArgs: [uintCV(planId)],
+    network: "testnet",
+    postConditionMode: 1,
+    onFinish,
+    onCancel,
+  });
+}
+
+export function resumePlan(
+  planId: number,
+  onFinish: (data: { txId: string }) => void,
+  onCancel?: () => void
+) {
+  openContractCall({
+    contractAddress: DCA_CONTRACT_ADDRESS,
+    contractName: DCA_CONTRACT_NAME,
+    functionName: "resume-plan",
+    functionArgs: [uintCV(planId)],
+    network: "testnet",
+    postConditionMode: 1,
+    onFinish,
+    onCancel,
+  });
+}
+
+// Helper: resolve source token object from plan's src string
+export function resolveSourceToken(srcContract: string) {
+  return (
+    SOURCE_TOKENS.find(
+      (t) => `${t.address}.${t.name}` === srcContract
+    ) ?? {
+      label: srcContract.split(".")[1] ?? "Unknown",
+      symbol: "???",
+      address: srcContract.split(".")[0] ?? "",
+      name: srcContract.split(".")[1] ?? "",
+      decimals: 6,
+    }
+  );
+}
+
+// noneCV export for memo field
+export { noneCV, principalCV };

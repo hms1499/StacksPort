@@ -13,6 +13,7 @@ import {
   depositToPlan,
   executePlan,
   TARGET_TOKENS,
+  DEFAULT_SWAP_ROUTER,
 } from "@/lib/dca";
 
 interface Props {
@@ -31,7 +32,7 @@ function shortToken(contractId: string): string {
 export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [depositInput, setDepositInput] = useState("");
-  const [routerInput, setRouterInput] = useState("");
+  const [routerInput, setRouterInput] = useState(DEFAULT_SWAP_ROUTER);
   const [minAmountOut, setMinAmountOut] = useState("0");
   const [loading, setLoading] = useState(false);
   const [txInfo, setTxInfo] = useState<string | null>(null);
@@ -190,22 +191,17 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
                 <span className="text-xs font-semibold text-teal-700">Ready to Execute</span>
                 <span className="ml-auto text-[11px] text-teal-600 font-medium">0.3% protocol fee</span>
               </div>
-              <input
-                type="text"
-                placeholder="Swap router: SP….contract-name"
-                value={routerInput}
-                onChange={(e) => setRouterInput(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-teal-200 bg-white text-xs text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
-              />
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-teal-600 font-medium">Swap Router</label>
                 <input
-                  type="number"
-                  placeholder="Min amount out (0 = no slippage guard)"
-                  value={minAmountOut}
-                  onChange={(e) => setMinAmountOut(e.target.value)}
-                  min="0"
-                  className="flex-1 px-3 py-2 rounded-lg border border-teal-200 bg-white text-xs text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  type="text"
+                  placeholder="SP….swap-router-contract"
+                  value={routerInput}
+                  onChange={(e) => setRouterInput(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-teal-200 bg-white text-xs text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 font-mono"
                 />
+              </div>
+              <div className="flex gap-2">
                 <button
                   onClick={handleExecute}
                   disabled={loading || !routerInput.includes(".")}
@@ -253,10 +249,12 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
                 <Play size={14} /> Resume
               </button>
             ) : null}
-            <button onClick={handleCancel} disabled={loading}
-              className="flex-1 py-2 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-40">
-              <Trash2 size={14} /> Cancel & Refund
-            </button>
+            {(plan.active || plan.bal > 0) && (
+              <button onClick={handleCancel} disabled={loading}
+                className="flex-1 py-2 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-40">
+                <Trash2 size={14} /> Cancel & Refund
+              </button>
+            )}
           </div>
 
           {txInfo && <p className="text-[11px] text-gray-400 break-all">Tx: {txInfo}</p>}

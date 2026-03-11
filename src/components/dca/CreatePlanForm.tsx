@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { PlusCircle, Info } from "lucide-react";
-import { createPlan, INTERVALS, stxToMicro, TARGET_TOKENS } from "@/lib/dca";
+import { useState, useEffect } from "react";
+import { PlusCircle, Info, AlertTriangle } from "lucide-react";
+import { createPlan, INTERVALS, stxToMicro, microToSTX, TARGET_TOKENS, getTestnetSTXBalance } from "@/lib/dca";
+import { useWalletStore } from "@/store/walletStore";
 
 interface Props {
   onCreated: () => void;
 }
 
 export default function CreatePlanForm({ onCreated }: Props) {
+  const { stxAddress } = useWalletStore();
   const [targetToken, setTargetToken] = useState("");
   const [amountPerSwap, setAmountPerSwap] = useState("");
   const [interval, setInterval] = useState<keyof typeof INTERVALS>("Weekly");
@@ -16,15 +18,24 @@ export default function CreatePlanForm({ onCreated }: Props) {
   const [loading, setLoading] = useState(false);
   const [txId, setTxId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [stxBalance, setStxBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!stxAddress) return;
+    getTestnetSTXBalance(stxAddress).then((bal) => setStxBalance(microToSTX(bal)));
+  }, [stxAddress]);
 
   const amt = parseFloat(amountPerSwap) || 0;
   const dep = parseFloat(initialDeposit) || 0;
+  const maxDeposit = stxBalance != null ? Math.max(0, Math.floor((stxBalance - 0.01) * 100) / 100) : 0;
+  const insufficientBalance = stxBalance != null && dep > stxBalance;
 
   const validate = (): string | null => {
     if (!targetToken.trim()) return "Chọn hoặc nhập target token";
     if (amt < 1) return "Minimum 1 STX per swap";
     if (dep < 2) return "Minimum deposit 2 STX";
     if (dep < amt) return "Initial deposit phải >= amount per swap";
+    if (insufficientBalance) return `Không đủ STX. Số dư hiện tại: ${stxBalance?.toFixed(2)} STX`;
     return null;
   };
 
@@ -146,7 +157,17 @@ export default function CreatePlanForm({ onCreated }: Props) {
 
       {/* Initial deposit */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-gray-500">Initial Deposit</label>
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-medium text-gray-500">Initial Deposit</label>
+          {stxBalance != null && (
+            <span className="text-xs text-gray-400">
+              Số dư:{" "}
+              <span className={insufficientBalance ? "text-red-500 font-medium" : "text-gray-600 font-medium"}>
+                {stxBalance.toFixed(2)} STX
+              </span>
+            </span>
+          )}
+        </div>
         <div className="relative">
           <input
             type="number"
@@ -154,11 +175,29 @@ export default function CreatePlanForm({ onCreated }: Props) {
             onChange={(e) => setInitialDeposit(e.target.value)}
             placeholder="2"
             min="2"
-            className="w-full px-3 py-2.5 pr-14 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            className={`w-full px-3 py-2.5 pr-20 rounded-xl border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400 ${
+              insufficientBalance ? "border-red-300 bg-red-50" : "border-gray-200"
+            }`}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">STX</span>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+            {stxBalance != null && (
+              <button
+                type="button"
+                onClick={() => setInitialDeposit(String(maxDeposit))}
+                className="text-[10px] font-semibold text-teal-600 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded hover:bg-teal-100 transition-colors"
+              >
+                Max
+              </button>
+            )}
+            <span className="text-xs font-medium text-gray-400">STX</span>
+          </div>
         </div>
-        {amt > 0 && dep >= amt && (
+        {insufficientBalance && (
+          <p className="text-xs text-red-500 flex items-center gap-1">
+            <AlertTriangle size={11} /> Không đủ STX trong ví testnet
+          </p>
+        )}
+        {!insufficientBalance && amt > 0 && dep >= amt && (
           <p className="text-xs text-gray-400 flex items-center gap-1">
             <Info size={11} />~{Math.floor(dep / amt)} lần swap
           </p>

@@ -12,7 +12,9 @@ import { openContractCall } from "@stacks/connect";
 
 export const DCA_CONTRACT_ADDRESS =
   "ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0";
-export const DCA_CONTRACT_NAME = "dca-vault-v4";
+export const DCA_CONTRACT_NAME = "dca-vault-v5";
+export const DEFAULT_SWAP_ROUTER =
+  "ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0.mock-swap-router-v2";
 
 // USDx on Stacks testnet
 export const USDX_CONTRACT_ADDRESS = "ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEMOKNC6C";
@@ -233,6 +235,15 @@ export async function getNextExecutionBlock(planId: number): Promise<number | nu
   } catch {
     return null;
   }
+}
+
+export async function getTestnetSTXBalance(address: string): Promise<number> {
+  const res = await fetch(
+    `${HIRO_TESTNET}/extended/v1/address/${address}/balances`
+  );
+  if (!res.ok) return 0;
+  const json = await res.json();
+  return Number(json.stx?.balance ?? 0);
 }
 
 // ─── Write functions ──────────────────────────────────────────────────────────

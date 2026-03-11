@@ -1,7 +1,0 @@
-[network]
-name = "testnet"
-node_rpc_address = "https://api.testnet.hiro.so/"
-deployment_fee_rate = 10
-
-[accounts.deployer]
-mnemonic = "observe live dirt include sun twice patch vanish swamp window floor vocal ready very adapt awake patch noise foot suggest chuckle seminar erode open"

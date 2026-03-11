@@ -1,0 +1,7 @@
+# Stacks network settings - contains mnemonic seed phrases
+settings/Testnet.toml
+settings/Mainnet.toml
+
+# Deployment plans may contain sensitive account info
+deployments/default.testnet-plan.yaml
+deployments/default.mainnet-plan.yaml

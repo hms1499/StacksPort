@@ -34,7 +34,7 @@ export default function DCAPageContent() {
           <p className="text-xs text-amber-600">
             Contract:{" "}
             <span className="font-mono">
-              ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0.dca-vault-v1
+              ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0.dca-vault-v3
             </span>
           </p>
         </div>

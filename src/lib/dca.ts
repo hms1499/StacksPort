@@ -12,7 +12,7 @@ import { openContractCall } from "@stacks/connect";
 
 export const DCA_CONTRACT_ADDRESS =
   "ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0";
-export const DCA_CONTRACT_NAME = "dca-vault-v2";
+export const DCA_CONTRACT_NAME = "dca-vault-v4";
 
 // USDx on Stacks testnet
 export const USDX_CONTRACT_ADDRESS = "ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEMOKNC6C";
@@ -26,6 +26,21 @@ export const SOURCE_TOKENS = [
     address: USDX_CONTRACT_ADDRESS,
     name: USDX_CONTRACT_NAME,
     decimals: 6,
+  },
+] as const;
+
+export const TARGET_TOKENS = [
+  {
+    label: "ALEX",
+    value: "ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEMOKNC6C.age000-governance-token",
+  },
+  {
+    label: "Welsh",
+    value: "SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token",
+  },
+  {
+    label: "sBTC",
+    value: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
   },
 ] as const;
 
@@ -60,8 +75,10 @@ export const stxToMicro = (n: number) => tokenToMicro(n, 6);
 // ─── Clarity helpers ──────────────────────────────────────────────────────────
 
 function cvHex(cv: ClarityValue): string {
-  const bytes = serializeCV(cv);
-  return "0x" + Buffer.from(bytes).toString("hex");
+  const result = serializeCV(cv);
+  // serializeCV returns hex string in newer @stacks/transactions versions
+  if (typeof result === "string") return "0x" + result;
+  return "0x" + Buffer.from(result as Uint8Array).toString("hex");
 }
 
 function principalCV(contractId: string): ClarityValue {
@@ -74,49 +91,55 @@ function principalCV(contractId: string): ClarityValue {
 function parseCV(cv: ClarityValue): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = cv as unknown as any;
+  const t = raw.type;
+
+  // @stacks/transactions returns string type names in this version
+  if (t === "uint" || t === "int") return Number(raw.value);
+  if (t === "true") return true;
+  if (t === "false") return false;
+  if (t === "none") return null;
+  if (t === "some") return parseCV(raw.value);
+  if (t === "ok") return parseCV(raw.value);
+  if (t === "err") throw new Error("Contract returned error");
+  if (t === "address" || t === "contract") return String(raw.value);
+  if (t === "tuple") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: Record<string, any> = {};
+    const data: Record<string, ClarityValue> = raw.value ?? {};
+    for (const [k, v] of Object.entries(data)) result[k] = parseCV(v);
+    return result;
+  }
+  if (t === "list") {
+    const list: ClarityValue[] = raw.value ?? [];
+    return list.map((item: ClarityValue) => parseCV(item));
+  }
+
+  // Fallback: legacy numeric ClarityType enum
   switch (cv.type) {
     case ClarityType.UInt:
     case ClarityType.Int:
       return Number(raw.value);
-    case ClarityType.BoolTrue:
-      return true;
-    case ClarityType.BoolFalse:
-      return false;
-    case ClarityType.ResponseOk:
-      return parseCV(raw.value);
-    case ClarityType.ResponseErr:
-      throw new Error("Contract returned error");
-    case ClarityType.OptionalNone:
-      return null;
-    case ClarityType.OptionalSome:
-      return parseCV(raw.value);
+    case ClarityType.BoolTrue: return true;
+    case ClarityType.BoolFalse: return false;
+    case ClarityType.ResponseOk: return parseCV(raw.value);
+    case ClarityType.ResponseErr: throw new Error("Contract returned error");
+    case ClarityType.OptionalNone: return null;
+    case ClarityType.OptionalSome: return parseCV(raw.value);
     case ClarityType.Tuple: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result: Record<string, any> = {};
       const data: Record<string, ClarityValue> = raw.data ?? raw.value ?? {};
-      for (const [k, v] of Object.entries(data)) {
-        result[k] = parseCV(v);
-      }
+      for (const [k, v] of Object.entries(data)) result[k] = parseCV(v);
       return result;
     }
     case ClarityType.PrincipalStandard:
-    case ClarityType.PrincipalContract: {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { addressToString } = require("@stacks/transactions");
-        const addr = addressToString(raw.address ?? raw.value);
-        const name: string = raw.contractName?.content ?? "";
-        return name ? `${addr}.${name}` : addr;
-      } catch {
-        return String(raw.contractName?.content ?? raw.address ?? "unknown");
-      }
-    }
+    case ClarityType.PrincipalContract:
+      return String(raw.value ?? raw.address ?? "unknown");
     case ClarityType.List: {
       const list: ClarityValue[] = raw.list ?? raw.value ?? [];
       return list.map((item: ClarityValue) => parseCV(item));
     }
-    default:
-      return null;
+    default: return null;
   }
 }
 
@@ -145,7 +168,6 @@ export interface DCAStats {
 export interface DCAPlan {
   id: number;
   owner: string;
-  src: string;   // source token contract (e.g. USDx)
   token: string; // target token contract
   amt: number;   // source token units per swap (micro)
   ivl: number;   // interval in blocks
@@ -185,7 +207,6 @@ export async function getPlan(planId: number): Promise<DCAPlan | null> {
   return {
     id: planId,
     owner: val.owner ?? "",
-    src: val.src ?? "",
     token: val.token ?? "",
     amt: Number(val.amt ?? 0),
     ivl: Number(val.ivl ?? 0),
@@ -217,7 +238,6 @@ export async function getNextExecutionBlock(planId: number): Promise<number | nu
 // ─── Write functions ──────────────────────────────────────────────────────────
 
 export function createPlan(
-  sourceToken: { address: string; name: string },
   targetToken: string,
   amountPerInterval: number,
   intervalBlocks: number,
@@ -231,7 +251,6 @@ export function createPlan(
     contractName: DCA_CONTRACT_NAME,
     functionName: "create-plan",
     functionArgs: [
-      contractPrincipalCV(sourceToken.address, sourceToken.name),
       contractPrincipalCV(tAddr, tName),
       uintCV(amountPerInterval),
       uintCV(intervalBlocks),
@@ -246,7 +265,6 @@ export function createPlan(
 
 export function depositToPlan(
   planId: number,
-  sourceToken: { address: string; name: string },
   amount: number,
   onFinish: (data: { txId: string }) => void,
   onCancel?: () => void
@@ -255,10 +273,30 @@ export function depositToPlan(
     contractAddress: DCA_CONTRACT_ADDRESS,
     contractName: DCA_CONTRACT_NAME,
     functionName: "deposit",
+    functionArgs: [uintCV(planId), uintCV(amount)],
+    network: "testnet",
+    postConditionMode: 1,
+    onFinish,
+    onCancel,
+  });
+}
+
+export function executePlan(
+  planId: number,
+  swapRouter: string,
+  minAmountOut: number,
+  onFinish: (data: { txId: string }) => void,
+  onCancel?: () => void
+) {
+  const [rAddr, rName] = swapRouter.split(".");
+  openContractCall({
+    contractAddress: DCA_CONTRACT_ADDRESS,
+    contractName: DCA_CONTRACT_NAME,
+    functionName: "execute-dca",
     functionArgs: [
       uintCV(planId),
-      contractPrincipalCV(sourceToken.address, sourceToken.name),
-      uintCV(amount),
+      contractPrincipalCV(rAddr, rName),
+      uintCV(minAmountOut),
     ],
     network: "testnet",
     postConditionMode: 1,
@@ -269,7 +307,6 @@ export function depositToPlan(
 
 export function cancelPlan(
   planId: number,
-  sourceToken: { address: string; name: string },
   onFinish: (data: { txId: string }) => void,
   onCancel?: () => void
 ) {
@@ -277,10 +314,7 @@ export function cancelPlan(
     contractAddress: DCA_CONTRACT_ADDRESS,
     contractName: DCA_CONTRACT_NAME,
     functionName: "cancel-plan",
-    functionArgs: [
-      uintCV(planId),
-      contractPrincipalCV(sourceToken.address, sourceToken.name),
-    ],
+    functionArgs: [uintCV(planId)],
     network: "testnet",
     postConditionMode: 1,
     onFinish,

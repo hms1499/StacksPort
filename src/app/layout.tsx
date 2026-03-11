@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${geist.className} bg-gray-50 antialiased`}>
+      <body className={`${geist.className} bg-gray-50 antialiased`} suppressHydrationWarning>
         <div className="flex h-screen overflow-hidden">
           {/* Sidebar — desktop only */}
           <div className="hidden md:block">

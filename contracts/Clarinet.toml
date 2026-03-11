@@ -4,7 +4,12 @@ description = 'DCA Vault contract for StacksPort'
 authors = []
 telemetry = false
 
-[contracts.dca-vault-v2]
+[contracts.dca-vault-v4]
 path = 'dca-vault.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.mock-swap-router]
+path = 'mock-swap-router.clar'
 clarity_version = 3
 epoch = '3.0'

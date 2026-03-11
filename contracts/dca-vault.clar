@@ -1,24 +1,12 @@
-;; SIP-010 Fungible Token Standard
-(define-trait sip-010-trait
-  (
-    (transfer (uint principal principal (optional (buff 34))) (response bool uint))
-    (get-name () (response (string-ascii 32) uint))
-    (get-symbol () (response (string-ascii 32) uint))
-    (get-decimals () (response uint uint))
-    (get-balance (principal) (response uint uint))
-    (get-total-supply () (response uint uint))
-    (get-token-uri () (response (optional (string-utf8 256)) uint))
-  )
-)
+;; dca-vault-v4: Dollar-Cost Averaging vault using STX as source token
 
-;; DCA Swap Router — any DEX router implements this trait
+;; DCA Swap Router - router receives STX, swaps to target token, sends to recipient
 (define-trait dca-swap-trait
   (
-    (swap-token-for-token (uint uint principal) (response uint uint))
+    (swap-stx-for-token (uint uint principal) (response uint uint))
   )
 )
 
-(define-constant CO tx-sender)
 (define-constant E100 (err u100)) ;; not authorized
 (define-constant E101 (err u101)) ;; plan not found
 (define-constant E102 (err u102)) ;; plan inactive
@@ -27,40 +15,36 @@
 (define-constant E105 (err u105)) ;; invalid amount
 (define-constant E106 (err u106)) ;; invalid interval
 (define-constant E107 (err u107)) ;; max plans reached
-(define-constant E108 (err u108)) ;; swap failed
 (define-constant E109 (err u109)) ;; deposit too small
-(define-constant E110 (err u110)) ;; wrong source token
 
-(define-constant BPD u144)
-(define-constant BPW u1008)
-(define-constant BPM u4320)
-(define-constant MSA u1000000)
-(define-constant MID u2000000)
-(define-constant ERBPS u50)
-(define-constant BPSB u10000)
-(define-constant MPPU u10)
+(define-constant BPD   u144)                                         ;; blocks per day
+(define-constant MSA   u1000000)                                     ;; min swap amount: 1 STX
+(define-constant MID   u2000000)                                     ;; min initial deposit: 2 STX
+(define-constant PFBPS u30)                                          ;; protocol fee: 30 bps = 0.3%
+(define-constant BPSB  u10000)
+(define-constant MPPU  u10)                                          ;; max plans per user
+(define-constant TREASURY 'ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0) ;; protocol treasury
 
-(define-data-var pc uint u0)
-(define-data-var tvol uint u0)
-(define-data-var tse uint u0)
+(define-data-var pc   uint u0)  ;; plan counter
+(define-data-var tvol uint u0)  ;; total volume (uSTX)
+(define-data-var tse  uint u0)  ;; total swaps executed
 
 (define-map plans uint {
-  owner: principal,
-  src:   principal,  ;; source token (e.g. USDx)
-  token: principal,  ;; target token
-  amt:   uint,       ;; source token units per swap
-  ivl:   uint,       ;; blocks between swaps
-  leb:   uint,       ;; last executed block (0 = never)
-  bal:   uint,       ;; source token balance remaining
-  tsd:   uint,       ;; total swaps done
-  tss:   uint,       ;; total source tokens spent
+  owner:  principal,
+  token:  principal, ;; target token contract
+  amt:    uint,      ;; uSTX per swap
+  ivl:    uint,      ;; blocks between swaps
+  leb:    uint,      ;; last executed block (0 = never)
+  bal:    uint,      ;; uSTX balance remaining
+  tsd:    uint,      ;; total swaps done
+  tss:    uint,      ;; total STX spent (uSTX)
   active: bool,
-  cat:   uint        ;; created at block
+  cat:    uint       ;; created at block
 })
 
 (define-map uids principal (list 10 uint))
 
-(define-private (exec-reward (a uint)) (/ (* a ERBPS) BPSB))
+(define-private (protocol-fee (a uint)) (/ (* a PFBPS) BPSB))
 
 (define-private (add-uid (u principal) (id uint))
   (let ((ex (default-to (list) (map-get? uids u)))
@@ -68,16 +52,14 @@
     (map-set uids u up)))
 
 (define-private (interval-passed (p {
-    owner: principal, src: principal, token: principal,
+    owner: principal, token: principal,
     amt: uint, ivl: uint, leb: uint, bal: uint,
     tsd: uint, tss: uint, active: bool, cat: uint
   }))
   (or (is-eq (get leb p) u0)
-      (>= (- block-height (get leb p)) (get ivl p))))
+      (>= (- stacks-block-height (get leb p)) (get ivl p))))
 
-;; create-plan: deposit source token and configure DCA parameters
 (define-public (create-plan
-    (source-token        <sip-010-trait>)
     (target-token        principal)
     (amount-per-interval uint)
     (interval-blocks     uint)
@@ -89,76 +71,68 @@
     (asserts! (>= initial-deposit MID)                 E109)
     (asserts! (>= initial-deposit amount-per-interval) E103)
     (asserts! (< (len up) MPPU)                        E107)
-    (try! (contract-call? source-token transfer initial-deposit tx-sender (as-contract tx-sender) none))
+    (try! (stx-transfer? initial-deposit tx-sender (as-contract tx-sender)))
     (map-set plans id {
-      owner: tx-sender, src: (contract-of source-token),
-      token: target-token, amt: amount-per-interval,
-      ivl: interval-blocks, leb: u0, bal: initial-deposit,
-      tsd: u0, tss: u0, active: true, cat: block-height
+      owner: tx-sender, token: target-token,
+      amt: amount-per-interval, ivl: interval-blocks,
+      leb: u0, bal: initial-deposit,
+      tsd: u0, tss: u0, active: true, cat: stacks-block-height
     })
     (var-set pc id)
     (add-uid tx-sender id)
     (print { event: "plan-created", plan-id: id, owner: tx-sender,
-             src: (contract-of source-token), token: target-token,
-             amt: amount-per-interval, ivl: interval-blocks, deposit: initial-deposit })
+             token: target-token, amt: amount-per-interval,
+             ivl: interval-blocks, deposit: initial-deposit })
     (ok id)))
 
-;; deposit: add more source tokens to an active plan
-(define-public (deposit (plan-id uint) (source-token <sip-010-trait>) (amount uint))
+(define-public (deposit (plan-id uint) (amount uint))
   (let ((p (unwrap! (map-get? plans plan-id) E101)))
-    (asserts! (is-eq tx-sender (get owner p))                E100)
-    (asserts! (get active p)                                  E102)
-    (asserts! (>= amount MSA)                                 E105)
-    (asserts! (is-eq (contract-of source-token) (get src p)) E110)
-    (try! (contract-call? source-token transfer amount tx-sender (as-contract tx-sender) none))
+    (asserts! (is-eq tx-sender (get owner p)) E100)
+    (asserts! (get active p)                   E102)
+    (asserts! (>= amount MSA)                  E105)
+    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
     (map-set plans plan-id (merge p { bal: (+ (get bal p) amount) }))
     (print { event: "deposit", plan-id: plan-id, amount: amount })
     (ok true)))
 
-;; execute-dca: trigger a swap when interval has passed.
-;; Caller earns 0.5% of the swap amount in source tokens.
 (define-public (execute-dca
     (plan-id        uint)
-    (source-token   <sip-010-trait>)
     (swap-router    <dca-swap-trait>)
     (min-amount-out uint))
-  (let ((p     (unwrap! (map-get? plans plan-id) E101))
-        (sa    (get amt p))
-        (er    (exec-reward sa))
-        (net   (- sa er))
+  (let ((p    (unwrap! (map-get? plans plan-id) E101))
+        (sa   (get amt p))
+        (pf   (protocol-fee sa))
+        (net  (- sa pf))
         (owner (get owner p)))
-    (asserts! (get active p)                                  E102)
-    (asserts! (>= (get bal p) sa)                             E103)
-    (asserts! (interval-passed p)                             E104)
-    (asserts! (is-eq (contract-of source-token) (get src p)) E110)
-    ;; Pay executor reward in source token
-    (as-contract (try! (contract-call? source-token transfer er tx-sender tx-sender none)))
-    ;; Transfer net source tokens to swap router
-    (as-contract (try! (contract-call? source-token transfer net tx-sender (contract-of swap-router) none)))
+    (asserts! (get active p)       E102)
+    (asserts! (>= (get bal p) sa)  E103)
+    (asserts! (interval-passed p)  E104)
+    ;; Transfer 0.3% protocol fee to treasury
+    (as-contract (try! (stx-transfer? pf tx-sender TREASURY)))
+    ;; Transfer remaining 99.7% to swap router
+    (as-contract (try! (stx-transfer? net tx-sender (contract-of swap-router))))
     ;; Router swaps and sends target tokens to plan owner
-    (as-contract (try! (contract-call? swap-router swap-token-for-token net min-amount-out owner)))
+    (as-contract (try! (contract-call? swap-router swap-stx-for-token net min-amount-out owner)))
     (let ((nr  (- (get bal p) sa))
           (nd  (+ (get tsd p) u1))
           (ns  (+ (get tss p) sa))
           (act (>= nr (get amt p))))
       (map-set plans plan-id
-        (merge p { leb: block-height, bal: nr, tsd: nd, tss: ns, active: act }))
+        (merge p { leb: stacks-block-height, bal: nr, tsd: nd, tss: ns, active: act }))
       (var-set tvol (+ (var-get tvol) sa))
       (var-set tse  (+ (var-get tse)  u1))
       (print { event: "dca-executed", plan-id: plan-id, executor: tx-sender,
-               owner: owner, net-swapped: net, reward: er,
+               owner: owner, net-swapped: net, protocol-fee: pf,
                swaps-done: nd, bal-remaining: nr, active: act })
-      (ok { net-swapped: net, executor-reward: er,
+      (ok { net-swapped: net, protocol-fee: pf,
             swaps-done: nd, bal-remaining: nr }))))
 
-;; cancel-plan: cancel and refund remaining source tokens to owner
-(define-public (cancel-plan (plan-id uint) (source-token <sip-010-trait>))
+(define-public (cancel-plan (plan-id uint))
   (let ((p (unwrap! (map-get? plans plan-id) E101)))
-    (asserts! (is-eq tx-sender (get owner p))                E100)
-    (asserts! (get active p)                                  E102)
-    (asserts! (is-eq (contract-of source-token) (get src p)) E110)
+    (asserts! (is-eq tx-sender (get owner p)) E100)
+    (asserts! (get active p)                   E102)
     (if (> (get bal p) u0)
-      (as-contract (try! (contract-call? source-token transfer (get bal p) tx-sender (get owner p) none)))
+      (as-contract (try! (stx-transfer? (get bal p) tx-sender (get owner p))))
       true)
     (map-set plans plan-id (merge p { active: false, bal: u0 }))
     (print { event: "plan-cancelled", plan-id: plan-id,
@@ -197,7 +171,7 @@
 (define-read-only (next-execution-block (plan-id uint))
   (match (map-get? plans plan-id)
     p (if (is-eq (get leb p) u0)
-        (ok block-height)
+        (ok stacks-block-height)
         (ok (+ (get leb p) (get ivl p))))
     E101))
 

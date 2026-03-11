@@ -13,6 +13,7 @@ export default function MyPlans({ address }: Props) {
   const [plans, setPlans] = useState<DCAPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentBlock, setCurrentBlock] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -23,6 +24,7 @@ export default function MyPlans({ address }: Props) {
       ]);
       setPlans(userPlans);
       setCurrentBlock(blockRes.stacks_tip_height ?? 0);
+      setLastUpdated(new Date());
     } catch {
       // silently fail, keep previous state
     } finally {
@@ -45,13 +47,20 @@ export default function MyPlans({ address }: Props) {
             </span>
           )}
         </h2>
-        <button
-          onClick={fetchData}
-          disabled={loading}
-          className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
-        >
-          <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-        </button>
+        <div className="flex items-center gap-2">
+          {lastUpdated && !loading && (
+            <span className="text-[10px] text-gray-300">
+              {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s ago
+            </span>
+          )}
+          <button
+            onClick={fetchData}
+            disabled={loading}
+            className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
+          >
+            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+          </button>
+        </div>
       </div>
 
       {loading ? (

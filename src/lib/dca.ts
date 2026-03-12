@@ -11,43 +11,20 @@ import {
 import { openContractCall } from "@stacks/connect";
 
 export const DCA_CONTRACT_ADDRESS =
-  "ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0";
-export const DCA_CONTRACT_NAME = "dca-vault-v5";
+  "SP18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4EFYJMNW";
+export const DCA_CONTRACT_NAME = "dca-vault";
 export const DEFAULT_SWAP_ROUTER =
-  "ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0.mock-swap-router-v2";
-
-// USDx on Stacks testnet
-export const USDX_CONTRACT_ADDRESS = "ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEMOKNC6C";
-export const USDX_CONTRACT_NAME = "usdcx";
-export const USDX_DECIMALS = 6;
-
-export const SOURCE_TOKENS = [
-  {
-    label: "USDx",
-    symbol: "USDx",
-    address: USDX_CONTRACT_ADDRESS,
-    name: USDX_CONTRACT_NAME,
-    decimals: 6,
-  },
-] as const;
+  "SP18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4EFYJMNW.bitflow-sbtc-swap-router";
 
 export const TARGET_TOKENS = [
-  {
-    label: "ALEX",
-    value: "ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEMOKNC6C.age000-governance-token",
-  },
-  {
-    label: "Welsh",
-    value: "SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token",
-  },
   {
     label: "sBTC",
     value: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
   },
 ] as const;
 
-const HIRO_TESTNET = "https://api.testnet.hiro.so";
-const DUMMY_SENDER = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
+const HIRO_API = "https://api.hiro.so";
+const DUMMY_SENDER = "SP000000000000000000002Q6VF78"; // Stacks burn address (always valid on mainnet)
 
 export const INTERVALS = {
   Daily: 144,
@@ -147,7 +124,7 @@ function parseCV(cv: ClarityValue): any {
 
 async function readOnly(fn: string, args: string[] = []): Promise<ClarityValue> {
   const res = await fetch(
-    `${HIRO_TESTNET}/v2/contracts/call-read/${DCA_CONTRACT_ADDRESS}/${DCA_CONTRACT_NAME}/${fn}`,
+    `${HIRO_API}/v2/contracts/call-read/${DCA_CONTRACT_ADDRESS}/${DCA_CONTRACT_NAME}/${fn}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -237,9 +214,9 @@ export async function getNextExecutionBlock(planId: number): Promise<number | nu
   }
 }
 
-export async function getTestnetSTXBalance(address: string): Promise<number> {
+export async function getSTXBalance(address: string): Promise<number> {
   const res = await fetch(
-    `${HIRO_TESTNET}/extended/v1/address/${address}/balances`
+    `${HIRO_API}/extended/v1/address/${address}/balances`
   );
   if (!res.ok) return 0;
   const json = await res.json();
@@ -267,7 +244,7 @@ export function createPlan(
       uintCV(intervalBlocks),
       uintCV(initialDeposit),
     ],
-    network: "testnet",
+    network: "mainnet",
     postConditionMode: 1,
     onFinish,
     onCancel,
@@ -285,7 +262,7 @@ export function depositToPlan(
     contractName: DCA_CONTRACT_NAME,
     functionName: "deposit",
     functionArgs: [uintCV(planId), uintCV(amount)],
-    network: "testnet",
+    network: "mainnet",
     postConditionMode: 1,
     onFinish,
     onCancel,
@@ -309,7 +286,7 @@ export function executePlan(
       contractPrincipalCV(rAddr, rName),
       uintCV(minAmountOut),
     ],
-    network: "testnet",
+    network: "mainnet",
     postConditionMode: 1,
     onFinish,
     onCancel,
@@ -326,7 +303,7 @@ export function cancelPlan(
     contractName: DCA_CONTRACT_NAME,
     functionName: "cancel-plan",
     functionArgs: [uintCV(planId)],
-    network: "testnet",
+    network: "mainnet",
     postConditionMode: 1,
     onFinish,
     onCancel,
@@ -343,7 +320,7 @@ export function pausePlan(
     contractName: DCA_CONTRACT_NAME,
     functionName: "pause-plan",
     functionArgs: [uintCV(planId)],
-    network: "testnet",
+    network: "mainnet",
     postConditionMode: 1,
     onFinish,
     onCancel,
@@ -360,26 +337,11 @@ export function resumePlan(
     contractName: DCA_CONTRACT_NAME,
     functionName: "resume-plan",
     functionArgs: [uintCV(planId)],
-    network: "testnet",
+    network: "mainnet",
     postConditionMode: 1,
     onFinish,
     onCancel,
   });
-}
-
-// Helper: resolve source token object from plan's src string
-export function resolveSourceToken(srcContract: string) {
-  return (
-    SOURCE_TOKENS.find(
-      (t) => `${t.address}.${t.name}` === srcContract
-    ) ?? {
-      label: srcContract.split(".")[1] ?? "Unknown",
-      symbol: "???",
-      address: srcContract.split(".")[0] ?? "",
-      name: srcContract.split(".")[1] ?? "",
-      decimals: 6,
-    }
-  );
 }
 
 // noneCV export for memo field

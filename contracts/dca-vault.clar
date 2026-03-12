@@ -1,4 +1,4 @@
-;; dca-vault-v4: Dollar-Cost Averaging vault using STX as source token
+;; dca-vault: Dollar-Cost Averaging vault using STX as source token
 
 ;; DCA Swap Router - router receives STX, swaps to target token, sends to recipient
 (define-trait dca-swap-trait
@@ -23,7 +23,7 @@
 (define-constant PFBPS u30)                                          ;; protocol fee: 30 bps = 0.3%
 (define-constant BPSB  u10000)
 (define-constant MPPU  u10)                                          ;; max plans per user
-(define-constant TREASURY 'ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0) ;; protocol treasury
+(define-constant TREASURY 'SP2DZKR60CN5QKJQT18T8ZMSERGA6R4QKHEM5QT1W) ;; protocol treasury
 
 (define-data-var pc   uint u0)  ;; plan counter
 (define-data-var tvol uint u0)  ;; total volume (uSTX)
@@ -127,10 +127,10 @@
       (ok { net-swapped: net, protocol-fee: pf,
             swaps-done: nd, bal-remaining: nr }))))
 
+;; Fix: removed (asserts! (get active p) E102) - cancel works for active AND paused plans
 (define-public (cancel-plan (plan-id uint))
   (let ((p (unwrap! (map-get? plans plan-id) E101)))
     (asserts! (is-eq tx-sender (get owner p)) E100)
-    (asserts! (get active p)                   E102)
     (if (> (get bal p) u0)
       (as-contract (try! (stx-transfer? (get bal p) tx-sender (get owner p))))
       true)

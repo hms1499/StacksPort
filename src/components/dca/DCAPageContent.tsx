@@ -22,22 +22,8 @@ export default function DCAPageContent() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">DCA Vault</h1>
         <p className="text-sm text-gray-400 mt-1">
-          Tự động mua token định kỳ với STX · Testnet
+          Automatically buy sBTC on a schedule with STX · Powered by Bitflow
         </p>
-      </div>
-
-      {/* Testnet notice */}
-      <div className="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3 flex items-center gap-3">
-        <span className="text-amber-500 text-lg">⚠️</span>
-        <div>
-          <p className="text-sm font-medium text-amber-700">Testnet only</p>
-          <p className="text-xs text-amber-600">
-            Contract:{" "}
-            <span className="font-mono">
-              ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0.dca-vault-v3
-            </span>
-          </p>
-        </div>
       </div>
 
       {/* Protocol stats */}
@@ -51,10 +37,10 @@ export default function DCAPageContent() {
           </div>
           <div>
             <p className="text-base font-semibold text-gray-900">
-              Kết nối ví để bắt đầu
+              Connect your wallet to get started
             </p>
             <p className="text-sm text-gray-400 mt-1">
-              Cần kết nối ví Leather hoặc Xverse (Testnet mode)
+              Connect a Leather or Xverse wallet
             </p>
           </div>
         </div>
@@ -77,15 +63,15 @@ export default function DCAPageContent() {
         {[
           {
             title: "Dollar-Cost Averaging",
-            desc: "Phân tán rủi ro bằng cách mua token theo lịch cố định, không quan tâm đến biến động giá.",
+            desc: "Spread your risk by buying tokens on a fixed schedule, regardless of price fluctuations.",
           },
           {
-            title: "Executor Reward",
-            desc: "Bất kỳ ai cũng có thể trigger swap khi đến hạn và nhận 0.5% phần thưởng từ số tiền swap.",
+            title: "0.3% Protocol Fee",
+            desc: "0.3% of each swap goes to the treasury. The remaining 99.7% is used to purchase sBTC via Bitflow.",
           },
           {
             title: "Non-custodial",
-            desc: "STX được giữ trực tiếp trong smart contract. Token mua được gửi thẳng về ví của bạn.",
+            desc: "STX is held directly in the smart contract. Purchased tokens are sent straight to your wallet.",
           },
         ].map(({ title, desc }) => (
           <div

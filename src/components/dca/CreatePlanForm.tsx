@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { PlusCircle, Info, AlertTriangle } from "lucide-react";
-import { createPlan, INTERVALS, stxToMicro, microToSTX, TARGET_TOKENS, getTestnetSTXBalance } from "@/lib/dca";
+import { createPlan, INTERVALS, stxToMicro, microToSTX, TARGET_TOKENS, getSTXBalance } from "@/lib/dca";
 import { useWalletStore } from "@/store/walletStore";
+
+const SBTC = TARGET_TOKENS[0].value; // SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
 
 interface Props {
   onCreated: () => void;
@@ -11,7 +13,6 @@ interface Props {
 
 export default function CreatePlanForm({ onCreated }: Props) {
   const { stxAddress } = useWalletStore();
-  const [targetToken, setTargetToken] = useState("");
   const [amountPerSwap, setAmountPerSwap] = useState("");
   const [interval, setInterval] = useState<keyof typeof INTERVALS>("Weekly");
   const [initialDeposit, setInitialDeposit] = useState("");
@@ -22,7 +23,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
 
   useEffect(() => {
     if (!stxAddress) return;
-    getTestnetSTXBalance(stxAddress).then((bal) => setStxBalance(microToSTX(bal)));
+    getSTXBalance(stxAddress).then((bal) => setStxBalance(microToSTX(bal)));
   }, [stxAddress]);
 
   const amt = parseFloat(amountPerSwap) || 0;
@@ -31,11 +32,10 @@ export default function CreatePlanForm({ onCreated }: Props) {
   const insufficientBalance = stxBalance != null && dep > stxBalance;
 
   const validate = (): string | null => {
-    if (!targetToken.trim()) return "Chọn hoặc nhập target token";
     if (amt < 1) return "Minimum 1 STX per swap";
     if (dep < 2) return "Minimum deposit 2 STX";
-    if (dep < amt) return "Initial deposit phải >= amount per swap";
-    if (insufficientBalance) return `Không đủ STX. Số dư hiện tại: ${stxBalance?.toFixed(2)} STX`;
+    if (dep < amt) return "Initial deposit must be ≥ amount per swap";
+    if (insufficientBalance) return `Insufficient STX. Current balance: ${stxBalance?.toFixed(2)} STX`;
     return null;
   };
 
@@ -46,7 +46,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
     setLoading(true);
 
     createPlan(
-      targetToken.trim(),
+      SBTC,
       stxToMicro(amt),
       INTERVALS[interval],
       stxToMicro(dep),
@@ -64,13 +64,13 @@ export default function CreatePlanForm({ onCreated }: Props) {
         <p className="font-semibold text-gray-900">Plan submitted!</p>
         <p className="text-xs text-gray-400 break-all">Tx: {txId}</p>
         <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
-          Plan sẽ hiển thị sau khi transaction được confirm (~1-2 phút). My Plans tự động refresh mỗi 30s.
+          Plan will appear after the transaction is confirmed (~1-2 min). Click refresh to update.
         </p>
         <button
-          onClick={() => { setTxId(null); setTargetToken(""); setAmountPerSwap(""); setInitialDeposit(""); }}
+          onClick={() => { setTxId(null); setAmountPerSwap(""); setInitialDeposit(""); }}
           className="mt-1 text-sm text-teal-600 hover:underline text-left"
         >
-          + Tạo plan mới
+          + Create new plan
         </button>
       </div>
     );
@@ -78,7 +78,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
-      <h2 className="font-semibold text-gray-900">Tạo DCA Plan</h2>
+      <h2 className="font-semibold text-gray-900">Create DCA Plan</h2>
 
       {/* Source token (fixed = STX) */}
       <div className="flex flex-col gap-1.5">
@@ -92,30 +92,15 @@ export default function CreatePlanForm({ onCreated }: Props) {
         </div>
       </div>
 
-      {/* Target token */}
+      {/* Target token — fixed to sBTC */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-gray-500">Buy (Target Token)</label>
-        <input
-          type="text"
-          value={targetToken}
-          onChange={(e) => setTargetToken(e.target.value)}
-          placeholder="SP…contract.token-name"
-          className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
-        />
-        <div className="flex gap-2 flex-wrap mt-0.5">
-          {TARGET_TOKENS.map((t) => (
-            <button
-              key={t.label}
-              onClick={() => setTargetToken(t.value)}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                targetToken === t.value
-                  ? "bg-teal-500 text-white border-teal-500"
-                  : "border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200">
+          <span className="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+            ₿
+          </span>
+          <span className="text-sm font-semibold text-gray-900">sBTC</span>
+          <span className="text-xs text-gray-400 ml-auto">Bitcoin on Stacks</span>
         </div>
       </div>
 
@@ -161,7 +146,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
           <label className="text-xs font-medium text-gray-500">Initial Deposit</label>
           {stxBalance != null && (
             <span className="text-xs text-gray-400">
-              Số dư:{" "}
+              Balance:{" "}
               <span className={insufficientBalance ? "text-red-500 font-medium" : "text-gray-600 font-medium"}>
                 {stxBalance.toFixed(2)} STX
               </span>
@@ -194,12 +179,12 @@ export default function CreatePlanForm({ onCreated }: Props) {
         </div>
         {insufficientBalance && (
           <p className="text-xs text-red-500 flex items-center gap-1">
-            <AlertTriangle size={11} /> Không đủ STX trong ví testnet
+            <AlertTriangle size={11} /> Insufficient STX in wallet
           </p>
         )}
         {!insufficientBalance && amt > 0 && dep >= amt && (
           <p className="text-xs text-gray-400 flex items-center gap-1">
-            <Info size={11} />~{Math.floor(dep / amt)} lần swap
+            <Info size={11} />~{Math.floor(dep / amt)} swaps
           </p>
         )}
       </div>
@@ -212,11 +197,11 @@ export default function CreatePlanForm({ onCreated }: Props) {
         className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
       >
         <PlusCircle size={16} />
-        {loading ? "Chờ ví xác nhận…" : "Tạo Plan"}
+        {loading ? "Waiting for wallet…" : "Create Plan"}
       </button>
 
       <p className="text-[11px] text-gray-400 text-center">
-        Testnet · 0.3% protocol fee mỗi swap
+        Mainnet · 0.3% protocol fee per swap
       </p>
     </div>
   );

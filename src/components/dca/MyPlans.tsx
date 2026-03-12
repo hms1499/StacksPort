@@ -20,7 +20,7 @@ export default function MyPlans({ address }: Props) {
     try {
       const [userPlans, blockRes] = await Promise.all([
         getUserPlans(address),
-        fetch("https://api.testnet.hiro.so/v2/info").then((r) => r.json()),
+        fetch("https://api.hiro.so/v2/info").then((r) => r.json()),
       ]);
       setPlans(userPlans);
       setCurrentBlock(blockRes.stacks_tip_height ?? 0);
@@ -34,6 +34,8 @@ export default function MyPlans({ address }: Props) {
 
   useEffect(() => {
     fetchData();
+    // const interval = setInterval(fetchData, 30000);
+    // return () => clearInterval(interval);
   }, [fetchData]);
 
   return (
@@ -74,9 +76,9 @@ export default function MyPlans({ address }: Props) {
           <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center">
             <Inbox size={22} className="text-gray-300" />
           </div>
-          <p className="text-sm font-medium text-gray-500">Chưa có plan nào</p>
+          <p className="text-sm font-medium text-gray-500">No plans yet</p>
           <p className="text-xs text-gray-400">
-            Tạo plan đầu tiên để bắt đầu DCA tự động
+            Create your first plan to start automated DCA
           </p>
         </div>
       ) : (

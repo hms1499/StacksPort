@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Pause, Play, Trash2, PlusCircle, Clock, Repeat2, ChevronDown, ChevronUp, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Pause, Play, Trash2, PlusCircle, Clock, Repeat2, ChevronDown, ChevronUp, Zap, Loader2 } from "lucide-react";
 import {
   type DCAPlan,
   microToSTX,
@@ -33,7 +33,10 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [depositInput, setDepositInput] = useState("");
   const [routerInput, setRouterInput] = useState(DEFAULT_SWAP_ROUTER);
-  const [minAmountOut, setMinAmountOut] = useState("0");
+  const [slippage, setSlippage] = useState(1); // 1%
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quotedSbtc, setQuotedSbtc] = useState<number | null>(null); // sBTC amount (normal units)
+  const [quoteError, setQuoteError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [txInfo, setTxInfo] = useState<string | null>(null);
 
@@ -43,6 +46,66 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const nextBlock = plan.leb === 0 ? currentBlock : plan.leb + plan.ivl;
   const blocksLeft = Math.max(0, nextBlock - currentBlock);
   const canExecuteNow = plan.active && plan.bal >= plan.amt && blocksLeft === 0;
+
+  // Query xyk-core.get-dx directly on mainnet — exact sBTC output for our specific pool
+  // get-dx(pool, x-token=sBTC, y-token=wSTX, y-amount=uSTX) → (ok uint) satoshis
+  useEffect(() => {
+    if (!expanded || !canExecuteNow) return;
+    setQuoteLoading(true);
+    setQuoteError(null);
+    setQuotedSbtc(null);
+
+    // net uSTX after vault's 0.3% protocol fee (matches what router actually receives)
+    const netUstx = plan.amt - Math.floor(plan.amt * 30 / 10000);
+
+    async function fetchPoolQuote() {
+      const { contractPrincipalCV, uintCV, serializeCV, hexToCV } = await import("@stacks/transactions");
+
+      const toHex = (cv: unknown) => {
+        const bytes = serializeCV(cv as Parameters<typeof serializeCV>[0]);
+        const hex = typeof bytes === "string" ? bytes : Buffer.from(bytes).toString("hex");
+        return "0x" + hex;
+      };
+
+      const args = [
+        toHex(contractPrincipalCV("SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", "xyk-pool-sbtc-stx-v-1-1")),
+        toHex(contractPrincipalCV("SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4", "sbtc-token")),
+        toHex(contractPrincipalCV("SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", "token-stx-v-1-2")),
+        toHex(uintCV(netUstx)),
+      ];
+
+      const res = await fetch(
+        "https://api.hiro.so/v2/contracts/call-read/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR/xyk-core-v-1-2/get-dx",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sender: "SP000000000000000000002Q6VF78", arguments: args }),
+        }
+      );
+
+      const data = await res.json();
+      if (!data.okay) throw new Error(data.cause ?? "get-dx failed");
+
+      // result is (ok uint) — unwrap to get satoshis
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cv = hexToCV(data.result) as any;
+      const sats = Number(cv?.value?.value ?? cv?.value ?? 0);
+      if (!sats || sats <= 0) throw new Error("No liquidity in pool");
+
+      setQuotedSbtc(sats / 1e8); // convert sats → sBTC normal units for display
+    }
+
+    fetchPoolQuote()
+      .catch((e: Error) => setQuoteError(e.message ?? "Failed to get quote"))
+      .finally(() => setQuoteLoading(false));
+  }, [expanded, canExecuteNow, plan.amt]);
+
+  // minAmountOut in satoshis (sBTC 8 decimals), applying slippage on pool's real quote
+  const minAmountOut = quotedSbtc != null
+    ? Math.floor(quotedSbtc * (1 - slippage / 100) * 1e8)
+    : 0;
+  // netUstx mirrors what vault sends to router (for display parity)
+  const netUstx = plan.amt - Math.floor(plan.amt * 30 / 10000);
 
   function withLoading(fn: () => void) {
     setLoading(true);
@@ -67,7 +130,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
     );
 
   const handleCancel = () => {
-    if (!confirm(`Huỷ plan #${plan.id} và hoàn lại ${balSTX.toFixed(2)} STX?`)) return;
+    if (!confirm(`Cancel plan #${plan.id} and refund ${balSTX.toFixed(2)} STX?`)) return;
     withLoading(() =>
       cancelPlan(plan.id,
         ({ txId }) => { setTxInfo(txId); setLoading(false); onRefresh(); },
@@ -90,7 +153,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const handleExecute = () => {
     if (!routerInput.includes(".")) return;
     withLoading(() =>
-      executePlan(plan.id, routerInput.trim(), Math.floor(parseFloat(minAmountOut) || 0),
+      executePlan(plan.id, routerInput.trim(), minAmountOut,
         ({ txId }) => { setTxInfo(txId); setLoading(false); onRefresh(); },
         () => setLoading(false)
       )
@@ -191,6 +254,45 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
                 <span className="text-xs font-semibold text-teal-700">Ready to Execute</span>
                 <span className="ml-auto text-[11px] text-teal-600 font-medium">0.3% protocol fee</span>
               </div>
+              {/* Quote + slippage */}
+              <div className="bg-white rounded-lg border border-teal-100 px-3 py-2.5 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-teal-600 font-medium">
+                    Estimated sBTC · swap {microToSTX(netUstx).toFixed(4)} STX
+                  </span>
+                  <div className="flex gap-1">
+                    {[0.5, 1, 2].map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setSlippage(s)}
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                          slippage === s ? "bg-teal-500 text-white" : "bg-teal-50 text-teal-600 hover:bg-teal-100"
+                        }`}
+                      >
+                        {s}%
+                      </button>
+                    ))}
+                    <span className="text-[10px] text-gray-400 self-center ml-0.5">slip</span>
+                  </div>
+                </div>
+                {quoteLoading ? (
+                  <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <Loader2 size={11} className="animate-spin" /> Fetching quote…
+                  </span>
+                ) : quoteError ? (
+                  <span className="text-xs text-red-400">{quoteError}</span>
+                ) : quotedSbtc != null ? (
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm font-bold text-teal-700">
+                      ≥ {(quotedSbtc * (1 - slippage / 100)).toFixed(8)}
+                    </span>
+                    <span className="text-xs text-gray-400">sBTC</span>
+                    <span className="text-[10px] text-gray-300 ml-auto">
+                      min {minAmountOut} sats
+                    </span>
+                  </div>
+                ) : null}
+              </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] text-teal-600 font-medium">Swap Router</label>
                 <input
@@ -204,7 +306,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
               <div className="flex gap-2">
                 <button
                   onClick={handleExecute}
-                  disabled={loading || !routerInput.includes(".")}
+                  disabled={loading || quoteLoading || !!quoteError || !routerInput.includes(".")}
                   className="px-4 py-2 rounded-lg bg-teal-500 hover:bg-teal-600 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
                 >
                   <Zap size={13} /> Execute

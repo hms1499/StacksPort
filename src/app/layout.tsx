@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "StacksPort — Portfolio Manager",
   description: "Manage your Stacks blockchain portfolio",
   other: {
-    "talentapp:project_verification": "60874f6e194b163b7f9e8aafd0833a3e2a7bfbc502d21e614333c6f35ecb76f7396c6fb598ed4024cf28d55f013c97ad4dca545f00f3c2924a37a31f36a38151",
+    "talentapp:project_verification": "8e7d88c649059a8b9ca547b2c4611ac999a2d7e09ca60083f58af1e1aaa10cb6937fcce415886641448b653b69b94b767b5e4fff6dfb9c6e2403420da36c4cc1",
   },
 };
 

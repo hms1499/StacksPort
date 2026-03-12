@@ -11,10 +11,10 @@ import {
 import { openContractCall } from "@stacks/connect";
 
 export const DCA_CONTRACT_ADDRESS =
-  "SP18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4EFYJMNW";
+  "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
 export const DCA_CONTRACT_NAME = "dca-vault";
 export const DEFAULT_SWAP_ROUTER =
-  "SP18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4EFYJMNW.bitflow-sbtc-swap-router";
+  "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router";
 
 export const TARGET_TOKENS = [
   {

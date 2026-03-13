@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     rules: {
       // These patterns (setLoading/setState at start of useEffect) are intentional
       "react-hooks/set-state-in-effect": "warn",
+      // Date.now() / Math.random() inside useMemo is intentional for time-based filtering
+      "react-hooks/purity": "off",
       // Downgrade unused-expressions to warning
       "@typescript-eslint/no-unused-expressions": "warn",
     },

@@ -31,17 +31,14 @@ export default function NotificationsContent() {
       filtered = filtered.filter((n) => filters.categories.includes(n.category));
     }
 
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
     filtered = filtered.filter((n) => {
-      const now = Date.now();
       const diff = now - n.timestamp;
-      const oneHour = 60 * 60 * 1000;
-      const oneDay = 24 * oneHour;
-      const oneWeek = 7 * oneDay;
-
       switch (filters.dateRange) {
         case 'hour': return diff <= oneHour;
-        case 'day':  return diff <= oneDay;
-        case 'week': return diff <= oneWeek;
+        case 'day':  return diff <= oneHour * 24;
+        case 'week': return diff <= oneHour * 24 * 7;
         default:     return true;
       }
     });

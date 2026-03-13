@@ -45,13 +45,11 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
 
   const duration = notification.duration || 4000;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!notification.duration) return;
 
     const startTime = Date.now();
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, 100 - (elapsed / duration) * 100);

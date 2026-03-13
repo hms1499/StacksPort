@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Moon, ChevronLeft, Loader2 } from "lucide-react";
+import { Moon, ChevronLeft, Loader2 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { shortenAddress, cn } from "@/lib/utils";
 import { connect as stacksConnect } from "@stacks/connect";
+import NotificationBadge from "@/components/notifications/NotificationBadge";
 
 interface TopbarProps {
   title?: string;
@@ -25,8 +26,9 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
       const btcEntry = result.addresses.find(
         (a) => a.symbol === "BTC" || (!a.address.startsWith("SP") && !a.address.startsWith("ST"))
       );
+      const address = stxEntry?.address ?? result.addresses[0]?.address ?? "";
       connect(
-        stxEntry?.address ?? result.addresses[0]?.address ?? "",
+        address,
         btcEntry?.address ?? ""
       );
     } catch {
@@ -34,6 +36,11 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
     } finally {
       setConnecting(false);
     }
+  }
+
+  function handleDisconnect() {
+    disconnect();
+    setDropdownOpen(false);
   }
 
   return (
@@ -48,10 +55,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
 
       {/* Right actions */}
       <div className="flex items-center gap-1.5">
-        <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors relative">
-          <Bell size={18} className="text-gray-500" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+        <NotificationBadge />
         <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors hidden md:flex">
           <Moon size={18} className="text-gray-500" />
         </button>
@@ -77,7 +81,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     <p className="text-sm font-medium text-gray-900 truncate">{stxAddress}</p>
                   </div>
                   <button
-                    onClick={() => { disconnect(); setDropdownOpen(false); }}
+                    onClick={() => handleDisconnect()}
                     className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     Disconnect

@@ -25,8 +25,8 @@ export default function MyPlans({ address }: Props) {
       setPlans(userPlans);
       setCurrentBlock(blockRes.stacks_tip_height ?? 0);
       setLastUpdated(new Date());
-    } catch {
-      // silently fail, keep previous state
+    } catch (err) {
+      console.error('Failed to fetch plans:', err);
     } finally {
       setLoading(false);
     }

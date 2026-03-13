@@ -14,6 +14,7 @@ import {
 import { openContractCall } from "@stacks/connect";
 import { PostConditionMode } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import type { Token, QuoteResult } from "@bitflowlabs/core-sdk";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -177,6 +178,7 @@ type Status = "idle" | "quoting" | "ready" | "swapping" | "success" | "error";
 
 export default function SwapWidget() {
   const { stxAddress, isConnected, network } = useWalletStore();
+  const { addNotification } = useNotificationStore();
 
   const [tokens, setTokens] = useState<Token[]>([]);
   const [tokensLoading, setTokensLoading] = useState(true);
@@ -308,12 +310,21 @@ export default function SwapWidget() {
         onFinish: ({ txId: id }) => {
           setTxId(id);
           setStatus("success");
+          addNotification(
+            `Swap executed: ${fromToken?.symbol} → ${toToken?.symbol}`,
+            'success',
+            'swap',
+            5000,
+            { txId: id, amount: amountIn, tokenSymbol: toToken?.symbol }
+          );
         },
         onCancel: () => setStatus("ready"),
       });
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : "Swap failed");
+      const errorMessage = e instanceof Error ? e.message : "Swap failed";
+      setErrorMsg(errorMessage);
       setStatus("error");
+      addNotification(`Swap failed: ${errorMessage}`, 'error', 'swap', 5000);
     }
   }
 

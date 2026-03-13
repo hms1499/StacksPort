@@ -15,6 +15,7 @@ import {
   TARGET_TOKENS,
   DEFAULT_SWAP_ROUTER,
 } from "@/lib/dca";
+import { useNotificationStore } from "@/store/notificationStore";
 
 interface Props {
   plan: DCAPlan;
@@ -30,6 +31,7 @@ function shortToken(contractId: string): string {
 }
 
 export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
+  const { addNotification } = useNotificationStore();
   const [expanded, setExpanded] = useState(false);
   const [depositInput, setDepositInput] = useState("");
   const [routerInput, setRouterInput] = useState(DEFAULT_SWAP_ROUTER);
@@ -96,7 +98,10 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
     }
 
     fetchPoolQuote()
-      .catch((e: Error) => setQuoteError(e.message ?? "Failed to get quote"))
+      .catch((e: Error) => {
+        const error = e.message ?? "Failed to get quote";
+        setQuoteError(error);
+      })
       .finally(() => setQuoteLoading(false));
   }, [expanded, canExecuteNow, plan.amt]);
 
@@ -116,16 +121,28 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const handlePause = () =>
     withLoading(() =>
       pausePlan(plan.id,
-        ({ txId }) => { setTxInfo(txId); setLoading(false); onRefresh(); },
-        () => setLoading(false)
+        ({ txId }) => { 
+          setTxInfo(txId);
+          setLoading(false);
+          onRefresh();
+        },
+        () => {
+          setLoading(false);
+        }
       )
     );
 
   const handleResume = () =>
     withLoading(() =>
       resumePlan(plan.id,
-        ({ txId }) => { setTxInfo(txId); setLoading(false); onRefresh(); },
-        () => setLoading(false)
+        ({ txId }) => { 
+          setTxInfo(txId);
+          setLoading(false);
+          onRefresh();
+        },
+        () => {
+          setLoading(false);
+        }
       )
     );
 
@@ -133,8 +150,16 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
     if (!confirm(`Cancel plan #${plan.id} and refund ${balSTX.toFixed(2)} STX?`)) return;
     withLoading(() =>
       cancelPlan(plan.id,
-        ({ txId }) => { setTxInfo(txId); setLoading(false); onRefresh(); },
-        () => setLoading(false)
+        ({ txId }) => { 
+          setTxInfo(txId);
+          setLoading(false);
+          addNotification('Plan cancelled & refunded', 'success', 'dca', 5000, { planId: String(plan.id), action: 'cancelled', amount: balSTX.toFixed(2) });
+          onRefresh();
+        },
+        () => {
+          setLoading(false);
+          addNotification('Failed to cancel plan', 'error', 'dca', 5000);
+        }
       )
     );
   };
@@ -144,18 +169,35 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
     if (!amount || amount < 1) return;
     withLoading(() =>
       depositToPlan(plan.id, stxToMicro(amount),
-        ({ txId }) => { setTxInfo(txId); setDepositInput(""); setLoading(false); onRefresh(); },
-        () => setLoading(false)
+        ({ txId }) => { 
+          setTxInfo(txId);
+          setDepositInput("");
+          setLoading(false);
+          onRefresh();
+        },
+        () => {
+          setLoading(false);
+        }
       )
     );
   };
 
   const handleExecute = () => {
     if (!routerInput.includes(".")) return;
+    if (!plan.active) return;
+    if (plan.bal < plan.amt) return;
     withLoading(() =>
       executePlan(plan.id, routerInput.trim(), minAmountOut,
-        ({ txId }) => { setTxInfo(txId); setLoading(false); onRefresh(); },
-        () => setLoading(false)
+        ({ txId }) => { 
+          setTxInfo(txId);
+          setLoading(false);
+          addNotification('Plan executed! Swap completed', 'success', 'dca', 5000, { planId: String(plan.id), txId, action: 'executed' });
+          onRefresh();
+        },
+        () => {
+          setLoading(false);
+          addNotification('Execution failed', 'error', 'dca', 5000, { planId: String(plan.id) });
+        }
       )
     );
   };

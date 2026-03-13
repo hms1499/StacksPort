@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { PlusCircle, Info, AlertTriangle } from "lucide-react";
 import { createPlan, INTERVALS, stxToMicro, microToSTX, TARGET_TOKENS, getSTXBalance } from "@/lib/dca";
 import { useWalletStore } from "@/store/walletStore";
+import { useNotificationStore } from "@/store/notificationStore";
 
 const SBTC = TARGET_TOKENS[0].value; // SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
 
@@ -13,6 +14,7 @@ interface Props {
 
 export default function CreatePlanForm({ onCreated }: Props) {
   const { stxAddress } = useWalletStore();
+  const { addNotification } = useNotificationStore();
   const [amountPerSwap, setAmountPerSwap] = useState("");
   const [interval, setInterval] = useState<keyof typeof INTERVALS>("Weekly");
   const [initialDeposit, setInitialDeposit] = useState("");
@@ -41,7 +43,11 @@ export default function CreatePlanForm({ onCreated }: Props) {
 
   const handleSubmit = () => {
     const err = validate();
-    if (err) { setError(err); return; }
+    if (err) { 
+      setError(err);
+      addNotification(err, 'error', 'dca', 5000);
+      return;
+    }
     setError(null);
     setLoading(true);
 
@@ -50,8 +56,22 @@ export default function CreatePlanForm({ onCreated }: Props) {
       stxToMicro(amt),
       INTERVALS[interval],
       stxToMicro(dep),
-      ({ txId }) => { setTxId(txId); setLoading(false); onCreated(); },
-      () => setLoading(false)
+      ({ txId }) => { 
+        setTxId(txId);
+        setLoading(false);
+        addNotification(
+          `Plan created! Tx: ${txId.slice(0, 10)}...`,
+          'success',
+          'dca',
+          5000,
+          { txId, action: 'created', amount: String(amt), tokenSymbol: 'sBTC' }
+        );
+        onCreated();
+      },
+      () => {
+        setLoading(false);
+        addNotification('Failed to create plan', 'error', 'dca', 5000);
+      }
     );
   };
 

@@ -5,6 +5,7 @@ import { X, ArrowUpRight, Loader2, CheckCircle2, AlertCircle } from "lucide-reac
 import { openSTXTransfer, openContractCall } from "@stacks/connect";
 import { uintCV, standardPrincipalCV, noneCV, PostConditionMode } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
+import { useNotificationStore } from "@/store/notificationStore";
 
 export interface SendTokenInfo {
   symbol: string;
@@ -31,6 +32,7 @@ function humanBalance(rawBalance: string, decimals: number): string {
 
 export default function SendModal({ token, onClose }: Props) {
   const { stxAddress, network } = useWalletStore();
+  const { addNotification } = useNotificationStore();
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -53,7 +55,10 @@ export default function SendModal({ token, onClose }: Props) {
 
   async function handleSend() {
     const err = validate();
-    if (err) { setErrorMsg(err); return; }
+    if (err) { 
+      setErrorMsg(err);
+      return;
+    }
     setErrorMsg(null);
     setStatus("loading");
 
@@ -69,6 +74,7 @@ export default function SendModal({ token, onClose }: Props) {
           onFinish: ({ txId: id }) => {
             setTxId(id);
             setStatus("success");
+            addNotification(`Transfer sent: ${amount} ${token.symbol}`, 'success', 'send', 5000, { amount, tokenSymbol: token.symbol });
           },
           onCancel: () => setStatus("idle"),
         });
@@ -90,13 +96,16 @@ export default function SendModal({ token, onClose }: Props) {
           onFinish: ({ txId: id }) => {
             setTxId(id);
             setStatus("success");
+            addNotification(`Transfer sent: ${amount} ${token.symbol}`, 'success', 'send', 5000, { amount, tokenSymbol: token.symbol });
           },
           onCancel: () => setStatus("idle"),
         });
       }
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : "Transaction failed");
+      const error = e instanceof Error ? e.message : "Transaction failed";
+      setErrorMsg(error);
       setStatus("error");
+      addNotification(`Transfer failed: ${error}`, 'error', 'send', 5000);
     }
   }
 

@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/layout/Sidebar";
-import BottomNav from "@/components/layout/BottomNav";
+import LayoutClient from "./layout-client";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -28,20 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geist.className} bg-gray-50 antialiased`} suppressHydrationWarning>
-        <div className="flex h-screen overflow-hidden">
-          {/* Sidebar — desktop only */}
-          <div className="hidden md:block">
-            <Sidebar />
-          </div>
-
-          {/* Main content — add bottom padding on mobile for BottomNav */}
-          <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
-            {children}
-          </main>
-        </div>
-
-        {/* Bottom nav — mobile only */}
-        <BottomNav />
+        <LayoutClient>{children}</LayoutClient>
       </body>
     </html>
   );

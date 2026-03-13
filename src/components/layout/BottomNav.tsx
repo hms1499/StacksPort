@@ -10,7 +10,7 @@ const navItems = [
   { href: "/assets", label: "Assets", icon: Wallet },
   { href: "/trade", label: "Swap", icon: ArrowLeftRight },
   { href: "/dca", label: "DCA", icon: Repeat2 },
-  { href: "/notifications", label: "Alerts", icon: Bell, soon: true },
+  { href: "/notifications", label: "Alerts", icon: Bell },
 ];
 
 export default function BottomNav() {

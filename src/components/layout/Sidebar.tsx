@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Home,
   Wallet,
   Bell,
   BarChart2,
+  BarChart3,
   Sparkles,
   Crown,
   ChevronLeft,
@@ -18,11 +18,11 @@ import {
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", label: "Home", icon: Home },
+  { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/assets", label: "My assets", icon: Wallet },
   { href: "/trade", label: "Swap", icon: BarChart2 },
   { href: "/dca", label: "DCA Vault", icon: Repeat2 },
-  { href: "/notifications", label: "Notification", icon: Bell, soon: true },
+  { href: "/notifications", label: "Notification", icon: Bell },
   { href: "/ai", label: "Stacks AI", icon: Sparkles, soon: true },
   { href: "/premium", label: "Premium", icon: Crown, soon: true },
 ];
@@ -40,14 +40,8 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
-        <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
-          <Image
-            src="/logo.jpg"
-            alt="StacksPort"
-            width={36}
-            height={36}
-            className="w-full h-full object-cover"
-          />
+        <div className="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
+          <BarChart3 size={20} className="text-white" />
         </div>
         {!collapsed && (
           <span className="font-bold text-gray-900 text-lg">StacksPort</span>
@@ -66,7 +60,7 @@ export default function Sidebar() {
                 title={collapsed ? `${label} — Coming Soon` : undefined}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 cursor-not-allowed select-none"
               >
-                <Icon size={18} className="flex-shrink-0" />
+                <Icon size={18} className="shrink-0" />
                 {!collapsed && (
                   <>
                     <span>{label}</span>
@@ -90,7 +84,7 @@ export default function Sidebar() {
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
               )}
             >
-              <Icon size={18} className="flex-shrink-0" />
+              <Icon size={18} className="shrink-0" />
               {!collapsed && <span>{label}</span>}
               {!collapsed && active && (
                 <ChevronRight size={14} className="ml-auto text-gray-400" />

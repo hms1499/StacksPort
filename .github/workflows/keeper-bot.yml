@@ -1,0 +1,46 @@
+name: DCA Keeper Bot
+
+on:
+  schedule:
+    # Chạy mỗi 10 phút (≈ 1 Stacks block)
+    - cron: "*/10 * * * *"
+  # Cho phép chạy thủ công từ GitHub UI
+  workflow_dispatch:
+
+jobs:
+  run-keeper:
+    name: Execute DCA Plans
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    defaults:
+      run:
+        working-directory: keeper-bot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: keeper-bot/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run keeper bot
+        env:
+          KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
+          KEEPER_ADDRESS:     ${{ secrets.KEEPER_ADDRESS }}
+          CONTRACT_ADDRESS:   SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV
+          CONTRACT_NAME:      dca-vault
+          SWAP_ROUTER:        SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router
+          HIRO_API_URL:       https://api.hiro.so
+          MIN_AMOUNT_OUT:     "0"
+        run: npm start

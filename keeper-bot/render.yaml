@@ -1,0 +1,24 @@
+services:
+  - type: worker
+    name: dca-keeper-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: KEEPER_PRIVATE_KEY
+        sync: false
+      - key: KEEPER_ADDRESS
+        sync: false
+      - key: CONTRACT_ADDRESS
+        value: SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV
+      - key: CONTRACT_NAME
+        value: dca-vault
+      - key: SWAP_ROUTER
+        value: SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router
+      - key: HIRO_API_URL
+        value: https://api.hiro.so
+      - key: POLL_INTERVAL_MS
+        value: "120000"
+      - key: MIN_AMOUNT_OUT
+        value: "0"

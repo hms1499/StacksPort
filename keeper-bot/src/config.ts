@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { generateWallet } from "@stacks/wallet-sdk";
+import { generateWallet, generateNewAccount } from "@stacks/wallet-sdk";
 import { getAddressFromPrivateKey } from "@stacks/transactions";
 
 function required(key: string): string {
@@ -33,14 +33,18 @@ function isHexKey(value: string): boolean {
   return /^[0-9a-fA-F]{64}(01)?$/.test(cleaned);
 }
 
-async function resolvePrivateKey(raw: string): Promise<string> {
+async function resolvePrivateKey(raw: string, accountIndex: number): Promise<string> {
   if (isHexKey(raw)) {
     return raw.replace(/^0x/i, "").trim();
   }
 
   if (isMnemonic(raw)) {
-    const wallet = await generateWallet({ secretKey: raw.trim(), password: "" });
-    const account = wallet.accounts[0];
+    let wallet = await generateWallet({ secretKey: raw.trim(), password: "" });
+    // generateWallet creates account 0; add more accounts as needed
+    for (let i = wallet.accounts.length; i <= accountIndex; i++) {
+      wallet = generateNewAccount(wallet);
+    }
+    const account = wallet.accounts[accountIndex];
     // stxPrivateKey is hex, may have "01" suffix for compressed
     return account.stxPrivateKey;
   }
@@ -51,7 +55,8 @@ async function resolvePrivateKey(raw: string): Promise<string> {
 }
 
 export async function loadConfig(): Promise<BotConfig> {
-  const keeperPrivateKey = await resolvePrivateKey(required("KEEPER_PRIVATE_KEY"));
+  const accountIndex = Number(optional("KEEPER_ACCOUNT_INDEX", "1")); // Account 2 in wallet = index 1
+  const keeperPrivateKey = await resolvePrivateKey(required("KEEPER_PRIVATE_KEY"), accountIndex);
   const keeperAddress = required("KEEPER_ADDRESS");
 
   // Verify that the private key matches the expected address

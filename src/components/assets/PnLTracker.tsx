@@ -168,19 +168,32 @@ export default function PnLTracker() {
 
   useEffect(() => {
     if (!isConnected || !stxAddress) {
-      setData(null);
-      setError(null);
+      queueMicrotask(() => {
+        setData(null);
+        setError(null);
+      });
       return;
     }
-    setLoading(true);
-    setError(null);
-    getPnLData(stxAddress)
-      .then(setData)
+    let cancelled = false;
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) {
+          setLoading(true);
+          setError(null);
+        }
+        return getPnLData(stxAddress);
+      })
+      .then((result) => {
+        if (!cancelled) setData(result);
+      })
       .catch((e) => {
         console.error(e);
-        setError("Failed to load PnL data.");
+        if (!cancelled) setError("Failed to load PnL data.");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [stxAddress, isConnected]);
 
   return (

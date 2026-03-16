@@ -219,11 +219,20 @@ export default function SBTCMonitor() {
 
   useEffect(() => {
     if (!isConnected || !stxAddress) return;
-    setLoading(true);
-    getSBTCData(stxAddress)
-      .then(setData)
+    let cancelled = false;
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) setLoading(true);
+        return getSBTCData(stxAddress);
+      })
+      .then((result) => {
+        if (!cancelled) setData(result);
+      })
       .catch(console.error)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [stxAddress, isConnected]);
 
   return (

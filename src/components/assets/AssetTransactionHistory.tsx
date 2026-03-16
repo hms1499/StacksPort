@@ -217,7 +217,7 @@ export default function AssetTransactionHistory() {
   const fetchTxs = useCallback(
     async (currentOffset: number, append: boolean) => {
       if (!isConnected || !stxAddress) return;
-      append ? setLoadingMore(true) : setLoading(true);
+      if (append) setLoadingMore(true); else setLoading(true);
 
       try {
         const data = await getTransactions(stxAddress, PAGE_SIZE, currentOffset);
@@ -230,7 +230,7 @@ export default function AssetTransactionHistory() {
       } catch (e) {
         console.error(e);
       } finally {
-        append ? setLoadingMore(false) : setLoading(false);
+        if (append) setLoadingMore(false); else setLoading(false);
       }
     },
     [stxAddress, isConnected]

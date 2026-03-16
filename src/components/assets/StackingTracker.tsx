@@ -215,11 +215,20 @@ export default function StackingTracker() {
 
   useEffect(() => {
     if (!isConnected || !stxAddress) return;
-    setLoading(true);
-    getStackingStatus(stxAddress)
-      .then(setStatus)
+    let cancelled = false;
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) setLoading(true);
+        return getStackingStatus(stxAddress);
+      })
+      .then((result) => {
+        if (!cancelled) setStatus(result);
+      })
       .catch(console.error)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [stxAddress, isConnected]);
 
   return (

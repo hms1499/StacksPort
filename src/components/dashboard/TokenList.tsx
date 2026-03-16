@@ -29,10 +29,15 @@ export default function TokenList() {
 
   useEffect(() => {
     if (!isConnected || !stxAddress) return;
-    setLoading(true);
+    let cancelled = false;
 
-    getFungibleTokens(stxAddress)
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) setLoading(true);
+        return getFungibleTokens(stxAddress);
+      })
       .then(async (data) => {
+        if (cancelled) return;
         setStxOnly({ balance: data.stx?.balance ?? "0" });
 
         const list: FungibleToken[] = [];
@@ -69,7 +74,10 @@ export default function TokenList() {
         }));
       })
       .catch(console.error)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [stxAddress, isConnected]);
 
   if (!isConnected) {

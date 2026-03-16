@@ -164,14 +164,22 @@ export default function RecentActivity() {
 
   useEffect(() => {
     if (!isConnected || !stxAddress) return;
-    setLoading(true);
-    getTransactions(stxAddress, 8)
+    let cancelled = false;
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) setLoading(true);
+        return getTransactions(stxAddress, 8);
+      })
       .then((data) => {
+        if (cancelled) return;
         const results = data.results ?? [];
         setTxs(results.map((r: unknown) => parseTx(r, stxAddress)));
       })
       .catch(console.error)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [stxAddress, isConnected]);
 
   return (

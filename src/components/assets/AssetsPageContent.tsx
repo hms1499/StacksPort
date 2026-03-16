@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWalletStore } from "@/store/walletStore";
 import { getTokensWithValues, TokenWithValue } from "@/lib/stacks";
 import Topbar from "@/components/layout/Topbar";
@@ -18,24 +18,42 @@ export default function AssetsPageContent() {
   const [tokens, setTokens] = useState<TokenWithValue[]>([]);
   const [totalUsd, setTotalUsd] = useState(0);
   const [loading, setLoading] = useState(false);
+  const prevAddress = useRef(stxAddress);
+
+  const resetState = useCallback(() => {
+    setStx(null);
+    setTokens([]);
+    setTotalUsd(0);
+  }, []);
 
   useEffect(() => {
     if (!isConnected || !stxAddress) {
-      setStx(null);
-      setTokens([]);
-      setTotalUsd(0);
+      // Only reset if address actually changed to avoid cascading renders
+      if (prevAddress.current !== stxAddress) {
+        prevAddress.current = stxAddress;
+        queueMicrotask(resetState);
+      }
       return;
     }
-    setLoading(true);
-    getTokensWithValues(stxAddress)
+    prevAddress.current = stxAddress;
+    let cancelled = false;
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) setLoading(true);
+        return getTokensWithValues(stxAddress);
+      })
       .then((data) => {
+        if (cancelled) return;
         setStx(data.stx);
         setTokens(data.tokens);
         setTotalUsd(data.totalUsd);
       })
       .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [stxAddress, isConnected]);
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [stxAddress, isConnected, resetState]);
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { generateWallet } from "@stacks/wallet-sdk";
+import { getAddressFromPrivateKey } from "@stacks/transactions";
 
 function required(key: string): string {
   const val = process.env[key];
@@ -51,10 +52,20 @@ async function resolvePrivateKey(raw: string): Promise<string> {
 
 export async function loadConfig(): Promise<BotConfig> {
   const keeperPrivateKey = await resolvePrivateKey(required("KEEPER_PRIVATE_KEY"));
+  const keeperAddress = required("KEEPER_ADDRESS");
+
+  // Verify that the private key matches the expected address
+  const derivedAddress = getAddressFromPrivateKey(keeperPrivateKey, "mainnet");
+  if (derivedAddress !== keeperAddress) {
+    throw new Error(
+      `Address mismatch! Private key derives to ${derivedAddress} but KEEPER_ADDRESS is ${keeperAddress}. ` +
+      `Make sure the mnemonic/key and address belong to the same wallet.`
+    );
+  }
 
   return {
     keeperPrivateKey,
-    keeperAddress:    required("KEEPER_ADDRESS"),
+    keeperAddress,
     contractAddress:  optional("CONTRACT_ADDRESS", "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV"),
     contractName:     optional("CONTRACT_NAME", "dca-vault"),
     swapRouter:       optional("SWAP_ROUTER", "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router"),

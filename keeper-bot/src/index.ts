@@ -7,7 +7,7 @@ import { log } from "./logger";
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
 
 async function main(): Promise<void> {
-  const config = loadConfig();
+  const config = await loadConfig();
 
   log.info("Keeper bot starting", {
     contractAddress: config.contractAddress,

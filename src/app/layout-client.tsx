@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import BottomNav from '@/components/layout/BottomNav';
 import ToastContainer from '@/components/notifications/ToastContainer';
+import ThemeProvider from '@/components/ThemeProvider';
 import { usePriceAlertPolling } from '@/hooks/usePriceAlertPolling';
 
 function PriceAlertPoller() {
@@ -16,7 +17,8 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   const isHomePage = pathname === '/';
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <ThemeProvider>
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
       {/* Sidebar — hidden on home page, desktop only */}
       {!isHomePage && (
         <div className="hidden md:block">
@@ -38,5 +40,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       {/* Price alert polling — runs in background */}
       <PriceAlertPoller />
     </div>
+    </ThemeProvider>
   );
 }

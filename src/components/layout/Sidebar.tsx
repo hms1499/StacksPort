@@ -34,17 +34,17 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "h-screen bg-white border-r border-gray-100 flex flex-col transition-all duration-300 relative",
+        "h-screen bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex flex-col transition-all duration-300 relative",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100 dark:border-gray-800">
         <div className="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
           <BarChart3 size={20} className="text-white" />
         </div>
         {!collapsed && (
-          <span className="font-bold text-gray-900 text-lg">StacksPort</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">StacksPort</span>
         )}
       </div>
 
@@ -58,13 +58,13 @@ export default function Sidebar() {
               <div
                 key={href}
                 title={collapsed ? `${label} — Coming Soon` : undefined}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 cursor-not-allowed select-none"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 dark:text-gray-600 cursor-not-allowed select-none"
               >
                 <Icon size={18} className="shrink-0" />
                 {!collapsed && (
                   <>
                     <span>{label}</span>
-                    <span className="ml-auto text-[10px] font-semibold tracking-wide uppercase bg-gray-100 text-gray-400 rounded-full px-2 py-0.5">
+                    <span className="ml-auto text-[10px] font-semibold tracking-wide uppercase bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-full px-2 py-0.5">
                       Soon
                     </span>
                   </>
@@ -80,8 +80,8 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
                 active
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
               )}
             >
               <Icon size={18} className="shrink-0" />
@@ -97,7 +97,7 @@ export default function Sidebar() {
       {/* Collapse toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
+        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
       >
         {collapsed ? (
           <ChevronRight size={12} className="text-gray-500" />

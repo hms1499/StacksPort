@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingDown, TrendingUp, ExternalLink } from "lucide-react";
+import { TrendingDown, TrendingUp, ExternalLink, Loader2 } from "lucide-react";
+import { connect as stacksConnect } from "@stacks/connect";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -17,11 +18,30 @@ import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 type Period = "1D" | "1W" | "1M";
 
 export default function BalanceCard() {
-  const { stxAddress, isConnected } = useWalletStore();
+  const { stxAddress, isConnected, connect } = useWalletStore();
   const [portfolio, setPortfolio] = useState<PortfolioValue | null>(null);
   const [chartData, setChartData] = useState<{ date: string; value: number }[]>([]);
   const [period, setPeriod] = useState<Period>("1W");
   const [loading, setLoading] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+
+  async function handleConnect() {
+    setConnecting(true);
+    try {
+      const result = await stacksConnect();
+      const stxEntry = result.addresses.find(
+        (a) => a.symbol === "STX" || a.address.startsWith("SP") || a.address.startsWith("ST")
+      );
+      const btcEntry = result.addresses.find(
+        (a) => a.symbol === "BTC" || (!a.address.startsWith("SP") && !a.address.startsWith("ST"))
+      );
+      connect(stxEntry?.address ?? result.addresses[0]?.address ?? "", btcEntry?.address ?? "");
+    } catch {
+      // user cancelled
+    } finally {
+      setConnecting(false);
+    }
+  }
 
   const isPositive = (portfolio?.stxChange24h ?? 0) >= 0;
   const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
@@ -117,9 +137,16 @@ export default function BalanceCard() {
             </div>
           </>
         ) : (
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <p className="text-2xl font-bold text-gray-300">---.--</p>
-            <p className="text-sm text-gray-400">Connect wallet to view balance</p>
+            <button
+              onClick={handleConnect}
+              disabled={connecting}
+              className="flex items-center gap-2 self-start bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+            >
+              {connecting && <Loader2 size={14} className="animate-spin" />}
+              {connecting ? "Connecting..." : "Connect Wallet"}
+            </button>
           </div>
         )}
       </div>

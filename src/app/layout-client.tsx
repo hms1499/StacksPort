@@ -37,7 +37,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       {/* Toast notifications */}
       <ToastContainer />
 
-      {/* Price alert polling — runs in background */}
+      {/* Background services */}
       <PriceAlertPoller />
     </div>
     </ThemeProvider>

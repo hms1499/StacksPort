@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Moon, Sun, ChevronLeft, Loader2, Copy, Check } from "lucide-react";
+import { Moon, Sun, ChevronLeft, Loader2, Copy, Check, RefreshCw } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { shortenAddress, cn } from "@/lib/utils";
-import { connect as stacksConnect } from "@stacks/connect";
+import { connectWallet } from "@/lib/wallet";
 import NotificationBadge from "@/components/notifications/NotificationBadge";
 
 interface TopbarProps {
@@ -22,18 +22,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
   async function handleConnect() {
     setConnecting(true);
     try {
-      const result = await stacksConnect();
-      const stxEntry = result.addresses.find(
-        (a) => a.symbol === "STX" || a.address.startsWith("SP") || a.address.startsWith("ST")
-      );
-      const btcEntry = result.addresses.find(
-        (a) => a.symbol === "BTC" || (!a.address.startsWith("SP") && !a.address.startsWith("ST"))
-      );
-      const address = stxEntry?.address ?? result.addresses[0]?.address ?? "";
-      connect(
-        address,
-        btcEntry?.address ?? ""
-      );
+      await connectWallet(connect);
     } catch {
       // user cancelled or error — do nothing
     } finally {
@@ -96,6 +85,13 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                   >
                     {copied ? <Check size={14} className="text-teal-500" /> : <Copy size={14} />}
                     {copied ? "Copied!" : "Copy Address"}
+                  </button>
+                  <button
+                    onClick={() => { setDropdownOpen(false); void handleConnect(); }}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
+                  >
+                    <RefreshCw size={14} />
+                    Switch Account
                   </button>
                   <button
                     onClick={() => handleDisconnect()}

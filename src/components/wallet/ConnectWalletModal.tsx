@@ -4,7 +4,7 @@ import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWalletStore } from "@/store/walletStore";
-import { connect as stacksConnect } from "@stacks/connect";
+import { connectWallet } from "@/lib/wallet";
 
 interface ConnectWalletModalProps {
   isOpen: boolean;
@@ -21,17 +21,7 @@ export default function ConnectWalletModal({ isOpen, onClose }: ConnectWalletMod
     setLoading(true);
     setError(null);
     try {
-      const result = await stacksConnect();
-      // addresses[0] = STX address, addresses[1] = BTC address (varies by wallet)
-      const stxEntry = result.addresses.find(
-        (a) => a.symbol === "STX" || a.address.startsWith("SP") || a.address.startsWith("ST")
-      );
-      const btcEntry = result.addresses.find(
-        (a) => a.symbol === "BTC" || (!a.address.startsWith("SP") && !a.address.startsWith("ST"))
-      );
-      const stxAddress = stxEntry?.address ?? result.addresses[0]?.address ?? "";
-      const btcAddress = btcEntry?.address ?? "";
-      connect(stxAddress, btcAddress);
+      await connectWallet(connect);
       onClose();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Connection failed";

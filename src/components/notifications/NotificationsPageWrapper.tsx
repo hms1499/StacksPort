@@ -36,7 +36,7 @@ export default function NotificationsPageWrapper() {
       <Topbar title="Notifications" />
 
       {/* Tab bar */}
-      <div className="bg-white border-b border-gray-100 px-4 md:px-6">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 md:px-6">
         <div className="flex gap-1">
           {tabs.map(({ id, label, icon: Icon }) => (
             <button
@@ -45,8 +45,8 @@ export default function NotificationsPageWrapper() {
               className={cn(
                 'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors',
                 activeTab === id
-                  ? 'border-teal-500 text-teal-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-teal-500 text-teal-600 dark:text-teal-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               )}
             >
               <Icon size={16} />
@@ -57,7 +57,7 @@ export default function NotificationsPageWrapper() {
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden bg-gray-50 dark:bg-gray-950">
         {activeTab === 'activity' ? (
           <NotificationsContent />
         ) : (

@@ -14,7 +14,7 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '7px',
+          borderRadius: '22%',
         }}
       >
         {/* BarChart3 icon paths */}

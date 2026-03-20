@@ -76,6 +76,6 @@ export async function loadConfig(): Promise<BotConfig> {
     swapRouter:       optional("SWAP_ROUTER", "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router"),
     hiroApiUrl:       optional("HIRO_API_URL", "https://api.hiro.so"),
     pollIntervalMs:   Number(optional("POLL_INTERVAL_MS", "120000")),
-    minAmountOut:     Number(optional("MIN_AMOUNT_OUT", "0")),
+    minAmountOut:     Number(optional("MIN_AMOUNT_OUT", "1")),
   };
 }

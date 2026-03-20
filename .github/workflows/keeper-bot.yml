@@ -34,9 +34,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test failure alert
-        run: exit 1
-
       - name: Run keeper bot
         env:
           KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}

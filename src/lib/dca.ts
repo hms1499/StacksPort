@@ -26,16 +26,25 @@ export const TARGET_TOKENS = [
 const HIRO_API = "https://api.hiro.so";
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78"; // Stacks burn address (always valid on mainnet)
 
+// Nakamoto Stacks produces ~13 blocks/minute (vs pre-Nakamoto 1 block/10min)
+// Daily  = 13 × 60 × 24       = 18,720 blocks
+// Weekly = 18,720 × 7         = 131,040 blocks
+// Monthly= 18,720 × 30        = 561,600 blocks
 export const INTERVALS = {
-  Daily: 144,
-  Weekly: 1008,
-  Monthly: 4320,
+  Daily: 18720,
+  Weekly: 131040,
+  Monthly: 561600,
 } as const;
 
 export function blocksToInterval(blocks: number): string {
-  if (blocks === 144) return "Daily";
-  if (blocks === 1008) return "Weekly";
-  if (blocks === 4320) return "Monthly";
+  // New Nakamoto values
+  if (blocks === 18720) return "Daily";
+  if (blocks === 131040) return "Weekly";
+  if (blocks === 561600) return "Monthly";
+  // Legacy pre-Nakamoto values (existing plans)
+  if (blocks === 144) return "Daily (legacy)";
+  if (blocks === 1008) return "Weekly (legacy)";
+  if (blocks === 4320) return "Monthly (legacy)";
   return `${blocks} blocks`;
 }
 

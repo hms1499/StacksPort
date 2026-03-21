@@ -238,15 +238,16 @@ export default function PnLTracker() {
         <div className="space-y-5">
           {/* Summary Cards */}
           <div className="grid grid-cols-3 gap-3">
-            <SummaryCard
-              label="Unrealized PnL"
-              value={data.totalUnrealized}
-              pct={
-                data.entries.reduce((s, e) => s + e.totalCost, 0) > 0
-                  ? (data.totalUnrealized / data.entries.reduce((s, e) => s + e.totalCost, 0)) * 100
-                  : undefined
-              }
-            />
+            {(() => {
+              const totalCost = data.entries.reduce((s, e) => s + e.totalCost, 0);
+              return (
+                <SummaryCard
+                  label="Unrealized PnL"
+                  value={data.totalUnrealized}
+                  pct={totalCost > 0 ? (data.totalUnrealized / totalCost) * 100 : undefined}
+                />
+              );
+            })()}
             <SummaryCard label="Realized PnL" value={data.totalRealized} />
             <SummaryCard label="Total PnL" value={data.totalPnL} />
           </div>

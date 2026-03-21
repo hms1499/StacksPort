@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
   ArrowDownUp,
   Loader2,
@@ -15,20 +15,8 @@ import { openContractCall } from "@stacks/connect";
 import { PostConditionMode } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import { formatAmount, formatUSD } from "@/lib/utils";
 import type { Token, QuoteResult } from "@bitflowlabs/core-sdk";
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatAmount(n: number, decimals = 6): string {
-  if (n === 0) return "0";
-  if (n >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
-  if (n >= 1) return n.toFixed(Math.min(4, decimals));
-  return n.toFixed(Math.min(6, decimals));
-}
-
-function formatUSD(n: number): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(n);
-}
 
 // Deserialize bigint placeholders from API response
 function deserialize(obj: unknown): unknown {
@@ -62,10 +50,14 @@ function TokenSelector({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const filtered = tokens.filter(
-    (t) =>
-      t.symbol.toLowerCase().includes(search.toLowerCase()) ||
-      t.name.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () =>
+      tokens.filter(
+        (t) =>
+          t.symbol.toLowerCase().includes(search.toLowerCase()) ||
+          t.name.toLowerCase().includes(search.toLowerCase())
+      ),
+    [tokens, search]
   );
 
   return (
@@ -73,13 +65,13 @@ function TokenSelector({
       <p className="text-xs font-medium text-gray-400 mb-1.5">{label}</p>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 hover:border-teal-400 transition-colors bg-white"
+        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-teal-400 transition-colors bg-white dark:bg-gray-700"
       >
         {selected ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={selected.icon} alt={selected.symbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            <span className="font-semibold text-gray-900 text-sm">{selected.symbol}</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{selected.symbol}</span>
             <span className="text-xs text-gray-400 truncate flex-1 text-left">{selected.name}</span>
           </>
         ) : (
@@ -89,15 +81,15 @@ function TokenSelector({
       </button>
 
       {open && (
-        <div className="absolute z-50 top-full mt-1.5 left-0 right-0 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-          <div className="p-2 border-b border-gray-50">
+        <div className="absolute z-50 top-full mt-1.5 left-0 right-0 bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl shadow-lg overflow-hidden">
+          <div className="p-2 border-b border-gray-50 dark:border-gray-600">
             <input
               autoFocus
               type="text"
               placeholder="Search tokens..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm rounded-lg bg-gray-50 border-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="w-full px-3 py-1.5 text-sm rounded-lg bg-gray-50 dark:bg-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 border-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
             />
           </div>
           <div className="max-h-52 overflow-y-auto">
@@ -108,16 +100,16 @@ function TokenSelector({
                 <button
                   key={t.tokenId}
                   onClick={() => { onChange(t); setOpen(false); setSearch(""); }}
-                  className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-gray-50 transition-colors text-left ${selected?.tokenId === t.tokenId ? "bg-teal-50" : ""}`}
+                  className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-left ${selected?.tokenId === t.tokenId ? "bg-teal-50 dark:bg-teal-900/30" : ""}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={t.icon} alt={t.symbol} className="w-6 h-6 rounded-full flex-shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <img src={t.icon} alt={t.symbol} className="w-6 h-6 rounded-full shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900">{t.symbol}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t.symbol}</p>
                     <p className="text-xs text-gray-400 truncate">{t.name}</p>
                   </div>
                   {t.priceData.last_price && (
-                    <span className="ml-auto text-xs text-gray-400 flex-shrink-0">{formatUSD(t.priceData.last_price)}</span>
+                    <span className="ml-auto text-xs text-gray-400 shrink-0">{formatUSD(t.priceData.last_price)}</span>
                   )}
                 </button>
               ))
@@ -136,7 +128,7 @@ function RoutePath({ path }: { path: string[] }) {
     <div className="flex items-center gap-1 flex-wrap">
       {path.map((token, i) => (
         <span key={i} className="flex items-center gap-1">
-          <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded-full">
             {token.replace("token-", "").toUpperCase()}
           </span>
           {i < path.length - 1 && <ArrowRight size={10} className="text-gray-400" />}
@@ -227,7 +219,6 @@ export default function SwapWidget() {
   function setPercent(pct: number) {
     if (fromBalance === null || fromBalance <= 0) return;
     const val = fromBalance * pct;
-    // Round to token's decimal precision (max 6)
     const decimals = Math.min(fromToken?.tokenDecimals ?? 6, 6);
     setAmountIn(parseFloat(val.toFixed(decimals)).toString());
   }
@@ -297,7 +288,7 @@ export default function SwapWidget() {
         postConditions: unknown[];
       };
 
-      await openContractCall({
+      openContractCall({
         contractAddress: params.contractAddress,
         contractName: params.contractName,
         functionName: params.functionName,
@@ -340,7 +331,7 @@ export default function SwapWidget() {
       <div className="flex flex-col items-center py-10 gap-4 text-center">
         <CheckCircle2 size={52} className="text-green-500" />
         <div>
-          <p className="text-lg font-semibold text-gray-900">Swap Submitted!</p>
+          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Swap Submitted!</p>
           <p className="text-sm text-gray-400 mt-1">
             {fromToken?.symbol} → {toToken?.symbol}
           </p>
@@ -355,7 +346,7 @@ export default function SwapWidget() {
         </a>
         <button
           onClick={() => { setStatus("idle"); setTxId(null); setAmountIn(""); setQuote(null); }}
-          className="mt-2 px-6 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+          className="mt-2 px-6 py-2.5 rounded-xl bg-gray-900 dark:bg-gray-600 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-500 transition-colors"
         >
           New Swap
         </button>
@@ -367,7 +358,7 @@ export default function SwapWidget() {
     <div className="space-y-4">
       {/* Token loading error */}
       {tokenError && (
-        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
           <AlertCircle size={13} />
           {tokenError}
         </div>
@@ -375,14 +366,14 @@ export default function SwapWidget() {
 
       {tokensLoading ? (
         <div className="space-y-3 animate-pulse">
-          <div className="h-10 bg-gray-100 rounded-xl" />
-          <div className="h-10 bg-gray-100 rounded-xl" />
-          <div className="h-10 bg-gray-100 rounded-xl" />
+          <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+          <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+          <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded-xl" />
         </div>
       ) : (
         <>
           {/* From token */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
             <TokenSelector
               tokens={tokens}
               selected={fromToken}
@@ -396,9 +387,9 @@ export default function SwapWidget() {
                 <span className="text-xs text-gray-400">
                   Balance:{" "}
                   {balanceLoading ? (
-                    <span className="inline-block w-12 h-3 bg-gray-200 rounded animate-pulse align-middle" />
+                    <span className="inline-block w-12 h-3 bg-gray-200 dark:bg-gray-600 rounded animate-pulse align-middle" />
                   ) : fromBalance !== null ? (
-                    <span className="font-medium text-gray-600">
+                    <span className="font-medium text-gray-600 dark:text-gray-300">
                       {formatAmount(fromBalance, fromToken.tokenDecimals)} {fromToken.symbol}
                     </span>
                   ) : (
@@ -411,7 +402,7 @@ export default function SwapWidget() {
                       key={pct}
                       onClick={() => setPercent(pct)}
                       disabled={!fromBalance}
-                      className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       {pct === 1 ? "MAX" : `${pct * 100}%`}
                     </button>
@@ -430,10 +421,10 @@ export default function SwapWidget() {
                   step="any"
                   value={amountIn}
                   onChange={(e) => setAmountIn(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-white text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 transition-colors ${
+                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 dark:placeholder:text-gray-500 transition-colors ${
                     isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance
                       ? "border-red-300 focus:ring-red-300 text-red-600"
-                      : "border-gray-200 focus:ring-teal-400"
+                      : "border-gray-200 dark:border-gray-600 focus:ring-teal-400 text-gray-900 dark:text-gray-100"
                   }`}
                 />
                 {fromToken?.priceData.last_price && amountIn && !(isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance) && (
@@ -455,14 +446,14 @@ export default function SwapWidget() {
           <div className="flex justify-center">
             <button
               onClick={flipTokens}
-              className="w-9 h-9 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-50 hover:border-teal-400 transition-colors shadow-sm"
+              className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-teal-400 transition-colors shadow-sm"
             >
-              <ArrowDownUp size={15} className="text-gray-500" />
+              <ArrowDownUp size={15} className="text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
           {/* To token */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
             <TokenSelector
               tokens={tokens.filter((t) => t.tokenId !== fromToken?.tokenId)}
               selected={toToken}
@@ -472,14 +463,14 @@ export default function SwapWidget() {
             {/* Quote output */}
             <div>
               <label className="text-xs font-medium text-gray-400 mb-1.5 block">You receive (estimated)</label>
-              <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white min-h-[42px] flex items-center">
+              <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 min-h-[42px] flex items-center">
                 {status === "quoting" ? (
                   <span className="flex items-center gap-2 text-sm text-gray-400">
                     <Loader2 size={13} className="animate-spin" /> Fetching quote...
                   </span>
                 ) : amountOut !== null ? (
                   <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {formatAmount(amountOut, toToken?.tokenDecimals)}
                     </span>
                     <span className="text-xs text-gray-400">{toToken?.symbol}</span>
@@ -490,7 +481,7 @@ export default function SwapWidget() {
                     )}
                   </div>
                 ) : (
-                  <span className="text-sm text-gray-300">—</span>
+                  <span className="text-sm text-gray-300 dark:text-gray-500">—</span>
                 )}
               </div>
             </div>
@@ -498,17 +489,17 @@ export default function SwapWidget() {
 
           {/* Route & details */}
           {quote?.bestRoute && (
-            <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-2.5">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3 space-y-2.5">
               {routePath.length > 0 && (
                 <div className="flex items-start gap-2">
-                  <span className="text-xs text-gray-400 mt-0.5 flex-shrink-0">Route</span>
+                  <span className="text-xs text-gray-400 mt-0.5 shrink-0">Route</span>
                   <RoutePath path={routePath} />
                 </div>
               )}
               {dexPath.length > 0 && (
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-400">Via</span>
-                  <span className="text-xs font-medium text-gray-600">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                     {dexPath.map((d) => d.replace(/-/g, " ")).join(" → ")}
                   </span>
                 </div>
@@ -516,7 +507,7 @@ export default function SwapWidget() {
               {priceImpact > 0 && (
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-400">Price Impact</span>
-                  <span className={priceImpact > 2 ? "text-red-500 font-medium" : "text-gray-600"}>
+                  <span className={priceImpact > 2 ? "text-red-500 font-medium" : "text-gray-600 dark:text-gray-300"}>
                     {priceImpact.toFixed(2)}%
                   </span>
                 </div>
@@ -529,7 +520,9 @@ export default function SwapWidget() {
                       key={s}
                       onClick={() => setSlippage(s)}
                       className={`px-2 py-0.5 rounded-lg font-medium transition-colors ${
-                        slippage === s ? "bg-gray-900 text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                        slippage === s
+                          ? "bg-gray-900 dark:bg-gray-500 text-white"
+                          : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500"
                       }`}
                     >
                       {s}%
@@ -542,7 +535,7 @@ export default function SwapWidget() {
 
           {/* Error */}
           {status === "error" && errorMsg && (
-            <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 rounded-xl px-3 py-2.5">
+            <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
               <AlertCircle size={13} />
               {errorMsg}
             </div>
@@ -550,7 +543,7 @@ export default function SwapWidget() {
 
           {/* Wallet not connected */}
           {!isConnected && (
-            <div className="flex items-center gap-2 text-xs text-yellow-600 bg-yellow-50 rounded-xl px-3 py-2.5">
+            <div className="flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl px-3 py-2.5">
               <Info size={13} />
               Connect your wallet to swap
             </div>
@@ -574,7 +567,7 @@ export default function SwapWidget() {
           </button>
 
           {/* Powered by */}
-          <p className="text-center text-[11px] text-gray-300">
+          <p className="text-center text-[11px] text-gray-300 dark:text-gray-500">
             Powered by{" "}
             <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-500">
               Bitflow

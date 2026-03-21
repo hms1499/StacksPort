@@ -30,3 +30,10 @@ export function formatPercent(value: number): string {
   const sign = value >= 0 ? "+" : "";
   return `${sign}${value.toFixed(2)}%`;
 }
+
+export function formatAmount(n: number, decimals = 6): string {
+  if (n === 0) return "0";
+  if (n >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  if (n >= 1) return n.toFixed(Math.min(4, decimals));
+  return n.toFixed(Math.min(6, decimals));
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Lightbulb, Wallet } from "lucide-react";
 import { TokenWithValue } from "@/lib/stacks";
 
@@ -305,7 +306,7 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
     );
   }
 
-  const result = calcHealth(stx, tokens, totalUsd);
+  const result = useMemo(() => calcHealth(stx, tokens, totalUsd), [stx, tokens, totalUsd]);
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

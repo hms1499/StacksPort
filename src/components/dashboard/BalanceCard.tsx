@@ -17,6 +17,8 @@ import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 
 type Period = "1D" | "1W" | "1M";
 
+const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
+
 export default function BalanceCard() {
   const { stxAddress, isConnected, connect } = useWalletStore();
   const [portfolio, setPortfolio] = useState<PortfolioValue | null>(null);
@@ -44,7 +46,6 @@ export default function BalanceCard() {
   }
 
   const isPositive = (portfolio?.stxChange24h ?? 0) >= 0;
-  const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
 
   useEffect(() => {
     async function load() {
@@ -68,7 +69,6 @@ export default function BalanceCard() {
       }
     }
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stxAddress, isConnected, period]);
 
   return (

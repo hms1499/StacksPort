@@ -48,6 +48,8 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const nextBlock = plan.leb === 0 ? currentBlock : plan.leb + plan.ivl;
   const blocksLeft = Math.max(0, nextBlock - currentBlock);
   const canExecuteNow = plan.active && plan.bal >= plan.amt && blocksLeft === 0;
+  // net uSTX after vault's 0.3% protocol fee (matches what router actually receives)
+  const netUstx = plan.amt - Math.floor(plan.amt * 30 / 10000);
 
   // Query xyk-core.get-dx directly on mainnet — exact sBTC output for our specific pool
   // get-dx(pool, x-token=sBTC, y-token=wSTX, y-amount=uSTX) → (ok uint) satoshis
@@ -57,10 +59,8 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
     setQuoteError(null);
     setQuotedSbtc(null);
 
-    // net uSTX after vault's 0.3% protocol fee (matches what router actually receives)
-    const netUstx = plan.amt - Math.floor(plan.amt * 30 / 10000);
-
     async function fetchPoolQuote() {
+
       const { contractPrincipalCV, uintCV, serializeCV, hexToCV } = await import("@stacks/transactions");
 
       const toHex = (cv: unknown) => {
@@ -109,8 +109,6 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const minAmountOut = quotedSbtc != null
     ? Math.floor(quotedSbtc * (1 - slippage / 100) * 1e8)
     : 0;
-  // netUstx mirrors what vault sends to router (for display parity)
-  const netUstx = plan.amt - Math.floor(plan.amt * 30 / 10000);
 
   function withLoading(fn: () => void) {
     setLoading(true);

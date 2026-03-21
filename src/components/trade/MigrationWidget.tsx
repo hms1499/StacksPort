@@ -19,6 +19,7 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
+import { formatAmount } from "@/lib/utils";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -39,13 +40,6 @@ const HIRO_API = "https://api.hiro.so";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmt(n: number): string {
-  if (n === 0) return "0";
-  if (n >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
-  if (n >= 1) return n.toFixed(4);
-  return n.toFixed(6);
-}
-
 async function fetchBalance(address: string, contractId: string): Promise<number> {
   const res = await fetch(`${HIRO_API}/extended/v1/address/${address}/balances`);
   if (!res.ok) return 0;
@@ -64,7 +58,7 @@ function TokenBadge({ symbol, img }: { symbol: string; img: string }) {
     <span className="inline-flex items-center gap-1.5">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={img} alt={symbol} className="w-5 h-5 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-      <span className="font-semibold text-gray-900">{symbol}</span>
+      <span className="font-semibold text-gray-900 dark:text-gray-100">{symbol}</span>
     </span>
   );
 }
@@ -174,14 +168,12 @@ export default function MigrationWidget() {
       let postConditions: any[];
 
       if (direction === "x-to-y") {
-        // aeUSDC → USDCx
         functionName = "swap-x-for-y";
         postConditions = [
           Pc.principal(stxAddress).willSendEq(amountMicro).ft(`${AEUSDC_ADDRESS}.${AEUSDC_NAME}`, AEUSDC_ASSET),
           Pc.principal(`${POOL_ADDRESS}.${POOL_NAME}`).willSendGte(minOutputMicro).ft(`${USDCX_ADDRESS}.${USDCX_NAME}`, USDCX_ASSET),
         ];
       } else {
-        // USDCx → aeUSDC
         functionName = "swap-y-for-x";
         postConditions = [
           Pc.principal(stxAddress).willSendEq(amountMicro).ft(`${USDCX_ADDRESS}.${USDCX_NAME}`, USDCX_ASSET),
@@ -189,7 +181,7 @@ export default function MigrationWidget() {
         ];
       }
 
-      await openContractCall({
+      openContractCall({
         contractAddress: CORE_ADDRESS,
         contractName: CORE_NAME,
         functionName,
@@ -214,11 +206,11 @@ export default function MigrationWidget() {
   if (status === "success" && txId) {
     return (
       <div className="flex flex-col items-center py-8 gap-4 text-center">
-        <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
           <CheckCircle2 size={30} className="text-green-500" />
         </div>
         <div>
-          <p className="font-semibold text-gray-900">Migration Submitted!</p>
+          <p className="font-semibold text-gray-900 dark:text-gray-100">Migration Submitted!</p>
           <p className="text-sm text-gray-400 mt-1">{fromSymbol} → {toSymbol}</p>
         </div>
         <a
@@ -231,7 +223,7 @@ export default function MigrationWidget() {
         </a>
         <button
           onClick={() => { setStatus("idle"); setTxId(null); setAmount(""); setOutput(null); }}
-          className="px-6 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+          className="px-6 py-2.5 rounded-xl bg-gray-900 dark:bg-gray-600 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-500 transition-colors"
         >
           New Migration
         </button>
@@ -244,49 +236,51 @@ export default function MigrationWidget() {
   return (
     <div className="space-y-4">
       {/* Info banner */}
-      <div className="flex items-start gap-2.5 bg-blue-50 rounded-xl px-4 py-3">
-        <Info size={13} className="text-blue-400 mt-0.5 flex-shrink-0" />
-        <p className="text-xs text-blue-600 leading-relaxed">
+      <div className="flex items-start gap-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl px-4 py-3">
+        <Info size={13} className="text-blue-400 mt-0.5 shrink-0" />
+        <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
           Migrate between <strong>aeUSDC</strong> (Allbridge) and <strong>USDCx</strong> (Circle xReserve) at near 1:1 via the Bitflow stableswap pool.
         </p>
       </div>
 
       {/* Direction toggle */}
-      <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1">
+      <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 rounded-xl p-1">
         {(["x-to-y", "y-to-x"] as Direction[]).map((d) => (
           <button
             key={d}
             onClick={() => { setDirection(d); setAmount(""); setOutput(null); setStatus("idle"); setErrorMsg(null); }}
             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${
-              direction === d ? "bg-white shadow-sm text-gray-900" : "text-gray-400 hover:text-gray-600"
+              direction === d
+                ? "bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-gray-100"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             }`}
           >
             <TokenBadge symbol={d === "x-to-y" ? "aeUSDC" : "USDCx"} img={d === "x-to-y" ? AEUSDC_IMG : USDCX_IMG} />
-            <span className="text-gray-300">→</span>
+            <span className="text-gray-300 dark:text-gray-500">→</span>
             <TokenBadge symbol={d === "x-to-y" ? "USDCx" : "aeUSDC"} img={d === "x-to-y" ? USDCX_IMG : AEUSDC_IMG} />
           </button>
         ))}
       </div>
 
       {/* From section */}
-      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={fromImg} alt={fromSymbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            <span className="font-semibold text-sm text-gray-900">{fromSymbol}</span>
+            <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{fromSymbol}</span>
           </div>
           {isConnected && (
             <span className="text-xs text-gray-400">
               Balance:{" "}
               {balanceLoading ? (
-                <span className="inline-block w-10 h-2.5 bg-gray-200 rounded animate-pulse align-middle" />
+                <span className="inline-block w-10 h-2.5 bg-gray-200 dark:bg-gray-600 rounded animate-pulse align-middle" />
               ) : fromBalance !== null ? (
                 <button
                   onClick={() => setPercent(1)}
-                  className="font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                  className="font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
                 >
-                  {fmt(fromBalance)} {fromSymbol}
+                  {formatAmount(fromBalance)} {fromSymbol}
                 </button>
               ) : "—"}
             </span>
@@ -301,10 +295,10 @@ export default function MigrationWidget() {
             step="any"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className={`w-full px-3.5 py-2.5 rounded-xl border bg-white text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 transition-colors ${
+            className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 dark:placeholder:text-gray-500 transition-colors ${
               overBalance
                 ? "border-red-300 focus:ring-red-300 text-red-600"
-                : "border-gray-200 focus:ring-teal-400"
+                : "border-gray-200 dark:border-gray-600 focus:ring-teal-400 text-gray-900 dark:text-gray-100"
             }`}
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
@@ -315,7 +309,7 @@ export default function MigrationWidget() {
         {overBalance && (
           <p className="flex items-center gap-1.5 text-xs text-red-500">
             <AlertCircle size={12} />
-            Insufficient balance. Max: {fmt(fromBalance!)} {fromSymbol}
+            Insufficient balance. Max: {formatAmount(fromBalance!)} {fromSymbol}
           </p>
         )}
 
@@ -325,7 +319,7 @@ export default function MigrationWidget() {
               <button
                 key={pct}
                 onClick={() => setPercent(pct)}
-                className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors"
+                className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors"
               >
                 {pct === 1 ? "MAX" : `${pct * 100}%`}
               </button>
@@ -338,59 +332,59 @@ export default function MigrationWidget() {
       <div className="flex justify-center">
         <button
           onClick={flipDirection}
-          className="w-9 h-9 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-50 hover:border-teal-400 transition-colors shadow-sm"
+          className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-teal-400 transition-colors shadow-sm"
           title="Flip direction"
         >
-          <ArrowUpDown size={14} className="text-gray-500" />
+          <ArrowUpDown size={14} className="text-gray-500 dark:text-gray-400" />
         </button>
       </div>
 
       {/* To section */}
-      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={toImg} alt={toSymbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            <span className="font-semibold text-sm text-gray-900">{toSymbol}</span>
+            <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{toSymbol}</span>
           </div>
           {isConnected && (
             <span className="text-xs text-gray-400">
               Balance:{" "}
               {balanceLoading ? (
-                <span className="inline-block w-10 h-2.5 bg-gray-200 rounded animate-pulse align-middle" />
+                <span className="inline-block w-10 h-2.5 bg-gray-200 dark:bg-gray-600 rounded animate-pulse align-middle" />
               ) : (direction === "x-to-y" ? usdcxBalance : aeBalance) !== null ? (
-                <span className="font-medium text-gray-600">
-                  {fmt(direction === "x-to-y" ? usdcxBalance! : aeBalance!)} {toSymbol}
+                <span className="font-medium text-gray-600 dark:text-gray-300">
+                  {formatAmount(direction === "x-to-y" ? usdcxBalance! : aeBalance!)} {toSymbol}
                 </span>
               ) : "—"}
             </span>
           )}
         </div>
 
-        <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white min-h-[42px] flex items-center">
+        <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 min-h-10.5 flex items-center">
           {status === "quoting" ? (
             <span className="flex items-center gap-2 text-sm text-gray-400">
               <Loader2 size={13} className="animate-spin" /> Getting quote...
             </span>
           ) : output !== null ? (
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-gray-900">{fmt(output)}</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{formatAmount(output)}</span>
               <span className="text-xs text-gray-400">{toSymbol}</span>
               <span className="text-xs text-gray-400 ml-auto">≈ ${output.toFixed(2)}</span>
             </div>
           ) : (
-            <span className="text-sm text-gray-300">—</span>
+            <span className="text-sm text-gray-300 dark:text-gray-500">—</span>
           )}
         </div>
       </div>
 
       {/* Details panel */}
       {output !== null && status !== "quoting" && (
-        <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-2.5">
+        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3 space-y-2.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-400">Rate</span>
-            <span className="text-gray-600 font-medium">
-              1 {fromSymbol} ≈ {amountNum > 0 ? fmt(output / amountNum) : "—"} {toSymbol}
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
+              1 {fromSymbol} ≈ {amountNum > 0 ? formatAmount(output / amountNum) : "—"} {toSymbol}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
@@ -412,7 +406,9 @@ export default function MigrationWidget() {
                   key={s}
                   onClick={() => setSlippage(s)}
                   className={`px-2 py-0.5 rounded-lg font-medium transition-colors ${
-                    slippage === s ? "bg-gray-900 text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    slippage === s
+                      ? "bg-gray-900 dark:bg-gray-500 text-white"
+                      : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500"
                   }`}
                 >
                   {s}%
@@ -422,8 +418,8 @@ export default function MigrationWidget() {
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-400">Min received</span>
-            <span className="text-gray-600 font-medium">
-              {fmt(output * (1 - slippage / 100))} {toSymbol}
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
+              {formatAmount(output * (1 - slippage / 100))} {toSymbol}
             </span>
           </div>
         </div>
@@ -431,7 +427,7 @@ export default function MigrationWidget() {
 
       {/* Error */}
       {status === "error" && errorMsg && (
-        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
           <AlertCircle size={13} />
           {errorMsg}
         </div>
@@ -439,7 +435,7 @@ export default function MigrationWidget() {
 
       {/* Wallet not connected */}
       {!isConnected && (
-        <div className="flex items-center gap-2 text-xs text-yellow-600 bg-yellow-50 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl px-3 py-2.5">
           <Info size={13} />
           Connect your wallet to migrate
         </div>
@@ -463,7 +459,7 @@ export default function MigrationWidget() {
         )}
       </button>
 
-      <p className="text-center text-[11px] text-gray-300">
+      <p className="text-center text-[11px] text-gray-300 dark:text-gray-500">
         Powered by{" "}
         <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-500">
           Bitflow

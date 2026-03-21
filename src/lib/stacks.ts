@@ -800,17 +800,21 @@ async function fetchAllTransactions(address: string): Promise<TxWithTransfers[]>
   const all: TxWithTransfers[] = [];
 
   for (let page = 0; page < MAX_PAGES; page++) {
-    const res = await fetch(
-      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=${LIMIT}&offset=${page * LIMIT}`
-    );
-    if (!res.ok) break;
-    const data = await res.json();
-    const results: TxWithTransfers[] = data.results ?? [];
-    if (results.length === 0) break;
-    for (const item of results) {
-      if (item.tx.tx_status === "success") all.push(item);
+    try {
+      const res = await fetch(
+        `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=${LIMIT}&offset=${page * LIMIT}`
+      );
+      if (!res.ok) break;
+      const data = await res.json();
+      const results: TxWithTransfers[] = data.results ?? [];
+      if (results.length === 0) break;
+      for (const item of results) {
+        if (item.tx.tx_status === "success") all.push(item);
+      }
+      if (results.length < LIMIT) break;
+    } catch {
+      break;
     }
-    if (results.length < LIMIT) break;
   }
 
   return all;

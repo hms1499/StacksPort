@@ -277,6 +277,11 @@ interface Props {
 }
 
 export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
+  const result = useMemo(
+    () => (stx && totalUsd > 0 ? calcHealth(stx, tokens, totalUsd) : null),
+    [stx, tokens, totalUsd]
+  );
+
   if (loading) {
     return (
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse">
@@ -297,7 +302,7 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
     );
   }
 
-  if (!stx || totalUsd === 0) {
+  if (!stx || totalUsd === 0 || !result) {
     return (
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col items-center justify-center py-10 text-center">
         <Wallet size={32} className="text-gray-200 mb-3" />
@@ -305,8 +310,6 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
       </div>
     );
   }
-
-  const result = useMemo(() => calcHealth(stx, tokens, totalUsd), [stx, tokens, totalUsd]);
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

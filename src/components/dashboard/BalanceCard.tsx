@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from "recharts";
 import { useWalletStore } from "@/store/walletStore";
+import { useThemeStore } from "@/store/themeStore";
 import { getPortfolioValue, getPortfolioHistory, getSTXPriceHistory, PortfolioValue } from "@/lib/stacks";
 import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
 
 export default function BalanceCard() {
   const { stxAddress, isConnected, connect } = useWalletStore();
+  const isDark = useThemeStore((s) => s.theme === "dark");
   const [portfolio, setPortfolio] = useState<PortfolioValue | null>(null);
   const [chartData, setChartData] = useState<{ date: string; value: number }[]>([]);
   const [period, setPeriod] = useState<Period>("1W");
@@ -54,11 +56,9 @@ export default function BalanceCard() {
         if (isConnected && stxAddress) {
           const portfolioData = await getPortfolioValue(stxAddress);
           setPortfolio(portfolioData);
-          // Chart shows real portfolio value history
           const history = await getPortfolioHistory(stxAddress, portfolioData, periodDays[period]);
           setChartData(history);
         } else {
-          // Not connected: show STX price as market reference
           const history = await getSTXPriceHistory(periodDays[period]);
           setChartData(history);
         }
@@ -72,10 +72,10 @@ export default function BalanceCard() {
   }, [stxAddress, isConnected, period]);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-gray-700">Balance</h2>
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Balance</h2>
           {isConnected && (
             <a
               href={`https://explorer.hiro.so/address/${stxAddress}`}
@@ -94,8 +94,8 @@ export default function BalanceCard() {
               onClick={() => setPeriod(p)}
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                 period === p
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-gray-900 dark:bg-gray-600 text-white"
+                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
               {p}
@@ -108,13 +108,13 @@ export default function BalanceCard() {
       <div className="mt-3 mb-4">
         {loading ? (
           <div className="space-y-2">
-            <div className="h-10 bg-gray-100 rounded-lg animate-pulse w-48" />
-            <div className="h-4 bg-gray-100 rounded-lg animate-pulse w-64" />
+            <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse w-48" />
+            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse w-64" />
           </div>
         ) : isConnected && portfolio ? (
           <>
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-bold text-gray-900">
+              <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
                 {formatUSD(portfolio.totalUSD)}
               </span>
               <span
@@ -126,11 +126,11 @@ export default function BalanceCard() {
                 {formatPercent(portfolio.stxChange24h)}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 mt-0.5 flex-wrap">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-0.5 flex-wrap">
               <span>{formatSTX(portfolio.stxBalance)} STX · ${portfolio.stxPrice.toFixed(4)}/STX</span>
               {portfolio.otherUSD > 0 && (
                 <>
-                  <span className="text-gray-300">·</span>
+                  <span className="text-gray-300 dark:text-gray-600">·</span>
                   <span className="text-gray-400">+{formatUSD(portfolio.otherUSD)} other tokens</span>
                 </>
               )}
@@ -138,7 +138,7 @@ export default function BalanceCard() {
           </>
         ) : (
           <div className="flex flex-col gap-2">
-            <p className="text-2xl font-bold text-gray-300">---.--</p>
+            <p className="text-2xl font-bold text-gray-300 dark:text-gray-600">---.--</p>
             <button
               onClick={handleConnect}
               disabled={connecting}
@@ -163,24 +163,25 @@ export default function BalanceCard() {
             </defs>
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 11, fill: "#9ca3af" }}
+              tick={{ fontSize: 11, fill: isDark ? "#6b7280" : "#9ca3af" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis hide domain={["auto", "auto"]} />
             <Tooltip
               contentStyle={{
-                background: "#fff",
-                border: "1px solid #f3f4f6",
+                background: isDark ? "#1f2937" : "#fff",
+                border: `1px solid ${isDark ? "#374151" : "#f3f4f6"}`,
                 borderRadius: "10px",
                 fontSize: 12,
+                color: isDark ? "#f3f4f6" : "#111827",
               }}
               formatter={(v: unknown) => [
-              isConnected
-                ? formatUSD(Number(v))
-                : `$${Number(v).toFixed(4)}`,
-              isConnected ? "Portfolio" : "STX Price",
-            ]}
+                isConnected
+                  ? formatUSD(Number(v))
+                  : `$${Number(v).toFixed(4)}`,
+                isConnected ? "Portfolio" : "STX Price",
+              ]}
             />
             <Area
               type="monotone"
@@ -193,7 +194,7 @@ export default function BalanceCard() {
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <div className="h-[120px] bg-gray-50 rounded-xl flex items-center justify-center">
+        <div className="h-[120px] bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center">
           <span className="text-xs text-gray-400">Loading chart...</span>
         </div>
       )}

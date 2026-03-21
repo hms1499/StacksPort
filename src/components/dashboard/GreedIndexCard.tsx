@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Info, ExternalLink } from "lucide-react";
+import { useThemeStore } from "@/store/themeStore";
 
 interface FearGreedData {
   value: number;
@@ -20,7 +21,7 @@ function getColor(value: number): string {
   return CLASSIFICATIONS.find((c) => value >= c.min && value <= c.max)?.color ?? "#eab308";
 }
 
-function SemiGauge({ value }: { value: number }) {
+function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
   const r = 85;
   const cx = 110;
   const cy = 115; // pivot at bottom
@@ -74,7 +75,7 @@ function SemiGauge({ value }: { value: number }) {
         textAnchor="middle"
         fontSize="32"
         fontWeight="bold"
-        fill="#111827"
+        fill={isDark ? "#f3f4f6" : "#111827"}
         fontFamily="system-ui, sans-serif"
       >
         {value}
@@ -97,19 +98,20 @@ function SemiGauge({ value }: { value: number }) {
         y1={cy}
         x2={tip.x.toFixed(2)}
         y2={tip.y.toFixed(2)}
-        stroke="#1f2937"
+        stroke={isDark ? "#e5e7eb" : "#1f2937"}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
 
       {/* Pivot circle */}
-      <circle cx={cx} cy={cy} r={7} fill="#1f2937" />
-      <circle cx={cx} cy={cy} r={3.5} fill="white" />
+      <circle cx={cx} cy={cy} r={7} fill={isDark ? "#e5e7eb" : "#1f2937"} />
+      <circle cx={cx} cy={cy} r={3.5} fill={isDark ? "#1f2937" : "white"} />
     </svg>
   );
 }
 
 export default function GreedIndexCard() {
+  const isDark = useThemeStore((s) => s.theme === "dark");
   const [data, setData] = useState<FearGreedData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -130,10 +132,10 @@ export default function GreedIndexCard() {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold text-gray-700">Greed Index</h2>
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Greed Index</h2>
           <Info size={13} className="text-gray-400" />
         </div>
         <a
@@ -148,12 +150,12 @@ export default function GreedIndexCard() {
 
       {loading ? (
         <div className="flex flex-col items-center gap-3 py-6 animate-pulse">
-          <div className="w-52 h-28 bg-gray-100 rounded-xl" />
-          <div className="h-4 w-20 bg-gray-100 rounded" />
+          <div className="w-52 h-28 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+          <div className="h-4 w-20 bg-gray-100 dark:bg-gray-700 rounded" />
         </div>
       ) : data ? (
         <div className="flex flex-col items-center">
-          <SemiGauge value={data.value} />
+          <SemiGauge value={data.value} isDark={isDark} />
           <div className="flex gap-5 mt-3 text-xs text-gray-400">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />

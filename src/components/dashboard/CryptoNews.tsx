@@ -21,8 +21,8 @@ function timeAgo(dateStr: string): string {
 }
 
 const SOURCE_COLORS: Record<string, string> = {
-  CoinTelegraph: "bg-orange-50 text-orange-500",
-  CoinDesk: "bg-blue-50 text-blue-500",
+  CoinTelegraph: "bg-orange-50 text-orange-500 dark:bg-orange-900/20",
+  CoinDesk: "bg-blue-50 text-blue-500 dark:bg-blue-900/20",
 };
 
 function NewsRow({ item }: { item: NewsItem }) {
@@ -31,10 +31,10 @@ function NewsRow({ item }: { item: NewsItem }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-start gap-3 py-3 px-2 -mx-2 rounded-xl hover:bg-gray-50 transition-colors group"
+      className="flex items-start gap-3 py-3 px-2 -mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
     >
       {/* Thumbnail or fallback */}
-      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
         {item.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -54,13 +54,13 @@ function NewsRow({ item }: { item: NewsItem }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug">
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-snug">
           {item.title}
         </p>
         <div className="flex items-center gap-2 mt-1.5">
           <span
             className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-              SOURCE_COLORS[item.source] ?? "bg-gray-100 text-gray-500"
+              SOURCE_COLORS[item.source] ?? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
             }`}
           >
             {item.source}
@@ -83,13 +83,13 @@ function NewsRow({ item }: { item: NewsItem }) {
 function SkeletonRow() {
   return (
     <div className="flex items-start gap-3 py-3 px-2 animate-pulse">
-      <div className="w-12 h-12 rounded-xl bg-gray-100 flex-shrink-0" />
+      <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
       <div className="flex-1 space-y-2 pt-1">
-        <div className="h-3 bg-gray-100 rounded w-full" />
-        <div className="h-3 bg-gray-100 rounded w-3/4" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-full" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-3/4" />
         <div className="flex gap-2 mt-1">
-          <div className="h-3 bg-gray-100 rounded w-16" />
-          <div className="h-3 bg-gray-100 rounded w-10" />
+          <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-16" />
+          <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-10" />
         </div>
       </div>
     </div>
@@ -109,10 +109,10 @@ export default function CryptoNews() {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold text-gray-700">Crypto News</h2>
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Crypto News</h2>
           <span className="text-[10px] font-semibold bg-red-50 text-red-500 px-1.5 py-0.5 rounded-md">
             24h
           </span>
@@ -120,7 +120,7 @@ export default function CryptoNews() {
         <span className="text-xs text-gray-400">CoinTelegraph · CoinDesk</span>
       </div>
 
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-gray-50 dark:divide-gray-700">
         {loading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
           : news.length === 0

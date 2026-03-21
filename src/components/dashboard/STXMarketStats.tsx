@@ -54,10 +54,10 @@ function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boole
 
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-      <div className="h-3 bg-gray-100 rounded animate-pulse w-16" />
-      <div className="h-6 bg-gray-100 rounded animate-pulse mt-2 w-24" />
-      <div className="h-12 bg-gray-50 rounded-lg animate-pulse mt-3" />
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-16" />
+      <div className="h-6 bg-gray-100 dark:bg-gray-700 rounded animate-pulse mt-2 w-24" />
+      <div className="h-12 bg-gray-50 dark:bg-gray-700/50 rounded-lg animate-pulse mt-3" />
     </div>
   );
 }
@@ -83,13 +83,11 @@ export default function STXMarketStatsCard() {
 
   const isPositive = (stats?.change24h ?? 0) >= 0;
 
-  // Volume trend: compare last vs first
   const volIsPositive =
     history.volumes.length >= 2
       ? history.volumes[history.volumes.length - 1] >= history.volumes[0]
       : true;
 
-  // Market cap trend
   const mcapIsPositive =
     history.marketCaps.length >= 2
       ? history.marketCaps[history.marketCaps.length - 1] >= history.marketCaps[0]
@@ -108,10 +106,10 @@ export default function STXMarketStatsCard() {
   return (
     <div className="grid grid-cols-3 gap-4">
       {/* STX Price */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
         <p className="text-xs text-gray-400 font-medium">STX Price</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold text-gray-900">
+          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
             {stats ? `$${stats.price.toFixed(4)}` : "—"}
           </p>
           {stats && (
@@ -131,10 +129,10 @@ export default function STXMarketStatsCard() {
       </div>
 
       {/* Market Cap */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
         <p className="text-xs text-gray-400 font-medium">Market Cap</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold text-gray-900">
+          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
           </p>
           {history.marketCaps.length >= 2 && (
@@ -153,10 +151,10 @@ export default function STXMarketStatsCard() {
       </div>
 
       {/* Volume 24h */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
         <p className="text-xs text-gray-400 font-medium">Volume 24h</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold text-gray-900">
+          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
             {stats ? formatLargeNumber(stats.volume24h) : "—"}
           </p>
           {history.volumes.length >= 2 && (

@@ -90,11 +90,11 @@ function parseTx(raw: any, myAddress: string): TxItem {
 }
 
 const TYPE_STYLES = {
-  send: { icon: ArrowUpRight, bg: "bg-red-50", color: "text-red-500" },
-  receive: { icon: ArrowDownLeft, bg: "bg-green-50", color: "text-green-500" },
-  contract_call: { icon: Code2, bg: "bg-blue-50", color: "text-blue-500" },
-  smart_contract: { icon: Layers, bg: "bg-purple-50", color: "text-purple-500" },
-  coinbase: { icon: Layers, bg: "bg-gray-50", color: "text-gray-400" },
+  send: { icon: ArrowUpRight, bg: "bg-red-50 dark:bg-red-900/20", color: "text-red-500" },
+  receive: { icon: ArrowDownLeft, bg: "bg-green-50 dark:bg-green-900/20", color: "text-green-500" },
+  contract_call: { icon: Code2, bg: "bg-blue-50 dark:bg-blue-900/20", color: "text-blue-500" },
+  smart_contract: { icon: Layers, bg: "bg-purple-50 dark:bg-purple-900/20", color: "text-purple-500" },
+  coinbase: { icon: Layers, bg: "bg-gray-50 dark:bg-gray-700", color: "text-gray-400" },
 };
 
 const STATUS_DOT: Record<string, string> = {
@@ -110,7 +110,7 @@ function TxRow({ tx }: { tx: TxItem }) {
       href={`https://explorer.hiro.so/txid/${tx.txId}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-xl hover:bg-gray-50 transition-colors group"
+      className="flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
     >
       <div className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center flex-shrink-0`}>
         <Icon size={15} className={color} />
@@ -118,7 +118,7 @@ function TxRow({ tx }: { tx: TxItem }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-medium text-gray-900 truncate">{tx.label}</p>
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.label}</p>
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STATUS_DOT[tx.status]}`} />
         </div>
         <p className="text-xs text-gray-400 truncate">{tx.sublabel}</p>
@@ -144,14 +144,14 @@ function TxRow({ tx }: { tx: TxItem }) {
 function SkeletonRow() {
   return (
     <div className="flex items-center gap-3 py-2.5 px-2 animate-pulse">
-      <div className="w-9 h-9 rounded-full bg-gray-100 flex-shrink-0" />
+      <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3 bg-gray-100 rounded w-24" />
-        <div className="h-3 bg-gray-100 rounded w-32" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-24" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-32" />
       </div>
       <div className="space-y-1.5 text-right">
-        <div className="h-3 bg-gray-100 rounded w-16 ml-auto" />
-        <div className="h-3 bg-gray-100 rounded w-10 ml-auto" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-16 ml-auto" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-10 ml-auto" />
       </div>
     </div>
   );
@@ -183,9 +183,9 @@ export default function RecentActivity() {
   }, [stxAddress, isConnected]);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-700">Recent Activity</h2>
+        <h2 className="font-semibold text-gray-700 dark:text-gray-200">Recent Activity</h2>
         {isConnected && stxAddress && (
           <a
             href={`https://explorer.hiro.so/address/${stxAddress}`}

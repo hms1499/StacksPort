@@ -55,10 +55,10 @@ function TokenRow({ token }: { token: TrendingToken }) {
       href={`https://www.coingecko.com/en/coins/${token.id}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 py-3 hover:bg-gray-50 rounded-xl px-2 -mx-2 transition-colors cursor-pointer"
+      className="flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl px-2 -mx-2 transition-colors cursor-pointer"
     >
       {/* Avatar */}
-      <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
+      <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
         {token.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={token.image} alt={token.symbol} className="w-full h-full object-cover" />
@@ -71,7 +71,7 @@ function TokenRow({ token }: { token: TrendingToken }) {
 
       {/* Name + symbol */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-900 truncate">{token.name}</p>
+        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{token.name}</p>
         <p className="text-xs text-gray-400 font-medium">{token.symbol}</p>
       </div>
 
@@ -82,7 +82,7 @@ function TokenRow({ token }: { token: TrendingToken }) {
 
       {/* Price + change */}
       <div className="text-right flex-shrink-0 w-24">
-        <p className="text-sm font-semibold text-gray-900">{formatPrice(token.priceUsd)}</p>
+        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{formatPrice(token.priceUsd)}</p>
         <div
           className={`flex items-center justify-end gap-0.5 mt-0.5 text-xs font-medium ${
             isPositive ? "text-green-500" : "text-red-500"
@@ -110,15 +110,15 @@ function TokenRow({ token }: { token: TrendingToken }) {
 function SkeletonRow() {
   return (
     <div className="flex items-center gap-3 py-3 px-2 animate-pulse">
-      <div className="w-11 h-11 rounded-full bg-gray-100 flex-shrink-0" />
+      <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3 bg-gray-100 rounded w-24" />
-        <div className="h-3 bg-gray-100 rounded w-12" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-24" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-12" />
       </div>
-      <div className="w-20 h-10 bg-gray-100 rounded flex-shrink-0" />
+      <div className="w-20 h-10 bg-gray-100 dark:bg-gray-700 rounded flex-shrink-0" />
       <div className="w-24 space-y-1.5 text-right">
-        <div className="h-3 bg-gray-100 rounded w-16 ml-auto" />
-        <div className="h-3 bg-gray-100 rounded w-12 ml-auto" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-16 ml-auto" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-12 ml-auto" />
       </div>
     </div>
   );
@@ -136,11 +136,11 @@ export default function TrendingTokens() {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold text-gray-700">Trending</h2>
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Trending</h2>
           <Info size={13} className="text-gray-400" />
         </div>
         <a
@@ -154,7 +154,7 @@ export default function TrendingTokens() {
       </div>
 
       {/* Token rows */}
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-gray-50 dark:divide-gray-700">
         {loading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
           : tokens.slice(0, 5).map((token) => <TokenRow key={token.id} token={token} />)}

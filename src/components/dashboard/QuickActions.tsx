@@ -41,21 +41,21 @@ export default function QuickActions() {
       <div className="flex gap-3">
         <button
           onClick={() => setSendOpen(true)}
-          className="flex items-center gap-2 bg-white border border-gray-100 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           <ArrowUpRight size={16} className="text-red-500" />
           Send
         </button>
         <button
           onClick={() => setMultisendOpen(true)}
-          className="flex items-center gap-2 bg-white border border-gray-100 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           <Users size={16} className="text-orange-500" />
           Multi-Send
         </button>
         <button
           onClick={() => setReceiveOpen(true)}
-          className="flex items-center gap-2 bg-white border border-gray-100 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           <ArrowDownLeft size={16} className="text-green-500" />
           Receive

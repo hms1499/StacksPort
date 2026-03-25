@@ -12,7 +12,7 @@ import { openContractCall } from "@stacks/connect";
 
 export const DCA_SBTC_CONTRACT_ADDRESS =
   "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
-export const DCA_SBTC_CONTRACT_NAME = "dca-vault-sbtc";
+export const DCA_SBTC_CONTRACT_NAME = "dca-vault-sbtc-v2";
 export const DEFAULT_SBTC_SWAP_ROUTER =
   "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-usdcx-swap-router";
 

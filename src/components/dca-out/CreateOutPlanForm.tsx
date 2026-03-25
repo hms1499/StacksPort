@@ -41,8 +41,8 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
   const insufficientBalance = sbtcBalance != null && dep > sbtcBalance;
 
   const validate = (): string | null => {
-    if (btcToSats(amt) < 20) return "Minimum 20 satoshis per swap (0.0000002 sBTC)";
-    if (btcToSats(dep) < 40) return "Minimum deposit 40 satoshis";
+    if (btcToSats(amt) < 334) return "Minimum 334 satoshis per swap (0.00000334 sBTC)";
+    if (btcToSats(dep) < 668) return "Minimum deposit 668 satoshis";
     if (dep < amt) return "Initial deposit must be ≥ amount per swap";
     if (insufficientBalance)
       return `Insufficient sBTC. Current balance: ${sbtcBalance?.toFixed(8)} sBTC`;
@@ -144,9 +144,9 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
             type="number"
             value={amountPerSwap}
             onChange={(e) => setAmountPerSwap(e.target.value)}
-            placeholder="0.0001"
+            placeholder="0.00000334"
             step="0.00000001"
-            min="0.0000002"
+            min="0.00000334"
             className="w-full px-3 py-2.5 pr-14 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">
@@ -220,9 +220,9 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
             type="number"
             value={initialDeposit}
             onChange={(e) => setInitialDeposit(e.target.value)}
-            placeholder="0.0002"
+            placeholder="0.00000668"
             step="0.00000001"
-            min="0.0000004"
+            min="0.00000668"
             className={`w-full px-3 py-2.5 pr-20 rounded-xl border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400 ${
               insufficientBalance ? "border-red-300 bg-red-50" : "border-gray-200"
             }`}

@@ -56,6 +56,11 @@ path = 'dca-vault-sbtc.clar'
 clarity_version = 3
 epoch = '3.0'
 
+[contracts.dca-vault-sbtc-v2]
+path = 'dca-vault-sbtc.clar'
+clarity_version = 3
+epoch = '3.0'
+
 [contracts.bitflow-usdcx-swap-router]
 path = 'bitflow-usdcx-swap-router.clar'
 clarity_version = 3

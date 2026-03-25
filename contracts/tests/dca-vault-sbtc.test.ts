@@ -30,7 +30,7 @@ function usdcxBalance(who: string) {
   return simnet.callReadOnlyFn(MOCK_USDCX, "get-balance", [Cl.principal(who)], deployer).result;
 }
 
-function createPlan(sender: string, amount = 100, interval = 144, deposit = 1000) {
+function createPlan(sender: string, amount = 500, interval = 144, deposit = 1000) {
   return simnet.callPublicFn(
     VAULT, "create-plan",
     [Cl.principal(`${deployer}.${MOCK_USDCX}`), Cl.uint(amount), Cl.uint(interval), Cl.uint(deposit)],
@@ -74,32 +74,32 @@ describe("DCA Vault sBTC", () => {
     it("transfers sBTC from user to vault on create", () => {
       mintSbtc(10000, wallet1);
       const vaultBalBefore = sbtcBalance(vaultAddr());
-      createPlan(wallet1, 100, 144, 500);
+      createPlan(wallet1, 500, 144, 1000);
       const vaultBalAfter = sbtcBalance(vaultAddr());
       expect(vaultBalAfter).not.toStrictEqual(vaultBalBefore);
     });
 
-    it("rejects amount below MSA (20 satoshis) - E105", () => {
+    it("rejects amount below MSA (334 satoshis) - E105", () => {
       mintSbtc(10000, wallet1);
-      const res = createPlan(wallet1, 19, 144, 40);
+      const res = createPlan(wallet1, 333, 144, 1000);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(105)));
     });
 
     it("rejects interval below BPD (144 blocks) - E106", () => {
       mintSbtc(10000, wallet1);
-      const res = createPlan(wallet1, 20, 143, 40);
+      const res = createPlan(wallet1, 500, 143, 1000);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(106)));
     });
 
-    it("rejects deposit below MID (40 satoshis) - E109", () => {
+    it("rejects deposit below MID (668 satoshis) - E109", () => {
       mintSbtc(10000, wallet1);
-      const res = createPlan(wallet1, 20, 144, 39);
+      const res = createPlan(wallet1, 334, 144, 667);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(109)));
     });
 
     it("rejects deposit less than amount-per-interval - E103", () => {
       mintSbtc(10000, wallet1);
-      const res = createPlan(wallet1, 100, 144, 50);
+      const res = createPlan(wallet1, 1000, 144, 668);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(103)));
     });
 
@@ -107,10 +107,10 @@ describe("DCA Vault sBTC", () => {
       // Use wallet2 so it starts with 0 plans. Test contract has MPPU=100 for testing.
       mintSbtc(10000000, wallet2);
       for (let i = 0; i < 100; i++) {
-        const r = createPlan(wallet2, 20, 144, 40);
+        const r = createPlan(wallet2, 334, 144, 668);
         expect(r.result.type).toBe("ok");
       }
-      const res = createPlan(wallet2, 20, 144, 40);
+      const res = createPlan(wallet2, 334, 144, 668);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(107)));
     });
   });
@@ -119,9 +119,9 @@ describe("DCA Vault sBTC", () => {
   describe("deposit", () => {
     it("deposits additional sBTC to existing plan", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
-      const res = simnet.callPublicFn(VAULT, "deposit", [Cl.uint(planId), Cl.uint(200)], wallet1);
+      const res = simnet.callPublicFn(VAULT, "deposit", [Cl.uint(planId), Cl.uint(500)], wallet1);
       expect(res.result).toStrictEqual(Cl.ok(Cl.bool(true)));
     });
 
@@ -132,7 +132,7 @@ describe("DCA Vault sBTC", () => {
 
     it("rejects deposit from non-owner - E100", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       mintSbtc(10000, wallet2);
       const res = simnet.callPublicFn(VAULT, "deposit", [Cl.uint(planId), Cl.uint(100)], wallet2);
@@ -141,9 +141,9 @@ describe("DCA Vault sBTC", () => {
 
     it("rejects deposit below MSA - E105", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
-      const res = simnet.callPublicFn(VAULT, "deposit", [Cl.uint(planId), Cl.uint(19)], wallet1);
+      const res = simnet.callPublicFn(VAULT, "deposit", [Cl.uint(planId), Cl.uint(333)], wallet1);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(105)));
     });
   });
@@ -245,7 +245,7 @@ describe("DCA Vault sBTC", () => {
   describe("pause-plan", () => {
     it("pauses an active plan", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callPublicFn(VAULT, "pause-plan", [Cl.uint(planId)], wallet1);
       expect(res.result).toStrictEqual(Cl.ok(Cl.bool(true)));
@@ -256,7 +256,7 @@ describe("DCA Vault sBTC", () => {
 
     it("rejects pause from non-owner - E100", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callPublicFn(VAULT, "pause-plan", [Cl.uint(planId)], wallet2);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(100)));
@@ -264,7 +264,7 @@ describe("DCA Vault sBTC", () => {
 
     it("rejects pause on already paused plan - E102", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
       simnet.callPublicFn(VAULT, "pause-plan", [Cl.uint(planId)], wallet1);
 
       const res = simnet.callPublicFn(VAULT, "pause-plan", [Cl.uint(planId)], wallet1);
@@ -275,7 +275,7 @@ describe("DCA Vault sBTC", () => {
   describe("resume-plan", () => {
     it("resumes a paused plan", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
       simnet.callPublicFn(VAULT, "pause-plan", [Cl.uint(planId)], wallet1);
 
       const res = simnet.callPublicFn(VAULT, "resume-plan", [Cl.uint(planId)], wallet1);
@@ -284,7 +284,7 @@ describe("DCA Vault sBTC", () => {
 
     it("rejects resume on active plan - E102", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callPublicFn(VAULT, "resume-plan", [Cl.uint(planId)], wallet1);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(102)));
@@ -305,15 +305,15 @@ describe("DCA Vault sBTC", () => {
   describe("cancel-plan", () => {
     it("cancels plan and refunds remaining balance", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callPublicFn(VAULT, "cancel-plan", [Cl.uint(planId)], wallet1);
-      expect(res.result).toStrictEqual(Cl.ok(Cl.uint(500)));
+      expect(res.result).toStrictEqual(Cl.ok(Cl.uint(1000)));
     });
 
     it("rejects cancel from non-owner - E100", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callPublicFn(VAULT, "cancel-plan", [Cl.uint(planId)], wallet2);
       expect(res.result).toStrictEqual(Cl.error(Cl.uint(100)));
@@ -334,15 +334,15 @@ describe("DCA Vault sBTC", () => {
   describe("read-only functions", () => {
     it("remaining-swaps returns correct count", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callReadOnlyFn(VAULT, "remaining-swaps", [Cl.uint(planId)], deployer);
-      expect(res.result).toStrictEqual(Cl.ok(Cl.uint(5))); // 500 / 100 = 5
+      expect(res.result).toStrictEqual(Cl.ok(Cl.uint(2))); // 1000 / 500 = 2
     });
 
     it("can-execute returns true for executable plan", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callReadOnlyFn(VAULT, "can-execute", [Cl.uint(planId)], deployer);
       expect(res.result).toStrictEqual(Cl.bool(true));
@@ -355,7 +355,7 @@ describe("DCA Vault sBTC", () => {
 
     it("next-execution-block returns ok for new plan", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callReadOnlyFn(VAULT, "next-execution-block", [Cl.uint(planId)], deployer);
       expect(res.result.type).toBe("ok");
@@ -363,7 +363,7 @@ describe("DCA Vault sBTC", () => {
 
     it("get-user-plans returns list of plan IDs", () => {
       mintSbtc(10000, wallet1);
-      const planId = extractPlanId(createPlan(wallet1, 100, 144, 500));
+      const planId = extractPlanId(createPlan(wallet1, 500, 144, 1000));
 
       const res = simnet.callReadOnlyFn(VAULT, "get-user-plans", [Cl.principal(wallet1)], deployer);
       // Result is a list type containing uints

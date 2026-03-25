@@ -18,8 +18,8 @@
 (define-constant E109 (err u109)) ;; deposit too small
 
 (define-constant BPD   u144)                                         ;; blocks per day
-(define-constant MSA   u20)                                          ;; min swap amount: 20 satoshis
-(define-constant MID   u40)                                          ;; min initial deposit: 2x min swap
+(define-constant MSA   u334)                                         ;; min swap amount: 334 satoshis (ensures protocol fee >= 1 sat)
+(define-constant MID   u668)                                         ;; min initial deposit: 2x min swap
 (define-constant PFBPS u30)                                          ;; protocol fee: 30 bps = 0.3%
 (define-constant BPSB  u10000)
 (define-constant MPPU  u100)                                         ;; max plans per user (raised for testing)

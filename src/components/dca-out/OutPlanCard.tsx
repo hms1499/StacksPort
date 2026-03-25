@@ -57,9 +57,9 @@ export default function OutPlanCard({ plan, currentBlock, onRefresh }: Props) {
   const canExecuteNow = plan.active && plan.bal >= plan.amt && blocksLeft === 0;
   const netSats = plan.amt - Math.floor((plan.amt * 30) / 10000);
 
-  // minAmountOut for USDCx (6 decimals) — user can adjust slippage
-  // Without a live quote, we use 0 as a safe default
-  const minAmountOut = 0;
+  // minAmountOut for USDCx (6 decimals) — must be >= 1 for stableswap validation
+  // Without a live quote, accept any non-zero output (slippage protection via UI only)
+  const minAmountOut = 1;
 
   function withLoading(fn: () => void) {
     setLoading(true);
@@ -118,7 +118,7 @@ export default function OutPlanCard({ plan, currentBlock, onRefresh }: Props) {
 
   const handleDeposit = () => {
     const amount = parseFloat(depositInput);
-    if (!amount || btcToSats(amount) < 20) return;
+    if (!amount || btcToSats(amount) < 334) return;
     withLoading(() =>
       depositToSBTCPlan(
         plan.id,

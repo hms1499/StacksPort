@@ -22,6 +22,24 @@ contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2'
 [[project.requirements]]
 contract_id = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token'
 
+[[project.requirements]]
+contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-stx-aeusdc-v-1-2'
+
+[[project.requirements]]
+contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-core-v-1-4'
+
+[[project.requirements]]
+contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-pool-trait-v-1-4'
+
+[[project.requirements]]
+contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-pool-aeusdc-usdcx-v-1-1'
+
+[[project.requirements]]
+contract_id = 'SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc'
+
+[[project.requirements]]
+contract_id = 'SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE.usdcx'
+
 
 [contracts.dca-vault]
 path = 'dca-vault.clar'
@@ -30,6 +48,16 @@ epoch = '3.0'
 
 [contracts.bitflow-sbtc-swap-router]
 path = 'bitflow-sbtc-swap-router.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.dca-vault-sbtc]
+path = 'dca-vault-sbtc.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.bitflow-usdcx-swap-router]
+path = 'bitflow-usdcx-swap-router.clar'
 clarity_version = 3
 epoch = '3.0'
 

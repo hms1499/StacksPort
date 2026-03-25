@@ -95,7 +95,7 @@ export default function STXMarketStatsCard() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
@@ -104,7 +104,7 @@ export default function STXMarketStatsCard() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-2 sm:gap-4">
       {/* STX Price */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
         <p className="text-xs text-gray-400 font-medium">STX Price</p>

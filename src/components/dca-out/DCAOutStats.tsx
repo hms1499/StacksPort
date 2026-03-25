@@ -42,18 +42,18 @@ export default function DCAOutStats() {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-2 sm:gap-4">
       {items.map(({ icon: Icon, label, value, color, bg }) => (
         <div
           key={label}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4"
+          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-4 text-center sm:text-left"
         >
-          <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}>
-            <Icon size={18} className={color} />
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${bg} flex items-center justify-center shrink-0`}>
+            <Icon size={15} className={color} />
           </div>
-          <div>
-            <p className="text-xs text-gray-400 font-medium">{label}</p>
-            <p className="text-lg font-bold text-gray-900">{value}</p>
+          <div className="min-w-0 w-full">
+            <p className="text-[9px] sm:text-xs text-gray-400 font-medium truncate">{label}</p>
+            <p className="text-sm sm:text-lg font-bold text-gray-900 truncate">{value}</p>
           </div>
         </div>
       ))}

@@ -153,6 +153,29 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
             sBTC
           </span>
         </div>
+        {/* Recommended amounts */}
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { label: "10k sats", value: "0.0001", usd: "~$10" },
+            { label: "50k sats", value: "0.0005", usd: "~$50" },
+            { label: "100k sats", value: "0.001", usd: "~$100" },
+            { label: "500k sats", value: "0.005", usd: "~$500" },
+            { label: "0.01 BTC", value: "0.01", usd: "~$1k" },
+          ].map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => setAmountPerSwap(preset.value)}
+              className={`px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors ${
+                amountPerSwap === preset.value
+                  ? "bg-teal-50 border-teal-300 text-teal-700"
+                  : "border-gray-200 text-gray-400 hover:border-teal-200 hover:text-gray-600"
+              }`}
+            >
+              {preset.label} <span className="text-gray-300">{preset.usd}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Interval */}

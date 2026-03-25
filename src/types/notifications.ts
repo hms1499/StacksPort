@@ -1,5 +1,5 @@
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
-export type NotificationCategory = 'dca' | 'wallet' | 'swap' | 'send' | 'price';
+export type NotificationCategory = 'dca' | 'dca-out' | 'wallet' | 'swap' | 'send' | 'price';
 
 export interface NotificationContext {
   planId?: string;

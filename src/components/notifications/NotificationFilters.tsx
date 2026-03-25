@@ -7,7 +7,7 @@ import type { NotificationType, NotificationCategory } from '@/types/notificatio
 import { cn } from '@/lib/utils';
 
 const typeOptions: NotificationType[] = ['success', 'error', 'warning', 'info'];
-const categoryOptions: NotificationCategory[] = ['dca', 'wallet', 'swap', 'send', 'price'];
+const categoryOptions: NotificationCategory[] = ['dca', 'dca-out', 'wallet', 'swap', 'send', 'price'];
 
 interface NotificationFiltersProps {
   isMobileOpen?: boolean;
@@ -52,7 +52,8 @@ export default function NotificationFilters({
 
   const getCategoryLabel = (category: NotificationCategory) => {
     const labels: Record<NotificationCategory, string> = {
-      dca: 'DCA',
+      dca: 'DCA In',
+      'dca-out': 'DCA Out',
       wallet: 'Wallet',
       swap: 'Swap',
       send: 'Send',

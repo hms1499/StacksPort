@@ -13,7 +13,7 @@ const TABS = [
   { key: 'all',          label: 'All',          categories: [] as NotificationCategory[] },
   { key: 'transactions', label: 'Transactions',  categories: ['swap', 'send'] as NotificationCategory[] },
   { key: 'alerts',       label: 'Alerts',        categories: ['price'] as NotificationCategory[] },
-  { key: 'dca',          label: 'DCA',           categories: ['dca'] as NotificationCategory[] },
+  { key: 'dca',          label: 'DCA',           categories: ['dca', 'dca-out'] as NotificationCategory[] },
   { key: 'wallet',       label: 'Wallet',        categories: ['wallet'] as NotificationCategory[] },
 ] as const;
 

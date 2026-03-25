@@ -1,0 +1,192 @@
+;; test-dca-vault-sbtc: Test-only copy of dca-vault-sbtc using mock tokens for simnet
+;; Identical logic to dca-vault-sbtc.clar, with mainnet addresses replaced by local mocks
+
+(define-trait dca-sbtc-swap-trait
+  (
+    (swap-sbtc-for-token (uint uint principal) (response uint uint))
+  )
+)
+
+(define-constant E100 (err u100)) ;; not authorized
+(define-constant E101 (err u101)) ;; plan not found
+(define-constant E102 (err u102)) ;; plan inactive
+(define-constant E103 (err u103)) ;; insufficient balance
+(define-constant E104 (err u104)) ;; too early
+(define-constant E105 (err u105)) ;; invalid amount
+(define-constant E106 (err u106)) ;; invalid interval
+(define-constant E107 (err u107)) ;; max plans reached
+(define-constant E109 (err u109)) ;; deposit too small
+
+(define-constant BPD   u144)                                         ;; blocks per day
+(define-constant MSA   u20)                                          ;; min swap amount: 20 satoshis
+(define-constant MID   u40)                                          ;; min initial deposit: 2x min swap
+(define-constant PFBPS u30)                                          ;; protocol fee: 30 bps = 0.3%
+(define-constant BPSB  u10000)
+(define-constant MPPU  u100)                                         ;; max plans per user (raised for testing)
+(define-constant TREASURY tx-sender)                                   ;; deployer acts as treasury in tests
+
+(define-data-var pc   uint u0)  ;; plan counter
+(define-data-var tvol uint u0)  ;; total volume (satoshis)
+(define-data-var tse  uint u0)  ;; total swaps executed
+
+(define-map plans uint {
+  owner:  principal,
+  token:  principal, ;; target token contract
+  amt:    uint,      ;; satoshis per swap
+  ivl:    uint,      ;; blocks between swaps
+  leb:    uint,      ;; last executed block (0 = never)
+  bal:    uint,      ;; satoshis balance remaining
+  tsd:    uint,      ;; total swaps done
+  tss:    uint,      ;; total sBTC spent (satoshis)
+  active: bool,
+  cat:    uint       ;; created at block
+})
+
+(define-map uids principal (list 100 uint))
+
+(define-private (protocol-fee (a uint)) (/ (* a PFBPS) BPSB))
+
+(define-private (add-uid (u principal) (id uint))
+  (let ((ex (default-to (list) (map-get? uids u)))
+        (up (unwrap-panic (as-max-len? (append ex id) u100))))
+    (map-set uids u up)))
+
+(define-private (interval-passed (p {
+    owner: principal, token: principal,
+    amt: uint, ivl: uint, leb: uint, bal: uint,
+    tsd: uint, tss: uint, active: bool, cat: uint
+  }))
+  (or (is-eq (get leb p) u0)
+      (>= (- stacks-block-height (get leb p)) (get ivl p))))
+
+(define-public (create-plan
+    (target-token        principal)
+    (amount-per-interval uint)
+    (interval-blocks     uint)
+    (initial-deposit     uint))
+  (let ((id (+ (var-get pc) u1))
+        (up (default-to (list) (map-get? uids tx-sender))))
+    (asserts! (>= amount-per-interval MSA)             E105)
+    (asserts! (>= interval-blocks BPD)                 E106)
+    (asserts! (>= initial-deposit MID)                 E109)
+    (asserts! (>= initial-deposit amount-per-interval) E103)
+    (asserts! (< (len up) MPPU)                        E107)
+    ;; Transfer mock-sbtc from user to vault
+    (try! (contract-call? .mock-sbtc
+            transfer initial-deposit tx-sender (as-contract tx-sender) none))
+    (map-set plans id {
+      owner: tx-sender, token: target-token,
+      amt: amount-per-interval, ivl: interval-blocks,
+      leb: u0, bal: initial-deposit,
+      tsd: u0, tss: u0, active: true, cat: stacks-block-height
+    })
+    (var-set pc id)
+    (add-uid tx-sender id)
+    (print { event: "plan-created", plan-id: id, owner: tx-sender,
+             token: target-token, amt: amount-per-interval,
+             ivl: interval-blocks, deposit: initial-deposit })
+    (ok id)))
+
+(define-public (deposit (plan-id uint) (amount uint))
+  (let ((p (unwrap! (map-get? plans plan-id) E101)))
+    (asserts! (is-eq tx-sender (get owner p)) E100)
+    (asserts! (get active p)                   E102)
+    (asserts! (>= amount MSA)                  E105)
+    ;; Transfer mock-sbtc from user to vault
+    (try! (contract-call? .mock-sbtc
+            transfer amount tx-sender (as-contract tx-sender) none))
+    (map-set plans plan-id (merge p { bal: (+ (get bal p) amount) }))
+    (print { event: "deposit", plan-id: plan-id, amount: amount })
+    (ok true)))
+
+(define-public (execute-dca
+    (plan-id        uint)
+    (swap-router    <dca-sbtc-swap-trait>)
+    (min-amount-out uint))
+  (let ((p    (unwrap! (map-get? plans plan-id) E101))
+        (sa   (get amt p))
+        (pf   (protocol-fee sa))
+        (net  (- sa pf))
+        (owner (get owner p)))
+    (asserts! (get active p)       E102)
+    (asserts! (>= (get bal p) sa)  E103)
+    (asserts! (interval-passed p)  E104)
+    ;; Transfer 0.3% protocol fee in mock-sbtc to treasury
+    (as-contract (try! (contract-call? .mock-sbtc
+      transfer pf tx-sender TREASURY none)))
+    ;; Transfer remaining 99.7% mock-sbtc to swap router
+    (as-contract (try! (contract-call? .mock-sbtc
+      transfer net tx-sender (contract-of swap-router) none)))
+    ;; Router swaps and sends target tokens to plan owner
+    (as-contract (try! (contract-call? swap-router swap-sbtc-for-token net min-amount-out owner)))
+    (let ((nr  (- (get bal p) sa))
+          (nd  (+ (get tsd p) u1))
+          (ns  (+ (get tss p) sa))
+          (act (>= nr (get amt p))))
+      (map-set plans plan-id
+        (merge p { leb: stacks-block-height, bal: nr, tsd: nd, tss: ns, active: act }))
+      (var-set tvol (+ (var-get tvol) sa))
+      (var-set tse  (+ (var-get tse)  u1))
+      (print { event: "dca-executed", plan-id: plan-id, executor: tx-sender,
+               owner: owner, net-swapped: net, protocol-fee: pf,
+               swaps-done: nd, bal-remaining: nr, active: act })
+      (ok { net-swapped: net, protocol-fee: pf,
+            swaps-done: nd, bal-remaining: nr }))))
+
+(define-public (cancel-plan (plan-id uint))
+  (let ((p (unwrap! (map-get? plans plan-id) E101)))
+    (asserts! (is-eq tx-sender (get owner p)) E100)
+    (if (> (get bal p) u0)
+      (as-contract (try! (contract-call? .mock-sbtc
+        transfer (get bal p) tx-sender (get owner p) none)))
+      true)
+    (map-set plans plan-id (merge p { active: false, bal: u0 }))
+    (print { event: "plan-cancelled", plan-id: plan-id,
+             owner: (get owner p), refunded: (get bal p) })
+    (ok (get bal p))))
+
+(define-public (pause-plan (plan-id uint))
+  (let ((p (unwrap! (map-get? plans plan-id) E101)))
+    (asserts! (is-eq tx-sender (get owner p)) E100)
+    (asserts! (get active p)                  E102)
+    (map-set plans plan-id (merge p { active: false }))
+    (print { event: "plan-paused", plan-id: plan-id })
+    (ok true)))
+
+(define-public (resume-plan (plan-id uint))
+  (let ((p (unwrap! (map-get? plans plan-id) E101)))
+    (asserts! (is-eq tx-sender (get owner p))  E100)
+    (asserts! (not (get active p))             E102)
+    (asserts! (>= (get bal p) (get amt p))     E103)
+    (map-set plans plan-id (merge p { active: true }))
+    (print { event: "plan-resumed", plan-id: plan-id })
+    (ok true)))
+
+(define-read-only (get-plan (plan-id uint)) (map-get? plans plan-id))
+
+(define-read-only (get-user-plans (user principal))
+  (default-to (list) (map-get? uids user)))
+
+(define-read-only (can-execute (plan-id uint))
+  (match (map-get? plans plan-id)
+    p (and (get active p)
+           (>= (get bal p) (get amt p))
+           (interval-passed p))
+    false))
+
+(define-read-only (next-execution-block (plan-id uint))
+  (match (map-get? plans plan-id)
+    p (if (is-eq (get leb p) u0)
+        (ok stacks-block-height)
+        (ok (+ (get leb p) (get ivl p))))
+    E101))
+
+(define-read-only (remaining-swaps (plan-id uint))
+  (match (map-get? plans plan-id)
+    p (ok (/ (get bal p) (get amt p)))
+    E101))
+
+(define-read-only (get-stats)
+  (ok { total-plans: (var-get pc),
+        total-volume: (var-get tvol),
+        total-executed: (var-get tse) }))

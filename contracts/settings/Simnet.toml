@@ -4,3 +4,11 @@ name = "simnet"
 [accounts.deployer]
 mnemonic = "observe live dirt include sun twice patch vanish swamp window floor vocal ready very adapt awake patch noise foot suggest chuckle seminar erode open"
 balance = 100_000_000_000_000
+
+[accounts.wallet_1]
+mnemonic = "sell invite acquire kitten bamboo drastic jelly vivid peace spawn twice guilt pave pen trash pretty park cube fragile unaware remain midnight betray rebuild"
+balance = 100_000_000_000_000
+
+[accounts.wallet_2]
+mnemonic = "hold excess usual excess ring elephant install account animal craft account area arrest body arm lunch account push pull ghost fresh dizzy brand swear"
+balance = 100_000_000_000_000

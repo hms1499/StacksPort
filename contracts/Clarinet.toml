@@ -61,3 +61,23 @@ path = 'bitflow-usdcx-swap-router.clar'
 clarity_version = 3
 epoch = '3.0'
 
+[contracts.mock-sbtc]
+path = 'mock-sbtc.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.mock-usdcx]
+path = 'mock-usdcx.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.test-dca-vault-sbtc]
+path = 'test-dca-vault-sbtc.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.mock-sbtc-swap-router]
+path = 'mock-sbtc-swap-router.clar'
+clarity_version = 3
+epoch = '3.0'
+

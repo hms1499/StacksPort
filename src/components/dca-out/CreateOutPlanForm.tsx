@@ -138,13 +138,13 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
 
       {/* Amount per swap */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-gray-500">Amount per Swap</label>
+        <label className="text-xs font-medium text-gray-500">Amount per Swap <span className="text-gray-400">(min: 334 sats = 0.00000334 sBTC)</span></label>
         <div className="relative">
           <input
             type="number"
             value={amountPerSwap}
             onChange={(e) => setAmountPerSwap(e.target.value)}
-            placeholder="0.00000334"
+            placeholder="Min 334 sats (0.00000334)"
             step="0.00000001"
             min="0.00000334"
             className="w-full px-3 py-2.5 pr-14 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"

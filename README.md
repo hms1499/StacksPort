@@ -1,6 +1,6 @@
 # StacksPort - DCA & Portfolio Platform for Stacks
 
-A non-custodial DCA (Dollar-Cost Averaging) and portfolio management platform built on the Stacks blockchain. Users can automate recurring STX-to-sBTC swaps via Bitflow DEX, track holdings, monitor markets, and set price alerts.
+A non-custodial DCA (Dollar-Cost Averaging) and portfolio management platform built on the Stacks blockchain. Users can automate recurring STX-to-sBTC and sBTC-to-USDCx swaps via Bitflow DEX, track holdings, monitor markets, and set price alerts.
 
 ## Architecture
 
@@ -19,16 +19,19 @@ stacks-portfolio/
 │   ├── store/              # Zustand stores (wallet, notifications, alerts)
 │   └── types/              # TypeScript type definitions
 ├── contracts/              # Clarity smart contracts
-│   ├── dca-vault.clar      # Core DCA vault (create/execute/cancel plans)
-│   └── bitflow-sbtc-swap-router.clar  # STX → sBTC swap via Bitflow
+│   ├── dca-vault.clar      # DCA vault for STX → sBTC
+│   ├── dca-vault-sbtc.clar # DCA vault for sBTC → USDCx
+│   ├── bitflow-sbtc-swap-router.clar  # STX → sBTC swap via Bitflow xyk pool
+│   └── bitflow-usdcx-swap-router.clar # sBTC → USDCx 3-hop swap router
 ├── keeper-bot/             # Automated DCA executor
 │   └── src/                # Bot logic (scan plans, build & broadcast txs)
-└── .github/workflows/      # GitHub Actions (keeper-bot cron every 10min)
+└── .github/workflows/      # GitHub Actions (2 keeper-bot crons every 10min)
 ```
 
 ## Features
 
-- **DCA Vault** - Create automated recurring buy plans (STX → sBTC) with configurable intervals and amounts. Pause, resume, or cancel anytime with refund.
+- **DCA Vault (STX → sBTC)** - Create automated recurring buy plans with configurable intervals and amounts. Pause, resume, or cancel anytime with refund.
+- **DCA Vault (sBTC → USDCx)** - Automate sBTC-to-USDCx swaps via 3-hop route (sBTC → STX → aeUSDC → USDCx). Same pause/resume/cancel features.
 - **Swap** - Instant token swaps via Bitflow DEX with real-time quotes.
 - **Portfolio Tracker** - Real-time balances, PnL tracking, portfolio health score, stacking & sBTC monitoring.
 - **Price Alerts** - Set target prices and get notified via toast/drawer notifications.
@@ -54,13 +57,19 @@ Deployed on **Stacks Mainnet** at `SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV`:
 
 | Contract | Description |
 |----------|-------------|
-| `dca-vault` | Core vault - manages DCA plans, deposits, execution, fees (0.3%) |
+| `dca-vault` | DCA vault for STX → sBTC plans, deposits, execution, fees (0.3%) |
+| `dca-vault-sbtc-v2` | DCA vault for sBTC → USDCx plans, deposits, execution, fees (0.3%) |
 | `bitflow-sbtc-swap-router` | Routes STX → sBTC swaps through Bitflow's xyk pool |
+| `bitflow-usdcx-swap-router` | Routes sBTC → USDCx swaps via 3-hop (sBTC → STX → aeUSDC → USDCx) |
 
 Key parameters:
-- Min deposit: 2 STX | Min swap: 1 STX
-- Max plans per user: 10
-- Protocol fee: 0.3% per swap
+
+| Parameter | dca-vault (STX) | dca-vault-sbtc-v2 (sBTC) |
+|-----------|----------------|--------------------------|
+| Min swap amount | 1 STX | 334 satoshis |
+| Min initial deposit | 2 STX | 668 satoshis |
+| Max plans per user | 10 | 10 |
+| Protocol fee | 0.3% per swap | 0.3% per swap |
 
 ## Getting Started
 
@@ -115,13 +124,15 @@ clarinet test
 | `KEEPER_PRIVATE_KEY` | Yes | Hex key or 24-word mnemonic |
 | `KEEPER_ADDRESS` | Yes | Keeper wallet STX address |
 | `CONTRACT_ADDRESS` | No | DCA vault address (default: mainnet) |
+| `CONTRACT_NAME` | No | Contract name (default: dca-vault-sbtc-v2) |
+| `SWAP_ROUTER` | No | Swap router contract (default: bitflow-usdcx-swap-router) |
 | `HIRO_API_URL` | No | Stacks API (default: https://api.hiro.so) |
-| `MIN_AMOUNT_OUT` | No | Min output for slippage (default: 0) |
+| `MIN_AMOUNT_OUT` | No | Min output for slippage (default: 1) |
 
 ## Deployment
 
 - **Frontend**: Push to `main` → auto-deploys on Vercel
-- **Keeper Bot**: Runs via GitHub Actions cron (`*/10 * * * *`). Requires `KEEPER_PRIVATE_KEY` and `KEEPER_ADDRESS` as repository secrets.
+- **Keeper Bot**: Two GitHub Actions workflows run via cron (`*/10 * * * *`), one per DCA vault. Requires `KEEPER_PRIVATE_KEY` and `KEEPER_ADDRESS` as repository secrets.
 
 ## License
 

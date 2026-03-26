@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activity } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { getTransactions } from "@/lib/stacks";
@@ -103,7 +103,7 @@ const STATUS_DOT: Record<string, string> = {
   failed: "bg-red-400",
 };
 
-function TxRow({ tx }: { tx: TxItem }) {
+const TxRow = React.memo(function TxRow({ tx }: { tx: TxItem }) {
   const { icon: Icon, bg, color } = TYPE_STYLES[tx.type];
   return (
     <a
@@ -139,7 +139,7 @@ function TxRow({ tx }: { tx: TxItem }) {
       <ExternalLink size={11} className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
     </a>
   );
-}
+});
 
 function SkeletonRow() {
   return (
@@ -157,7 +157,7 @@ function SkeletonRow() {
   );
 }
 
-export default function RecentActivity() {
+function RecentActivity() {
   const { stxAddress, isConnected } = useWalletStore();
   const [txs, setTxs] = useState<TxItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -220,3 +220,5 @@ export default function RecentActivity() {
     </div>
   );
 }
+
+export default React.memo(RecentActivity);

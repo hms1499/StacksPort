@@ -62,7 +62,7 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
           onDismiss(notification.id);
         }, 300);
       }
-    }, 10);
+    }, 50);
 
     return () => clearInterval(interval);
   }, [notification.id, notification.duration, duration, onDismiss]);

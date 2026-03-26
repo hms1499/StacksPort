@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2 } from "lucide-react";
 import { connect as stacksConnect } from "@stacks/connect";
 import {
@@ -20,7 +20,7 @@ type Period = "1D" | "1W" | "1M";
 
 const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
 
-export default function BalanceCard() {
+function BalanceCard() {
   const { stxAddress, isConnected, connect } = useWalletStore();
   const isDark = useThemeStore((s) => s.theme === "dark");
   const [portfolio, setPortfolio] = useState<PortfolioValue | null>(null);
@@ -201,3 +201,5 @@ export default function BalanceCard() {
     </div>
   );
 }
+
+export default React.memo(BalanceCard);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowUpRight, ArrowDownLeft, Coins } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { getFungibleTokens, getTokenMetadata } from "@/lib/stacks";
@@ -19,7 +19,7 @@ interface FungibleToken {
 
 const STX_IMAGE = "https://assets.coingecko.com/coins/images/2069/small/Stacks_logo_full.png";
 
-export default function TokenList() {
+function TokenList() {
   const { stxAddress, isConnected } = useWalletStore();
   const [tokens, setTokens] = useState<FungibleToken[]>([]);
   const [loading, setLoading] = useState(false);
@@ -207,7 +207,7 @@ function TokenAvatar({
   );
 }
 
-function TokenRow({
+const TokenRow = React.memo(function TokenRow({
   symbol,
   name,
   balance,
@@ -259,4 +259,6 @@ function TokenRow({
       </div>
     </div>
   );
-}
+});
+
+export default React.memo(TokenList);

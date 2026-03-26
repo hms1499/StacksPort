@@ -42,3 +42,11 @@ contracts/settings/Mainnet.toml
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vim swap files
+*.swp
+*.swo
+
+# Clarinet generated files
+contracts/node_modules/
+contracts/history.txt

@@ -48,6 +48,7 @@ export default function OutPlanCard({ plan, currentBlock, onRefresh }: Props) {
   const [slippage, setSlippage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [txInfo, setTxInfo] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const balBTC = satsToBTC(plan.bal);
   const amtBTC = satsToBTC(plan.amt);
@@ -93,8 +94,10 @@ export default function OutPlanCard({ plan, currentBlock, onRefresh }: Props) {
       )
     );
 
-  const handleCancel = () => {
-    if (!confirm(`Cancel plan #${plan.id} and refund ${balBTC.toFixed(8)} sBTC?`)) return;
+  const handleCancel = () => setShowCancelModal(true);
+
+  const confirmCancel = () => {
+    setShowCancelModal(false);
     withLoading(() =>
       cancelSBTCPlan(
         plan.id,
@@ -389,6 +392,41 @@ export default function OutPlanCard({ plan, currentBlock, onRefresh }: Props) {
           </div>
 
           {txInfo && <p className="text-[11px] text-gray-400 break-all">Tx: {txInfo}</p>}
+        </div>
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-[90%] max-w-sm p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                <Trash2 size={18} className="text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Cancel & Refund</h3>
+                <p className="text-xs text-gray-400">Plan #{plan.id}</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600">
+              Are you sure you want to cancel this plan? You will be refunded{" "}
+              <span className="font-semibold text-gray-900">{balBTC.toFixed(8)} sBTC</span>.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors"
+              >
+                Keep Plan
+              </button>
+              <button
+                onClick={confirmCancel}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors"
+              >
+                Cancel & Refund
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

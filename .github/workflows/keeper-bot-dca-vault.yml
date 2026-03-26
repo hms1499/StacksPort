@@ -1,4 +1,4 @@
-name: DCA Keeper Bot — dca-vault-sbtc-v2
+name: DCA Keeper Bot — dca-vault
 
 on:
   schedule:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-keeper:
-    name: Execute DCA Plans
+    name: Execute DCA Plans (dca-vault)
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -39,8 +39,8 @@ jobs:
           KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
           KEEPER_ADDRESS:     ${{ secrets.KEEPER_ADDRESS }}
           CONTRACT_ADDRESS:   SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV
-          CONTRACT_NAME:      dca-vault-sbtc-v2
-          SWAP_ROUTER:        SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-usdcx-swap-router
+          CONTRACT_NAME:      dca-vault
+          SWAP_ROUTER:        SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router
           HIRO_API_URL:       https://api.hiro.so
           MIN_AMOUNT_OUT:     "1"
         run: npm start
@@ -51,4 +51,4 @@ jobs:
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d parse_mode="Markdown" \
-            -d text="🚨 *DCA Keeper Bot (dca-vault-sbtc-v2) FAILED*%0A%0A*Repo:* ${{ github.repository }}%0A*Run:* ${{ github.run_number }}%0A*Time:* $(date -u '+%Y-%m-%d %H:%M UTC')%0A%0A[View logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            -d text="🚨 *DCA Keeper Bot (dca-vault) FAILED*%0A%0A*Repo:* ${{ github.repository }}%0A*Run:* ${{ github.run_number }}%0A*Time:* $(date -u '+%Y-%m-%d %H:%M UTC')%0A%0A[View logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"

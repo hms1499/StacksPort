@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowUpRight, ArrowDownLeft, Users } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
-import { getFungibleTokens } from "@/lib/stacks";
+import { useFungibleTokens } from "@/hooks/useMarketData";
 import SendModal, { SendTokenInfo } from "@/components/wallet/SendModal";
 import ReceiveModal from "@/components/wallet/ReceiveModal";
 import MultisendModal from "@/components/wallet/MultisendModal";
@@ -13,19 +13,16 @@ const STX_IMAGE =
 
 export default function QuickActions() {
   const { stxAddress, isConnected } = useWalletStore();
-  const [stxBalance, setStxBalance] = useState("0");
+  const { data: balanceData } = useFungibleTokens(
+    isConnected && stxAddress ? stxAddress : undefined
+  );
   const [sendOpen, setSendOpen] = useState(false);
   const [receiveOpen, setReceiveOpen] = useState(false);
   const [multisendOpen, setMultisendOpen] = useState(false);
 
-  useEffect(() => {
-    if (!isConnected || !stxAddress) return;
-    getFungibleTokens(stxAddress)
-      .then((data) => setStxBalance(data.stx?.balance ?? "0"))
-      .catch(console.error);
-  }, [stxAddress, isConnected]);
-
   if (!isConnected) return null;
+
+  const stxBalance = balanceData?.stx?.balance ?? "0";
 
   const sendToken: SendTokenInfo = {
     symbol: "STX",

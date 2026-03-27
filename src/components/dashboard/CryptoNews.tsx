@@ -1,15 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Newspaper, ExternalLink, Clock } from "lucide-react";
-
-interface NewsItem {
-  title: string;
-  url: string;
-  source: string;
-  publishedAt: string;
-  imageUrl?: string;
-}
+import { useNews, type NewsItem } from "@/hooks/useMarketData";
 
 function timeAgo(dateStr: string): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
@@ -97,16 +89,7 @@ function SkeletonRow() {
 }
 
 export default function CryptoNews() {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/news")
-      .then((r) => r.json())
-      .then(setNews)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: news, isLoading } = useNews();
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -121,9 +104,9 @@ export default function CryptoNews() {
       </div>
 
       <div className="divide-y divide-gray-50 dark:divide-gray-700">
-        {loading
+        {isLoading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
-          : news.length === 0
+          : !news || news.length === 0
           ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <Newspaper size={32} className="text-gray-200 mb-3" />

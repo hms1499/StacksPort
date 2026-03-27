@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Info, ChevronRight } from "lucide-react";
-import { getTrendingTokens, TrendingToken } from "@/lib/stacks";
+import { useTrendingTokens } from "@/hooks/useMarketData";
+import type { TrendingToken } from "@/lib/stacks";
 
 const COINGECKO_STACKS_URL = "https://www.coingecko.com/en/categories/stacks-ecosystem";
 
@@ -125,15 +125,7 @@ function SkeletonRow() {
 }
 
 export default function TrendingTokens() {
-  const [tokens, setTokens] = useState<TrendingToken[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getTrendingTokens()
-      .then(setTokens)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: tokens, isLoading } = useTrendingTokens();
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -155,9 +147,9 @@ export default function TrendingTokens() {
 
       {/* Token rows */}
       <div className="divide-y divide-gray-50 dark:divide-gray-700">
-        {loading
+        {isLoading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
-          : tokens.slice(0, 5).map((token) => <TokenRow key={token.id} token={token} />)}
+          : (tokens ?? []).slice(0, 5).map((token) => <TokenRow key={token.id} token={token} />)}
       </div>
     </div>
   );

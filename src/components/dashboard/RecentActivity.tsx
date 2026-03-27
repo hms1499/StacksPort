@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activity } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
-import { getTransactions } from "@/lib/stacks";
+import { useTransactions } from "@/hooks/useMarketData";
 
 interface TxItem {
   txId: string;
@@ -159,28 +159,12 @@ function SkeletonRow() {
 
 function RecentActivity() {
   const { stxAddress, isConnected } = useWalletStore();
-  const [txs, setTxs] = useState<TxItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data: txData, isLoading } = useTransactions(addr);
 
-  useEffect(() => {
-    if (!isConnected || !stxAddress) return;
-    let cancelled = false;
-    Promise.resolve()
-      .then(() => {
-        if (!cancelled) setLoading(true);
-        return getTransactions(stxAddress, 8);
-      })
-      .then((data) => {
-        if (cancelled) return;
-        const results = data.results ?? [];
-        setTxs(results.map((r: unknown) => parseTx(r, stxAddress)));
-      })
-      .catch(console.error)
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [stxAddress, isConnected]);
+  const txs: TxItem[] = (txData?.results ?? []).map((r: unknown) =>
+    parseTx(r, stxAddress ?? "")
+  );
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col">
@@ -203,7 +187,7 @@ function RecentActivity() {
           <Activity size={32} className="text-gray-200 mb-3" />
           <p className="text-sm text-gray-400">Connect your wallet to view activity</p>
         </div>
-      ) : loading ? (
+      ) : isLoading ? (
         <div className="space-y-1">
           {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
         </div>

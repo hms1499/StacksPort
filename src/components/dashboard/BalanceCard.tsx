@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2 } from "lucide-react";
 import { connect as stacksConnect } from "@stacks/connect";
 import {
@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
-import { getPortfolioValue, getPortfolioHistory, getSTXPriceHistory, PortfolioValue } from "@/lib/stacks";
+import { usePortfolio, usePortfolioHistory, useSTXPriceHistory } from "@/hooks/useMarketData";
 import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 
 type Period = "1D" | "1W" | "1M";
@@ -23,11 +23,23 @@ const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
 function BalanceCard() {
   const { stxAddress, isConnected, connect } = useWalletStore();
   const isDark = useThemeStore((s) => s.theme === "dark");
-  const [portfolio, setPortfolio] = useState<PortfolioValue | null>(null);
-  const [chartData, setChartData] = useState<{ date: string; value: number }[]>([]);
   const [period, setPeriod] = useState<Period>("1W");
-  const [loading, setLoading] = useState(false);
   const [connecting, setConnecting] = useState(false);
+
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data: portfolio, isLoading: portfolioLoading } = usePortfolio(addr);
+  const { data: portfolioHistory } = usePortfolioHistory(
+    addr,
+    portfolio,
+    periodDays[period]
+  );
+  const { data: priceHistory } = useSTXPriceHistory(
+    periodDays[period],
+    !isConnected
+  );
+
+  const chartData = isConnected ? portfolioHistory ?? [] : priceHistory ?? [];
+  const loading = portfolioLoading && !portfolio;
 
   async function handleConnect() {
     setConnecting(true);
@@ -48,28 +60,6 @@ function BalanceCard() {
   }
 
   const isPositive = (portfolio?.stxChange24h ?? 0) >= 0;
-
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      try {
-        if (isConnected && stxAddress) {
-          const portfolioData = await getPortfolioValue(stxAddress);
-          setPortfolio(portfolioData);
-          const history = await getPortfolioHistory(stxAddress, portfolioData, periodDays[period]);
-          setChartData(history);
-        } else {
-          const history = await getSTXPriceHistory(periodDays[period]);
-          setChartData(history);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [stxAddress, isConnected, period]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">

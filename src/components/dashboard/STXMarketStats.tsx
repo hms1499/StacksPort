@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { getSTXMarketStats, getSTXMarketHistory, STXMarketStats } from "@/lib/stacks";
+import { useSTXMarketStats, useSTXMarketHistory } from "@/hooks/useMarketData";
 
 function formatLargeNumber(value: number): string {
   if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
@@ -63,37 +62,27 @@ function SkeletonCard() {
 }
 
 export default function STXMarketStatsCard() {
-  const [stats, setStats] = useState<STXMarketStats | null>(null);
-  const [history, setHistory] = useState<{ prices: number[]; marketCaps: number[]; volumes: number[] }>({
-    prices: [],
-    marketCaps: [],
-    volumes: [],
-  });
-  const [loading, setLoading] = useState(true);
+  const { data: stats, isLoading: statsLoading } = useSTXMarketStats();
+  const { data: history, isLoading: historyLoading } = useSTXMarketHistory(7);
 
-  useEffect(() => {
-    Promise.all([getSTXMarketStats(), getSTXMarketHistory(7)])
-      .then(([s, h]) => {
-        setStats(s);
-        setHistory(h);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const loading = statsLoading || historyLoading;
+  const prices = history?.prices ?? [];
+  const marketCaps = history?.marketCaps ?? [];
+  const volumes = history?.volumes ?? [];
 
   const isPositive = (stats?.change24h ?? 0) >= 0;
 
   const volIsPositive =
-    history.volumes.length >= 2
-      ? history.volumes[history.volumes.length - 1] >= history.volumes[0]
+    volumes.length >= 2
+      ? volumes[volumes.length - 1] >= volumes[0]
       : true;
 
   const mcapIsPositive =
-    history.marketCaps.length >= 2
-      ? history.marketCaps[history.marketCaps.length - 1] >= history.marketCaps[0]
+    marketCaps.length >= 2
+      ? marketCaps[marketCaps.length - 1] >= marketCaps[0]
       : true;
 
-  if (loading) {
+  if (loading && !stats) {
     return (
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <SkeletonCard />
@@ -124,7 +113,7 @@ export default function STXMarketStatsCard() {
           )}
         </div>
         <div className="mt-2">
-          <Sparkline prices={history.prices} isPositive={isPositive} />
+          <Sparkline prices={prices} isPositive={isPositive} />
         </div>
       </div>
 
@@ -135,7 +124,7 @@ export default function STXMarketStatsCard() {
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
           </p>
-          {history.marketCaps.length >= 2 && (
+          {marketCaps.length >= 2 && (
             <span
               className={`flex items-center gap-0.5 text-xs font-medium ${
                 mcapIsPositive ? "text-green-500" : "text-red-500"
@@ -146,7 +135,7 @@ export default function STXMarketStatsCard() {
           )}
         </div>
         <div className="mt-2">
-          <Sparkline prices={history.marketCaps} isPositive={mcapIsPositive} />
+          <Sparkline prices={marketCaps} isPositive={mcapIsPositive} />
         </div>
       </div>
 
@@ -157,7 +146,7 @@ export default function STXMarketStatsCard() {
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
             {stats ? formatLargeNumber(stats.volume24h) : "—"}
           </p>
-          {history.volumes.length >= 2 && (
+          {volumes.length >= 2 && (
             <span
               className={`flex items-center gap-0.5 text-xs font-medium ${
                 volIsPositive ? "text-green-500" : "text-red-500"
@@ -168,7 +157,7 @@ export default function STXMarketStatsCard() {
           )}
         </div>
         <div className="mt-2">
-          <Sparkline prices={history.volumes} isPositive={volIsPositive} />
+          <Sparkline prices={volumes} isPositive={volIsPositive} />
         </div>
       </div>
     </div>

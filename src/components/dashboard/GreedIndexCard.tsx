@@ -1,13 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Info, ExternalLink } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
-
-interface FearGreedData {
-  value: number;
-  classification: string;
-}
+import { useFearGreed } from "@/hooks/useMarketData";
 
 const CLASSIFICATIONS = [
   { label: "Extreme Fear", min: 0, max: 24, color: "#ef4444" },
@@ -24,7 +19,7 @@ function getColor(value: number): string {
 function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
   const r = 85;
   const cx = 110;
-  const cy = 115; // pivot at bottom
+  const cy = 115;
 
   const toRad = (deg: number) => (deg * Math.PI) / 180;
   const pt = (deg: number) => ({
@@ -32,23 +27,20 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
     y: cy - r * Math.sin(toRad(deg)),
   });
 
-  // sweep=1 → clockwise in SVG screen (draws arc going UPWARD through top)
   const arc = (from: number, to: number) => {
     const s = pt(from);
     const e = pt(to);
     return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 0 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
   };
 
-  // 5 equal segments: 180°→144°→108°→72°→36°→0°
   const segments = [
-    { from: 180, to: 144, color: "#ef4444" }, // Extreme Fear
-    { from: 144, to: 108, color: "#f97316" }, // Fear
-    { from: 108, to: 72,  color: "#eab308" }, // Neutral
-    { from: 72,  to: 36,  color: "#84cc16" }, // Greed
-    { from: 36,  to: 0,   color: "#22c55e" }, // Extreme Greed
+    { from: 180, to: 144, color: "#ef4444" },
+    { from: 144, to: 108, color: "#f97316" },
+    { from: 108, to: 72,  color: "#eab308" },
+    { from: 72,  to: 36,  color: "#84cc16" },
+    { from: 36,  to: 0,   color: "#22c55e" },
   ];
 
-  // value=0 → needle left (180°), value=100 → needle right (0°)
   const needleAngle = 180 - (value / 100) * 180;
   const tip = pt(needleAngle);
   const label = CLASSIFICATIONS.find((c) => value >= c.min && value <= c.max)?.label ?? "";
@@ -56,7 +48,6 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
 
   return (
     <svg viewBox="0 0 220 145" className="w-full max-w-[280px] mx-auto">
-      {/* Arc segments with rounded caps for the Zoof look */}
       {segments.map((seg, i) => (
         <path
           key={i}
@@ -68,7 +59,6 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
         />
       ))}
 
-      {/* Value + label text ABOVE pivot */}
       <text
         x={cx}
         y={cy - 30}
@@ -92,7 +82,6 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
         {label}
       </text>
 
-      {/* Needle */}
       <line
         x1={cx}
         y1={cy}
@@ -103,7 +92,6 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
         strokeLinecap="round"
       />
 
-      {/* Pivot circle */}
       <circle cx={cx} cy={cy} r={7} fill={isDark ? "#e5e7eb" : "#1f2937"} />
       <circle cx={cx} cy={cy} r={3.5} fill={isDark ? "#1f2937" : "white"} />
     </svg>
@@ -112,24 +100,7 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
 
 export default function GreedIndexCard() {
   const isDark = useThemeStore((s) => s.theme === "dark");
-  const [data, setData] = useState<FearGreedData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("https://api.alternative.me/fng/?limit=1")
-      .then((r) => r.json())
-      .then((json) => {
-        const d = json.data?.[0];
-        if (d) {
-          setData({
-            value: Number(d.value),
-            classification: d.value_classification,
-          });
-        }
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, isLoading } = useFearGreed();
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -148,7 +119,7 @@ export default function GreedIndexCard() {
         </a>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex flex-col items-center gap-3 py-6 animate-pulse">
           <div className="w-52 h-28 bg-gray-100 dark:bg-gray-700 rounded-xl" />
           <div className="h-4 w-20 bg-gray-100 dark:bg-gray-700 rounded" />

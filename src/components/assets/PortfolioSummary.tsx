@@ -23,9 +23,8 @@ interface Props {
 }
 
 const AllocationBar = memo(function AllocationBar({ stx, tokens, totalUsd }: Omit<Props, "loading">) {
-  if (!stx || totalUsd === 0) return null;
-
   const segments = useMemo(() => {
+    if (!stx || totalUsd === 0) return [];
     const allTokens = [stx, ...tokens.filter((t) => t.valueUsd > 0)];
     const topTokens = allTokens.slice(0, 7);
     const otherUsd = allTokens.slice(7).reduce((s, t) => s + t.valueUsd, 0);
@@ -41,6 +40,8 @@ const AllocationBar = memo(function AllocationBar({ stx, tokens, totalUsd }: Omi
         : []),
     ];
   }, [stx, tokens, totalUsd]);
+
+  if (segments.length === 0) return null;
 
   return (
     <div className="mt-5">

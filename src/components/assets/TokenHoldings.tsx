@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { ArrowUpRight, ArrowDownLeft, Coins, AlertTriangle, ShieldAlert, ChevronDown, ChevronUp } from "lucide-react";
 import { TokenWithValue } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
@@ -103,6 +103,94 @@ function WarningBanner({ suspicious, unverified }: { suspicious: number; unverif
   );
 }
 
+interface TokenRowProps {
+  t: TokenWithValue;
+  totalUsd: number;
+  onSend: (t: TokenWithValue) => void;
+  onReceive: () => void;
+}
+
+const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: TokenRowProps) {
+  const pct = totalUsd > 0 ? (t.valueUsd / totalUsd) * 100 : 0;
+  const isPositive = (t.change24h ?? 0) >= 0;
+  const isFlagged = !!t.warning;
+
+  return (
+    <div
+      className={`grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center ${
+        isFlagged ? "bg-gray-50/50 hover:bg-gray-50" : "hover:bg-gray-50"
+      }`}
+    >
+      {/* Token info */}
+      <div className="flex items-center gap-2.5 min-w-0">
+        <TokenAvatar symbol={t.symbol} imageUri={t.imageUri} warning={t.warning} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <p className={`text-sm font-semibold ${isFlagged ? "text-gray-500" : "text-gray-900"}`}>
+              {t.symbol}
+            </p>
+            <WarningBadge warning={t.warning} />
+          </div>
+          <p className="text-xs text-gray-400 truncate">{t.name}</p>
+        </div>
+        {/* Portfolio % bar — desktop xl only */}
+        {!isFlagged && (
+          <div className="hidden xl:flex items-center gap-1.5 ml-2">
+            <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-teal-400 rounded-full" style={{ width: `${Math.min(pct, 100)}%` }} />
+            </div>
+            <span className="text-[10px] text-gray-400">{pct.toFixed(1)}%</span>
+          </div>
+        )}
+      </div>
+
+      {/* Balance — desktop only */}
+      <p className={`hidden md:block text-sm text-right font-medium ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
+        {formatBalance(t.balance)}
+      </p>
+
+      {/* Price — desktop only */}
+      <p className={`hidden md:block text-sm text-right ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
+        {formatPrice(t.priceUsd)}
+      </p>
+
+      {/* Value */}
+      <p className={`text-sm font-semibold text-right ${isFlagged ? "text-gray-400" : "text-gray-900"}`}>
+        {t.valueUsd > 0 ? formatUSD(t.valueUsd) : "—"}
+      </p>
+
+      {/* 24h + actions */}
+      <div className="flex items-center justify-end gap-1.5">
+        {t.change24h !== null ? (
+          <span className={`text-xs font-medium ${isPositive ? "text-green-500" : "text-red-500"}`}>
+            {isPositive ? "+" : ""}
+            {t.change24h.toFixed(2)}%
+          </span>
+        ) : (
+          <span className="text-xs text-gray-300">—</span>
+        )}
+
+        <div className="hidden md:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => onSend(t)}
+            title="Send"
+            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
+          >
+            <ArrowUpRight size={11} className="text-red-500" />
+          </button>
+          <button
+            onClick={onReceive}
+            title="Receive"
+            className="p-1.5 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
+          >
+            <ArrowDownLeft size={11} className="text-green-500" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 interface Props {
   stx: TokenWithValue | null;
   tokens: TokenWithValue[];
@@ -115,15 +203,13 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
   const [receiveOpen, setReceiveOpen] = useState(false);
   const [showFlagged, setShowFlagged] = useState(false);
 
-  const allTokens = stx ? [stx, ...tokens] : tokens;
+  const allTokens = useMemo(() => stx ? [stx, ...tokens] : tokens, [stx, tokens]);
+  const trustedTokens = useMemo(() => allTokens.filter((t) => !t.warning), [allTokens]);
+  const flaggedTokens = useMemo(() => allTokens.filter((t) => t.warning), [allTokens]);
+  const suspiciousCount = useMemo(() => flaggedTokens.filter((t) => t.warning === "suspicious").length, [flaggedTokens]);
+  const unverifiedCount = useMemo(() => flaggedTokens.filter((t) => t.warning === "unverified").length, [flaggedTokens]);
 
-  // Separate trusted from flagged
-  const trustedTokens = allTokens.filter((t) => !t.warning);
-  const flaggedTokens = allTokens.filter((t) => t.warning);
-  const suspiciousCount = flaggedTokens.filter((t) => t.warning === "suspicious").length;
-  const unverifiedCount = flaggedTokens.filter((t) => t.warning === "unverified").length;
-
-  const openSend = (t: TokenWithValue) =>
+  const onSend = useCallback((t: TokenWithValue) =>
     setSendToken({
       symbol: t.symbol,
       name: t.name,
@@ -131,88 +217,9 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
       decimals: t.decimals,
       contractId: t.contractId,
       imageUri: t.imageUri,
-    });
+    }), []);
 
-  const TokenRow = ({ t }: { t: TokenWithValue }) => {
-    const pct = totalUsd > 0 ? (t.valueUsd / totalUsd) * 100 : 0;
-    const isPositive = (t.change24h ?? 0) >= 0;
-    const isFlagged = !!t.warning;
-
-    return (
-      <div
-        className={`grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center ${
-          isFlagged ? "bg-gray-50/50 hover:bg-gray-50" : "hover:bg-gray-50"
-        }`}
-      >
-        {/* Token info */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <TokenAvatar symbol={t.symbol} imageUri={t.imageUri} warning={t.warning} />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <p className={`text-sm font-semibold ${isFlagged ? "text-gray-500" : "text-gray-900"}`}>
-                {t.symbol}
-              </p>
-              <WarningBadge warning={t.warning} />
-            </div>
-            <p className="text-xs text-gray-400 truncate">{t.name}</p>
-          </div>
-          {/* Portfolio % bar — desktop xl only */}
-          {!isFlagged && (
-            <div className="hidden xl:flex items-center gap-1.5 ml-2">
-              <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-teal-400 rounded-full" style={{ width: `${Math.min(pct, 100)}%` }} />
-              </div>
-              <span className="text-[10px] text-gray-400">{pct.toFixed(1)}%</span>
-            </div>
-          )}
-        </div>
-
-        {/* Balance — desktop only */}
-        <p className={`hidden md:block text-sm text-right font-medium ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
-          {formatBalance(t.balance)}
-        </p>
-
-        {/* Price — desktop only */}
-        <p className={`hidden md:block text-sm text-right ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
-          {formatPrice(t.priceUsd)}
-        </p>
-
-        {/* Value */}
-        <p className={`text-sm font-semibold text-right ${isFlagged ? "text-gray-400" : "text-gray-900"}`}>
-          {t.valueUsd > 0 ? formatUSD(t.valueUsd) : "—"}
-        </p>
-
-        {/* 24h + actions */}
-        <div className="flex items-center justify-end gap-1.5">
-          {t.change24h !== null ? (
-            <span className={`text-xs font-medium ${isPositive ? "text-green-500" : "text-red-500"}`}>
-              {isPositive ? "+" : ""}
-              {t.change24h.toFixed(2)}%
-            </span>
-          ) : (
-            <span className="text-xs text-gray-300">—</span>
-          )}
-
-          <div className="hidden md:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => openSend(t)}
-              title="Send"
-              className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
-            >
-              <ArrowUpRight size={11} className="text-red-500" />
-            </button>
-            <button
-              onClick={() => setReceiveOpen(true)}
-              title="Receive"
-              className="p-1.5 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
-            >
-              <ArrowDownLeft size={11} className="text-green-500" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const onReceive = useCallback(() => setReceiveOpen(true), []);
 
   return (
     <>
@@ -275,7 +282,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
           ) : (
             <>
               {/* Trusted tokens */}
-              {trustedTokens.map((t) => <TokenRow key={t.contractId || "stx"} t={t} />)}
+              {trustedTokens.map((t) => <TokenRow key={t.contractId || "stx"} t={t} totalUsd={totalUsd} onSend={onSend} onReceive={onReceive} />)}
 
               {/* Flagged tokens — collapsible */}
               {flaggedTokens.length > 0 && (
@@ -290,7 +297,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
                     </span>
                     {showFlagged ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
                   </button>
-                  {showFlagged && flaggedTokens.map((t) => <TokenRow key={t.contractId} t={t} />)}
+                  {showFlagged && flaggedTokens.map((t) => <TokenRow key={t.contractId} t={t} totalUsd={totalUsd} onSend={onSend} onReceive={onReceive} />)}
                 </>
               )}
             </>
@@ -300,6 +307,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
 
       {sendToken && <SendModal token={sendToken} onClose={() => setSendToken(null)} />}
       {receiveOpen && <ReceiveModal onClose={() => setReceiveOpen(false)} />}
+
     </>
   );
 }

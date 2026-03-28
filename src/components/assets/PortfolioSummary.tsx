@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { TokenWithValue } from "@/lib/stacks";
 import { formatUSD, formatPercent } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
@@ -21,24 +22,25 @@ interface Props {
   loading: boolean;
 }
 
-function AllocationBar({ stx, tokens, totalUsd }: Omit<Props, "loading">) {
+const AllocationBar = memo(function AllocationBar({ stx, tokens, totalUsd }: Omit<Props, "loading">) {
   if (!stx || totalUsd === 0) return null;
 
-  const allTokens = [stx, ...tokens.filter((t) => t.valueUsd > 0)];
-  const topTokens = allTokens.slice(0, 7);
-  const otherUsd = allTokens.slice(7).reduce((s, t) => s + t.valueUsd, 0);
-
-  const segments = [
-    ...topTokens.map((t, i) => ({
-      label: t.symbol,
-      usd: t.valueUsd,
-      pct: (t.valueUsd / totalUsd) * 100,
-      color: ALLOCATION_COLORS[i],
-    })),
-    ...(otherUsd > 0
-      ? [{ label: "Other", usd: otherUsd, pct: (otherUsd / totalUsd) * 100, color: "#d1d5db" }]
-      : []),
-  ];
+  const segments = useMemo(() => {
+    const allTokens = [stx, ...tokens.filter((t) => t.valueUsd > 0)];
+    const topTokens = allTokens.slice(0, 7);
+    const otherUsd = allTokens.slice(7).reduce((s, t) => s + t.valueUsd, 0);
+    return [
+      ...topTokens.map((t, i) => ({
+        label: t.symbol,
+        usd: t.valueUsd,
+        pct: (t.valueUsd / totalUsd) * 100,
+        color: ALLOCATION_COLORS[i],
+      })),
+      ...(otherUsd > 0
+        ? [{ label: "Other", usd: otherUsd, pct: (otherUsd / totalUsd) * 100, color: "#d1d5db" }]
+        : []),
+    ];
+  }, [stx, tokens, totalUsd]);
 
   return (
     <div className="mt-5">
@@ -70,7 +72,7 @@ function AllocationBar({ stx, tokens, totalUsd }: Omit<Props, "loading">) {
       </div>
     </div>
   );
-}
+});
 
 export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Props) {
   const change24h = stx?.change24h ?? 0;

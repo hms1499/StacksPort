@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Info, ExternalLink } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
 import { useFearGreed } from "@/hooks/useMarketData";
@@ -16,7 +17,7 @@ function getColor(value: number): string {
   return CLASSIFICATIONS.find((c) => value >= c.min && value <= c.max)?.color ?? "#eab308";
 }
 
-function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
+const SemiGauge = memo(function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
   const r = 85;
   const cx = 110;
   const cy = 115;
@@ -96,7 +97,7 @@ function SemiGauge({ value, isDark }: { value: number; isDark: boolean }) {
       <circle cx={cx} cy={cy} r={3.5} fill={isDark ? "#1f2937" : "white"} />
     </svg>
   );
-}
+});
 
 export default function GreedIndexCard() {
   const isDark = useThemeStore((s) => s.theme === "dark");

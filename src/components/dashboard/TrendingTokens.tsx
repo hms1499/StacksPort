@@ -1,12 +1,13 @@
 "use client";
 
+import { memo } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import { useTrendingTokens } from "@/hooks/useMarketData";
 import type { TrendingToken } from "@/lib/stacks";
 
 const COINGECKO_STACKS_URL = "https://www.coingecko.com/en/categories/stacks-ecosystem";
 
-function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boolean }) {
+const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boolean }) {
   if (prices.length < 2) {
     return <div className="w-20 h-10" />;
   }
@@ -37,7 +38,7 @@ function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boole
       />
     </svg>
   );
-}
+});
 
 function formatPrice(price: number): string {
   if (price === 0) return "—";
@@ -47,7 +48,7 @@ function formatPrice(price: number): string {
   return `$${price.toFixed(6)}`;
 }
 
-function TokenRow({ token }: { token: TrendingToken }) {
+const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
   const isPositive = token.change24h >= 0;
 
   return (
@@ -105,7 +106,7 @@ function TokenRow({ token }: { token: TrendingToken }) {
       </div>
     </a>
   );
-}
+});
 
 function SkeletonRow() {
   return (

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useSTXMarketStats, useSTXMarketHistory } from "@/hooks/useMarketData";
 
@@ -9,7 +10,7 @@ function formatLargeNumber(value: number): string {
   return `$${value.toLocaleString()}`;
 }
 
-function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boolean }) {
+const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boolean }) {
   if (prices.length < 2) return <div className="w-full h-12" />;
 
   const w = 200;
@@ -49,7 +50,7 @@ function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boole
       />
     </svg>
   );
-}
+});
 
 function SkeletonCard() {
   return (
@@ -66,21 +67,13 @@ export default function STXMarketStatsCard() {
   const { data: history, isLoading: historyLoading } = useSTXMarketHistory(7);
 
   const loading = statsLoading || historyLoading;
-  const prices = history?.prices ?? [];
-  const marketCaps = history?.marketCaps ?? [];
-  const volumes = history?.volumes ?? [];
+  const prices = useMemo(() => history?.prices ?? [], [history]);
+  const marketCaps = useMemo(() => history?.marketCaps ?? [], [history]);
+  const volumes = useMemo(() => history?.volumes ?? [], [history]);
 
   const isPositive = (stats?.change24h ?? 0) >= 0;
-
-  const volIsPositive =
-    volumes.length >= 2
-      ? volumes[volumes.length - 1] >= volumes[0]
-      : true;
-
-  const mcapIsPositive =
-    marketCaps.length >= 2
-      ? marketCaps[marketCaps.length - 1] >= marketCaps[0]
-      : true;
+  const volIsPositive = useMemo(() => volumes.length >= 2 ? volumes[volumes.length - 1] >= volumes[0] : true, [volumes]);
+  const mcapIsPositive = useMemo(() => marketCaps.length >= 2 ? marketCaps[marketCaps.length - 1] >= marketCaps[0] : true, [marketCaps]);
 
   if (loading && !stats) {
     return (

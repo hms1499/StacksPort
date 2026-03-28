@@ -23,7 +23,7 @@ const navItems = [
   { href: "/trade", label: "Swap", icon: BarChart2 },
   { href: "/dca", label: "DCA Vault", icon: Repeat2 },
   { href: "/notifications", label: "Notification", icon: Bell },
-  { href: "/ai", label: "Stacks AI", icon: Sparkles, soon: true },
+  { href: "/ai", label: "Stacks AI", icon: Sparkles },
   { href: "/premium", label: "Premium", icon: Crown, soon: true },
 ];
 

@@ -2,8 +2,8 @@ name: DCA Keeper Bot — dca-vault
 
 on:
   schedule:
-    # Chạy mỗi 10 phút (≈ 1 Stacks block)
-    - cron: "*/10 * * * *"
+    # Chạy mỗi 10 phút, offset 5 phút so với keeper-bot.yml (tránh nonce conflict)
+    - cron: "5-55/10 * * * *"
   # Cho phép chạy thủ công từ GitHub UI
   workflow_dispatch:
 

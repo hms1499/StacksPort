@@ -58,6 +58,7 @@ export async function GET() {
         fetch(f.url, {
           headers: { "User-Agent": "Mozilla/5.0" },
           next: { revalidate: 300 },
+          signal: AbortSignal.timeout(10_000),
         })
           .then((r) => r.text())
           .then((text) => parseItems(text, f.source))

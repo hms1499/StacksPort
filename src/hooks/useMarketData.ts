@@ -28,7 +28,9 @@ interface FearGreedData {
 }
 
 async function fetchFearGreed(): Promise<FearGreedData | null> {
-  const res = await fetch("https://api.alternative.me/fng/?limit=1");
+  const res = await fetch("https://api.alternative.me/fng/?limit=1", {
+    signal: AbortSignal.timeout(10_000),
+  });
   const json = await res.json();
   const d = json.data?.[0];
   return d ? { value: Number(d.value), classification: d.value_classification } : null;

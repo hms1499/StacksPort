@@ -78,7 +78,7 @@ export async function getPortfolioValue(address: string): Promise<PortfolioValue
       const geckoIds = [...new Set(geckoTokens.map((t) => t.geckoId))].join(",");
       const res = await fetch(
         `${COINGECKO_API}/simple/price?ids=${geckoIds}&vs_currencies=usd`,
-        { next: { revalidate: 60 } }
+        { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
       );
       if (res.ok) {
         const prices = await res.json();
@@ -86,7 +86,7 @@ export async function getPortfolioValue(address: string): Promise<PortfolioValue
           otherUSD += humanBalance * (prices[geckoId]?.usd ?? 0);
         }
       }
-    } catch { /* ignore */ }
+    } catch (err) { console.error("[getPortfolioValue] CoinGecko price fetch failed:", err) }
   }
 
   const stxHumanBalance = stxBalance / 1_000_000;
@@ -124,7 +124,8 @@ async function fetchTransactionsInWindow(address: string, days: number): Promise
 
   while (true) {
     const res = await fetch(
-      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=50&offset=${offset}`
+      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=50&offset=${offset}`,
+      { signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) break;
     const data = await res.json();
@@ -280,7 +281,8 @@ export async function getPortfolioHistory(
         value: Math.round(total * 100) / 100,
       };
     });
-  } catch {
+  } catch (err) {
+    console.error("[getPortfolioHistory] failed:", err);
     return [];
   }
 }
@@ -289,7 +291,7 @@ export async function getTrendingTokens(): Promise<TrendingToken[]> {
   try {
     const res = await fetch(
       `${COINGECKO_API}/coins/markets?vs_currency=usd&category=stacks-ecosystem&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=24h`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) throw new Error("CoinGecko trending error");
     const data = await res.json();
@@ -317,7 +319,8 @@ export async function getTrendingTokens(): Promise<TrendingToken[]> {
         image: t.image ?? "",
         sparkline: t.sparkline_in_7d?.price ?? [],
       }));
-  } catch {
+  } catch (err) {
+    console.error("[getTrendingTokens] failed:", err);
     return [];
   }
 }
@@ -328,11 +331,12 @@ export async function getTokenMetadata(contractId: string): Promise<{ name?: str
     const cleanId = contractId.split("::")[0];
     const res = await fetch(
       `${HIRO_API_BASE}/metadata/v1/ft/${cleanId}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) return null;
     return res.json();
-  } catch {
+  } catch (err) {
+    console.error("[getTokenMetadata] failed:", err);
     return null;
   }
 }
@@ -340,7 +344,7 @@ export async function getTokenMetadata(contractId: string): Promise<{ name?: str
 export async function getSTXBalance(address: string) {
   const res = await fetch(
     `${HIRO_API_BASE}/v2/accounts/${address}?proof=0`,
-    { next: { revalidate: 30 } }
+    { next: { revalidate: 30 }, signal: AbortSignal.timeout(10_000) }
   );
   if (!res.ok) throw new Error("Failed to fetch STX balance");
   return res.json();
@@ -349,7 +353,7 @@ export async function getSTXBalance(address: string) {
 export async function getFungibleTokens(address: string) {
   const res = await fetch(
     `${HIRO_API_BASE}/extended/v1/address/${address}/balances`,
-    { next: { revalidate: 30 } }
+    { next: { revalidate: 30 }, signal: AbortSignal.timeout(10_000) }
   );
   if (!res.ok) throw new Error("Failed to fetch token balances");
   return res.json();
@@ -358,7 +362,7 @@ export async function getFungibleTokens(address: string) {
 export async function getTransactions(address: string, limit = 10, offset = 0) {
   const res = await fetch(
     `${HIRO_API_BASE}/extended/v2/addresses/${address}/transactions?limit=${limit}&offset=${offset}`,
-    { next: { revalidate: 30 } }
+    { next: { revalidate: 30 }, signal: AbortSignal.timeout(10_000) }
   );
   if (!res.ok) throw new Error("Failed to fetch transactions");
   return res.json();
@@ -397,10 +401,11 @@ export async function getSBTCData(address: string): Promise<SBTCData> {
     getFungibleTokens(address),
     fetch(
       `${COINGECKO_API}/simple/price?ids=bitcoin,sbtc-2&vs_currencies=usd`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
     ).then((r) => r.json()),
     fetch(
-      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=50`
+      `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=50`,
+      { signal: AbortSignal.timeout(10_000) }
     ).then((r) => r.json()),
   ]);
 
@@ -496,7 +501,7 @@ export interface StackingStatus {
 export async function getStackingStatus(address: string): Promise<StackingStatus> {
   const [balanceData, poxData, stxPrice] = await Promise.all([
     getFungibleTokens(address),
-    fetch(`${HIRO_API_BASE}/v2/pox`).then((r) => r.json()),
+    fetch(`${HIRO_API_BASE}/v2/pox`, { signal: AbortSignal.timeout(10_000) }).then((r) => r.json()),
     getSTXPrice(),
   ]);
 
@@ -598,10 +603,10 @@ export async function getTokensWithValues(address: string): Promise<{
     try {
       const res = await fetch(
         `${COINGECKO_API}/simple/price?ids=${[...geckoIds].join(",")}&vs_currencies=usd&include_24hr_change=true`,
-        { next: { revalidate: 60 } }
+        { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
       );
       if (res.ok) geckoPrices = await res.json();
-    } catch { /* ignore */ }
+    } catch (err) { console.error("[getTokensWithValues] CoinGecko price fetch failed:", err) }
   }
 
   let otherUsd = 0;
@@ -672,7 +677,7 @@ export async function getSTXPrice(): Promise<{ usd: number; usd_24h_change: numb
   try {
     const res = await fetch(
       `${COINGECKO_API}/simple/price?ids=blockstack&vs_currencies=usd&include_24hr_change=true`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) throw new Error("CoinGecko error");
     const data = await res.json();
@@ -680,7 +685,8 @@ export async function getSTXPrice(): Promise<{ usd: number; usd_24h_change: numb
       usd: data.blockstack?.usd ?? 0,
       usd_24h_change: data.blockstack?.usd_24h_change ?? 0,
     };
-  } catch {
+  } catch (err) {
+    console.error("[getSTXPrice] failed:", err);
     return { usd: 0, usd_24h_change: 0 };
   }
 }
@@ -696,7 +702,7 @@ export async function getSTXMarketStats(): Promise<STXMarketStats> {
   try {
     const res = await fetch(
       `${COINGECKO_API}/coins/blockstack?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) throw new Error("CoinGecko error");
     const data = await res.json();
@@ -706,7 +712,8 @@ export async function getSTXMarketStats(): Promise<STXMarketStats> {
       marketCap: data.market_data?.market_cap?.usd ?? 0,
       volume24h: data.market_data?.total_volume?.usd ?? 0,
     };
-  } catch {
+  } catch (err) {
+    console.error("[getSTXMarketStats] failed:", err);
     return { price: 0, change24h: 0, marketCap: 0, volume24h: 0 };
   }
 }
@@ -721,7 +728,7 @@ export async function getSTXMarketHistory(days = 7): Promise<STXMarketHistory> {
   try {
     const res = await fetch(
       `${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${days}&interval=daily`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) throw new Error("CoinGecko history error");
     const data = await res.json();
@@ -730,7 +737,8 @@ export async function getSTXMarketHistory(days = 7): Promise<STXMarketHistory> {
       marketCaps: (data.market_caps as [number, number][]).map(([, v]) => v),
       volumes: (data.total_volumes as [number, number][]).map(([, v]) => v),
     };
-  } catch {
+  } catch (err) {
+    console.error("[getSTXMarketHistory] failed:", err);
     return { prices: [], marketCaps: [], volumes: [] };
   }
 }
@@ -740,7 +748,7 @@ export async function getSTXPriceHistory(days = 7): Promise<{ date: string; valu
     const intervalParam = days === 1 ? "" : "&interval=daily";
     const res = await fetch(
       `${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${days}${intervalParam}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!res.ok) throw new Error("CoinGecko history error");
     const data = await res.json();
@@ -764,7 +772,8 @@ export async function getSTXPriceHistory(days = 7): Promise<{ date: string; valu
         : new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
       value: price,
     }));
-  } catch {
+  } catch (err) {
+    console.error("[getSTXPriceHistory] failed:", err);
     return [];
   }
 }
@@ -802,7 +811,8 @@ async function fetchAllTransactions(address: string): Promise<TxWithTransfers[]>
   for (let page = 0; page < MAX_PAGES; page++) {
     try {
       const res = await fetch(
-        `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=${LIMIT}&offset=${page * LIMIT}`
+        `${HIRO_API_BASE}/extended/v1/address/${address}/transactions_with_transfers?limit=${LIMIT}&offset=${page * LIMIT}`,
+        { signal: AbortSignal.timeout(10_000) }
       );
       if (!res.ok) break;
       const data = await res.json();
@@ -812,7 +822,8 @@ async function fetchAllTransactions(address: string): Promise<TxWithTransfers[]>
         if (item.tx.tx_status === "success") all.push(item);
       }
       if (results.length < LIMIT) break;
-    } catch {
+    } catch (err) {
+      console.error("[fetchAllTransactions] page fetch failed:", err);
       break;
     }
   }

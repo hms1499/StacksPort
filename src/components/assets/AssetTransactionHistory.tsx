@@ -10,7 +10,9 @@ import {
   ExternalLink,
   Activity,
   ChevronDown,
+  Download,
 } from "lucide-react";
+import { downloadCSV, csvDate } from "@/lib/export";
 import { useWalletStore } from "@/store/walletStore";
 import { getTransactions } from "@/lib/stacks";
 
@@ -245,20 +247,48 @@ export default function AssetTransactionHistory() {
 
   const filtered = allTxs.filter((tx) => matchesFilter(tx, filter));
 
+  const handleExport = useCallback(() => {
+    const headers = ["Date", "Type", "Status", "Description", "Details", "Amount (STX)", "TX ID"];
+    const rows = filtered.map((tx) => [
+      tx.timestamp > 0
+        ? new Date(tx.timestamp * 1000).toISOString().replace("T", " ").slice(0, 19)
+        : "",
+      tx.type,
+      tx.status,
+      tx.label,
+      tx.sublabel,
+      tx.amount ? (Number(tx.amount) / 1_000_000).toFixed(6) : "",
+      tx.txId,
+    ]);
+    downloadCSV(`transactions-${csvDate()}.csv`, [headers, ...rows]);
+  }, [filtered]);
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
         <h2 className="font-semibold text-gray-700">Transaction History</h2>
         {isConnected && stxAddress && (
-          <a
-            href={`https://explorer.hiro.so/address/${stxAddress}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-teal-500 hover:text-teal-600 transition-colors"
-          >
-            View on Explorer <ExternalLink size={11} />
-          </a>
+          <div className="flex items-center gap-3">
+            {filtered.length > 0 && (
+              <button
+                onClick={handleExport}
+                title="Export CSV"
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-600 bg-gray-50 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors"
+              >
+                <Download size={11} />
+                Export
+              </button>
+            )}
+            <a
+              href={`https://explorer.hiro.so/address/${stxAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-teal-500 hover:text-teal-600 transition-colors"
+            >
+              View on Explorer <ExternalLink size={11} />
+            </a>
+          </div>
         )}
       </div>
 

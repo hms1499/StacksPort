@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { TrendingUp, TrendingDown, BarChart3, Info } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { TrendingUp, TrendingDown, BarChart3, Info, Download } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { getPnLData, PnLData, PnLEntry } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
+import { downloadCSV, csvDate } from "@/lib/export";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -166,6 +167,22 @@ export default function PnLTracker() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const handleExport = useCallback(() => {
+    if (!data) return;
+    const headers = [
+      "Symbol", "Name", "Balance", "Avg Cost (USD)", "Current Price (USD)",
+      "Total Cost (USD)", "Current Value (USD)",
+      "Unrealized PnL (USD)", "Unrealized (%)", "Realized PnL (USD)", "Total PnL (USD)",
+    ];
+    const rows = data.entries.map((e) => [
+      e.symbol, e.name, e.currentBalance,
+      e.avgCostBasis, e.currentPrice,
+      e.totalCost, e.currentValue,
+      e.unrealizedPnL, e.unrealizedPct.toFixed(2), e.realizedPnL, e.totalPnL,
+    ]);
+    downloadCSV(`pnl-report-${csvDate()}.csv`, [headers, ...rows]);
+  }, [data]);
+
   useEffect(() => {
     if (!isConnected || !stxAddress) {
       queueMicrotask(() => {
@@ -208,12 +225,24 @@ export default function PnLTracker() {
             </span>
           )}
         </div>
-        {loading && (
-          <span className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-            Calculating...
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {!loading && data && data.entries.length > 0 && (
+            <button
+              onClick={handleExport}
+              title="Export CSV"
+              className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-600 bg-gray-50 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors"
+            >
+              <Download size={11} />
+              Export
+            </button>
+          )}
+          {loading && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+              Calculating...
+            </span>
+          )}
+        </div>
       </div>
 
       {/* States */}

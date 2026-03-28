@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useCallback, memo } from "react";
-import { ArrowUpRight, ArrowDownLeft, Coins, AlertTriangle, ShieldAlert, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Coins, AlertTriangle, ShieldAlert, ChevronDown, ChevronUp, Download } from "lucide-react";
+import { downloadCSV, csvDate } from "@/lib/export";
 import { TokenWithValue } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 import SendModal, { SendTokenInfo } from "@/components/wallet/SendModal";
@@ -221,6 +222,19 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
 
   const onReceive = useCallback(() => setReceiveOpen(true), []);
 
+  const handleExport = useCallback(() => {
+    const headers = ["Symbol", "Name", "Balance", "Price (USD)", "Value (USD)", "24h Change (%)"];
+    const rows = allTokens.map((t) => [
+      t.symbol,
+      t.name,
+      t.balance,
+      t.priceUsd,
+      t.valueUsd,
+      t.change24h ?? "",
+    ]);
+    downloadCSV(`token-holdings-${csvDate()}.csv`, [headers, ...rows]);
+  }, [allTokens]);
+
   return (
     <>
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -238,6 +252,16 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
               <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
                 {allTokens.length} assets
               </span>
+              {allTokens.length > 0 && (
+                <button
+                  onClick={handleExport}
+                  title="Export CSV"
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-600 bg-gray-50 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors"
+                >
+                  <Download size={11} />
+                  Export
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -139,23 +139,40 @@ export class StacksClient {
   }
 
   // Get all plan IDs that can be executed right now
+  // Scans from newest to oldest (newer plans more likely to be active)
   async getExecutablePlanIds(totalPlans: number): Promise<number[]> {
     const executable: number[] = [];
+    let rateLimitRetries = 0;
+    const MAX_RATE_LIMIT_RETRIES = 3;
 
-    for (let id = 1; id <= totalPlans; id++) {
+    for (let id = totalPlans; id >= 1; id--) {
       try {
         const canExec = await this.canExecute(id);
         if (canExec) executable.push(id);
+        rateLimitRetries = 0; // reset on success
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
-        // Rate limited — stop scanning and return what we have
-        if (msg === "RateLimited") break;
-        // Other errors: skip this plan
+        if (msg === "RateLimited") {
+          rateLimitRetries++;
+          if (rateLimitRetries >= MAX_RATE_LIMIT_RETRIES) {
+            console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "Rate limit exceeded max retries, stopping scan", scannedSoFar: totalPlans - id, found: executable.length }));
+            break;
+          }
+          // Back off and retry the same plan
+          console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "Rate limited, backing off", planId: id, retry: rateLimitRetries }));
+          await sleep(2000 * rateLimitRetries);
+          id++; // retry this plan ID
+          continue;
+        }
+        // Log other errors instead of silently skipping
+        console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "canExecute failed", planId: id, error: msg }));
       }
       // Small delay between API calls to avoid rate limiting
       await sleep(200);
     }
 
+    // Sort ascending for execution order
+    executable.sort((a, b) => a - b);
     return executable;
   }
 }

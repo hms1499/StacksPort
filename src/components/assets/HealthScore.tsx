@@ -318,7 +318,7 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
         <h2 className="font-semibold text-gray-700">Portfolio Health Score</h2>
         <div className="flex items-center gap-3 text-xs text-gray-400">
           <span>
-            <span className="inline-block w-2 h-2 rounded-full bg-teal-400 mr-1" />
+            <span className="inline-block w-2 h-2 rounded-full bg-[#B0E4CC] mr-1" />
             Volatile {(result.volatilePct * 100).toFixed(0)}%
           </span>
           <span>

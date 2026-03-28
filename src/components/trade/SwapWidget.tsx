@@ -65,7 +65,7 @@ function TokenSelector({
       <p className="text-xs font-medium text-gray-400 mb-1.5">{label}</p>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-teal-400 transition-colors bg-white dark:bg-gray-700"
+        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-[#B0E4CC] transition-colors bg-white dark:bg-gray-700"
       >
         {selected ? (
           <>
@@ -89,7 +89,7 @@ function TokenSelector({
               placeholder="Search tokens..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm rounded-lg bg-gray-50 dark:bg-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 border-0 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="w-full px-3 py-1.5 text-sm rounded-lg bg-gray-50 dark:bg-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 border-0 focus:outline-none focus:ring-2 focus:ring-[#B0E4CC]"
             />
           </div>
           <div className="max-h-52 overflow-y-auto">
@@ -100,7 +100,7 @@ function TokenSelector({
                 <button
                   key={t.tokenId}
                   onClick={() => { onChange(t); setOpen(false); setSearch(""); }}
-                  className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-left ${selected?.tokenId === t.tokenId ? "bg-teal-50 dark:bg-teal-900/30" : ""}`}
+                  className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-left ${selected?.tokenId === t.tokenId ? "bg-[#B0E4CC]/20 dark:bg-[#285A48]/30" : ""}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={t.icon} alt={t.symbol} className="w-6 h-6 rounded-full shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
@@ -340,7 +340,7 @@ export default function SwapWidget() {
           href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-teal-500 hover:text-teal-600 underline"
+          className="flex items-center gap-1.5 text-sm text-[#408A71] hover:text-[#285A48] underline"
         >
           View on Explorer <ExternalLink size={13} />
         </a>
@@ -402,7 +402,7 @@ export default function SwapWidget() {
                       key={pct}
                       onClick={() => setPercent(pct)}
                       disabled={!fromBalance}
-                      className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-[#B0E4CC]/20 dark:bg-[#285A48]/30 text-[#285A48] dark:text-[#B0E4CC] hover:bg-[#B0E4CC]/30 dark:hover:bg-[#285A48]/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       {pct === 1 ? "MAX" : `${pct * 100}%`}
                     </button>
@@ -424,7 +424,7 @@ export default function SwapWidget() {
                   className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 dark:placeholder:text-gray-500 transition-colors ${
                     isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance
                       ? "border-red-300 focus:ring-red-300 text-red-600"
-                      : "border-gray-200 dark:border-gray-600 focus:ring-teal-400 text-gray-900 dark:text-gray-100"
+                      : "border-gray-200 dark:border-gray-600 focus:ring-[#B0E4CC] text-gray-900 dark:text-gray-100"
                   }`}
                 />
                 {fromToken?.priceData.last_price && amountIn && !(isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance) && (
@@ -446,7 +446,7 @@ export default function SwapWidget() {
           <div className="flex justify-center">
             <button
               onClick={flipTokens}
-              className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-teal-400 transition-colors shadow-sm"
+              className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-[#B0E4CC] transition-colors shadow-sm"
             >
               <ArrowDownUp size={15} className="text-gray-500 dark:text-gray-400" />
             </button>
@@ -553,7 +553,7 @@ export default function SwapWidget() {
           <button
             onClick={handleSwap}
             disabled={!isConnected || status !== "ready" || !quote?.bestRoute || (fromBalance !== null && parseFloat(amountIn) > fromBalance)}
-            className="w-full py-3.5 rounded-xl bg-teal-500 text-white text-sm font-semibold hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-[#408A71] text-white text-sm font-semibold hover:bg-[#285A48] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {status === "swapping" ? (
               <><Loader2 size={15} className="animate-spin" /> Waiting for wallet...</>
@@ -569,7 +569,7 @@ export default function SwapWidget() {
           {/* Powered by */}
           <p className="text-center text-[11px] text-gray-300 dark:text-gray-500">
             Powered by{" "}
-            <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-500">
+            <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-[#B0E4CC] hover:text-[#408A71]">
               Bitflow
             </a>
           </p>

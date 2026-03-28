@@ -71,7 +71,7 @@ function BalanceCard() {
               href={`https://explorer.hiro.so/address/${stxAddress}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-teal-500 transition-colors"
+              className="text-gray-400 hover:text-[#408A71] transition-colors"
             >
               <ExternalLink size={13} />
             </a>
@@ -132,7 +132,7 @@ function BalanceCard() {
             <button
               onClick={handleConnect}
               disabled={connecting}
-              className="flex items-center gap-2 self-start bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+              className="flex items-center gap-2 self-start bg-[#408A71] hover:bg-[#285A48] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
             >
               {connecting && <Loader2 size={14} className="animate-spin" />}
               {connecting ? "Connecting..." : "Connect Wallet"}

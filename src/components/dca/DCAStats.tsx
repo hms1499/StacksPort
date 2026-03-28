@@ -20,8 +20,8 @@ export default function DCAStats() {
       icon: LayoutList,
       label: "Total Plans",
       value: loading ? "—" : (stats?.totalPlans ?? 0).toString(),
-      color: "text-teal-600",
-      bg: "bg-teal-50",
+      color: "text-[#285A48]",
+      bg: "bg-[#B0E4CC]/20",
     },
     {
       icon: TrendingUp,

@@ -79,13 +79,13 @@ export default function DCAPageContent() {
             onClick={() => setTab(key)}
             className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
               tab === key
-                ? "bg-teal-500 text-white shadow-sm"
-                : "bg-white border border-gray-200 text-gray-500 hover:border-teal-300 hover:text-gray-700"
+                ? "bg-[#408A71] text-white shadow-sm"
+                : "bg-white border border-gray-200 text-gray-500 hover:border-[#B0E4CC] hover:text-gray-700"
             }`}
           >
             <Icon size={16} />
             <span>{label}</span>
-            <span className={`text-[10px] hidden sm:inline ${tab === key ? "text-teal-100" : "text-gray-300"}`}>
+            <span className={`text-[10px] hidden sm:inline ${tab === key ? "text-[#B0E4CC]/30" : "text-gray-300"}`}>
               {desc}
             </span>
           </button>
@@ -98,8 +98,8 @@ export default function DCAPageContent() {
       {/* Main content */}
       {!isConnected ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-10 flex flex-col items-center gap-4 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center">
-            <Wallet size={26} className="text-teal-500" />
+          <div className="w-14 h-14 rounded-2xl bg-[#B0E4CC]/20 flex items-center justify-center">
+            <Wallet size={26} className="text-[#408A71]" />
           </div>
           <div>
             <p className="text-base font-semibold text-gray-900">

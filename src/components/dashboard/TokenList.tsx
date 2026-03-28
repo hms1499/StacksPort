@@ -123,8 +123,8 @@ function TokenList() {
                 name="Stacks"
                 balance={formatSTX(Number(stxOnly.balance))}
                 imageUri={STX_IMAGE}
-                fallbackColor="bg-teal-50"
-                fallbackTextColor="text-teal-600"
+                fallbackColor="bg-[#B0E4CC]/20"
+                fallbackTextColor="text-[#285A48]"
                 onSend={() => setSendToken({
                   symbol: "STX",
                   name: "Stacks",

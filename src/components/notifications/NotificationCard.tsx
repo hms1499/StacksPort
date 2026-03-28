@@ -91,7 +91,7 @@ export default function NotificationCard({
             type="checkbox"
             checked={isSelected || false}
             onChange={handleCheckboxChange}
-            className="mt-1 w-5 h-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500 cursor-pointer flex-shrink-0"
+            className="mt-1 w-5 h-5 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71] cursor-pointer flex-shrink-0"
           />
         )}
 

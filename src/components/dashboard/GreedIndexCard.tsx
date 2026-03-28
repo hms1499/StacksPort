@@ -114,7 +114,7 @@ export default function GreedIndexCard() {
           href="https://alternative.me/crypto/fear-and-greed-index/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-xs text-teal-500 hover:text-teal-600 transition-colors"
+          className="flex items-center gap-1 text-xs text-[#408A71] hover:text-[#285A48] transition-colors"
         >
           See all <ExternalLink size={11} />
         </a>

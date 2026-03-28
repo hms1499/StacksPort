@@ -157,7 +157,7 @@ export default function NotificationsContent() {
                   className={cn(
                     'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
                     activeTab === tab.key
-                      ? 'border-teal-500 text-teal-600 dark:text-teal-400'
+                      ? 'border-[#408A71] text-[#285A48] dark:text-[#B0E4CC]'
                       : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   )}
                 >
@@ -168,7 +168,7 @@ export default function NotificationsContent() {
 
             {unreadCount > 0 && (
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 align-middle" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#408A71] mr-1.5 align-middle" />
                 {unreadCount} unread
               </span>
             )}
@@ -184,14 +184,14 @@ export default function NotificationsContent() {
               className={cn(
                 'lg:hidden flex items-center gap-1.5 px-3 py-2 border rounded-lg transition-colors text-sm font-medium shrink-0',
                 activeFilterCount > 0
-                  ? 'border-teal-500 text-teal-600 bg-teal-50'
+                  ? 'border-[#408A71] text-[#285A48] bg-[#B0E4CC]/20'
                   : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
               )}
             >
               <SlidersHorizontal size={16} />
               Filters
               {activeFilterCount > 0 && (
-                <span className="bg-teal-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="bg-[#408A71] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {activeFilterCount}
                 </span>
               )}
@@ -204,7 +204,7 @@ export default function NotificationsContent() {
                 type="text"
                 placeholder="Search notifications..."
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm bg-white dark:bg-gray-800 dark:text-gray-200"
+                className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#408A71] focus:border-transparent text-sm bg-white dark:bg-gray-800 dark:text-gray-200"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function NotificationsContent() {
                         onClick={() => { setSortBy(sort); setIsSortOpen(false); }}
                         className={cn(
                           'w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-800',
-                          filters.sortBy === sort && 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 font-medium'
+                          filters.sortBy === sort && 'bg-[#B0E4CC]/20 dark:bg-[#285A48]/30 text-[#285A48] dark:text-[#B0E4CC] font-medium'
                         )}
                       >
                         {sort === 'newest' ? 'Newest first' : 'Oldest first'}
@@ -275,7 +275,7 @@ export default function NotificationsContent() {
                     type="checkbox"
                     checked={selectedIds.size === filteredNotifications.length}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                    className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
                   />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {selectedIds.size === filteredNotifications.length

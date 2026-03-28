@@ -138,7 +138,7 @@ export default function SendModal({ token, onClose }: Props) {
               href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-teal-500 hover:text-teal-600 underline"
+              className="text-xs text-[#408A71] hover:text-[#285A48] underline"
             >
               View on Explorer
             </a>
@@ -159,7 +159,7 @@ export default function SendModal({ token, onClose }: Props) {
                 placeholder={network === "mainnet" ? "SP..." : "ST..."}
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value.trim())}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent placeholder:text-gray-300"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] focus:border-transparent placeholder:text-gray-300"
               />
             </div>
 
@@ -174,12 +174,12 @@ export default function SendModal({ token, onClose }: Props) {
                   step="any"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent placeholder:text-gray-300 pr-24"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] focus:border-transparent placeholder:text-gray-300 pr-24"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   <button
                     onClick={() => setAmount(String(Number(token.rawBalance) / Math.pow(10, token.decimals)))}
-                    className="text-xs text-teal-500 hover:text-teal-600 font-medium"
+                    className="text-xs text-[#408A71] hover:text-[#285A48] font-medium"
                   >
                     MAX
                   </button>

@@ -72,8 +72,8 @@ function TokenAvatar({ symbol, imageUri }: { symbol: string; imageUri?: string }
     );
   }
   return (
-    <div className="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center flex-shrink-0">
-      <span className="text-xs font-bold text-teal-600">{symbol.slice(0, 3)}</span>
+    <div className="w-8 h-8 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center flex-shrink-0">
+      <span className="text-xs font-bold text-[#285A48]">{symbol.slice(0, 3)}</span>
     </div>
   );
 }
@@ -230,7 +230,7 @@ export default function PnLTracker() {
             <button
               onClick={handleExport}
               title="Export CSV"
-              className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-600 bg-gray-50 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors"
+              className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#285A48] bg-gray-50 hover:bg-[#B0E4CC]/20 px-2 py-1 rounded-lg transition-colors"
             >
               <Download size={11} />
               Export
@@ -238,7 +238,7 @@ export default function PnLTracker() {
           )}
           {loading && (
             <span className="flex items-center gap-1.5 text-xs text-gray-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B0E4CC] animate-pulse" />
               Calculating...
             </span>
           )}

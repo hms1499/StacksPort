@@ -42,8 +42,8 @@ function TokenAvatar({ symbol, imageUri, warning }: { symbol: string; imageUri?:
     );
   }
   return (
-    <div className={`w-9 h-9 rounded-full bg-teal-50 flex items-center justify-center flex-shrink-0 ${ring}`}>
-      <span className="text-xs font-bold text-teal-600">{symbol.slice(0, 3)}</span>
+    <div className={`w-9 h-9 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center flex-shrink-0 ${ring}`}>
+      <span className="text-xs font-bold text-[#285A48]">{symbol.slice(0, 3)}</span>
     </div>
   );
 }
@@ -138,7 +138,7 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
         {!isFlagged && (
           <div className="hidden xl:flex items-center gap-1.5 ml-2">
             <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-teal-400 rounded-full" style={{ width: `${Math.min(pct, 100)}%` }} />
+              <div className="h-full bg-[#B0E4CC] rounded-full" style={{ width: `${Math.min(pct, 100)}%` }} />
             </div>
             <span className="text-[10px] text-gray-400">{pct.toFixed(1)}%</span>
           </div>
@@ -256,7 +256,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
                 <button
                   onClick={handleExport}
                   title="Export CSV"
-                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-600 bg-gray-50 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors"
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#285A48] bg-gray-50 hover:bg-[#B0E4CC]/20 px-2 py-1 rounded-lg transition-colors"
                 >
                   <Download size={11} />
                   Export

@@ -30,14 +30,14 @@ export default function WalletBanner() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-2xl p-5 flex items-center justify-between">
+    <div className="bg-gradient-to-r from-[#408A71] to-[#285A48] rounded-2xl p-5 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
           <Wallet size={22} className="text-white" />
         </div>
         <div>
           <p className="text-white font-semibold">Connect your wallet</p>
-          <p className="text-teal-100 text-sm mt-0.5">
+          <p className="text-[#B0E4CC]/30 text-sm mt-0.5">
             View your Stacks portfolio in real-time
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function WalletBanner() {
       <button
         onClick={handleConnect}
         disabled={connecting}
-        className="flex items-center gap-2 bg-white text-teal-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-teal-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 bg-white text-[#285A48] px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#B0E4CC]/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {connecting ? (
           <>

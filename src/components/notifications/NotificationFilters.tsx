@@ -70,7 +70,7 @@ export default function NotificationFilters({
           {hasActiveFilters && (
             <button
               onClick={() => clearFilters()}
-              className="text-xs text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 font-medium transition-colors"
+              className="text-xs text-[#285A48] hover:text-[#285A48] dark:text-[#B0E4CC] dark:hover:text-[#B0E4CC] font-medium transition-colors"
             >
               Clear
             </button>
@@ -97,7 +97,7 @@ export default function NotificationFilters({
                 type="checkbox"
                 checked={filters.types.includes(type)}
                 onChange={() => handleTypeToggle(type)}
-                className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">{getTypeLabel(type)}</span>
             </label>
@@ -115,7 +115,7 @@ export default function NotificationFilters({
                 type="checkbox"
                 checked={filters.categories.includes(category)}
                 onChange={() => handleCategoryToggle(category)}
-                className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">{getCategoryLabel(category)}</span>
             </label>
@@ -135,7 +135,7 @@ export default function NotificationFilters({
                 value={range}
                 checked={filters.dateRange === range}
                 onChange={() => setDateRangeFilter(range)}
-                className="w-4 h-4 border-gray-300 text-teal-600 focus:ring-teal-500"
+                className="w-4 h-4 border-gray-300 text-[#285A48] focus:ring-[#408A71]"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">
                 {range === 'hour'

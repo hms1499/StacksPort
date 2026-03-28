@@ -58,8 +58,8 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
           value={`${formatSTXAmount(s.lockedSTX)} STX`}
           sub={formatUSD(s.lockedUsd)}
           icon={Lock}
-          iconColor="text-teal-600"
-          iconBg="bg-teal-50"
+          iconColor="text-[#285A48]"
+          iconBg="bg-[#B0E4CC]/20"
         />
         <StatCard
           label="Cycles Remaining"
@@ -94,7 +94,7 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
         </div>
         <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-teal-400 to-teal-500 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-[#B0E4CC] to-[#408A71] rounded-full transition-all duration-500"
             style={{ width: `${s.cycleProgress}%` }}
           />
         </div>
@@ -125,7 +125,7 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
             href={`https://explorer.hiro.so/txid/${s.lockTxId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-teal-500 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-1 text-[#408A71] hover:text-[#285A48] transition-colors"
           >
             View stack-stx tx <ExternalLink size={10} />
           </a>
@@ -170,7 +170,7 @@ function NotStacking({ s }: { s: StackingStatus }) {
           href="https://stacking.club"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-teal-600 font-medium hover:text-teal-700 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-[#285A48] font-medium hover:text-[#285A48] transition-colors"
         >
           Explore stacking pools <ExternalLink size={13} />
         </a>
@@ -241,13 +241,13 @@ export default function StackingTracker() {
             <span
               className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
                 status.isStacking
-                  ? "bg-teal-50 text-teal-600"
+                  ? "bg-[#B0E4CC]/20 text-[#285A48]"
                   : "bg-gray-100 text-gray-500"
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  status.isStacking ? "bg-teal-500" : "bg-gray-400"
+                  status.isStacking ? "bg-[#408A71]" : "bg-gray-400"
                 }`}
               />
               {status.isStacking ? "Active" : "Not Stacking"}

@@ -50,7 +50,7 @@ export default function Home() {
               {/* Left Column */}
               <div className="md:col-span-6">
                 <div className="mb-6">
-                  <span className="inline-block px-3 py-1 bg-teal-50 text-teal-600 text-xs font-semibold rounded-full">
+                  <span className="inline-block px-3 py-1 bg-[#B0E4CC]/20 text-[#285A48] text-xs font-semibold rounded-full">
                     🚀 Launch Week
                   </span>
                 </div>
@@ -67,7 +67,7 @@ export default function Home() {
                   <button
                     onClick={handleConnect}
                     disabled={connecting}
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg transition-colors shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-[#B0E4CC]/200 hover:bg-[#285A48] text-white font-semibold rounded-lg transition-colors shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-60"
                   >
                     {connecting ? 'Connecting...' : 'Connect Wallet'}
                     <ArrowRight size={18} />
@@ -82,9 +82,9 @@ export default function Home() {
               {/* Right Column - Visual */}
               <div className="md:col-span-6 flex items-center justify-center">
                 <div className="space-y-4 w-full max-w-md">
-                  <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl p-6 border border-teal-200">
+                  <div className="bg-gradient-to-br from-[#B0E4CC]/20 to-[#B0E4CC]/30 rounded-2xl p-6 border border-[#408A71]/30">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-lg bg-teal-600 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-[#285A48] flex items-center justify-center">
                         <Repeat2 size={20} className="text-white" />
                       </div>
                       <h3 className="font-semibold text-gray-900">DCA Plans</h3>
@@ -130,22 +130,22 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-teal-200 hover:shadow-sm transition-all">
-                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center mb-4">
-                  <Repeat2 size={24} className="text-teal-600" />
+              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#408A71]/30 hover:shadow-sm transition-all">
+                <div className="w-12 h-12 rounded-xl bg-[#B0E4CC]/20 flex items-center justify-center mb-4">
+                  <Repeat2 size={24} className="text-[#285A48]" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">DCA Automation</h3>
                 <p className="text-gray-600 mb-4">
                   Set up automated dollar-cost averaging plans. Invest regularly without lifting a finger.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-500">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Custom intervals</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Any token pair</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Auto-execution</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Custom intervals</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Any token pair</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Auto-execution</li>
                 </ul>
               </div>
 
-              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-teal-200 hover:shadow-sm transition-all">
+              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#408A71]/30 hover:shadow-sm transition-all">
                 <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-4">
                   <ZapIcon size={24} className="text-blue-600" />
                 </div>
@@ -154,43 +154,43 @@ export default function Home() {
                   Execute swaps instantly with competitive rates powered by leading DEXs on Stacks.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-500">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Real-time quotes</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Low slippage</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Multiple pairs</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Real-time quotes</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Low slippage</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Multiple pairs</li>
                 </ul>
               </div>
 
-              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-teal-200 hover:shadow-sm transition-all">
-                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center mb-4">
-                  <BarChart3 size={24} className="text-teal-600" />
+              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#408A71]/30 hover:shadow-sm transition-all">
+                <div className="w-12 h-12 rounded-xl bg-[#B0E4CC]/20 flex items-center justify-center mb-4">
+                  <BarChart3 size={24} className="text-[#285A48]" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Analytics</h3>
                 <p className="text-gray-600 mb-4">
                   Track your portfolio performance with detailed analytics and performance metrics.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-500">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Real-time balance</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> PnL tracking</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Performance charts</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Real-time balance</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> PnL tracking</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Performance charts</li>
                 </ul>
               </div>
 
-              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-teal-200 hover:shadow-sm transition-all">
-                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center mb-4">
-                  <Bell size={24} className="text-teal-600" />
+              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#408A71]/30 hover:shadow-sm transition-all">
+                <div className="w-12 h-12 rounded-xl bg-[#B0E4CC]/20 flex items-center justify-center mb-4">
+                  <Bell size={24} className="text-[#285A48]" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Notifications</h3>
                 <p className="text-gray-600 mb-4">
                   Get instant alerts for plan executions, swaps, and important portfolio changes.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-500">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Real-time alerts</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Smart filters</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> History tracking</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Real-time alerts</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Smart filters</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> History tracking</li>
                 </ul>
               </div>
 
-              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-teal-200 hover:shadow-sm transition-all">
+              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#408A71]/30 hover:shadow-sm transition-all">
                 <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
                   <Heart size={24} className="text-gray-600" />
                 </div>
@@ -199,24 +199,24 @@ export default function Home() {
                   Your security is our priority. No seed phrases, smart contract audited.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-500">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Non-custodial</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Audited contracts</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Stacks consensus</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Non-custodial</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Audited contracts</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Stacks consensus</li>
                 </ul>
               </div>
 
-              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-teal-200 hover:shadow-sm transition-all">
-                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center mb-4">
-                  <TrendingUp size={24} className="text-teal-600" />
+              <div className="md:col-span-6 lg:col-span-4 bg-white rounded-2xl border border-gray-200 p-8 hover:border-[#408A71]/30 hover:shadow-sm transition-all">
+                <div className="w-12 h-12 rounded-xl bg-[#B0E4CC]/20 flex items-center justify-center mb-4">
+                  <TrendingUp size={24} className="text-[#285A48]" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Community Driven</h3>
                 <p className="text-gray-600 mb-4">
                   Join a community of Stacks users optimizing their portfolio strategies.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-500">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Active community</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Open source</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Feedback welcome</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Active community</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Open source</li>
+                  <li className="flex items-center gap-2"><span className="text-[#408A71]">✓</span> Feedback welcome</li>
                 </ul>
               </div>
             </div>
@@ -224,18 +224,18 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 md:py-24 px-4 md:px-6 bg-teal-500">
+        <section className="py-16 md:py-24 px-4 md:px-6 bg-[#B0E4CC]/200">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Ready to optimize your portfolio?
             </h2>
-            <p className="text-lg text-teal-100 mb-8">
+            <p className="text-lg text-[#B0E4CC] mb-8">
               Connect your wallet and start building your first DCA plan today.
             </p>
             <button
               onClick={handleConnect}
               disabled={connecting}
-              className="inline-flex items-center gap-2 px-10 py-4 bg-white text-teal-600 font-semibold text-lg rounded-xl hover:bg-teal-50 transition-colors shadow-xl active:scale-95 disabled:opacity-60"
+              className="inline-flex items-center gap-2 px-10 py-4 bg-white text-[#285A48] font-semibold text-lg rounded-xl hover:bg-[#B0E4CC]/20 transition-colors shadow-xl active:scale-95 disabled:opacity-60"
             >
               {connecting ? 'Connecting...' : 'Get Started Now'}
               <ArrowRight size={20} />

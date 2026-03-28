@@ -129,7 +129,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
           <Link
             href="/notifications"
             onClick={onClose}
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium text-teal-600 hover:text-teal-700 hover:bg-teal-50 transition-colors border-t border-gray-100"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium text-[#285A48] hover:text-[#285A48] hover:bg-[#B0E4CC]/20 transition-colors border-t border-gray-100"
           >
             View all
             <ArrowRight size={16} />

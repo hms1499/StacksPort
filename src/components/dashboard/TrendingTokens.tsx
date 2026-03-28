@@ -140,7 +140,7 @@ export default function TrendingTokens() {
           href={COINGECKO_STACKS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-0.5 text-sm text-teal-500 hover:text-teal-600 transition-colors font-medium"
+          className="flex items-center gap-0.5 text-sm text-[#408A71] hover:text-[#285A48] transition-colors font-medium"
         >
           See all <ChevronRight size={15} />
         </a>

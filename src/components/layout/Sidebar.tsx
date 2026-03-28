@@ -40,7 +40,7 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100 dark:border-gray-800">
-        <div className="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
+        <div className="w-9 h-9 rounded-xl bg-[#408A71] flex items-center justify-center shrink-0">
           <BarChart3 size={20} className="text-white" />
         </div>
         {!collapsed && (
@@ -80,8 +80,8 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
                 active
-                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+                  ? "bg-[#408A71]/10 text-[#408A71] dark:bg-[#285A48]/30 dark:text-[#B0E4CC]"
+                  : "text-[#285A48]/60 dark:text-[#B0E4CC]/50 hover:bg-[#408A71]/5 dark:hover:bg-[#285A48]/20 hover:text-[#408A71] dark:hover:text-[#B0E4CC]"
               )}
             >
               <Icon size={18} className="shrink-0" />

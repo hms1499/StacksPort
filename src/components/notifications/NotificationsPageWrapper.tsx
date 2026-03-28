@@ -45,7 +45,7 @@ export default function NotificationsPageWrapper() {
               className={cn(
                 'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors',
                 activeTab === id
-                  ? 'border-teal-500 text-teal-600 dark:text-teal-400'
+                  ? 'border-[#408A71] text-[#285A48] dark:text-[#B0E4CC]'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               )}
             >

@@ -12,8 +12,8 @@ export default function TradePage() {
         {/* Swap Widget — full width */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="flex items-center gap-2.5 mb-5">
-            <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center">
-              <ArrowLeftRight size={15} className="text-teal-500" />
+            <div className="w-8 h-8 rounded-lg bg-[#B0E4CC]/20 dark:bg-[#091413]/30 flex items-center justify-center">
+              <ArrowLeftRight size={15} className="text-[#408A71]" />
             </div>
             <h2 className="font-semibold text-gray-700 dark:text-gray-200">Swap</h2>
           </div>
@@ -38,7 +38,7 @@ export default function TradePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <Zap size={15} className="text-teal-500" />
+              <Zap size={15} className="text-[#408A71]" />
               <h3 className="font-semibold text-gray-700 dark:text-gray-200 text-sm">Best Routes</h3>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">

@@ -217,7 +217,7 @@ export default function MigrationWidget() {
           href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-teal-500 hover:text-teal-600 underline"
+          className="flex items-center gap-1.5 text-sm text-[#408A71] hover:text-[#285A48] underline"
         >
           View on Explorer <ExternalLink size={12} />
         </a>
@@ -278,7 +278,7 @@ export default function MigrationWidget() {
               ) : fromBalance !== null ? (
                 <button
                   onClick={() => setPercent(1)}
-                  className="font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                  className="font-medium text-[#285A48] dark:text-[#B0E4CC] hover:text-[#285A48] dark:hover:text-[#B0E4CC] transition-colors"
                 >
                   {formatAmount(fromBalance)} {fromSymbol}
                 </button>
@@ -298,7 +298,7 @@ export default function MigrationWidget() {
             className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 dark:placeholder:text-gray-500 transition-colors ${
               overBalance
                 ? "border-red-300 focus:ring-red-300 text-red-600"
-                : "border-gray-200 dark:border-gray-600 focus:ring-teal-400 text-gray-900 dark:text-gray-100"
+                : "border-gray-200 dark:border-gray-600 focus:ring-[#B0E4CC] text-gray-900 dark:text-gray-100"
             }`}
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
@@ -319,7 +319,7 @@ export default function MigrationWidget() {
               <button
                 key={pct}
                 onClick={() => setPercent(pct)}
-                className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors"
+                className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-[#B0E4CC]/20 dark:bg-[#285A48]/30 text-[#285A48] dark:text-[#B0E4CC] hover:bg-[#B0E4CC]/30 dark:hover:bg-[#285A48]/50 transition-colors"
               >
                 {pct === 1 ? "MAX" : `${pct * 100}%`}
               </button>
@@ -332,7 +332,7 @@ export default function MigrationWidget() {
       <div className="flex justify-center">
         <button
           onClick={flipDirection}
-          className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-teal-400 transition-colors shadow-sm"
+          className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-[#B0E4CC] transition-colors shadow-sm"
           title="Flip direction"
         >
           <ArrowUpDown size={14} className="text-gray-500 dark:text-gray-400" />
@@ -393,7 +393,7 @@ export default function MigrationWidget() {
               href={`https://explorer.hiro.so/txid/${POOL_ADDRESS}.${POOL_NAME}?chain=${network}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-teal-500 hover:text-teal-600 flex items-center gap-1"
+              className="text-[#408A71] hover:text-[#285A48] flex items-center gap-1"
             >
               aeUSDC-USDCx-LP <ExternalLink size={10} />
             </a>
@@ -445,7 +445,7 @@ export default function MigrationWidget() {
       <button
         onClick={handleSwap}
         disabled={!isConnected || status !== "ready" || overBalance || amountNum <= 0}
-        className="w-full py-3.5 rounded-xl bg-teal-500 text-white text-sm font-semibold hover:bg-teal-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-3.5 rounded-xl bg-[#408A71] text-white text-sm font-semibold hover:bg-[#285A48] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {status === "swapping" ? (
           <><Loader2 size={15} className="animate-spin" /> Waiting for wallet...</>
@@ -461,7 +461,7 @@ export default function MigrationWidget() {
 
       <p className="text-center text-[11px] text-gray-300 dark:text-gray-500">
         Powered by{" "}
-        <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-500">
+        <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-[#B0E4CC] hover:text-[#408A71]">
           Bitflow
         </a>
         {" "}stableswap pool

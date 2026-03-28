@@ -29,7 +29,7 @@ export default function NewsDigestCard({
           >
             <div className="flex items-start gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 line-clamp-2 group-hover:text-[#285A48] dark:group-hover:text-[#B0E4CC] transition-colors">
                   {item.headline}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">

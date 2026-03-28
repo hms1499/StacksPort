@@ -17,7 +17,7 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-teal-500 to-teal-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#408A71] to-[#285A48] flex items-center justify-center">
               <BarChart3 size={20} className="text-white" />
             </div>
             <span className="font-bold text-gray-900 text-lg">StacksPort</span>
@@ -45,7 +45,7 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
           <div className="flex items-center gap-3">
             <button
               onClick={onConnectClick}
-              className="hidden md:inline-flex px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="hidden md:inline-flex px-6 py-2 bg-[#408A71] hover:bg-[#285A48] text-white text-sm font-semibold rounded-lg transition-colors"
             >
               Connect Wallet
             </button>
@@ -89,7 +89,7 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
                 onConnectClick();
                 setMobileOpen(false);
               }}
-              className="w-full mt-2 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="w-full mt-2 px-4 py-2 bg-[#408A71] hover:bg-[#285A48] text-white text-sm font-semibold rounded-lg transition-colors"
             >
               Connect Wallet
             </button>

@@ -65,7 +65,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-3 py-1.5 rounded-xl transition-colors"
             >
-              <div className="w-6 h-6 rounded-full bg-teal-500 flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-[#408A71] flex items-center justify-center">
                 <span className="text-white text-xs font-medium">{stxAddress.slice(0, 1)}</span>
               </div>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{shortenAddress(stxAddress)}</span>
@@ -83,7 +83,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     onClick={handleCopyAddress}
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
                   >
-                    {copied ? <Check size={14} className="text-teal-500" /> : <Copy size={14} />}
+                    {copied ? <Check size={14} className="text-[#408A71]" /> : <Copy size={14} />}
                     {copied ? "Copied!" : "Copy Address"}
                   </button>
                   <button
@@ -109,7 +109,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
             disabled={connecting}
             className={cn(
               "flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors",
-              "bg-teal-500 hover:bg-teal-600 text-white disabled:opacity-60 disabled:cursor-not-allowed"
+              "bg-[#408A71] hover:bg-[#285A48] text-white disabled:opacity-60 disabled:cursor-not-allowed"
             )}
           >
             {connecting && <Loader2 size={13} className="animate-spin" />}

@@ -172,7 +172,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
   function StatusIcon({ id }: { id: string }) {
     const s = rowStatuses[id];
     if (!s || s === "idle") return null;
-    if (s === "pending") return <Loader2 size={14} className="animate-spin text-teal-500 shrink-0" />;
+    if (s === "pending") return <Loader2 size={14} className="animate-spin text-[#408A71] shrink-0" />;
     if (s === "success") return <CheckCircle2 size={14} className="text-green-500 shrink-0" />;
     return <XCircle size={14} className="text-red-400 shrink-0" />;
   }
@@ -222,7 +222,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
                         href={`https://explorer.hiro.so/txid/${result.txId}?chain=${network}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-teal-500 hover:underline break-all"
+                        className="text-[#408A71] hover:underline break-all"
                       >
                         {result.txId.slice(0, 20)}...
                       </a>
@@ -290,7 +290,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
                   value={r.address}
                   onChange={(e) => updateRow(r.id, "address", e.target.value.trim())}
                   disabled={isRunning}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-400 placeholder:text-gray-300 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-60 pr-6"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] placeholder:text-gray-300 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-60 pr-6"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   <StatusIcon id={r.id} />
@@ -305,7 +305,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
                 value={r.amount}
                 onChange={(e) => updateRow(r.id, "amount", e.target.value)}
                 disabled={isRunning}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs focus:outline-none focus:ring-2 focus:ring-teal-400 placeholder:text-gray-300 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-60"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] placeholder:text-gray-300 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-60"
               />
 
               <button
@@ -323,7 +323,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
         {!isRunning && recipients.length < MAX_RECIPIENTS && (
           <button
             onClick={addRow}
-            className="mt-3 flex items-center gap-1.5 text-xs text-teal-500 hover:text-teal-600 font-medium"
+            className="mt-3 flex items-center gap-1.5 text-xs text-[#408A71] hover:text-[#285A48] font-medium"
           >
             <Plus size={13} />
             Add recipient ({recipients.length}/{MAX_RECIPIENTS})
@@ -346,7 +346,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
           </div>
           <div className="flex items-center justify-between text-xs border-t border-gray-200 dark:border-gray-700 pt-1.5">
             <span className="text-gray-500">Remaining balance</span>
-            <span className={`font-semibold ${maxSTX - totalSTX < 0 ? "text-red-500" : "text-teal-600 dark:text-teal-400"}`}>
+            <span className={`font-semibold ${maxSTX - totalSTX < 0 ? "text-red-500" : "text-[#285A48] dark:text-[#B0E4CC]"}`}>
               {(maxSTX - totalSTX).toFixed(6)} STX
             </span>
           </div>

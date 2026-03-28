@@ -175,7 +175,7 @@ function RecentActivity() {
             href={`https://explorer.hiro.so/address/${stxAddress}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-0.5 text-xs text-teal-500 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-0.5 text-xs text-[#408A71] hover:text-[#285A48] transition-colors"
           >
             See all <ExternalLink size={11} />
           </a>

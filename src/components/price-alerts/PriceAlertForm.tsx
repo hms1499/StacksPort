@@ -43,7 +43,7 @@ export default function PriceAlertForm() {
                 className={cn(
                   'px-3 py-2 rounded-xl border text-sm font-medium transition-colors',
                   selectedToken.geckoId === token.geckoId
-                    ? 'border-teal-500 bg-teal-50 text-teal-700'
+                    ? 'border-[#408A71] bg-[#B0E4CC]/20 text-[#285A48]'
                     : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                 )}
               >
@@ -103,7 +103,7 @@ export default function PriceAlertForm() {
                 setTargetPrice(e.target.value);
                 if (error) setError('');
               }}
-              className="w-full pl-7 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+              className="w-full pl-7 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#408A71] focus:border-transparent text-sm"
             />
           </div>
           {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
@@ -120,7 +120,7 @@ export default function PriceAlertForm() {
 
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-medium text-sm transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#408A71] hover:bg-[#285A48] text-white rounded-xl font-medium text-sm transition-colors"
         >
           <Plus size={16} />
           Create Alert

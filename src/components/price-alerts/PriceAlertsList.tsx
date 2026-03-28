@@ -78,7 +78,7 @@ export default function PriceAlertsList() {
                 className={cn(
                   'text-[10px] font-semibold uppercase tracking-wide px-2 py-1 rounded-full',
                   isTriggered
-                    ? 'bg-teal-50 text-teal-600'
+                    ? 'bg-[#B0E4CC]/20 text-[#285A48]'
                     : alert.isActive
                       ? 'bg-green-50 text-green-600'
                       : 'bg-gray-100 text-gray-400'
@@ -93,7 +93,7 @@ export default function PriceAlertsList() {
                   <button
                     onClick={() => resetAlert(alert.id)}
                     title="Reset alert"
-                    className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-[#285A48] hover:bg-[#B0E4CC]/20 rounded-lg transition-colors"
                   >
                     <RotateCcw size={15} />
                   </button>

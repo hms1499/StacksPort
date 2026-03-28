@@ -8,7 +8,7 @@ export default function Icon() {
     (
       <div
         style={{
-          background: '#14b8a6', // teal-500
+          background: '#408A71', // brand green
           width: '100%',
           height: '100%',
           display: 'flex',

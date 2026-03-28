@@ -48,7 +48,7 @@ export default function ReceiveModal({ onClose }: Props) {
         <div className="flex justify-center mb-4">
           <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
             network === "mainnet"
-              ? "bg-teal-50 text-teal-600"
+              ? "bg-[#B0E4CC]/20 text-[#285A48]"
               : "bg-yellow-50 text-yellow-600"
           }`}>
             {network === "mainnet" ? "Mainnet" : "Testnet"}

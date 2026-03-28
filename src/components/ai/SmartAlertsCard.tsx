@@ -7,9 +7,9 @@ import type { AlertItem } from "@/lib/ai";
 const typeConfig = {
   opportunity: {
     icon: Zap,
-    border: "border-l-teal-500",
-    iconColor: "text-teal-500",
-    bg: "bg-teal-50 dark:bg-teal-900/10",
+    border: "border-l-[#408A71]",
+    iconColor: "text-[#408A71]",
+    bg: "bg-[#B0E4CC]/20 dark:bg-[#285A48]/10",
   },
   warning: {
     icon: AlertTriangle,

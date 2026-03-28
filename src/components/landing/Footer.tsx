@@ -14,7 +14,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-3">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[#408A71] flex items-center justify-center">
                 <BarChart3 size={20} className="text-white" />
               </div>
               <span className="font-bold text-white text-lg">StacksPort</span>

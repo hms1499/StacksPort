@@ -274,7 +274,7 @@ export default function AssetTransactionHistory() {
               <button
                 onClick={handleExport}
                 title="Export CSV"
-                className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-600 bg-gray-50 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors"
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#285A48] bg-gray-50 hover:bg-[#B0E4CC]/20 px-2 py-1 rounded-lg transition-colors"
               >
                 <Download size={11} />
                 Export
@@ -284,7 +284,7 @@ export default function AssetTransactionHistory() {
               href={`https://explorer.hiro.so/address/${stxAddress}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-teal-500 hover:text-teal-600 transition-colors"
+              className="flex items-center gap-1 text-xs text-[#408A71] hover:text-[#285A48] transition-colors"
             >
               View on Explorer <ExternalLink size={11} />
             </a>

@@ -78,8 +78,8 @@ export default function CreatePlanForm({ onCreated }: Props) {
   if (txId) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3">
-        <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center">
-          <PlusCircle size={18} className="text-teal-500" />
+        <div className="w-10 h-10 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center">
+          <PlusCircle size={18} className="text-[#408A71]" />
         </div>
         <p className="font-semibold text-gray-900">Plan submitted!</p>
         <p className="text-xs text-gray-400 break-all">Tx: {txId}</p>
@@ -88,7 +88,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
         </p>
         <button
           onClick={() => { setTxId(null); setAmountPerSwap(""); setInitialDeposit(""); }}
-          className="mt-1 text-sm text-teal-600 hover:underline text-left"
+          className="mt-1 text-sm text-[#285A48] hover:underline text-left"
         >
           + Create new plan
         </button>
@@ -134,7 +134,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
             onChange={(e) => setAmountPerSwap(e.target.value)}
             placeholder="1"
             min="1"
-            className="w-full px-3 py-2.5 pr-14 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            className="w-full px-3 py-2.5 pr-14 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#B0E4CC]"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">STX</span>
         </div>
@@ -150,8 +150,8 @@ export default function CreatePlanForm({ onCreated }: Props) {
               onClick={() => setInterval(key)}
               className={`py-2 rounded-xl text-sm font-medium border transition-colors ${
                 interval === key
-                  ? "bg-teal-500 text-white border-teal-500"
-                  : "border-gray-200 text-gray-500 hover:border-teal-300"
+                  ? "bg-[#408A71] text-white border-[#408A71]"
+                  : "border-gray-200 text-gray-500 hover:border-[#B0E4CC]"
               }`}
             >
               {key}
@@ -180,7 +180,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
             onChange={(e) => setInitialDeposit(e.target.value)}
             placeholder="2"
             min="2"
-            className={`w-full px-3 py-2.5 pr-20 rounded-xl border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400 ${
+            className={`w-full px-3 py-2.5 pr-20 rounded-xl border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] ${
               insufficientBalance ? "border-red-300 bg-red-50" : "border-gray-200"
             }`}
           />
@@ -189,7 +189,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
               <button
                 type="button"
                 onClick={() => setInitialDeposit(String(maxDeposit))}
-                className="text-[10px] font-semibold text-teal-600 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded hover:bg-teal-100 transition-colors"
+                className="text-[10px] font-semibold text-[#285A48] bg-[#B0E4CC]/20 border border-[#B0E4CC] px-1.5 py-0.5 rounded hover:bg-[#B0E4CC]/30 transition-colors"
               >
                 Max
               </button>
@@ -214,7 +214,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 rounded-xl bg-[#408A71] hover:bg-[#285A48] disabled:opacity-50 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
       >
         <PlusCircle size={16} />
         {loading ? "Waiting for wallet…" : "Create Plan"}

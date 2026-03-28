@@ -249,7 +249,7 @@ export default function SBTCMonitor() {
           href="https://docs.stacks.co/concepts/sbtc"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-teal-500 hover:text-teal-600 transition-colors flex items-center gap-1"
+          className="text-xs text-[#408A71] hover:text-[#285A48] transition-colors flex items-center gap-1"
         >
           About sBTC <ExternalLink size={11} />
         </a>
@@ -313,7 +313,7 @@ export default function SBTCMonitor() {
                   href="https://app.stacks.co"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-teal-500 hover:underline"
+                  className="text-[#408A71] hover:underline"
                 >
                   Bridge BTC → sBTC
                 </a>

@@ -6,7 +6,7 @@ import { formatUSD, formatPercent } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 
 const ALLOCATION_COLORS = [
-  "#14b8a6", // teal  — STX
+  "#408A71", // brand green — STX
   "#6366f1", // indigo
   "#f97316", // orange
   "#ec4899", // pink

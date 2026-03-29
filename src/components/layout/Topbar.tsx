@@ -7,6 +7,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { shortenAddress, cn } from "@/lib/utils";
 import { connectWallet } from "@/lib/wallet";
 import NotificationBadge from "@/components/notifications/NotificationBadge";
+import CommandPalette from "@/components/layout/CommandPalette";
 
 interface TopbarProps {
   title?: string;
@@ -54,6 +55,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
 
       {/* Right actions */}
       <div className="flex items-center gap-1.5">
+        <CommandPalette />
         <NotificationBadge />
         <button onClick={toggleTheme} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors hidden md:flex">
           {theme === "dark" ? <Sun size={18} className="text-gray-400" /> : <Moon size={18} className="text-gray-500" />}

@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { useNotificationStore } from '@/store/notificationStore';
 import Toast from './Toast';
 
 export default function ToastContainer() {
   const { notifications, dismissNotification } = useNotificationStore();
 
-  // Get all toasts that have a duration (auto-dismiss) AND are still shown
   const toasts = notifications.filter((n) => n.duration && n.isShown !== false);
 
   return (
@@ -17,11 +17,13 @@ export default function ToastContainer() {
       aria-label="Notifications"
       aria-live="polite"
     >
-      {toasts.map((notification) => (
-        <div key={notification.id} className="pointer-events-auto">
-          <Toast notification={notification} onDismiss={dismissNotification} />
-        </div>
-      ))}
+      <AnimatePresence mode="popLayout">
+        {toasts.map((notification) => (
+          <div key={notification.id} className="pointer-events-auto">
+            <Toast notification={notification} onDismiss={dismissNotification} />
+          </div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

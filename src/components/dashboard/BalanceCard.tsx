@@ -15,6 +15,7 @@ import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { usePortfolio, usePortfolioHistory, useSTXPriceHistory } from "@/hooks/useMarketData";
 import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
+import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
 type Period = "1D" | "1W" | "1M";
 
@@ -104,9 +105,11 @@ function BalanceCard() {
         ) : isConnected && portfolio ? (
           <>
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-                {formatUSD(portfolio.totalUSD)}
-              </span>
+              <AnimatedCounter
+                value={portfolio.totalUSD}
+                formatFn={formatUSD}
+                className="text-4xl font-bold text-gray-900 dark:text-gray-100"
+              />
               <span
                 className={`flex items-center gap-1 text-sm font-medium ${
                   isPositive ? "text-green-500" : "text-red-500"

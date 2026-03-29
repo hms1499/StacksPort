@@ -4,6 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useWalletStore } from "@/store/walletStore";
 import { getTokensWithValues, TokenWithValue } from "@/lib/stacks";
 import Topbar from "@/components/layout/Topbar";
+import AnimatedPage from "@/components/motion/AnimatedPage";
+import StaggerChildren from "@/components/motion/StaggerChildren";
+import MotionCard from "@/components/motion/MotionCard";
 import PortfolioSummary from "@/components/assets/PortfolioSummary";
 import HealthScore from "@/components/assets/HealthScore";
 import TokenHoldings from "@/components/assets/TokenHoldings";
@@ -58,19 +61,31 @@ export default function AssetsPageContent() {
   return (
     <div className="flex flex-col min-h-screen">
       <Topbar title="My Assets" />
-      <div className="flex-1 p-4 md:p-6 space-y-4 md:space-y-5 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <PortfolioSummary stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
-          <HealthScore stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
-        </div>
-        <TokenHoldings stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
-        <PnLTracker />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <StackingTracker />
-          <SBTCMonitor />
-        </div>
-        <AssetTransactionHistory />
-      </div>
+      <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
+        <StaggerChildren className="space-y-4 md:space-y-5">
+          <MotionCard>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <PortfolioSummary stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
+              <HealthScore stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
+            </div>
+          </MotionCard>
+          <MotionCard>
+            <TokenHoldings stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
+          </MotionCard>
+          <MotionCard>
+            <PnLTracker />
+          </MotionCard>
+          <MotionCard>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <StackingTracker />
+              <SBTCMonitor />
+            </div>
+          </MotionCard>
+          <MotionCard>
+            <AssetTransactionHistory />
+          </MotionCard>
+        </StaggerChildren>
+      </AnimatedPage>
     </div>
   );
 }

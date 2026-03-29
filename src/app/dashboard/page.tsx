@@ -3,6 +3,9 @@ import Topbar from "@/components/layout/Topbar";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import WalletBanner from "@/components/dashboard/WalletBanner";
 import QuickActions from "@/components/dashboard/QuickActions";
+import AnimatedPage from "@/components/motion/AnimatedPage";
+import StaggerChildren from "@/components/motion/StaggerChildren";
+import MotionCard from "@/components/motion/MotionCard";
 
 // Below-the-fold components — lazy loaded to reduce initial bundle
 const STXMarketStatsCard = dynamic(() => import("@/components/dashboard/STXMarketStats"), {
@@ -91,32 +94,46 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Topbar title="Dashboard" />
-      <div className="flex-1 p-4 md:p-6 space-y-4 md:space-y-5 max-w-6xl mx-auto w-full">
-        <WalletBanner />
+      <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
+        <StaggerChildren className="space-y-4 md:space-y-5">
+          <MotionCard>
+            <WalletBanner />
+          </MotionCard>
 
-        {/* Balance card full width */}
-        <BalanceCard />
+          {/* Balance card full width */}
+          <MotionCard>
+            <BalanceCard />
+          </MotionCard>
 
-        {/* Quick actions — only visible when wallet connected */}
-        <QuickActions />
+          {/* Quick actions — only visible when wallet connected */}
+          <MotionCard>
+            <QuickActions />
+          </MotionCard>
 
-        {/* STX market stats row */}
-        <STXMarketStatsCard />
+          {/* STX market stats row */}
+          <MotionCard>
+            <STXMarketStatsCard />
+          </MotionCard>
 
-        {/* Greed Index + Trending side by side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
-          <GreedIndexCard />
-          <TrendingTokens />
-        </div>
+          {/* Greed Index + Trending side by side */}
+          <MotionCard>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+              <GreedIndexCard />
+              <TrendingTokens />
+            </div>
+          </MotionCard>
 
-        {/* Crypto News + Recent Activity side by side */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5 items-start">
-          <div className="lg:col-span-2">
-            <CryptoNews />
-          </div>
-          <RecentActivity />
-        </div>
-      </div>
+          {/* Crypto News + Recent Activity side by side */}
+          <MotionCard>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5 items-start">
+              <div className="lg:col-span-2">
+                <CryptoNews />
+              </div>
+              <RecentActivity />
+            </div>
+          </MotionCard>
+        </StaggerChildren>
+      </AnimatedPage>
     </div>
   );
 }

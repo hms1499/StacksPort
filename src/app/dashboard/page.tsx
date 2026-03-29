@@ -7,6 +7,8 @@ import AnimatedPage from "@/components/motion/AnimatedPage";
 import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 
+const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
+
 // Below-the-fold components — lazy loaded to reduce initial bundle
 const STXMarketStatsCard = dynamic(() => import("@/components/dashboard/STXMarketStats"), {
   loading: () => (
@@ -98,6 +100,11 @@ export default function DashboardPage() {
         <StaggerChildren className="space-y-4 md:space-y-5">
           <MotionCard>
             <WalletBanner />
+          </MotionCard>
+
+          {/* Welcome steps for new users */}
+          <MotionCard>
+            <WelcomeSteps />
           </MotionCard>
 
           {/* Balance card full width */}

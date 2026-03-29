@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useMemo, useCallback, memo } from "react";
-import { ArrowUpRight, ArrowDownLeft, Coins, AlertTriangle, ShieldAlert, ChevronDown, ChevronUp, Download } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, AlertTriangle, ShieldAlert, ChevronDown, ChevronUp, Download, Wallet } from "lucide-react";
 import { downloadCSV, csvDate } from "@/lib/export";
 import { TokenWithValue } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 import SendModal, { SendTokenInfo } from "@/components/wallet/SendModal";
 import ReceiveModal from "@/components/wallet/ReceiveModal";
+import EmptyState from "@/components/motion/EmptyState";
+import Sparkline from "@/components/dashboard/Sparkline";
 
 function formatBalance(n: number): string {
   if (n === 0) return "0";
@@ -35,14 +37,14 @@ function TokenAvatar({ symbol, imageUri, warning }: { symbol: string; imageUri?:
 
   if (imageUri && !err) {
     return (
-      <div className={`w-9 h-9 rounded-full overflow-hidden bg-gray-50 flex-shrink-0 ${ring}`}>
+      <div className={`w-9 h-9 rounded-full overflow-hidden bg-gray-50 shrink-0 ${ring}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={imageUri} alt={symbol} className="w-full h-full object-cover" onError={() => setErr(true)} />
       </div>
     );
   }
   return (
-    <div className={`w-9 h-9 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center flex-shrink-0 ${ring}`}>
+    <div className={`w-9 h-9 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center shrink-0 ${ring}`}>
       <span className="text-xs font-bold text-[#285A48]">{symbol.slice(0, 3)}</span>
     </div>
   );
@@ -56,7 +58,7 @@ function WarningBadge({ warning }: { warning: TokenWithValue["warning"] }) {
     return (
       <span
         title="This token has no registered metadata. It may be a spam airdrop or scam token. Do not interact unless you trust the source."
-        className="flex items-center gap-0.5 text-[10px] font-semibold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full cursor-help flex-shrink-0"
+        className="flex items-center gap-0.5 text-[10px] font-semibold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full cursor-help shrink-0"
       >
         <ShieldAlert size={9} />
         Suspicious
@@ -67,7 +69,7 @@ function WarningBadge({ warning }: { warning: TokenWithValue["warning"] }) {
   return (
     <span
       title="This token is not listed in any known price feed. It may be legitimate but unverified. Exercise caution."
-      className="flex items-center gap-0.5 text-[10px] font-semibold text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded-full cursor-help flex-shrink-0"
+      className="flex items-center gap-0.5 text-[10px] font-semibold text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded-full cursor-help shrink-0"
     >
       <AlertTriangle size={9} />
       Unverified
@@ -84,8 +86,8 @@ function WarningBanner({ suspicious, unverified }: { suspicious: number; unverif
   return (
     <div className={`flex items-start gap-2.5 px-3 md:px-6 py-3 border-b ${hasSuspicious ? "bg-red-50 border-red-100" : "bg-yellow-50 border-yellow-100"}`}>
       {hasSuspicious
-        ? <ShieldAlert size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
-        : <AlertTriangle size={14} className="text-yellow-500 flex-shrink-0 mt-0.5" />
+        ? <ShieldAlert size={14} className="text-red-500 shrink-0 mt-0.5" />
+        : <AlertTriangle size={14} className="text-yellow-500 shrink-0 mt-0.5" />
       }
       <p className={`text-xs leading-relaxed ${hasSuspicious ? "text-red-700" : "text-yellow-700"}`}>
         {hasSuspicious && (
@@ -118,7 +120,7 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
 
   return (
     <div
-      className={`grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center ${
+      className={`grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center ${
         isFlagged ? "bg-gray-50/50 hover:bg-gray-50" : "hover:bg-gray-50"
       }`}
     >
@@ -154,6 +156,11 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
       <p className={`hidden md:block text-sm text-right ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
         {formatPrice(t.priceUsd)}
       </p>
+
+      {/* Sparkline — desktop only */}
+      <div className="hidden md:flex justify-center">
+        {!isFlagged && <Sparkline change24h={t.change24h} />}
+      </div>
 
       {/* Value */}
       <p className={`text-sm font-semibold text-right ${isFlagged ? "text-gray-400" : "text-gray-900"}`}>
@@ -272,10 +279,11 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         )}
 
         {/* Table header */}
-        <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-2.5 bg-gray-50 text-xs font-medium text-gray-400 uppercase tracking-wide">
+        <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-2.5 bg-gray-50 text-xs font-medium text-gray-400 uppercase tracking-wide">
           <span>Token</span>
           <span className="hidden md:block text-right">Balance</span>
           <span className="hidden md:block text-right">Price</span>
+          <span className="hidden md:block text-center">7d</span>
           <span className="text-right">Value</span>
           <span className="text-right">24h</span>
         </div>
@@ -284,9 +292,9 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         <div className="divide-y divide-gray-50">
           {loading ? (
             [...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 animate-pulse">
+              <div key={i} className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 animate-pulse">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-gray-100 flex-shrink-0" />
+                  <div className="w-9 h-9 rounded-full bg-gray-100 shrink-0" />
                   <div className="space-y-1.5">
                     <div className="h-3 bg-gray-100 rounded w-16" />
                     <div className="h-3 bg-gray-100 rounded w-10" />
@@ -294,15 +302,17 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
                 </div>
                 <div className="hidden md:block h-3 bg-gray-100 rounded w-20 ml-auto self-center" />
                 <div className="hidden md:block h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
+                <div className="hidden md:block h-3 bg-gray-100 rounded w-14 mx-auto self-center" />
                 <div className="h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
                 <div className="h-3 bg-gray-100 rounded w-10 ml-auto self-center" />
               </div>
             ))
           ) : allTokens.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Coins size={32} className="text-gray-200 mb-3" />
-              <p className="text-sm text-gray-400">No tokens found</p>
-            </div>
+            <EmptyState
+              icon={<Wallet size={28} className="text-[#408A71]" />}
+              title="No tokens found"
+              description="Connect your wallet or fund it with STX to see your token holdings here."
+            />
           ) : (
             <>
               {/* Trusted tokens */}

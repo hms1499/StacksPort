@@ -13,6 +13,7 @@ import DCAOutStats from "@/components/dca-out/DCAOutStats";
 import CreateOutPlanForm from "@/components/dca-out/CreateOutPlanForm";
 import MyOutPlans from "@/components/dca-out/MyOutPlans";
 import { Wallet, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import EmptyState from "@/components/motion/EmptyState";
 
 type Tab = "in" | "out";
 
@@ -108,18 +109,12 @@ export default function DCAPageContent() {
         {/* Main content */}
         <MotionCard>
           {!isConnected ? (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-10 flex flex-col items-center gap-4 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#B0E4CC]/20 flex items-center justify-center">
-                <Wallet size={26} className="text-[#408A71]" />
-              </div>
-              <div>
-                <p className="text-base font-semibold text-gray-900">
-                  Connect your wallet to get started
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Connect a Leather or Xverse wallet
-                </p>
-              </div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+              <EmptyState
+                icon={<Wallet size={28} className="text-[#408A71]" />}
+                title="Connect your wallet to get started"
+                description="Connect a Leather or Xverse wallet to create and manage your DCA plans."
+              />
             </div>
           ) : tab === "in" ? (
             <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">

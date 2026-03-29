@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Inbox } from "lucide-react";
+import { RefreshCw, Repeat2 } from "lucide-react";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
 import PlanCard from "./PlanCard";
+import EmptyState from "@/components/motion/EmptyState";
 
 interface Props {
   address: string;
@@ -72,14 +73,12 @@ export default function MyPlans({ address }: Props) {
           ))}
         </div>
       ) : plans.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 flex flex-col items-center gap-3 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center">
-            <Inbox size={22} className="text-gray-300" />
-          </div>
-          <p className="text-sm font-medium text-gray-500">No plans yet</p>
-          <p className="text-xs text-gray-400">
-            Create your first plan to start automated DCA
-          </p>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+          <EmptyState
+            icon={<Repeat2 size={28} className="text-[#408A71]" />}
+            title="No DCA plans yet"
+            description="Create your first plan to start automated dollar-cost averaging into sBTC."
+          />
         </div>
       ) : (
         <div className="flex flex-col gap-3">

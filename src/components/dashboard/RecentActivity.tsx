@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activity } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activity, Wallet } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useTransactions } from "@/hooks/useMarketData";
+import EmptyState from "@/components/motion/EmptyState";
 
 interface TxItem {
   txId: string;
@@ -183,19 +184,21 @@ function RecentActivity() {
       </div>
 
       {!isConnected ? (
-        <div className="flex flex-col items-center justify-center flex-1 py-8 text-center">
-          <Activity size={32} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">Connect your wallet to view activity</p>
-        </div>
+        <EmptyState
+          icon={<Wallet size={28} className="text-[#408A71]" />}
+          title="No wallet connected"
+          description="Connect your wallet to view recent transactions."
+        />
       ) : isLoading ? (
         <div className="space-y-1">
           {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
         </div>
       ) : txs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 py-8 text-center">
-          <Activity size={32} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">No transactions found</p>
-        </div>
+        <EmptyState
+          icon={<Activity size={28} className="text-[#408A71]" />}
+          title="No transactions yet"
+          description="Your transaction history will appear here once you make your first swap or transfer."
+        />
       ) : (
         <div className="space-y-0.5">
           {txs.map((tx) => <TxRow key={tx.txId} tx={tx} />)}

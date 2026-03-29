@@ -6,6 +6,8 @@ import { useNotificationStore } from '@/store/notificationStore';
 import NotificationFilters from './NotificationFilters';
 import NotificationCard from './NotificationCard';
 import { cn } from '@/lib/utils';
+import EmptyState from '@/components/motion/EmptyState';
+import { Bell } from 'lucide-react';
 import type { Notification, NotificationCategory } from '@/types/notifications';
 
 // --- Filter tabs ---
@@ -255,17 +257,11 @@ export default function NotificationsContent() {
         {/* Notifications list grouped by date */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {filteredNotifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="text-gray-300 mb-3">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 font-medium">No notifications yet</p>
-              <p className="text-gray-500 text-sm mt-1">Notifications will appear here as events occur</p>
-            </div>
+            <EmptyState
+              icon={<Bell size={28} className="text-[#408A71]" />}
+              title="No notifications yet"
+              description="Notifications will appear here when you make swaps, DCA executions, or hit price targets."
+            />
           ) : (
             <div className="space-y-6">
               {/* Select all */}

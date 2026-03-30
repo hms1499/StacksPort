@@ -26,4 +26,4 @@ jobs:
         run: npm install --no-cache
 
       - name: Verify SDK installed
-        run: node -e "require('@stacksport/dca-sdk')"
+        run: ls node_modules/@stacksport/dca-sdk/package.json

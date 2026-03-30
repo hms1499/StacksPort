@@ -113,29 +113,44 @@ export class StacksClient {
 
   async getAccountNonce(address: string): Promise<number> {
     const { hiroApiUrl } = this.config;
-    const res = await fetch(`${hiroApiUrl}/v2/accounts/${address}?proof=0`);
-    if (!res.ok) throw new Error(`Failed to fetch nonce for ${address}`);
-    const json = await res.json() as { nonce: number };
-    return json.nonce;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const res = await fetch(`${hiroApiUrl}/v2/accounts/${address}?proof=0`);
+      if (res.status === 429) {
+        await sleep(3000 * (attempt + 1));
+        continue;
+      }
+      if (!res.ok) throw new Error(`Failed to fetch nonce for ${address}`);
+      const json = await res.json() as { nonce: number };
+      return json.nonce;
+    }
+    throw new Error(`Failed to fetch nonce for ${address} after retries`);
   }
 
   async getPendingNonce(address: string): Promise<number> {
     const { hiroApiUrl } = this.config;
     // Use mempool endpoint to get nonce including pending txs
-    const res = await fetch(
-      `${hiroApiUrl}/extended/v1/address/${address}/mempool?limit=50`
-    );
-    if (!res.ok) {
-      // Fallback to account nonce
-      return this.getAccountNonce(address);
-    }
-    const json = await res.json() as { results?: { nonce: number }[] };
-    const results = json.results ?? [];
-    if (results.length === 0) return this.getAccountNonce(address);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const res = await fetch(
+        `${hiroApiUrl}/extended/v1/address/${address}/mempool?limit=50`
+      );
+      if (res.status === 429) {
+        await sleep(3000 * (attempt + 1));
+        continue;
+      }
+      if (!res.ok) {
+        // Fallback to account nonce
+        return this.getAccountNonce(address);
+      }
+      const json = await res.json() as { results?: { nonce: number }[] };
+      const results = json.results ?? [];
+      if (results.length === 0) return this.getAccountNonce(address);
 
-    const maxPendingNonce = Math.max(...results.map((tx) => tx.nonce));
-    const accountNonce = await this.getAccountNonce(address);
-    return Math.max(maxPendingNonce + 1, accountNonce);
+      const maxPendingNonce = Math.max(...results.map((tx) => tx.nonce));
+      const accountNonce = await this.getAccountNonce(address);
+      return Math.max(maxPendingNonce + 1, accountNonce);
+    }
+    // All retries exhausted, fallback
+    return this.getAccountNonce(address);
   }
 
   // Get all plan IDs that can be executed right now
@@ -143,13 +158,18 @@ export class StacksClient {
   async getExecutablePlanIds(totalPlans: number): Promise<number[]> {
     const executable: number[] = [];
     let rateLimitRetries = 0;
-    const MAX_RATE_LIMIT_RETRIES = 3;
+    const MAX_RATE_LIMIT_RETRIES = 5;
+    const BATCH_SIZE = 20;
+    const BATCH_PAUSE_MS = 3000;
+    const CALL_DELAY_MS = 350;
+    let callsSincePause = 0;
 
     for (let id = totalPlans; id >= 1; id--) {
       try {
         const canExec = await this.canExecute(id);
         if (canExec) executable.push(id);
         rateLimitRetries = 0; // reset on success
+        callsSincePause++;
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         if (msg === "RateLimited") {
@@ -160,15 +180,22 @@ export class StacksClient {
           }
           // Back off and retry the same plan
           console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "Rate limited, backing off", planId: id, retry: rateLimitRetries }));
-          await sleep(2000 * rateLimitRetries);
+          await sleep(5000 * rateLimitRetries);
           id++; // retry this plan ID
+          callsSincePause = 0;
           continue;
         }
         // Log other errors instead of silently skipping
         console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "canExecute failed", planId: id, error: msg }));
       }
-      // Small delay between API calls to avoid rate limiting
-      await sleep(200);
+
+      // Batch pause to stay under rate limits
+      if (callsSincePause >= BATCH_SIZE) {
+        await sleep(BATCH_PAUSE_MS);
+        callsSincePause = 0;
+      } else {
+        await sleep(CALL_DELAY_MS);
+      }
     }
 
     // Sort ascending for execution order

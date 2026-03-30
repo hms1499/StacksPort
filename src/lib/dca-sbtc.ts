@@ -31,16 +31,20 @@ const SBTC_DECIMALS = 8;
 
 // Nakamoto block intervals (same as STX vault)
 export const SBTC_INTERVALS = {
-  Daily: 1300,
-  Weekly: 9100,
-  Monthly: 39000,
+  Daily: 650,
+  Weekly: 4550,
+  Monthly: 19500,
 } as const;
 
 export function blocksToInterval(blocks: number): string {
   // Current values
-  if (blocks === 1300) return "Daily";
-  if (blocks === 9100) return "Weekly";
-  if (blocks === 39000) return "Monthly";
+  if (blocks === 650) return "Daily";
+  if (blocks === 4550) return "Weekly";
+  if (blocks === 19500) return "Monthly";
+  // Previous values
+  if (blocks === 1300) return "Daily (v2)";
+  if (blocks === 9100) return "Weekly (v2)";
+  if (blocks === 39000) return "Monthly (v2)";
   // Legacy values (existing plans)
   if (blocks === 9360) return "Daily (legacy)";
   if (blocks === 65520) return "Weekly (legacy)";

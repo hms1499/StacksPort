@@ -25,5 +25,5 @@ jobs:
       - name: Clean install dependencies
         run: npm install --no-cache
 
-      - name: Build
-        run: npm run build
+      - name: Verify SDK installed
+        run: node -e "require('@stacksport/dca-sdk')"

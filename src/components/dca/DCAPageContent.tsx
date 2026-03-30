@@ -67,7 +67,7 @@ export default function DCAPageContent() {
     <AnimatedPage className="max-w-6xl mx-auto w-full px-4 py-6">
       <StaggerChildren className="flex flex-col gap-6">
         {/* Page header */}
-        <MotionCard>
+        <MotionCard disableHover>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">DCA Vault</h1>
             <p className="text-sm text-gray-400 mt-1">
@@ -79,7 +79,7 @@ export default function DCAPageContent() {
         </MotionCard>
 
         {/* Tab navigator */}
-        <MotionCard>
+        <MotionCard disableHover>
           <div className="flex gap-2">
             {tabs.map(({ key, label, icon: Icon, desc }) => (
               <button
@@ -107,7 +107,7 @@ export default function DCAPageContent() {
         </MotionCard>
 
         {/* Main content */}
-        <MotionCard>
+        <MotionCard disableHover>
           {!isConnected ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
               <EmptyState
@@ -138,7 +138,7 @@ export default function DCAPageContent() {
         </MotionCard>
 
         {/* Info footer */}
-        <MotionCard>
+        <MotionCard disableHover>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
             {infoFooter.map(({ title, desc }) => (
               <div

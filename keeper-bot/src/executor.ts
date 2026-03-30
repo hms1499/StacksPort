@@ -9,8 +9,8 @@ import type { BotConfig } from "./config";
 import { log } from "./logger";
 import { sleep } from "./stacks-client";
 
-const TX_FEE = BigInt(3000); // 0.003 STX per execution
-const RETRY_DELAYS = [1000, 3000, 8000]; // 1s, 3s, 8s
+const TX_FEE = BigInt(15000); // 0.015 STX per execution (increased to avoid TooMuchChaining)
+const RETRY_DELAYS = [2000, 5000, 10000]; // 2s, 5s, 10s (increased for stability)
 
 export class Executor {
   constructor(private config: BotConfig) {}

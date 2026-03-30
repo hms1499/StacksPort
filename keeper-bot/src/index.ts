@@ -48,7 +48,7 @@ async function main(): Promise<void> {
   }
 
   // Cooldown after scan to let rate limit window reset
-  await sleep(5000);
+  await sleep(15000);
 
   // Execute each plan sequentially
   let executed = 0;
@@ -70,7 +70,7 @@ async function main(): Promise<void> {
       failed++;
     }
 
-    await sleep(2000);
+    await sleep(4000);
   }
 
   log.info("Run complete", { executed, failed, total: executableIds.length });

@@ -63,7 +63,7 @@ export default function AssetsPageContent() {
       <Topbar title="My Assets" />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <StaggerChildren className="space-y-4 md:space-y-5">
-          <MotionCard>
+          <MotionCard disableHover>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <PortfolioSummary stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
               <HealthScore stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
@@ -75,7 +75,7 @@ export default function AssetsPageContent() {
           <MotionCard>
             <PnLTracker />
           </MotionCard>
-          <MotionCard>
+          <MotionCard disableHover>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <StackingTracker />
               <SBTCMonitor />

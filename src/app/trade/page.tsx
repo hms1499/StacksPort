@@ -39,7 +39,7 @@ export default function TradePage() {
           </MotionCard>
 
           {/* Info panels — side by side below */}
-          <MotionCard>
+          <MotionCard disableHover>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-2 mb-3">

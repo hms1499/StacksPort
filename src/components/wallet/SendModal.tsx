@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, ArrowUpRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { openSTXTransfer, openContractCall } from "@stacks/connect";
 import { uintCV, standardPrincipalCV, noneCV, PostConditionMode } from "@stacks/transactions";
@@ -109,22 +110,22 @@ export default function SendModal({ token, onClose }: Props) {
     }
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 z-10">
+      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
               <ArrowUpRight size={16} className="text-green-600" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-gray-900">Send {token.symbol}</h2>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">Send {token.symbol}</h2>
               <p className="text-xs text-gray-400">Balance: {maxHuman} {token.symbol}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             <X size={17} className="text-gray-500" />
           </button>
         </div>
@@ -132,7 +133,7 @@ export default function SendModal({ token, onClose }: Props) {
         {status === "success" ? (
           <div className="flex flex-col items-center py-6 gap-3 text-center">
             <CheckCircle2 size={44} className="text-green-500" />
-            <p className="font-semibold text-gray-900">Transaction Submitted!</p>
+            <p className="font-semibold text-gray-900 dark:text-white">Transaction Submitted!</p>
             <p className="text-xs text-gray-400 break-all">TX: {txId}</p>
             <a
               href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
@@ -144,7 +145,7 @@ export default function SendModal({ token, onClose }: Props) {
             </a>
             <button
               onClick={onClose}
-              className="mt-2 w-full py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="mt-2 w-full py-2.5 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               Done
             </button>
@@ -153,19 +154,19 @@ export default function SendModal({ token, onClose }: Props) {
           <div className="space-y-4">
             {/* Recipient */}
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1.5 block">Recipient Address</label>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 block">Recipient Address</label>
               <input
                 type="text"
                 placeholder={network === "mainnet" ? "SP..." : "ST..."}
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value.trim())}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] focus:border-transparent placeholder:text-gray-300"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] focus:border-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
               />
             </div>
 
             {/* Amount */}
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1.5 block">Amount</label>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 block">Amount</label>
               <div className="relative">
                 <input
                   type="number"
@@ -174,7 +175,7 @@ export default function SendModal({ token, onClose }: Props) {
                   step="any"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] focus:border-transparent placeholder:text-gray-300 pr-24"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] focus:border-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 pr-24"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   <button
@@ -190,7 +191,7 @@ export default function SendModal({ token, onClose }: Props) {
 
             {/* Error */}
             {(errorMsg || status === "error") && (
-              <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 rounded-xl px-3 py-2.5">
+              <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
                 <AlertCircle size={13} />
                 {errorMsg ?? "Something went wrong"}
               </div>
@@ -200,7 +201,7 @@ export default function SendModal({ token, onClose }: Props) {
             <button
               onClick={handleSend}
               disabled={status === "loading"}
-              className="w-full py-3 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {status === "loading" ? (
                 <>
@@ -217,6 +218,7 @@ export default function SendModal({ token, onClose }: Props) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

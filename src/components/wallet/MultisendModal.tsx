@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Plus,
@@ -183,7 +184,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
     const successIds = recipients.filter((r) => rowStatuses[r.id] === "success");
     const failIds    = recipients.filter((r) => rowStatuses[r.id] === "error");
 
-    return (
+    return createPortal(
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
         <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 z-10 max-h-[85vh] flex flex-col">
@@ -243,13 +244,14 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
             Done
           </button>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
   // ── Main form ─────────────────────────────────────────────────────────────
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={!isRunning ? onClose : undefined} />
       <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 z-10 max-h-[90vh] flex flex-col">
@@ -379,6 +381,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
           )}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

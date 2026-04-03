@@ -10,12 +10,10 @@ interface MotionCardProps {
   disableHover?: boolean;
 }
 
-export default function MotionCard({ children, className, disableHover }: MotionCardProps) {
+export default function MotionCard({ children, className }: MotionCardProps) {
   return (
     <motion.div
       variants={staggerItem}
-      whileHover={disableHover ? undefined : { y: -2, boxShadow: "0 8px 25px -5px rgba(0,0,0,0.1), 0 4px 10px -6px rgba(0,0,0,0.05)" }}
-      transition={{ duration: 0.2 }}
       className={className}
     >
       {children}

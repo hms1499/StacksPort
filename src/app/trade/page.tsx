@@ -41,7 +41,7 @@ export default function TradePage() {
           {/* Info panels — side by side below */}
           <MotionCard disableHover>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Zap size={15} className="text-[#408A71]" />
                   <h3 className="font-semibold text-gray-700 dark:text-gray-200 text-sm">Best Routes</h3>
@@ -50,7 +50,7 @@ export default function TradePage() {
                   Aggregates multiple DEX pools to find the optimal swap path with lowest slippage.
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Shield size={15} className="text-orange-500" />
                   <h3 className="font-semibold text-gray-700 dark:text-gray-200 text-sm">Real Yield</h3>

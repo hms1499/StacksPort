@@ -1,9 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import LayoutClient from "./layout-client";
 
-const geist = Geist({ subsets: ["latin"] });
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "StacksPort — Portfolio Manager",
@@ -26,7 +37,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.className} antialiased`} suppressHydrationWarning>
+      <body
+        className={`${syne.variable} ${jetBrainsMono.variable} ${syne.className} antialiased`}
+        suppressHydrationWarning
+      >
         <LayoutClient>{children}</LayoutClient>
       </body>
     </html>

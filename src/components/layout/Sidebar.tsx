@@ -4,27 +4,27 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home,
+  LayoutDashboard,
   Wallet,
+  ArrowLeftRight,
   Bell,
-  BarChart2,
-  BarChart3,
+  Repeat2,
   Sparkles,
   Crown,
-  ChevronLeft,
-  ChevronRight,
-  Repeat2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/assets", label: "My assets", icon: Wallet },
-  { href: "/trade", label: "Swap", icon: BarChart2 },
-  { href: "/dca", label: "DCA Vault", icon: Repeat2 },
-  { href: "/notifications", label: "Notification", icon: Bell },
-  { href: "/ai", label: "Stacks AI", icon: Sparkles },
-  { href: "/premium", label: "Premium", icon: Crown, soon: true },
+  { href: "/dashboard",     label: "Dashboard",  icon: LayoutDashboard },
+  { href: "/assets",        label: "My Assets",  icon: Wallet },
+  { href: "/trade",         label: "Swap",       icon: ArrowLeftRight },
+  { href: "/dca",           label: "DCA Vault",  icon: Repeat2 },
+  { href: "/notifications", label: "Alerts",     icon: Bell },
+  { href: "/ai",            label: "Stacks AI",  icon: Sparkles },
+  { href: "/premium",       label: "Premium",    icon: Crown, soon: true },
 ];
 
 export default function Sidebar() {
@@ -33,23 +33,42 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={cn(
-        "h-screen bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex flex-col transition-all duration-300 relative",
-        collapsed ? "w-16" : "w-64"
-      )}
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderRight: '1px solid var(--border-subtle)',
+        width: collapsed ? 64 : 220,
+        transition: 'width 280ms cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
+      className="h-screen flex flex-col relative shrink-0"
     >
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100 dark:border-gray-800">
-        <div className="w-9 h-9 rounded-xl bg-[#408A71] flex items-center justify-center shrink-0">
-          <BarChart3 size={20} className="text-white" />
+      {/* ── Logo ── */}
+      <div
+        className="flex items-center gap-3 px-4 py-5"
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      >
+        {/* Icon mark */}
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, var(--accent) 0%, #0094FF 100%)',
+            boxShadow: '0 0 16px var(--accent-glow)',
+          }}
+        >
+          <Zap size={15} className="text-white" fill="white" />
         </div>
+
         {!collapsed && (
-          <span className="font-bold text-gray-900 dark:text-gray-100 text-lg">StacksPort</span>
+          <span
+            className="font-bold text-base tracking-tight truncate"
+            style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}
+          >
+            StacksPort
+          </span>
         )}
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-2 py-4 space-y-1">
+      {/* ── Nav ── */}
+      <nav className="flex-1 px-2 py-4 space-y-0.5">
         {navItems.map(({ href, label, icon: Icon, soon }) => {
           const active = pathname === href;
 
@@ -58,13 +77,20 @@ export default function Sidebar() {
               <div
                 key={href}
                 title={collapsed ? `${label} — Coming Soon` : undefined}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 dark:text-gray-600 cursor-not-allowed select-none"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm select-none cursor-not-allowed"
+                style={{ color: 'var(--text-muted)' }}
               >
-                <Icon size={18} className="shrink-0" />
+                <Icon size={17} className="shrink-0" />
                 {!collapsed && (
                   <>
-                    <span>{label}</span>
-                    <span className="ml-auto text-[10px] font-semibold tracking-wide uppercase bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-full px-2 py-0.5">
+                    <span className="font-medium">{label}</span>
+                    <span
+                      className="ml-auto text-[9px] font-bold tracking-widest uppercase rounded-full px-2 py-0.5"
+                      style={{
+                        background: 'var(--border-subtle)',
+                        color: 'var(--text-muted)',
+                      }}
+                    >
                       Soon
                     </span>
                   </>
@@ -77,34 +103,73 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              title={collapsed ? label : undefined}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                "relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
+              )}
+              style={
                 active
-                  ? "bg-[#408A71]/10 text-[#408A71] dark:bg-[#285A48]/30 dark:text-[#B0E4CC]"
-                  : "text-[#285A48]/60 dark:text-[#B0E4CC]/50 hover:bg-[#408A71]/5 dark:hover:bg-[#285A48]/20 hover:text-[#408A71] dark:hover:text-[#B0E4CC]"
-              )}
+                  ? {
+                      backgroundColor: 'var(--accent-dim)',
+                      color: 'var(--accent)',
+                      boxShadow: 'inset 0 0 0 1px var(--border-active)',
+                    }
+                  : {
+                      color: 'var(--text-secondary)',
+                    }
+              }
+              onMouseEnter={(e) => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent-dim)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--accent)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = '';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+                }
+              }}
             >
-              <Icon size={18} className="shrink-0" />
-              {!collapsed && <span>{label}</span>}
-              {!collapsed && active && (
-                <ChevronRight size={14} className="ml-auto text-gray-400" />
+              {/* Active indicator bar */}
+              {active && (
+                <span
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
+                  style={{ backgroundColor: 'var(--accent)' }}
+                />
               )}
+              <Icon size={17} className="shrink-0" />
+              {!collapsed && <span>{label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* Collapse toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
+      {/* ── Collapse toggle ── */}
+      <div
+        className="px-2 py-4"
+        style={{ borderTop: '1px solid var(--border-subtle)' }}
       >
-        {collapsed ? (
-          <ChevronRight size={12} className="text-gray-500" />
-        ) : (
-          <ChevronLeft size={12} className="text-gray-500" />
-        )}
-      </button>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--border-subtle)';
+            (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = '';
+            (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
+          }}
+        >
+          {collapsed
+            ? <PanelLeftOpen size={17} className="shrink-0" />
+            : <PanelLeftClose size={17} className="shrink-0" />
+          }
+          {!collapsed && <span>Collapse</span>}
+        </button>
+      </div>
     </aside>
   );
 }

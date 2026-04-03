@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { TrendingDown, TrendingUp, ExternalLink, Loader2 } from "lucide-react";
+import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap } from "lucide-react";
 import { connect as stacksConnect } from "@stacks/connect";
 import {
   ResponsiveContainer,
@@ -63,31 +63,52 @@ function BalanceCard() {
   const isPositive = (portfolio?.stxChange24h ?? 0) >= 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="flex items-center justify-between mb-1">
+    <div
+      className="rounded-2xl p-5 overflow-hidden"
+      style={{
+        backgroundColor: 'var(--bg-card)',
+        border: '1px solid var(--border-subtle)',
+      }}
+    >
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Balance</h2>
+          <span
+            className="text-xs font-bold tracking-widest uppercase"
+            style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+          >
+            Portfolio Value
+          </span>
           {isConnected && (
             <a
               href={`https://explorer.hiro.so/address/${stxAddress}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-[#408A71] transition-colors"
+              className="transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--accent)')}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--text-muted)')}
             >
-              <ExternalLink size={13} />
+              <ExternalLink size={12} />
             </a>
           )}
         </div>
-        <div className="flex gap-1">
+
+        {/* Period selector */}
+        <div
+          className="flex gap-0.5 p-0.5 rounded-lg"
+          style={{ backgroundColor: 'var(--border-subtle)' }}
+        >
           {(["1D", "1W", "1M"] as Period[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+              className="px-2.5 py-1 rounded-md text-xs font-bold transition-all duration-150"
+              style={
                 period === p
-                  ? "bg-gray-900 dark:bg-gray-600 text-white"
-                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-              }`}
+                  ? { backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }
+                  : { color: 'var(--text-muted)' }
+              }
             >
               {p}
             </button>
@@ -95,12 +116,18 @@ function BalanceCard() {
         </div>
       </div>
 
-      {/* Balance display */}
-      <div className="mt-3 mb-4">
+      {/* ── Balance display ── */}
+      <div className="mb-5">
         {loading ? (
           <div className="space-y-2">
-            <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse w-48" />
-            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse w-64" />
+            <div
+              className="h-11 rounded-lg animate-pulse w-52"
+              style={{ backgroundColor: 'var(--border-subtle)' }}
+            />
+            <div
+              className="h-4 rounded-lg animate-pulse w-64"
+              style={{ backgroundColor: 'var(--border-subtle)' }}
+            />
           </div>
         ) : isConnected && portfolio ? (
           <>
@@ -108,87 +135,111 @@ function BalanceCard() {
               <AnimatedCounter
                 value={portfolio.totalUSD}
                 formatFn={formatUSD}
-                className="text-4xl font-bold text-gray-900 dark:text-gray-100"
+                className="text-4xl font-bold font-data"
               />
               <span
-                className={`flex items-center gap-1 text-sm font-medium ${
-                  isPositive ? "text-green-500" : "text-red-500"
-                }`}
+                className="flex items-center gap-1 text-sm font-semibold font-data px-2 py-0.5 rounded-lg"
+                style={
+                  isPositive
+                    ? { color: 'var(--positive)', backgroundColor: isDark ? 'rgba(0, 229, 160, 0.1)' : 'rgba(0, 194, 122, 0.1)' }
+                    : { color: 'var(--negative)', backgroundColor: isDark ? 'rgba(255, 91, 110, 0.1)' : 'rgba(240, 74, 110, 0.1)' }
+                }
               >
-                {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                {isPositive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
                 {formatPercent(portfolio.stxChange24h)}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-0.5 flex-wrap">
-              <span>{formatSTX(portfolio.stxBalance)} STX · ${portfolio.stxPrice.toFixed(4)}/STX</span>
+            <div
+              className="flex items-center gap-2 text-xs mt-1.5 font-data flex-wrap"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              <span>{formatSTX(portfolio.stxBalance)} STX</span>
+              <span style={{ color: 'var(--border-default)' }}>·</span>
+              <span style={{ color: 'var(--text-secondary)' }}>${portfolio.stxPrice.toFixed(4)}/STX</span>
               {portfolio.otherUSD > 0 && (
                 <>
-                  <span className="text-gray-300 dark:text-gray-600">·</span>
-                  <span className="text-gray-400">+{formatUSD(portfolio.otherUSD)} other tokens</span>
+                  <span style={{ color: 'var(--border-default)' }}>·</span>
+                  <span>+{formatUSD(portfolio.otherUSD)} other</span>
                 </>
               )}
             </div>
           </>
         ) : (
-          <div className="flex flex-col gap-2">
-            <p className="text-2xl font-bold text-gray-300 dark:text-gray-600">---.--</p>
+          <div className="flex flex-col gap-3">
+            <p
+              className="text-3xl font-bold font-data"
+              style={{ color: 'var(--border-default)', letterSpacing: '-0.04em' }}
+            >
+              ——.——
+            </p>
             <button
               onClick={handleConnect}
               disabled={connecting}
-              className="flex items-center gap-2 self-start bg-[#408A71] hover:bg-[#285A48] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+              className="flex items-center gap-2 self-start px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: 'var(--accent)',
+                color: '#060C18',
+                boxShadow: connecting ? 'none' : '0 0 14px var(--accent-glow)',
+              }}
             >
-              {connecting && <Loader2 size={14} className="animate-spin" />}
-              {connecting ? "Connecting..." : "Connect Wallet"}
+              {connecting
+                ? <Loader2 size={14} className="animate-spin" />
+                : <Zap size={14} fill="currentColor" />
+              }
+              {connecting ? "Connecting…" : "Connect Wallet"}
             </button>
           </div>
         )}
       </div>
 
-      {/* Chart */}
+      {/* ── Chart ── */}
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={120}>
+        <ResponsiveContainer width="100%" height={110}>
           <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="stxGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+              <linearGradient id="balanceGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor={isDark ? "#00E5A0" : "#00C27A"} stopOpacity={0.25} />
+                <stop offset="100%" stopColor={isDark ? "#00E5A0" : "#00C27A"} stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 11, fill: isDark ? "#6b7280" : "#9ca3af" }}
+              tick={{ fontSize: 10, fill: isDark ? '#2A4060' : '#8AA0BE', fontFamily: 'var(--font-mono)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis hide domain={["auto", "auto"]} />
             <Tooltip
               contentStyle={{
-                background: isDark ? "#1f2937" : "#fff",
-                border: `1px solid ${isDark ? "#374151" : "#f3f4f6"}`,
-                borderRadius: "10px",
+                background: isDark ? 'var(--bg-elevated)' : '#fff',
+                border: `1px solid ${isDark ? 'var(--border-default)' : '#E2EAF4'}`,
+                borderRadius: '12px',
                 fontSize: 12,
-                color: isDark ? "#f3f4f6" : "#111827",
+                fontFamily: 'var(--font-mono)',
+                color: isDark ? '#DDE8F8' : '#0A1628',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
               }}
               formatter={(v: unknown) => [
-                isConnected
-                  ? formatUSD(Number(v))
-                  : `$${Number(v).toFixed(4)}`,
+                isConnected ? formatUSD(Number(v)) : `$${Number(v).toFixed(4)}`,
                 isConnected ? "Portfolio" : "STX Price",
               ]}
             />
             <Area
               type="monotone"
               dataKey="value"
-              stroke="#14b8a6"
-              strokeWidth={2}
-              fill="url(#stxGrad)"
+              stroke={isDark ? "#00E5A0" : "#00C27A"}
+              strokeWidth={1.5}
+              fill="url(#balanceGrad)"
               dot={false}
             />
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <div className="h-[120px] bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center">
-          <span className="text-xs text-gray-400">Loading chart...</span>
+        <div
+          className="h-[110px] rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: 'var(--border-subtle)' }}
+        >
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Loading chart…</span>
         </div>
       )}
     </div>

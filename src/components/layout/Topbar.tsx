@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Moon, Sun, ChevronLeft, Loader2, Copy, Check, RefreshCw } from "lucide-react";
+import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { shortenAddress, cn } from "@/lib/utils";
@@ -25,7 +25,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
     try {
       await connectWallet(connect);
     } catch {
-      // user cancelled or error — do nothing
+      // user cancelled
     } finally {
       setConnecting(false);
     }
@@ -44,63 +44,136 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
   }
 
   return (
-    <header className="h-14 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
-      {/* Title */}
-      <div className="flex items-center gap-2 flex-1">
-        <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors hidden md:flex">
-          <ChevronLeft size={18} className="text-gray-500" />
-        </button>
-        <h1 className="font-semibold text-gray-900 dark:text-gray-100 text-base">{title}</h1>
+    <header
+      className="h-14 flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30"
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderBottom: '1px solid var(--border-subtle)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+      }}
+    >
+      {/* ── Title ── */}
+      <div className="flex-1">
+        <h1
+          className="font-bold text-base tracking-tight"
+          style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
+        >
+          {title}
+        </h1>
       </div>
 
-      {/* Right actions */}
-      <div className="flex items-center gap-1.5">
+      {/* ── Right actions ── */}
+      <div className="flex items-center gap-1">
         <CommandPalette />
         <NotificationBadge />
-        <button onClick={toggleTheme} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors hidden md:flex">
-          {theme === "dark" ? <Sun size={18} className="text-gray-400" /> : <Moon size={18} className="text-gray-500" />}
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-xl transition-colors hidden md:flex"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--border-subtle)';
+            (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = '';
+            (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
+          }}
+        >
+          {theme === "dark"
+            ? <Sun size={16} />
+            : <Moon size={16} />
+          }
         </button>
 
+        {/* Wallet */}
         {isConnected && stxAddress ? (
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-3 py-1.5 rounded-xl transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-200"
+              style={{
+                backgroundColor: 'var(--accent-dim)',
+                border: '1px solid var(--border-active)',
+                color: 'var(--accent)',
+              }}
             >
-              <div className="w-6 h-6 rounded-full bg-[#408A71] flex items-center justify-center">
-                <span className="text-white text-xs font-medium">{stxAddress.slice(0, 1)}</span>
-              </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{shortenAddress(stxAddress)}</span>
+              {/* Avatar dot */}
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
+                style={{ backgroundColor: 'var(--accent)', color: '#060C18' }}
+              >
+                {stxAddress.slice(2, 3).toUpperCase()}
+              </span>
+              <span
+                className="text-sm font-semibold font-data hidden sm:block"
+                style={{ letterSpacing: '0.01em' }}
+              >
+                {shortenAddress(stxAddress)}
+              </span>
             </button>
 
             {dropdownOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                <div className="absolute right-0 mt-2 w-48 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1 z-50">
-                  <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Connected</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{stxAddress}</p>
+                <div
+                  className="absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl py-1.5 z-50 overflow-hidden"
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-default)',
+                  }}
+                >
+                  <div className="px-3 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>
+                      Connected
+                    </p>
+                    <p
+                      className="text-xs font-semibold truncate font-data"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      {stxAddress}
+                    </p>
                   </div>
+
                   <button
                     onClick={handleCopyAddress}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
+                    className={cn("w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors")}
+                    style={{ color: 'var(--text-secondary)' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border-subtle)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
                   >
-                    {copied ? <Check size={14} className="text-[#408A71]" /> : <Copy size={14} />}
+                    {copied
+                      ? <Check size={14} style={{ color: 'var(--accent)' }} />
+                      : <Copy size={14} />
+                    }
                     {copied ? "Copied!" : "Copy Address"}
                   </button>
+
                   <button
                     onClick={() => { setDropdownOpen(false); void handleConnect(); }}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors"
+                    style={{ color: 'var(--text-secondary)' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border-subtle)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
                   >
                     <RefreshCw size={14} />
                     Switch Account
                   </button>
-                  <button
-                    onClick={() => handleDisconnect()}
-                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                  >
-                    Disconnect
-                  </button>
+
+                  <div style={{ borderTop: '1px solid var(--border-subtle)', marginTop: '4px', paddingTop: '4px' }}>
+                    <button
+                      onClick={handleDisconnect}
+                      className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors"
+                      style={{ color: 'var(--negative)' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(240, 74, 110, 0.08)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
+                    >
+                      <LogOut size={14} />
+                      Disconnect
+                    </button>
+                  </div>
                 </div>
               </>
             )}
@@ -109,13 +182,15 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
           <button
             onClick={handleConnect}
             disabled={connecting}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors",
-              "bg-[#408A71] hover:bg-[#285A48] text-white disabled:opacity-60 disabled:cursor-not-allowed"
-            )}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: 'var(--accent)',
+              color: '#060C18',
+              boxShadow: connecting ? 'none' : '0 0 12px var(--accent-glow)',
+            }}
           >
             {connecting && <Loader2 size={13} className="animate-spin" />}
-            {connecting ? "Connecting..." : "Connect Wallet"}
+            {connecting ? "Connecting…" : "Connect Wallet"}
           </button>
         )}
       </div>

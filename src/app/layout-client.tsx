@@ -18,7 +18,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
-    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-base)' }}>
       {/* Sidebar — hidden on home page, desktop only */}
       {!isHomePage && (
         <div className="hidden md:block">

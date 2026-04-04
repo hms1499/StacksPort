@@ -8,6 +8,7 @@ import {
 } from "@stacks/transactions";
 import type { BotConfig } from "./config";
 import type { BatchPlan } from "./batch-executor";
+import { log } from "./logger";
 
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78";
 
@@ -212,10 +213,19 @@ export class StacksClient {
       this.getTotalPlans(sbtcVaultContract),
     ]);
 
+    log.info("Total plans per vault", { stxTotal, sbtcTotal });
+
     const [stxIds, sbtcIds] = await Promise.all([
       stxTotal  > 0 ? this.getExecutablePlanIds(stxVaultContract,  stxTotal)  : Promise.resolve([]),
       sbtcTotal > 0 ? this.getExecutablePlanIds(sbtcVaultContract, sbtcTotal) : Promise.resolve([]),
     ]);
+
+    log.info("Executable plans found", {
+      stxExecutable: stxIds.length,
+      sbtcExecutable: sbtcIds.length,
+      stxPlanIds: stxIds,
+      sbtcPlanIds: sbtcIds,
+    });
 
     const plans: BatchPlan[] = [
       ...stxIds.map((id) => ({ planId: id, vaultType: 0 as const })),

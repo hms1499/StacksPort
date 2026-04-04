@@ -92,6 +92,12 @@ export class StacksClient {
 
     if (res.status === 429) throw new Error("RateLimited");
 
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      if (res.status >= 500 || text.includes("upstream")) throw new Error("RateLimited");
+      throw new Error(`API error ${res.status}: ${text.slice(0, 120)}`);
+    }
+
     const json = await res.json() as { okay: boolean; result: string; cause?: string };
     if (!json.okay) throw new Error(json.cause ?? "Read-only call failed");
     return hexToCV(json.result);

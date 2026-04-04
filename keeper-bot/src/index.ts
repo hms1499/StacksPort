@@ -1,80 +1,73 @@
 import { loadConfig } from "./config";
-import { StacksClient, sleep } from "./stacks-client";
-import { NonceManager } from "./nonce-manager";
-import { Executor } from "./executor";
+import { StacksClient } from "./stacks-client";
+import { BatchExecutor, chunkArray } from "./batch-executor";
 import { log } from "./logger";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
+const MAX_BATCH_SIZE = 50;
 
 async function main(): Promise<void> {
   const config = await loadConfig();
 
   log.info("Keeper bot starting", {
-    contractAddress: config.contractAddress,
-    contractName:    config.contractName,
-    keeperAddress:   config.keeperAddress,
+    batchExecutorContract: config.batchExecutorContract,
+    keeperAddress:         config.keeperAddress,
   });
 
-  const client       = new StacksClient(config);
-  const nonceManager = new NonceManager(client, config);
-  const executor     = new Executor(config);
+  const client   = new StacksClient(config);
+  const executor = new BatchExecutor(config);
 
   // Check keeper wallet balance
   const balance = await client.getKeeperBalance();
   log.info("Keeper balance", {
     balanceUstx: balance,
-    balanceSTX: (balance / 1_000_000).toFixed(6),
+    balanceSTX:  (balance / 1_000_000).toFixed(6),
   });
 
   if (balance < LOW_BALANCE_WARN_USTX) {
-    log.warn("Keeper balance is low — top up needed", { balanceSTX: (balance / 1_000_000).toFixed(6) });
+    log.warn("Keeper balance is low — top up needed", {
+      balanceSTX: (balance / 1_000_000).toFixed(6),
+    });
   }
 
-  // Scan all plans
-  const totalPlans = await client.getTotalPlans();
-  log.info("Scanning plans", { totalPlans });
+  // Scan both vaults for executable plans
+  const plans = await client.getExecutablePlansForBothVaults();
+  log.info("Plans ready to execute", { count: plans.length, plans });
 
-  if (totalPlans === 0) {
-    log.info("No plans found, exiting");
-    process.exit(0);
-  }
-
-  const executableIds = await client.getExecutablePlanIds(totalPlans);
-  log.info("Plans ready to execute", { count: executableIds.length, ids: executableIds });
-
-  if (executableIds.length === 0) {
+  if (plans.length === 0) {
     log.info("Nothing to execute, exiting");
     process.exit(0);
   }
 
-  // Cooldown after scan to let rate limit window reset
-  await sleep(15000);
+  // Chunk into batches of ≤50 (Clarity list limit)
+  const chunks = chunkArray(plans, MAX_BATCH_SIZE);
+  log.info("Executing batches", { totalPlans: plans.length, chunks: chunks.length });
 
-  // Execute each plan sequentially
-  let executed = 0;
-  let failed   = 0;
+  let anyFailed = false;
+  // Nonce management only needed when >50 plans (multiple chunks)
+  let nonce: number | undefined = chunks.length > 1
+    ? await client.getAccountNonce(config.keeperAddress)
+    : undefined;
 
-  for (const planId of executableIds) {
-    const result = await executor.executePlanWithRetry(
-      planId,
-      () => nonceManager.getNextNonce(),
-      () => nonceManager.confirmTx(),
-      () => nonceManager.reset()
-    );
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
+    log.info(`Sending batch ${i + 1}/${chunks.length}`, { planCount: chunk.length });
+
+    const result = await executor.executeBatchWithRetry(chunk, nonce);
 
     if (result) {
-      log.info("DCA executed", { planId, txid: result.txid });
-      executed++;
+      log.info(`Batch ${i + 1} broadcast`, { txid: result.txid, planCount: chunk.length });
+      if (nonce !== undefined) nonce++;
     } else {
-      log.error("DCA failed after retries", { planId });
-      failed++;
+      log.error(`Batch ${i + 1} failed after all retries`, {
+        planIds: chunk.map((p) => p.planId),
+      });
+      anyFailed = true;
     }
-
-    await sleep(4000);
   }
 
-  log.info("Run complete", { executed, failed, total: executableIds.length });
-  process.exit(failed > 0 ? 1 : 0);
+  log.info("Run complete", { totalPlans: plans.length, chunks: chunks.length });
+  process.exit(anyFailed ? 1 : 0);
 }
 
 main().catch((err: unknown) => {

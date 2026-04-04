@@ -7,6 +7,7 @@ import {
   standardPrincipalCV,
 } from "@stacks/transactions";
 import type { BotConfig } from "./config";
+import type { BatchPlan } from "./batch-executor";
 
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78";
 
@@ -22,7 +23,7 @@ function cvHex(cv: ClarityValue): string {
 function parseCV(cv: ClarityValue): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = cv as unknown as any;
-  const t = raw.type;
+  const t   = raw.type;
 
   if (t === "uint" || t === "int") return Number(raw.value);
   if (t === "true")  return true;
@@ -75,9 +76,13 @@ function parseCV(cv: ClarityValue): any {
 export class StacksClient {
   constructor(private config: BotConfig) {}
 
-  private async readOnly(fn: string, args: string[] = []): Promise<ClarityValue> {
-    const { hiroApiUrl, contractAddress, contractName } = this.config;
-    const url = `${hiroApiUrl}/v2/contracts/call-read/${contractAddress}/${contractName}/${fn}`;
+  private async readOnly(
+    contractAddress: string,
+    contractName: string,
+    fn: string,
+    args: string[] = []
+  ): Promise<ClarityValue> {
+    const url = `${this.config.hiroApiUrl}/v2/contracts/call-read/${contractAddress}/${contractName}/${fn}`;
 
     const res = await fetch(url, {
       method: "POST",
@@ -92,29 +97,36 @@ export class StacksClient {
     return hexToCV(json.result);
   }
 
-  async getTotalPlans(): Promise<number> {
-    const cv = await this.readOnly("get-stats");
+  private parseContract(fullName: string): [string, string] {
+    const [addr, name] = fullName.split(".");
+    return [addr, name];
+  }
+
+  async getTotalPlans(vaultContract: string): Promise<number> {
+    const [addr, name] = this.parseContract(vaultContract);
+    const cv = await this.readOnly(addr, name, "get-stats");
     const val = parseCV(cv) as { "total-plans": number };
     return val["total-plans"];
   }
 
-  async canExecute(planId: number): Promise<boolean> {
-    const cv = await this.readOnly("can-execute", [cvHex(uintCV(planId))]);
+  async canExecute(vaultContract: string, planId: number): Promise<boolean> {
+    const [addr, name] = this.parseContract(vaultContract);
+    const cv = await this.readOnly(addr, name, "can-execute", [cvHex(uintCV(planId))]);
     return parseCV(cv) as boolean;
   }
 
   async getKeeperBalance(): Promise<number> {
-    const { hiroApiUrl, keeperAddress } = this.config;
-    const res = await fetch(`${hiroApiUrl}/v2/accounts/${keeperAddress}?proof=0`);
+    const res = await fetch(
+      `${this.config.hiroApiUrl}/v2/accounts/${this.config.keeperAddress}?proof=0`
+    );
     if (!res.ok) return 0;
     const json = await res.json() as { balance: string };
     return Number(json.balance ?? 0);
   }
 
   async getAccountNonce(address: string): Promise<number> {
-    const { hiroApiUrl } = this.config;
     for (let attempt = 0; attempt < 3; attempt++) {
-      const res = await fetch(`${hiroApiUrl}/v2/accounts/${address}?proof=0`);
+      const res = await fetch(`${this.config.hiroApiUrl}/v2/accounts/${address}?proof=0`);
       if (res.status === 429) {
         await sleep(3000 * (attempt + 1));
         continue;
@@ -126,70 +138,41 @@ export class StacksClient {
     throw new Error(`Failed to fetch nonce for ${address} after retries`);
   }
 
-  async getPendingNonce(address: string): Promise<number> {
-    const { hiroApiUrl } = this.config;
-    // Use mempool endpoint to get nonce including pending txs
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const res = await fetch(
-        `${hiroApiUrl}/extended/v1/address/${address}/mempool?limit=50`
-      );
-      if (res.status === 429) {
-        await sleep(3000 * (attempt + 1));
-        continue;
-      }
-      if (!res.ok) {
-        // Fallback to account nonce
-        return this.getAccountNonce(address);
-      }
-      const json = await res.json() as { results?: { nonce: number }[] };
-      const results = json.results ?? [];
-      if (results.length === 0) return this.getAccountNonce(address);
-
-      const maxPendingNonce = Math.max(...results.map((tx) => tx.nonce));
-      const accountNonce = await this.getAccountNonce(address);
-      return Math.max(maxPendingNonce + 1, accountNonce);
-    }
-    // All retries exhausted, fallback
-    return this.getAccountNonce(address);
-  }
-
-  // Get all plan IDs that can be executed right now
-  // Scans from newest to oldest (newer plans more likely to be active)
-  async getExecutablePlanIds(totalPlans: number): Promise<number[]> {
-    const executable: number[] = [];
-    let rateLimitRetries = 0;
+  // Scan a single vault for executable plan IDs
+  async getExecutablePlanIds(
+    vaultContract: string,
+    totalPlans: number
+  ): Promise<number[]> {
+    const executable: number[]   = [];
+    let rateLimitRetries         = 0;
     const MAX_RATE_LIMIT_RETRIES = 5;
-    const BATCH_SIZE = 20;
-    const BATCH_PAUSE_MS = 3000;
-    const CALL_DELAY_MS = 350;
-    let callsSincePause = 0;
+    const BATCH_SIZE             = 20;
+    const BATCH_PAUSE_MS         = 3000;
+    const CALL_DELAY_MS          = 350;
+    let callsSincePause          = 0;
 
     for (let id = totalPlans; id >= 1; id--) {
       try {
-        const canExec = await this.canExecute(id);
+        const canExec = await this.canExecute(vaultContract, id);
         if (canExec) executable.push(id);
-        rateLimitRetries = 0; // reset on success
+        rateLimitRetries = 0;
         callsSincePause++;
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         if (msg === "RateLimited") {
           rateLimitRetries++;
-          if (rateLimitRetries >= MAX_RATE_LIMIT_RETRIES) {
-            console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "Rate limit exceeded max retries, stopping scan", scannedSoFar: totalPlans - id, found: executable.length }));
-            break;
-          }
-          // Back off and retry the same plan
-          console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "Rate limited, backing off", planId: id, retry: rateLimitRetries }));
+          if (rateLimitRetries >= MAX_RATE_LIMIT_RETRIES) break;
           await sleep(5000 * rateLimitRetries);
-          id++; // retry this plan ID
+          id++;
           callsSincePause = 0;
           continue;
         }
-        // Log other errors instead of silently skipping
-        console.error(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: "canExecute failed", planId: id, error: msg }));
+        console.error(
+          JSON.stringify({ timestamp: new Date().toISOString(), level: "warn",
+            message: "canExecute failed", vaultContract, planId: id, error: msg })
+        );
       }
 
-      // Batch pause to stay under rate limits
       if (callsSincePause >= BATCH_SIZE) {
         await sleep(BATCH_PAUSE_MS);
         callsSincePause = 0;
@@ -198,9 +181,30 @@ export class StacksClient {
       }
     }
 
-    // Sort ascending for execution order
     executable.sort((a, b) => a - b);
     return executable;
+  }
+
+  // Scan both vaults and return combined BatchPlan list
+  async getExecutablePlansForBothVaults(): Promise<BatchPlan[]> {
+    const { stxVaultContract, sbtcVaultContract } = this.config;
+
+    const [stxTotal, sbtcTotal] = await Promise.all([
+      this.getTotalPlans(stxVaultContract),
+      this.getTotalPlans(sbtcVaultContract),
+    ]);
+
+    const [stxIds, sbtcIds] = await Promise.all([
+      stxTotal  > 0 ? this.getExecutablePlanIds(stxVaultContract,  stxTotal)  : Promise.resolve([]),
+      sbtcTotal > 0 ? this.getExecutablePlanIds(sbtcVaultContract, sbtcTotal) : Promise.resolve([]),
+    ]);
+
+    const plans: BatchPlan[] = [
+      ...stxIds.map((id) => ({ planId: id, vaultType: 0 as const })),
+      ...sbtcIds.map((id) => ({ planId: id, vaultType: 1 as const })),
+    ];
+
+    return plans;
   }
 }
 

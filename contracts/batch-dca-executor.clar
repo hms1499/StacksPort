@@ -5,13 +5,13 @@
 (define-constant MAX-BATCH u50)
 (define-constant MIN-AMOUNT-OUT u1)
 
-;; vault-type = u0: STX → sBTC
+;; vault-type = u0: STX -> sBTC
 (define-constant VAULT-STX
   'SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.dca-vault)
 (define-constant ROUTER-STX
   'SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-sbtc-swap-router)
 
-;; vault-type = u1: sBTC → USDCx
+;; vault-type = u1: sBTC -> USDCx
 (define-constant VAULT-SBTC
   'SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.dca-vault-sbtc-v2)
 (define-constant ROUTER-SBTC
@@ -31,8 +31,8 @@
         (get plan-id item) ROUTER-SBTC MIN-AMOUNT-OUT)
     )))
   (match result
-    _ok  { success: (+ (get success acc) u1), failed: (get failed acc) }
-    _err { success: (get success acc), failed: (+ (get failed acc) u1) }
+    ok-val  { success: (+ (get success acc) u1), failed: (get failed acc) }
+    err-val { success: (get success acc), failed: (+ (get failed acc) u1) }
   ))
 )
 

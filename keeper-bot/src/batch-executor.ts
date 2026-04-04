@@ -36,6 +36,8 @@ export class BatchExecutor {
       })
     );
 
+    const fee = calcFee(plans.length);
+
     const tx = await makeContractCall({
       contractAddress,
       contractName,
@@ -43,9 +45,18 @@ export class BatchExecutor {
       functionArgs:  [listCV(planArgs)],
       senderKey:     this.config.keeperPrivateKey,
       network:       STACKS_MAINNET,
-      fee:           calcFee(plans.length),
+      fee,
       ...(nonce !== undefined ? { nonce: BigInt(nonce) } : {}),
       postConditionMode: 1, // Allow
+    });
+
+    // Override SDK fee estimate — force our calculated fee
+    tx.setFee(fee);
+
+    log.info("Broadcasting batch tx", {
+      planCount: plans.length,
+      feeUstx: Number(fee),
+      feeSTX: (Number(fee) / 1_000_000).toFixed(6),
     });
 
     const result = await broadcastTransaction({ transaction: tx, network: STACKS_MAINNET });

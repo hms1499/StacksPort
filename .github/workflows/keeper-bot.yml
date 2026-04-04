@@ -9,7 +9,7 @@ jobs:
   run-keeper:
     name: Execute DCA Plans (Batch)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 9
 
     defaults:
       run:

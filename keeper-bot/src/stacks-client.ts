@@ -164,9 +164,9 @@ export class StacksClient {
     const executable: number[]   = [];
     let rateLimitRetries         = 0;
     const MAX_RATE_LIMIT_RETRIES = 5;
-    const BATCH_SIZE             = 20;
-    const BATCH_PAUSE_MS         = 3000;
-    const CALL_DELAY_MS          = 350;
+    const BATCH_SIZE             = 30;
+    const BATCH_PAUSE_MS         = 2000;
+    const CALL_DELAY_MS          = 200;
     let callsSincePause          = 0;
 
     for (let id = totalPlans; id >= 1; id--) {

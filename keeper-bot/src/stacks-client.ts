@@ -110,9 +110,21 @@ export class StacksClient {
 
   async getTotalPlans(vaultContract: string): Promise<number> {
     const [addr, name] = this.parseContract(vaultContract);
-    const cv = await this.readOnly(addr, name, "get-stats");
-    const val = parseCV(cv) as { "total-plans": number };
-    return val["total-plans"];
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const cv = await this.readOnly(addr, name, "get-stats");
+        const val = parseCV(cv) as { "total-plans": number };
+        return val["total-plans"];
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (attempt < 2 && (msg === "RateLimited" || msg.includes("upstream"))) {
+          await sleep(3000 * (attempt + 1));
+          continue;
+        }
+        throw new Error(`getTotalPlans(${vaultContract}) failed: ${msg}`);
+      }
+    }
+    return 0;
   }
 
   async canExecute(vaultContract: string, planId: number): Promise<boolean> {

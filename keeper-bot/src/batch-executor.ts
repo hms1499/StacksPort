@@ -15,8 +15,8 @@ export interface BatchPlan {
   vaultType: 0 | 1; // 0 = dca-vault (STX→sBTC), 1 = dca-vault-sbtc-v2 (sBTC→USDCx)
 }
 
-const BASE_FEE_USTX     = 25_000;
-const PER_PLAN_FEE_USTX = 2_000;
+const BASE_FEE_USTX     = 5_000;
+const PER_PLAN_FEE_USTX = 500;
 const RETRY_DELAYS      = [2000, 5000, 10000]; // ms
 
 function calcFee(planCount: number): bigint {

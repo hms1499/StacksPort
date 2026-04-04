@@ -170,29 +170,40 @@ export class StacksClient {
     const CALL_DELAY_MS          = 200;
     let callsSincePause          = 0;
 
+    const scanStart = Date.now();
+    let scanned = 0;
+
     for (let id = totalPlans; id >= 1; id--) {
       try {
         const canExec = await this.canExecute(vaultContract, id);
         if (canExec) executable.push(id);
         rateLimitRetries = 0;
         callsSincePause++;
+        scanned++;
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         if (msg === "RateLimited") {
           rateLimitRetries++;
-          if (rateLimitRetries >= MAX_RATE_LIMIT_RETRIES) break;
+          if (rateLimitRetries >= MAX_RATE_LIMIT_RETRIES) {
+            log.warn("Too many rate limits, stopping scan early", { vaultContract, stoppedAtId: id });
+            break;
+          }
           await sleep(5000 * rateLimitRetries);
           id++;
           callsSincePause = 0;
           continue;
         }
-        console.error(
-          JSON.stringify({ timestamp: new Date().toISOString(), level: "warn",
-            message: "canExecute failed", vaultContract, planId: id, error: msg })
-        );
+        // Skip non-retryable errors silently
       }
 
       if (callsSincePause >= BATCH_SIZE) {
+        log.info("Scan progress", {
+          vaultContract: vaultContract.split(".")[1],
+          scanned,
+          total: totalPlans,
+          found: executable.length,
+          elapsed: `${((Date.now() - scanStart) / 1000).toFixed(0)}s`,
+        });
         await sleep(BATCH_PAUSE_MS);
         callsSincePause = 0;
       } else {
@@ -215,10 +226,9 @@ export class StacksClient {
 
     log.info("Total plans per vault", { stxTotal, sbtcTotal });
 
-    const [stxIds, sbtcIds] = await Promise.all([
-      stxTotal  > 0 ? this.getExecutablePlanIds(stxVaultContract,  stxTotal)  : Promise.resolve([]),
-      sbtcTotal > 0 ? this.getExecutablePlanIds(sbtcVaultContract, sbtcTotal) : Promise.resolve([]),
-    ]);
+    // Scan sequentially to avoid doubling API rate
+    const stxIds  = stxTotal  > 0 ? await this.getExecutablePlanIds(stxVaultContract,  stxTotal)  : [];
+    const sbtcIds = sbtcTotal > 0 ? await this.getExecutablePlanIds(sbtcVaultContract, sbtcTotal) : [];
 
     log.info("Executable plans found", {
       stxExecutable: stxIds.length,

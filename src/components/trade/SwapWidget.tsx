@@ -199,14 +199,17 @@ export default function SwapWidget() {
   // Fetch from-token balance when token or address changes
   useEffect(() => {
     if (!stxAddress) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFromBalance(null);
       return;
     }
+    let cancelled = false;
     setBalanceLoading(true);
     fetchTokenBalance(stxAddress, fromToken)
-      .then(setFromBalance)
-      .catch(() => setFromBalance(null))
-      .finally(() => setBalanceLoading(false));
+      .then((bal) => { if (!cancelled) setFromBalance(bal); })
+      .catch(() => { if (!cancelled) setFromBalance(null); })
+      .finally(() => { if (!cancelled) setBalanceLoading(false); });
+    return () => { cancelled = true; };
   }, [fromToken, stxAddress]);
 
   function setPercent(pct: number) {
@@ -241,8 +244,8 @@ export default function SwapWidget() {
   useEffect(() => {
     const amt = parseFloat(amountIn);
     if (!toToken || !amountIn || isNaN(amt)) {
-      setQuote(null);
-      setStatus("idle");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setQuote(null); setStatus("idle");
       return;
     }
     if (quoteTimer.current) clearTimeout(quoteTimer.current);

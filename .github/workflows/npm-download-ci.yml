@@ -50,7 +50,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Clean install dependencies
-        run: npm install --no-cache
+        run: rm -rf node_modules package-lock.json && npm install
 
       - name: Lint
         run: npm run lint

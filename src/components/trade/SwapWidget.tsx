@@ -197,9 +197,9 @@ export default function SwapWidget() {
   const toTokens = getValidDestinations(fromToken.id);
 
   // Fetch from-token balance when token or address changes
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (!stxAddress) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFromBalance(null);
       return;
     }
@@ -241,11 +241,12 @@ export default function SwapWidget() {
     []
   );
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     const amt = parseFloat(amountIn);
     if (!toToken || !amountIn || isNaN(amt)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setQuote(null); setStatus("idle");
+      setQuote(null);
+      setStatus("idle");
       return;
     }
     if (quoteTimer.current) clearTimeout(quoteTimer.current);

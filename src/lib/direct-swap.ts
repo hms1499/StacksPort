@@ -49,9 +49,9 @@ export interface SwapToken {
 }
 
 export const SWAP_TOKENS: SwapToken[] = [
-  { id: "stx", symbol: "STX", name: "Stacks", contract: null, decimals: 6, icon: "/tokens/stx.png" },
-  { id: "sbtc", symbol: "sBTC", name: "sBTC", contract: `${SBTC.address}.${SBTC.name}`, decimals: 8, icon: "/tokens/sbtc.png" },
-  { id: "usdcx", symbol: "USDCx", name: "USD Coin", contract: `${USDCX.address}.${USDCX.name}`, decimals: 6, icon: "/tokens/usdcx.png" },
+  { id: "stx", symbol: "STX", name: "Stacks", contract: null, decimals: 6, icon: "/tokens/stx.svg" },
+  { id: "sbtc", symbol: "sBTC", name: "sBTC", contract: `${SBTC.address}.${SBTC.name}`, decimals: 8, icon: "/tokens/sbtc.svg" },
+  { id: "usdcx", symbol: "USDCx", name: "USD Coin", contract: `${USDCX.address}.${USDCX.name}`, decimals: 6, icon: "/tokens/usdcx.svg" },
 ];
 
 // ─── Route Resolver ──────────────────────────────────────────────────────────

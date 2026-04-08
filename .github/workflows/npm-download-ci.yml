@@ -29,6 +29,12 @@ jobs:
       - name: Verify SDK installed
         run: ls node_modules/@stacksport/dca-sdk/package.json
 
+      - name: Check SDK version
+        run: node -e "console.log(require('@stacksport/dca-sdk/package.json').version)"
+
+      - name: Verify SDK importable
+        run: node -e "require('@stacksport/dca-sdk')"
+
   build:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest

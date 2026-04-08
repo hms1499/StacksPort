@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { staggerContainer, staggerItem as sharedStaggerItem } from "@/lib/animations";
 
 interface StaggerChildrenProps {
   children: ReactNode;
@@ -9,39 +10,16 @@ interface StaggerChildrenProps {
   staggerDelay?: number;
 }
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-export const staggerItem = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: "easeOut" as const },
-  },
-};
+export { sharedStaggerItem as staggerItem };
 
 export default function StaggerChildren({
   children,
   className,
-  staggerDelay = 0.08,
+  staggerDelay = 0.05,
 }: StaggerChildrenProps) {
   return (
     <motion.div
-      variants={{
-        ...container,
-        show: {
-          ...container.show,
-          transition: { staggerChildren: staggerDelay },
-        },
-      }}
+      variants={staggerContainer(staggerDelay)}
       initial="hidden"
       animate="show"
       className={className}

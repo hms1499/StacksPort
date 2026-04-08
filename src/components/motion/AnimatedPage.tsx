@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { pageTransition, pageSpring } from "@/lib/animations";
 
 interface AnimatedPageProps {
   children: ReactNode;
@@ -11,9 +12,11 @@ interface AnimatedPageProps {
 export default function AnimatedPage({ children, className }: AnimatedPageProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      variants={pageTransition}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={pageSpring}
       className={className}
     >
       {children}

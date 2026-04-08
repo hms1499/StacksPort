@@ -8,6 +8,8 @@ import { shortenAddress, cn } from "@/lib/utils";
 import { connectWallet } from "@/lib/wallet";
 import NotificationBadge from "@/components/notifications/NotificationBadge";
 import CommandPalette from "@/components/layout/CommandPalette";
+import { motion, AnimatePresence } from "framer-motion";
+import { dropdown, dropdownTransition } from "@/lib/animations";
 
 interface TopbarProps {
   title?: string;
@@ -71,16 +73,11 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl transition-colors hidden md:flex"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--border-subtle)';
-            (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = '';
-            (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
-          }}
+          className={cn(
+            "p-2 rounded-xl hidden md:flex",
+            "transition-[background-color,color] duration-200",
+            "text-[var(--text-muted)] hover:bg-[var(--border-subtle)] hover:text-[var(--text-secondary)]",
+          )}
         >
           {theme === "dark"
             ? <Sun size={16} />
@@ -115,16 +112,22 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
               </span>
             </button>
 
-            {dropdownOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                <div
-                  className="absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl py-1.5 z-50 overflow-hidden"
-                  style={{
-                    backgroundColor: 'var(--bg-elevated)',
-                    border: '1px solid var(--border-default)',
-                  }}
-                >
+            <AnimatePresence>
+              {dropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                  <motion.div
+                    variants={dropdown}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={dropdownTransition}
+                    className="absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl py-1.5 z-50 overflow-hidden"
+                    style={{
+                      backgroundColor: 'var(--bg-elevated)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                  >
                   <div className="px-3 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>
                       Connected
@@ -139,10 +142,11 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
 
                   <button
                     onClick={handleCopyAddress}
-                    className={cn("w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors")}
-                    style={{ color: 'var(--text-secondary)' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border-subtle)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
+                    className={cn(
+                      "w-full text-left px-3 py-2 text-sm flex items-center gap-2.5",
+                      "transition-[background-color] duration-150",
+                      "text-[var(--text-secondary)] hover:bg-[var(--border-subtle)]",
+                    )}
                   >
                     {copied
                       ? <Check size={14} style={{ color: 'var(--accent)' }} />
@@ -153,10 +157,11 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
 
                   <button
                     onClick={() => { setDropdownOpen(false); void handleConnect(); }}
-                    className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors"
-                    style={{ color: 'var(--text-secondary)' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border-subtle)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
+                    className={cn(
+                      "w-full text-left px-3 py-2 text-sm flex items-center gap-2.5",
+                      "transition-[background-color] duration-150",
+                      "text-[var(--text-secondary)] hover:bg-[var(--border-subtle)]",
+                    )}
                   >
                     <RefreshCw size={14} />
                     Switch Account
@@ -165,18 +170,20 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                   <div style={{ borderTop: '1px solid var(--border-subtle)', marginTop: '4px', paddingTop: '4px' }}>
                     <button
                       onClick={handleDisconnect}
-                      className="w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors"
-                      style={{ color: 'var(--negative)' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(240, 74, 110, 0.08)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '')}
+                      className={cn(
+                        "w-full text-left px-3 py-2 text-sm flex items-center gap-2.5",
+                        "transition-[background-color] duration-150",
+                        "text-[var(--negative)] hover:bg-[rgba(240,74,110,0.08)]",
+                      )}
                     >
                       <LogOut size={14} />
                       Disconnect
                     </button>
                   </div>
-                </div>
-              </>
-            )}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
         ) : (
           <button

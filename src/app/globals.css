@@ -159,6 +159,24 @@ body {
   animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
+@keyframes number-flash-positive {
+  0%   { color: var(--positive); }
+  100% { color: inherit; }
+}
+
+@keyframes number-flash-negative {
+  0%   { color: var(--negative); }
+  100% { color: inherit; }
+}
+
+.flash-positive {
+  animation: number-flash-positive 0.5s ease-out;
+}
+
+.flash-negative {
+  animation: number-flash-negative 0.5s ease-out;
+}
+
 /* ══════════════════════════════════════════════════════
    FOCUS RING
 ══════════════════════════════════════════════════════ */
@@ -166,6 +184,12 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 8px;
+  animation: focus-ring-in 0.15s ease-out;
+}
+
+@keyframes focus-ring-in {
+  from { outline-color: transparent; }
+  to   { outline-color: var(--accent); }
 }
 
 /* ══════════════════════════════════════════════════════

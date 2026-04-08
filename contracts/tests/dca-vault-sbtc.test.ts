@@ -48,6 +48,7 @@ function executeDca(planId: number, sender = deployer) {
 
 function extractPlanId(res: { result: ClarityValue }): number {
   // result is ok(uint) -> { type: "ok", value: { type: "uint", value: bigint } }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return Number((res.result as any).value.value);
 }
 
@@ -368,8 +369,10 @@ describe("DCA Vault sBTC", () => {
       const res = simnet.callReadOnlyFn(VAULT, "get-user-plans", [Cl.principal(wallet1)], deployer);
       // Result is a list type containing uints
       expect(res.result.type).toBe("list");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const list = (res.result as any).value;
       // The plan we just created should be in the list
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ids = list.map((v: any) => Number(v.value));
       expect(ids).toContain(planId);
     });

@@ -6,6 +6,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import ToastContainer from '@/components/notifications/ToastContainer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { usePriceAlertPolling } from '@/hooks/usePriceAlertPolling';
+import { AnimatePresence } from 'framer-motion';
 
 function PriceAlertPoller() {
   usePriceAlertPolling();
@@ -28,7 +29,9 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
       {/* Main content — add bottom padding on mobile for BottomNav */}
       <main className={isHomePage ? 'w-full overflow-y-auto' : 'flex-1 overflow-y-auto pb-16 md:pb-0'}>
-        {children}
+        <AnimatePresence mode="wait">
+          {children}
+        </AnimatePresence>
       </main>
 
       {/* Bottom nav — hidden on home page, mobile only */}

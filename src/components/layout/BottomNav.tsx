@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Wallet, ArrowLeftRight, Bell, Repeat2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const navItems = [
   { href: "/dashboard",     label: "Home",   icon: LayoutDashboard },
@@ -44,9 +45,11 @@ export default function BottomNav() {
             <div className="relative">
               <Icon size={20} />
               {active && (
-                <span
+                <motion.span
+                  layoutId="bottomnav-active"
                   className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
                   style={{ backgroundColor: 'var(--accent)' }}
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
             </div>

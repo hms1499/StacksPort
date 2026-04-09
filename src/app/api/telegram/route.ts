@@ -2,29 +2,44 @@ import { NextResponse } from "next/server";
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const ALLOWED_CHAT_ID = process.env.TELEGRAM_CHAT_ID!;
-const GITHUB_TOKEN = process.env.GH_PAT!;
 
 async function sendTelegramMessage(chatId: string, text: string) {
   await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown" }),
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      parse_mode: "Markdown",
+      disable_web_page_preview: true,
+    }),
   });
 }
 
-async function triggerWorkflow() {
+interface NewsArticle {
+  title: string;
+  source: string;
+  url: string;
+  published_at?: string;
+}
+
+async function fetchCryptoNews(query?: string): Promise<NewsArticle[]> {
+  const params = new URLSearchParams({ limit: "5" });
+  if (query) params.set("q", query);
   const res = await fetch(
-    "https://api.github.com/repos/hms1499/StacksPort/actions/workflows/npm-download-ci.yml/dispatches",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        Accept: "application/vnd.github+json",
-      },
-      body: JSON.stringify({ ref: "main" }),
-    }
+    `https://cryptocurrency.cv/api/news?${params.toString()}`
   );
-  return res.status === 204;
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? data : data.articles ?? data.results ?? [];
+}
+
+function formatNews(articles: NewsArticle[], heading: string): string {
+  if (articles.length === 0) return `${heading}\n\nNo news found.`;
+  const lines = articles.map(
+    (a, i) => `${i + 1}. [${a.title}](${a.url})\n    _${a.source}_`
+  );
+  return `${heading}\n\n${lines.join("\n\n")}`;
 }
 
 export async function POST(request: Request) {
@@ -40,33 +55,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  if (text === "/run") {
-    const success = await triggerWorkflow();
-    if (success) {
-      await sendTelegramMessage(chatId, "CI workflow triggered successfully.");
-    } else {
-      await sendTelegramMessage(chatId, "Failed to trigger workflow.");
-    }
-  } else if (text === "/status") {
-    const res = await fetch(
-      "https://api.github.com/repos/hms1499/StacksPort/actions/workflows/npm-download-ci.yml/runs?per_page=1",
-      {
-        headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github+json",
-        },
-      }
-    );
-    const data = await res.json();
-    const run = data.workflow_runs?.[0];
-    if (run) {
-      await sendTelegramMessage(
-        chatId,
-        `*Latest run:* ${run.status} (${run.conclusion || "in progress"})\n*Started:* ${run.created_at}`
-      );
-    } else {
-      await sendTelegramMessage(chatId, "No workflow runs found.");
-    }
+  if (text === "/news" || text === "/run") {
+    const articles = await fetchCryptoNews();
+    const msg = formatNews(articles, "*Crypto News Today*");
+    await sendTelegramMessage(chatId, msg);
+  } else if (text.startsWith("/news ")) {
+    const query = text.slice(6).trim();
+    const articles = await fetchCryptoNews(query);
+    const msg = formatNews(articles, `*News: ${query}*`);
+    await sendTelegramMessage(chatId, msg);
+  } else if (text === "/stacks") {
+    const articles = await fetchCryptoNews("stacks STX");
+    const msg = formatNews(articles, "*Stacks Ecosystem News*");
+    await sendTelegramMessage(chatId, msg);
+  } else if (text === "/btc") {
+    const articles = await fetchCryptoNews("bitcoin");
+    const msg = formatNews(articles, "*Bitcoin News*");
+    await sendTelegramMessage(chatId, msg);
   } else if (text === "/downloads") {
     const res = await fetch(
       "https://api.npmjs.org/downloads/point/last-day/@stacksport/dca-sdk"
@@ -75,6 +80,17 @@ export async function POST(request: Request) {
     await sendTelegramMessage(
       chatId,
       `*@stacksport/dca-sdk*\nDownloads today: *${data.downloads}*`
+    );
+  } else if (text === "/help") {
+    await sendTelegramMessage(
+      chatId,
+      "*Available Commands:*\n\n" +
+        "/news — Top crypto news today\n" +
+        "/news _keyword_ — Search news by topic\n" +
+        "/stacks — Stacks ecosystem news\n" +
+        "/btc — Bitcoin news\n" +
+        "/downloads — SDK download stats\n" +
+        "/help — Show this message"
     );
   }
 

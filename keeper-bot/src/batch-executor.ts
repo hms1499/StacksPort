@@ -6,9 +6,9 @@ import {
   tupleCV,
 } from "@stacks/transactions";
 import { STACKS_MAINNET } from "@stacks/network";
-import type { BotConfig } from "./config";
-import { log } from "./logger";
-import { sleep } from "./stacks-client";
+import type { BotConfig } from "./config.js";
+import { log } from "./logger.js";
+import { sleep } from "./stacks-client.js";
 
 export interface BatchPlan {
   planId: number;

@@ -1,7 +1,7 @@
-import { loadConfig } from "./config";
-import { StacksClient } from "./stacks-client";
-import { BatchExecutor, chunkArray } from "./batch-executor";
-import { log } from "./logger";
+import { loadConfig } from "./config.js";
+import { StacksClient } from "./stacks-client.js";
+import { BatchExecutor, chunkArray } from "./batch-executor.js";
+import { log } from "./logger.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
 const MAX_BATCH_SIZE = 50;

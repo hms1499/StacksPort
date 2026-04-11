@@ -91,8 +91,8 @@ function shortAddr(addr) {
 
 function cvToHex(cv) {
   const result = serializeCV(cv);
-  if (typeof result === "string") return "0x" + result;
-  return "0x" + Buffer.from(result).toString("hex");
+  if (typeof result === "string") return result;
+  return Buffer.from(result).toString("hex");
 }
 
 // Derive STX accounts using Xverse-style BIP44 path: m/44'/5757'/{accountIndex}'/0/0
@@ -147,7 +147,7 @@ async function fetchStxBalance(address, retries = 10) {
 // ── Quote Fetching ───────────────────────────────────────────────────────────
 
 async function fetchSwapQuote(sbtcAmountSats, retries = 6) {
-  const args = [
+  const callArgs = [
     cvToHex(contractPrincipalCV(POOL_SBTC_STX.address, POOL_SBTC_STX.name)),
     cvToHex(contractPrincipalCV(SBTC.address, SBTC.name)),
     cvToHex(contractPrincipalCV(WSTX.address, WSTX.name)),
@@ -160,7 +160,7 @@ async function fetchSwapQuote(sbtcAmountSats, retries = 6) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: DUMMY_SENDER, arguments: args }),
+        body: JSON.stringify({ sender: DUMMY_SENDER, arguments: callArgs }),
       }
     );
     if (res.status === 429 || res.status === 503) {

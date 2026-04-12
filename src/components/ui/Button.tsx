@@ -6,15 +6,18 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const variantStyles = {
-  primary:
-    "bg-[#408A71] hover:bg-[#285A48] text-white shadow-sm",
-  secondary:
-    "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm",
-  ghost:
-    "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
-  danger:
-    "bg-red-500 hover:bg-red-600 text-white shadow-sm",
+  primary: "text-white shadow-sm",
+  secondary: "shadow-sm",
+  ghost: "",
+  danger: "bg-red-500 hover:bg-red-600 text-white shadow-sm",
 } as const;
+
+const variantInlineStyles: Record<keyof typeof variantStyles, React.CSSProperties> = {
+  primary: { backgroundColor: 'var(--accent)', boxShadow: '0 0 12px var(--accent-glow)' },
+  secondary: { backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' },
+  ghost: { color: 'var(--text-secondary)' },
+  danger: {},
+};
 
 const sizeStyles = {
   sm: "px-3 py-1.5 text-xs rounded-lg gap-1.5",
@@ -46,6 +49,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           sizeStyles[size],
           className
         )}
+        style={{ ...variantInlineStyles[variant], ...props.style }}
         {...props}
       >
         {loading ? <Loader2 size={14} className="animate-spin" /> : icon}

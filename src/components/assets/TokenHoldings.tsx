@@ -8,6 +8,7 @@ import { formatUSD } from "@/lib/utils";
 import SendModal, { SendTokenInfo } from "@/components/wallet/SendModal";
 import ReceiveModal from "@/components/wallet/ReceiveModal";
 import EmptyState from "@/components/motion/EmptyState";
+import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import Sparkline from "@/components/dashboard/Sparkline";
 
 function formatBalance(n: number): string {
@@ -309,9 +310,10 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
             ))
           ) : allTokens.length === 0 ? (
             <EmptyState
-              icon={<Wallet size={28} className="text-[#408A71]" />}
+              icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
               title="No tokens found"
               description="Connect your wallet or fund it with STX to see your token holdings here."
+              action={<ConnectWalletCTA />}
             />
           ) : (
             <>

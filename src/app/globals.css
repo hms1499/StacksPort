@@ -78,7 +78,16 @@ body {
   color: var(--text-primary);
 }
 
-/* Subtle ambient glow + dot-grid in dark mode */
+/* Subtle ambient gradient + dot-grid in light mode */
+:root body {
+  background-image:
+    radial-gradient(ellipse 60% 50% at 10% 30%, rgba(0, 194, 122, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 90% 10%, rgba(0, 120, 200, 0.035) 0%, transparent 70%),
+    radial-gradient(circle, rgba(200, 214, 232, 0.3) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px;
+}
+
+/* Stronger ambient glow + dot-grid in dark mode */
 .dark body {
   background-image:
     radial-gradient(ellipse 60% 50% at 15% 40%, rgba(0, 229, 160, 0.035) 0%, transparent 70%),

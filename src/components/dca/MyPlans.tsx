@@ -73,9 +73,9 @@ export default function MyPlans({ address }: Props) {
           ))}
         </div>
       ) : plans.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="glass-card rounded-2xl shadow-sm">
           <EmptyState
-            icon={<Repeat2 size={28} className="text-[#408A71]" />}
+            icon={<Repeat2 size={28} style={{ color: 'var(--accent)' }} />}
             title="No DCA plans yet"
             description="Create your first plan to start automated dollar-cost averaging into sBTC."
           />

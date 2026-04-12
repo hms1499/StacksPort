@@ -5,6 +5,7 @@ import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activi
 import { useWalletStore } from "@/store/walletStore";
 import { useTransactions } from "@/hooks/useMarketData";
 import EmptyState from "@/components/motion/EmptyState";
+import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 
 interface TxItem {
   txId: string;
@@ -191,6 +192,7 @@ function RecentActivity() {
           icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
           title="No wallet connected"
           description="Connect your wallet to view recent transactions."
+          action={<ConnectWalletCTA />}
         />
       ) : isLoading ? (
         <div className="space-y-1">

@@ -258,7 +258,7 @@ export default function NotificationsContent() {
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {filteredNotifications.length === 0 ? (
             <EmptyState
-              icon={<Bell size={28} className="text-[#408A71]" />}
+              icon={<Bell size={28} style={{ color: 'var(--accent)' }} />}
               title="No notifications yet"
               description="Notifications will appear here when you make swaps, DCA executions, or hit price targets."
             />

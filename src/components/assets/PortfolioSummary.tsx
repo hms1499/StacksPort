@@ -6,6 +6,7 @@ import { TokenWithValue } from "@/lib/stacks";
 import { formatUSD, formatPercent } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import EmptyState from "@/components/motion/EmptyState";
+import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
 const ALLOCATION_COLORS = [
@@ -117,11 +118,12 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
 
   if (!loading && !stx) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="glass-card rounded-2xl shadow-sm">
         <EmptyState
-          icon={<Wallet size={28} className="text-[#408A71]" />}
+          icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
           title="Portfolio overview"
           description="Connect your wallet to view your net worth and asset allocation."
+          action={<ConnectWalletCTA />}
         />
       </div>
     );

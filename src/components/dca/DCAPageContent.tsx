@@ -14,6 +14,7 @@ import CreateOutPlanForm from "@/components/dca-out/CreateOutPlanForm";
 import MyOutPlans from "@/components/dca-out/MyOutPlans";
 import { Wallet, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
 import EmptyState from "@/components/motion/EmptyState";
+import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 
 type Tab = "in" | "out";
 
@@ -112,9 +113,10 @@ export default function DCAPageContent() {
           {!isConnected ? (
             <div className="glass-card rounded-2xl shadow-sm">
               <EmptyState
-                icon={<Wallet size={28} className="text-[#408A71]" />}
+                icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
                 title="Connect your wallet to get started"
                 description="Connect a Leather or Xverse wallet to create and manage your DCA plans."
+                action={<ConnectWalletCTA />}
               />
             </div>
           ) : tab === "in" ? (

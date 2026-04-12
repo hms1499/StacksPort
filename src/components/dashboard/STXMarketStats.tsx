@@ -54,10 +54,10 @@ const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: numb
 
 function SkeletonCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-16" />
-      <div className="h-6 bg-gray-100 dark:bg-gray-700 rounded animate-pulse mt-2 w-24" />
-      <div className="h-12 bg-gray-50 dark:bg-gray-700/50 rounded-lg animate-pulse mt-3" />
+    <div className="glass-card rounded-2xl p-4 shadow-sm">
+      <div className="h-3 rounded animate-pulse w-16" style={{ backgroundColor: 'var(--border-subtle)' }} />
+      <div className="h-6 rounded animate-pulse mt-2 w-24" style={{ backgroundColor: 'var(--border-subtle)' }} />
+      <div className="h-12 rounded-lg animate-pulse mt-3" style={{ backgroundColor: 'var(--bg-elevated)' }} />
     </div>
   );
 }
@@ -88,10 +88,10 @@ export default function STXMarketStatsCard() {
   return (
     <div className="grid grid-cols-3 gap-2 sm:gap-4">
       {/* STX Price */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
-        <p className="text-xs text-gray-400 font-medium">STX Price</p>
+      <div className="glass-card rounded-2xl p-4 shadow-sm">
+        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>STX Price</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {stats ? `$${stats.price.toFixed(4)}` : "—"}
           </p>
           {stats && (
@@ -111,10 +111,10 @@ export default function STXMarketStatsCard() {
       </div>
 
       {/* Market Cap */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
-        <p className="text-xs text-gray-400 font-medium">Market Cap</p>
+      <div className="glass-card rounded-2xl p-4 shadow-sm">
+        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Market Cap</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
           </p>
           {marketCaps.length >= 2 && (
@@ -133,10 +133,10 @@ export default function STXMarketStatsCard() {
       </div>
 
       {/* Volume 24h */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
-        <p className="text-xs text-gray-400 font-medium">Volume 24h</p>
+      <div className="glass-card rounded-2xl p-4 shadow-sm">
+        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Volume 24h</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.volume24h) : "—"}
           </p>
           {volumes.length >= 2 && (

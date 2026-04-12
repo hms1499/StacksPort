@@ -63,14 +63,14 @@ export default function DCAPageContent() {
 
   return (
     <div className="flex flex-col min-h-screen">
-    <Topbar />
+    <Topbar title="DCA Vault" />
     <AnimatedPage className="max-w-6xl mx-auto w-full px-4 py-6">
       <StaggerChildren className="flex flex-col gap-6">
         {/* Page header */}
         <MotionCard disableHover>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">DCA Vault</h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>DCA Vault</h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
               {tab === "in"
                 ? "Automatically buy sBTC on a schedule with STX · Powered by Bitflow"
                 : "Automatically sell sBTC for USDCx on a schedule · Powered by Bitflow"}
@@ -85,15 +85,16 @@ export default function DCAPageContent() {
               <button
                 key={key}
                 onClick={() => setTab(key)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                style={
                   tab === key
-                    ? "bg-[#408A71] text-white shadow-sm"
-                    : "bg-white border border-gray-200 text-gray-500 hover:border-[#B0E4CC] hover:text-gray-700"
-                }`}
+                    ? { backgroundColor: 'var(--accent)', color: '#fff', boxShadow: '0 0 12px var(--accent-glow)' }
+                    : { backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }
+                }
               >
                 <Icon size={16} />
                 <span>{label}</span>
-                <span className={`text-[10px] hidden sm:inline ${tab === key ? "text-[#B0E4CC]/30" : "text-gray-300"}`}>
+                <span className="text-[10px] hidden sm:inline" style={{ opacity: tab === key ? 0.6 : 0.5, color: tab === key ? '#fff' : 'var(--text-muted)' }}>
                   {desc}
                 </span>
               </button>
@@ -109,7 +110,7 @@ export default function DCAPageContent() {
         {/* Main content */}
         <MotionCard disableHover>
           {!isConnected ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="glass-card rounded-2xl shadow-sm">
               <EmptyState
                 icon={<Wallet size={28} className="text-[#408A71]" />}
                 title="Connect your wallet to get started"
@@ -143,10 +144,10 @@ export default function DCAPageContent() {
             {infoFooter.map(({ title, desc }) => (
               <div
                 key={title}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
+                className="glass-card rounded-2xl shadow-sm p-4 hover:shadow-md transition-shadow"
               >
-                <p className="text-sm font-semibold text-gray-900 mb-1">{title}</p>
-                <p className="text-xs text-gray-400 leading-relaxed">{desc}</p>
+                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{title}</p>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>{desc}</p>
               </div>
             ))}
           </div>

@@ -104,17 +104,18 @@ export default function GreedIndexCard() {
   const { data, isLoading } = useFearGreed();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Greed Index</h2>
-          <Info size={13} className="text-gray-400" />
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Greed Index</h2>
+          <Info size={13} style={{ color: 'var(--text-muted)' }} />
         </div>
         <a
           href="https://alternative.me/crypto/fear-and-greed-index/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-xs text-[#408A71] hover:text-[#285A48] transition-colors"
+          className="flex items-center gap-1 text-xs transition-colors"
+          style={{ color: 'var(--accent)' }}
         >
           See all <ExternalLink size={11} />
         </a>
@@ -122,13 +123,13 @@ export default function GreedIndexCard() {
 
       {isLoading ? (
         <div className="flex flex-col items-center gap-3 py-6 animate-pulse">
-          <div className="w-52 h-28 bg-gray-100 dark:bg-gray-700 rounded-xl" />
-          <div className="h-4 w-20 bg-gray-100 dark:bg-gray-700 rounded" />
+          <div className="w-52 h-28 rounded-xl" style={{ backgroundColor: 'var(--border-subtle)' }} />
+          <div className="h-4 w-20 rounded" style={{ backgroundColor: 'var(--border-subtle)' }} />
         </div>
       ) : data ? (
         <div className="flex flex-col items-center">
           <SemiGauge value={data.value} isDark={isDark} />
-          <div className="flex gap-5 mt-3 text-xs text-gray-400">
+          <div className="flex gap-5 mt-3 text-xs" style={{ color: 'var(--text-muted)' }}>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
               Fear
@@ -144,7 +145,7 @@ export default function GreedIndexCard() {
           </div>
         </div>
       ) : (
-        <p className="text-sm text-gray-400 text-center py-8">Failed to load index</p>
+        <p className="text-sm text-center py-8" style={{ color: 'var(--text-muted)' }}>Failed to load index</p>
       )}
     </div>
   );

@@ -111,7 +111,9 @@ const TxRow = React.memo(function TxRow({ tx }: { tx: TxItem }) {
       href={`https://explorer.hiro.so/txid/${tx.txId}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+      className="flex items-center gap-3 py-2.5 px-2 -mx-2 rounded-xl transition-colors group"
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-elevated)')}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
       <div className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center flex-shrink-0`}>
         <Icon size={15} className={color} />
@@ -119,10 +121,10 @@ const TxRow = React.memo(function TxRow({ tx }: { tx: TxItem }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.label}</p>
+          <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{tx.label}</p>
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STATUS_DOT[tx.status]}`} />
         </div>
-        <p className="text-xs text-gray-400 truncate">{tx.sublabel}</p>
+        <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{tx.sublabel}</p>
       </div>
 
       <div className="text-right flex-shrink-0">
@@ -168,15 +170,16 @@ function RecentActivity() {
   );
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col">
+    <div className="glass-card rounded-2xl p-5 shadow-sm flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-700 dark:text-gray-200">Recent Activity</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Activity</h2>
         {isConnected && stxAddress && (
           <a
             href={`https://explorer.hiro.so/address/${stxAddress}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-0.5 text-xs text-[#408A71] hover:text-[#285A48] transition-colors"
+            className="flex items-center gap-0.5 text-xs transition-colors"
+            style={{ color: 'var(--accent)' }}
           >
             See all <ExternalLink size={11} />
           </a>
@@ -185,7 +188,7 @@ function RecentActivity() {
 
       {!isConnected ? (
         <EmptyState
-          icon={<Wallet size={28} className="text-[#408A71]" />}
+          icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
           title="No wallet connected"
           description="Connect your wallet to view recent transactions."
         />
@@ -195,7 +198,7 @@ function RecentActivity() {
         </div>
       ) : txs.length === 0 ? (
         <EmptyState
-          icon={<Activity size={28} className="text-[#408A71]" />}
+          icon={<Activity size={28} style={{ color: 'var(--accent)' }} />}
           title="No transactions yet"
           description="Your transaction history will appear here once you make your first swap or transfer."
         />

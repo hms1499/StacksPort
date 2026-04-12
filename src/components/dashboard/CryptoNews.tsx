@@ -23,10 +23,12 @@ function NewsRow({ item }: { item: NewsItem }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-start gap-3 py-3 px-2 -mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+      className="flex items-start gap-3 py-3 px-2 -mx-2 rounded-xl transition-colors group"
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-elevated)')}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
       {/* Thumbnail or fallback */}
-      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
+      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         {item.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -39,14 +41,14 @@ function NewsRow({ item }: { item: NewsItem }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Newspaper size={18} className="text-gray-300" />
+            <Newspaper size={18} style={{ color: 'var(--text-muted)' }} />
           </div>
         )}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-snug">
+        <p className="text-sm font-medium line-clamp-2 leading-snug" style={{ color: 'var(--text-primary)' }}>
           {item.title}
         </p>
         <div className="flex items-center gap-2 mt-1.5">
@@ -57,7 +59,7 @@ function NewsRow({ item }: { item: NewsItem }) {
           >
             {item.source}
           </span>
-          <span className="flex items-center gap-0.5 text-xs text-gray-400">
+          <span className="flex items-center gap-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
             <Clock size={9} />
             {timeAgo(item.publishedAt)}
           </span>
@@ -92,25 +94,25 @@ export default function CryptoNews() {
   const { data: news, isLoading } = useNews();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Crypto News</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Crypto News</h2>
           <span className="text-[10px] font-semibold bg-red-50 text-red-500 px-1.5 py-0.5 rounded-md">
             24h
           </span>
         </div>
-        <span className="text-xs text-gray-400">CoinTelegraph · CoinDesk</span>
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>CoinTelegraph · CoinDesk</span>
       </div>
 
-      <div className="divide-y divide-gray-50 dark:divide-gray-700">
+      <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
         {isLoading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
           : !news || news.length === 0
           ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Newspaper size={32} className="text-gray-200 mb-3" />
-              <p className="text-sm text-gray-400">No news available</p>
+              <Newspaper size={32} className="mb-3" style={{ color: 'var(--text-muted)' }} />
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No news available</p>
             </div>
           )
           : news.map((item, i) => <NewsRow key={i} item={item} />)}

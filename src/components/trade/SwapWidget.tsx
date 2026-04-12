@@ -51,10 +51,11 @@ function SimpleTokenSelector({
 
   return (
     <div ref={ref} className="relative">
-      <p className="text-xs font-medium text-gray-400 mb-1.5">{label}</p>
+      <p className="text-xs font-medium mb-1.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-[#B0E4CC] transition-colors bg-white dark:bg-gray-700"
+        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border transition-colors"
+        style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-card)' }}
       >
         {selected ? (
           <>
@@ -67,27 +68,28 @@ function SimpleTokenSelector({
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
-            <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
               {selected.symbol}
             </span>
-            <span className="text-xs text-gray-400 truncate flex-1 text-left">
+            <span className="text-xs truncate flex-1 text-left" style={{ color: 'var(--text-muted)' }}>
               {selected.name}
             </span>
           </>
         ) : (
-          <span className="text-sm text-gray-400 flex-1 text-left">Select token</span>
+          <span className="text-sm flex-1 text-left" style={{ color: 'var(--text-muted)' }}>Select token</span>
         )}
         <ChevronDown
           size={14}
-          className={`text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+          style={{ color: 'var(--text-muted)' }}
         />
       </button>
 
       {open && (
-        <div className="absolute z-50 top-full mt-1.5 left-0 right-0 bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-50 top-full mt-1.5 left-0 right-0 rounded-xl shadow-lg overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
           <div className="max-h-52 overflow-y-auto">
             {tokens.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-4">No tokens available</p>
+              <p className="text-xs text-center py-4" style={{ color: 'var(--text-muted)' }}>No tokens available</p>
             ) : (
               tokens.map((t) => (
                 <button
@@ -96,11 +98,8 @@ function SimpleTokenSelector({
                     onChange(t);
                     setOpen(false);
                   }}
-                  className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-left ${
-                    selected?.id === t.id
-                      ? "bg-[#B0E4CC]/20 dark:bg-[#285A48]/30"
-                      : ""
-                  }`}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 transition-colors text-left"
+                  style={{ backgroundColor: selected?.id === t.id ? 'var(--accent-dim)' : 'transparent' }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -112,10 +111,10 @@ function SimpleTokenSelector({
                     }}
                   />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                       {t.symbol}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">{t.name}</p>
+                    <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{t.name}</p>
                   </div>
                 </button>
               ))
@@ -134,10 +133,10 @@ function RoutePath({ hops }: { hops: string[] }) {
     <div className="flex items-center gap-1 flex-wrap">
       {hops.map((hop, i) => (
         <span key={i} className="flex items-center gap-1">
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ color: 'var(--text-secondary)', backgroundColor: 'var(--bg-elevated)' }}>
             {hop}
           </span>
-          {i < hops.length - 1 && <ArrowRight size={10} className="text-gray-400" />}
+          {i < hops.length - 1 && <ArrowRight size={10} style={{ color: 'var(--text-muted)' }} />}
         </span>
       ))}
     </div>
@@ -345,10 +344,10 @@ export default function SwapWidget() {
       <div className="flex flex-col items-center py-10 gap-4 text-center">
         <CheckCircle2 size={52} className="text-green-500" />
         <div>
-          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <p className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
             Swap Submitted!
           </p>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
             {fromToken.symbol} → {toToken?.symbol}
           </p>
         </div>
@@ -356,7 +355,8 @@ export default function SwapWidget() {
           href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-[#408A71] hover:text-[#285A48] underline"
+          className="flex items-center gap-1.5 text-sm underline"
+          style={{ color: 'var(--accent)' }}
         >
           View on Explorer <ExternalLink size={13} />
         </a>
@@ -367,7 +367,8 @@ export default function SwapWidget() {
             setAmountIn("");
             setQuote(null);
           }}
-          className="mt-2 px-6 py-2.5 rounded-xl bg-gray-900 dark:bg-gray-600 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-500 transition-colors"
+          className="mt-2 px-6 py-2.5 rounded-xl text-sm font-medium transition-colors"
+          style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
         >
           New Swap
         </button>
@@ -378,7 +379,7 @@ export default function SwapWidget() {
   return (
     <div className="space-y-4">
       {/* From token */}
-      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
+      <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <SimpleTokenSelector
           tokens={fromTokens}
           selected={fromToken}
@@ -389,12 +390,12 @@ export default function SwapWidget() {
         {/* Balance + % shortcuts */}
         {isConnected && (
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Balance:{" "}
               {balanceLoading ? (
-                <span className="inline-block w-12 h-3 bg-gray-200 dark:bg-gray-600 rounded animate-pulse align-middle" />
+                <span className="inline-block w-12 h-3 rounded animate-pulse align-middle" style={{ backgroundColor: 'var(--bg-elevated)' }} />
               ) : fromBalance !== null ? (
-                <span className="font-medium text-gray-600 dark:text-gray-300">
+                <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>
                   {formatAmount(fromBalance, fromToken.decimals)} {fromToken.symbol}
                 </span>
               ) : (
@@ -407,7 +408,8 @@ export default function SwapWidget() {
                   key={pct}
                   onClick={() => setPercent(pct)}
                   disabled={!fromBalance}
-                  className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-[#B0E4CC]/20 dark:bg-[#285A48]/30 text-[#285A48] dark:text-[#B0E4CC] hover:bg-[#B0E4CC]/30 dark:hover:bg-[#285A48]/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="px-2 py-0.5 text-[11px] font-semibold rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: 'var(--accent-dim)', color: 'var(--accent)' }}
                 >
                   {pct === 1 ? "MAX" : `${pct * 100}%`}
                 </button>
@@ -417,7 +419,7 @@ export default function SwapWidget() {
         )}
 
         <div>
-          <label className="text-xs font-medium text-gray-400 mb-1.5 block">
+          <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-muted)' }}>
             Amount
           </label>
           <div className="relative">
@@ -428,13 +430,12 @@ export default function SwapWidget() {
               step="any"
               value={amountIn}
               onChange={(e) => setAmountIn(e.target.value)}
-              className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 dark:placeholder:text-gray-500 transition-colors ${
-                isConnected &&
-                fromBalance !== null &&
-                parseFloat(amountIn) > fromBalance
-                  ? "border-red-300 focus:ring-red-300 text-red-600"
-                  : "border-gray-200 dark:border-gray-600 focus:ring-[#B0E4CC] text-gray-900 dark:text-gray-100"
-              }`}
+              className="w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 transition-colors"
+              style={
+                isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance
+                  ? { borderColor: 'rgb(252,165,165)', backgroundColor: 'var(--bg-card)', color: 'rgb(239,68,68)' }
+                  : { borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }
+              }
             />
           </div>
           {isConnected &&
@@ -455,14 +456,15 @@ export default function SwapWidget() {
         <button
           onClick={flipTokens}
           disabled={!canFlip}
-          className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-[#B0E4CC] transition-colors shadow-sm disabled:opacity-30 disabled:cursor-not-allowed"
+          className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}
         >
-          <ArrowDownUp size={15} className="text-gray-500 dark:text-gray-400" />
+          <ArrowDownUp size={15} />
         </button>
       </div>
 
       {/* To token */}
-      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
+      <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <SimpleTokenSelector
           tokens={toTokens}
           selected={toToken}
@@ -471,23 +473,23 @@ export default function SwapWidget() {
         />
         {/* Quote output */}
         <div>
-          <label className="text-xs font-medium text-gray-400 mb-1.5 block">
+          <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-muted)' }}>
             You receive (estimated)
           </label>
-          <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 min-h-[42px] flex items-center">
+          <div className="px-3.5 py-2.5 rounded-xl border min-h-[42px] flex items-center" style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-card)' }}>
             {status === "quoting" ? (
-              <span className="flex items-center gap-2 text-sm text-gray-400">
+              <span className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                 <Loader2 size={13} className="animate-spin" /> Fetching quote...
               </span>
             ) : quote && toToken ? (
               <div className="flex items-baseline gap-2">
-                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                   {formatAmount(quote.amountOutHuman, toToken.decimals)}
                 </span>
-                <span className="text-xs text-gray-400">{toToken.symbol}</span>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{toToken.symbol}</span>
               </div>
             ) : (
-              <span className="text-sm text-gray-300 dark:text-gray-500">—</span>
+              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>—</span>
             )}
           </div>
         </div>
@@ -495,33 +497,34 @@ export default function SwapWidget() {
 
       {/* Route & details */}
       {quote && (
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3 space-y-2.5">
+        <div className="rounded-xl px-4 py-3 space-y-2.5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
           {quote.route.hops.length > 0 && (
             <div className="flex items-start gap-2">
-              <span className="text-xs text-gray-400 mt-0.5 shrink-0">Route</span>
+              <span className="text-xs mt-0.5 shrink-0" style={{ color: 'var(--text-muted)' }}>Route</span>
               <RoutePath hops={quote.route.hops} />
             </div>
           )}
           {minReceived !== null && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-400">Min received</span>
-              <span className="text-gray-600 dark:text-gray-300">
+              <span style={{ color: 'var(--text-muted)' }}>Min received</span>
+              <span style={{ color: 'var(--text-secondary)' }}>
                 {formatAmount(minReceived, toToken?.decimals ?? 6)} {toToken?.symbol}
               </span>
             </div>
           )}
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-400">Slippage</span>
+            <span style={{ color: 'var(--text-muted)' }}>Slippage</span>
             <div className="flex gap-1">
               {[0.1, 0.5, 1].map((s) => (
                 <button
                   key={s}
                   onClick={() => setSlippage(s)}
-                  className={`px-2 py-0.5 rounded-lg font-medium transition-colors ${
+                  className="px-2 py-0.5 rounded-lg font-medium transition-colors"
+                  style={
                     slippage === s
-                      ? "bg-gray-900 dark:bg-gray-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500"
-                  }`}
+                      ? { backgroundColor: 'var(--text-primary)', color: 'var(--bg-surface)' }
+                      : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }
+                  }
                 >
                   {s}%
                 </button>
@@ -533,7 +536,7 @@ export default function SwapWidget() {
 
       {/* Error */}
       {status === "error" && errorMsg && (
-        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs text-red-500 rounded-xl px-3 py-2.5" style={{ backgroundColor: 'rgba(239,68,68,0.08)' }}>
           <AlertCircle size={13} />
           {errorMsg}
         </div>
@@ -541,7 +544,7 @@ export default function SwapWidget() {
 
       {/* Wallet not connected */}
       {!isConnected && (
-        <div className="flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400 rounded-xl px-3 py-2.5" style={{ backgroundColor: 'rgba(234,179,8,0.08)' }}>
           <Info size={13} />
           Connect your wallet to swap
         </div>
@@ -557,7 +560,8 @@ export default function SwapWidget() {
           !toToken ||
           (fromBalance !== null && parseFloat(amountIn) > fromBalance)
         }
-        className="w-full py-3.5 rounded-xl bg-[#408A71] text-white text-sm font-semibold hover:bg-[#285A48] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-3.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 12px var(--accent-glow)' }}
       >
         {status === "swapping" ? (
           <>
@@ -575,13 +579,13 @@ export default function SwapWidget() {
       </button>
 
       {/* Powered by */}
-      <p className="text-center text-[11px] text-gray-300 dark:text-gray-500">
+      <p className="text-center text-[11px]" style={{ color: 'var(--text-muted)' }}>
         Powered by{" "}
         <a
           href="https://bitflow.finance"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#B0E4CC] hover:text-[#408A71]"
+          style={{ color: 'var(--accent)' }}
         >
           Bitflow Pools
         </a>

@@ -24,22 +24,22 @@ function ScoreBadge({ score }: { score: number }) {
 
 export default function SentimentCard({ data }: { data: SentimentData }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100">Market Sentiment</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Market Sentiment</h3>
         <ScoreBadge score={data.score} />
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+      <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
         {data.summary}
       </p>
 
       {/* Fear & Greed */}
-      <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-xl">
-        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+      <div className="flex items-center gap-3 mb-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+        <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
           Fear & Greed
         </span>
-        <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
           <div
             className={cn(
               "h-full rounded-full transition-all",
@@ -52,7 +52,7 @@ export default function SentimentCard({ data }: { data: SentimentData }) {
             style={{ width: `${data.fearGreedValue}%` }}
           />
         </div>
-        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[2.5rem] text-right">
+        <span className="text-sm font-semibold min-w-[2.5rem] text-right" style={{ color: 'var(--text-primary)' }}>
           {data.fearGreedValue}
         </span>
       </div>
@@ -68,7 +68,7 @@ export default function SentimentCard({ data }: { data: SentimentData }) {
                 ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
                 : signal.type === "bearish"
                   ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                  : "text-[color:var(--text-muted)] bg-[var(--bg-elevated)]"
             )}
           >
             {signal.label}

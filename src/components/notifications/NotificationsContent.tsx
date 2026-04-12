@@ -149,19 +149,18 @@ export default function NotificationsContent() {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Filter tabs + unread badge */}
-        <div className="border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 md:px-6">
+        <div className="px-4 md:px-6" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
           <div className="flex items-center justify-between">
             <div className="flex gap-1">
               {TABS.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={cn(
-                    'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
-                    activeTab === tab.key
-                      ? 'border-[#408A71] text-[#285A48] dark:text-[#B0E4CC]'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  )}
+                  className="px-4 py-3 text-sm font-medium border-b-2 transition-colors"
+                  style={{
+                    borderBottomColor: activeTab === tab.key ? 'var(--accent)' : 'transparent',
+                    color: activeTab === tab.key ? 'var(--accent)' : 'var(--text-muted)',
+                  }}
                 >
                   {tab.label}
                 </button>
@@ -169,8 +168,8 @@ export default function NotificationsContent() {
             </div>
 
             {unreadCount > 0 && (
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#408A71] mr-1.5 align-middle" />
+              <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                <span className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ backgroundColor: 'var(--accent)' }} />
                 {unreadCount} unread
               </span>
             )}
@@ -178,22 +177,22 @@ export default function NotificationsContent() {
         </div>
 
         {/* Search and controls */}
-        <div className="border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3 md:px-6">
+        <div className="px-4 py-3 md:px-6" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
           <div className="flex items-center gap-2">
             {/* Filter button — mobile */}
             <button
               onClick={() => setIsMobileFilterOpen(true)}
-              className={cn(
-                'lg:hidden flex items-center gap-1.5 px-3 py-2 border rounded-lg transition-colors text-sm font-medium shrink-0',
-                activeFilterCount > 0
-                  ? 'border-[#408A71] text-[#285A48] bg-[#B0E4CC]/20'
-                  : 'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-              )}
+              className="lg:hidden flex items-center gap-1.5 px-3 py-2 border rounded-lg transition-colors text-sm font-medium shrink-0"
+              style={{
+                borderColor: activeFilterCount > 0 ? 'var(--accent)' : 'var(--border-default)',
+                color: activeFilterCount > 0 ? 'var(--accent)' : 'var(--text-secondary)',
+                backgroundColor: activeFilterCount > 0 ? 'var(--accent-dim)' : 'transparent',
+              }}
             >
               <SlidersHorizontal size={16} />
               Filters
               {activeFilterCount > 0 && (
-                <span className="bg-[#408A71] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center" style={{ backgroundColor: 'var(--accent)' }}>
                   {activeFilterCount}
                 </span>
               )}
@@ -201,12 +200,17 @@ export default function NotificationsContent() {
 
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 placeholder="Search notifications..."
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#408A71] focus:border-transparent text-sm bg-white dark:bg-gray-800 dark:text-gray-200"
+                className="w-full pl-9 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-sm"
+                style={{
+                  border: '1px solid var(--border-default)',
+                  backgroundColor: 'var(--bg-card)',
+                  color: 'var(--text-primary)',
+                }}
               />
             </div>
 
@@ -214,7 +218,8 @@ export default function NotificationsContent() {
             <div className="relative ml-auto">
               <button
                 onClick={() => setIsSortOpen(!isSortOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
+                style={{ border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}
               >
                 Sort
                 <ChevronDown size={15} />
@@ -223,15 +228,17 @@ export default function NotificationsContent() {
               {isSortOpen && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setIsSortOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-40">
+                  <div className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg py-1 z-40" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
                     {(['newest', 'oldest'] as const).map((sort) => (
                       <button
                         key={sort}
                         onClick={() => { setSortBy(sort); setIsSortOpen(false); }}
-                        className={cn(
-                          'w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-800',
-                          filters.sortBy === sort && 'bg-[#B0E4CC]/20 dark:bg-[#285A48]/30 text-[#285A48] dark:text-[#B0E4CC] font-medium'
-                        )}
+                        className="w-full text-left px-4 py-2 text-sm transition-colors"
+                        style={{
+                          backgroundColor: filters.sortBy === sort ? 'var(--accent-dim)' : 'transparent',
+                          color: filters.sortBy === sort ? 'var(--accent)' : 'var(--text-secondary)',
+                          fontWeight: filters.sortBy === sort ? 500 : 400,
+                        }}
                       >
                         {sort === 'newest' ? 'Newest first' : 'Oldest first'}
                       </button>
@@ -266,14 +273,14 @@ export default function NotificationsContent() {
             <div className="space-y-6">
               {/* Select all */}
               {filteredNotifications.length > 1 && (
-                <label className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer">
+                <label className="flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                   <input
                     type="checkbox"
                     checked={selectedIds.size === filteredNotifications.length}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
+                    className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
                     {selectedIds.size === filteredNotifications.length
                       ? `Deselect all (${filteredNotifications.length})`
                       : `Select all (${filteredNotifications.length})`}
@@ -284,7 +291,7 @@ export default function NotificationsContent() {
               {/* Date groups */}
               {groups.map((group) => (
                 <div key={group.label}>
-                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: 'var(--text-muted)' }}>
                     {group.label}
                   </p>
                   <div className="space-y-3">

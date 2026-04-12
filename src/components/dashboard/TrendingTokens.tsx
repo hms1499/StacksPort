@@ -56,10 +56,13 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
       href={`https://www.coingecko.com/en/coins/${token.id}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl px-2 -mx-2 transition-colors cursor-pointer"
+      className="flex items-center gap-3 py-3 rounded-xl px-2 -mx-2 transition-colors cursor-pointer"
+      style={{ ['--hover-bg' as string]: 'var(--bg-elevated)' }}
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-elevated)')}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
       {/* Avatar */}
-      <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
+      <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         {token.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={token.image} alt={token.symbol} className="w-full h-full object-cover" />
@@ -72,8 +75,8 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
 
       {/* Name + symbol */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{token.name}</p>
-        <p className="text-xs text-gray-400 font-medium">{token.symbol}</p>
+        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{token.name}</p>
+        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>{token.symbol}</p>
       </div>
 
       {/* Sparkline */}
@@ -83,7 +86,7 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
 
       {/* Price + change */}
       <div className="text-right flex-shrink-0 w-24">
-        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{formatPrice(token.priceUsd)}</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{formatPrice(token.priceUsd)}</p>
         <div
           className={`flex items-center justify-end gap-0.5 mt-0.5 text-xs font-medium ${
             isPositive ? "text-green-500" : "text-red-500"
@@ -129,25 +132,26 @@ export default function TrendingTokens() {
   const { data: tokens, isLoading } = useTrendingTokens();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200">Trending</h2>
-          <Info size={13} className="text-gray-400" />
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Trending</h2>
+          <Info size={13} style={{ color: 'var(--text-muted)' }} />
         </div>
         <a
           href={COINGECKO_STACKS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-0.5 text-sm text-[#408A71] hover:text-[#285A48] transition-colors font-medium"
+          className="flex items-center gap-0.5 text-sm transition-colors font-medium"
+          style={{ color: 'var(--accent)' }}
         >
           See all <ChevronRight size={15} />
         </a>
       </div>
 
       {/* Token rows */}
-      <div className="divide-y divide-gray-50 dark:divide-gray-700">
+      <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
         {isLoading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
           : (tokens ?? []).slice(0, 5).map((token) => <TokenRow key={token.id} token={token} />)}

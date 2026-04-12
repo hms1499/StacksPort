@@ -43,19 +43,18 @@ export default function BottomNav() {
             }}
           >
             <div className="relative">
-              <Icon size={20} />
+              <Icon size={20} strokeWidth={active ? 2.5 : 2} />
               {active && (
                 <motion.span
                   layoutId="bottomnav-active"
-                  className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-[3px] rounded-full"
                   style={{ backgroundColor: 'var(--accent)' }}
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
             </div>
             <span
-              className="text-[9px] font-bold tracking-wide uppercase"
-              style={{ letterSpacing: '0.06em' }}
+              className="text-[10px] font-semibold tracking-wide"
             >
               {label}
             </span>

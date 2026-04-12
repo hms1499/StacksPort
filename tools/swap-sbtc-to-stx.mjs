@@ -186,3 +186,135 @@ async function fetchSwapQuote(sbtcAmountSats, retries = 6) {
   }
   throw new Error(`Quote rate limited after ${retries} retries`);
 }
+
+// ── Main ────────────────────────────────────────────────────────────────────
+
+async function main() {
+  const rl = readline.createInterface({ input, output });
+
+  console.log("\n========================================");
+  console.log("  sBTC → STX Swap Tool — Mainnet");
+  console.log("========================================");
+  console.log(`  XYK Pool  : ${POOL_SBTC_STX.address}.${POOL_SBTC_STX.name}`);
+  console.log(`  Accounts  : ${NUM_ACCOUNTS}`);
+  console.log(`  Slippage  : ${SLIPPAGE}%`);
+  console.log(`  Dry run   : ${DRY_RUN ? "YES" : "no"}`);
+  console.log(`  Tx fee    : ${formatStx(TX_FEE)} STX (per swap)`);
+  console.log("========================================\n");
+
+  // 1. Get mnemonic
+  const mnemonic = await rl.question("Enter your mnemonic (12 or 24 words): ");
+  const words = mnemonic.trim().split(/\s+/);
+  if (words.length !== 12 && words.length !== 24) {
+    console.error("❌ Invalid mnemonic — expected 12 or 24 words.");
+    rl.close();
+    process.exit(1);
+  }
+
+  const is12Word = words.length === 12;
+
+  // 2. Derive wallet
+  console.log("\nDeriving wallet...");
+  let derivedAccounts;
+
+  if (is12Word) {
+    console.log("  Mode: Xverse (BIP44 account-level derivation)");
+    derivedAccounts = deriveXverseAccounts(mnemonic, NUM_ACCOUNTS);
+  } else {
+    console.log("  Mode: Leather (wallet-sdk derivation)");
+    let wallet = await generateWallet({ secretKey: mnemonic.trim(), password: "" });
+    for (let i = 1; i < NUM_ACCOUNTS; i++) {
+      wallet = generateNewAccount(wallet);
+    }
+    derivedAccounts = wallet.accounts.map((account, i) => ({
+      index: i,
+      address: getStxAddress(account, NETWORK),
+      stxPrivateKey: account.stxPrivateKey,
+    }));
+  }
+
+  console.log(`✓ Derived ${derivedAccounts.length} accounts\n`);
+
+  // 3. Scan balances + fetch quotes
+  console.log("Scanning sBTC balances and fetching quotes...\n");
+  console.log("  #   Address          sBTC In           STX Out (est.)    STX Balance");
+  console.log("  ─── ──────────────── ──────────────── ──────────────── ──────────────");
+
+  const swappable = [];
+  let totalSbtcIn = 0n;
+  let totalStxOut = 0n;
+  let lowFeeAccounts = 0;
+
+  for (const { index, address, stxPrivateKey } of derivedAccounts) {
+    const sbtcBalance = await fetchSbtcBalance(address);
+    await sleep(400);
+    const stxBalance = await fetchStxBalance(address);
+
+    const hasFee = stxBalance >= TX_FEE;
+    const hasSbtc = sbtcBalance > 0n;
+
+    let stxOutEst = 0n;
+    let estStr = "                ";
+
+    if (hasSbtc && hasFee) {
+      await sleep(400);
+      try {
+        stxOutEst = await fetchSwapQuote(sbtcBalance);
+        estStr = formatStx(stxOutEst).padStart(16);
+      } catch {
+        estStr = "   (quote error)";
+      }
+      swappable.push({ index, address, stxPrivateKey, sbtcBalance, stxOutEst });
+      totalSbtcIn += sbtcBalance;
+      totalStxOut += stxOutEst;
+    } else if (hasSbtc && !hasFee) {
+      lowFeeAccounts++;
+    }
+
+    const feeWarning = hasSbtc && !hasFee ? " ⚠ low STX" : "";
+    console.log(
+      `  ${String(index).padStart(3)}  ${shortAddr(address).padEnd(14)}  ${formatSbtc(sbtcBalance).padStart(16)}  ${estStr}  ${formatStx(stxBalance).padStart(14)}${feeWarning}`
+    );
+
+    await sleep(800);
+  }
+
+  console.log("\n────────────────────────────────────────────────────────────────");
+  console.log(`  Accounts to swap    : ${swappable.length}`);
+  console.log(`  Total sBTC in       : ${formatSbtc(totalSbtcIn)} sBTC`);
+  console.log(`  Total STX out (est.): ~${formatStx(totalStxOut)} STX`);
+  console.log(`  Total fees          : ${formatStx(TX_FEE * BigInt(swappable.length))} STX`);
+  if (lowFeeAccounts > 0) {
+    console.log(`  ⚠ Skipped (low STX) : ${lowFeeAccounts} accounts — need ${formatStx(TX_FEE)} STX for fee`);
+  }
+  console.log("────────────────────────────────────────────────────────────────\n");
+
+  if (swappable.length === 0) {
+    console.log("Nothing to swap.");
+    rl.close();
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log("🏁 Dry run complete — no transactions sent.");
+    rl.close();
+    return;
+  }
+
+  // 4. Confirm
+  const confirm = await rl.question(
+    `Swap ${formatSbtc(totalSbtcIn)} sBTC across ${swappable.length} account(s)? (yes/no): `
+  );
+  if (confirm.trim().toLowerCase() !== "yes") {
+    console.log("Cancelled.");
+    rl.close();
+    return;
+  }
+
+  rl.close();
+}
+
+main().catch((err) => {
+  console.error("Fatal:", err);
+  process.exit(1);
+});

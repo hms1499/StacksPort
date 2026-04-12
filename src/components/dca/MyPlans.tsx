@@ -42,24 +42,25 @@ export default function MyPlans({ address }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-gray-900">
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
           My Plans
           {plans.length > 0 && (
-            <span className="ml-2 text-xs font-medium text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+            <span className="ml-2 text-xs font-medium rounded-full px-2 py-0.5" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-elevated)' }}>
               {plans.length}
             </span>
           )}
         </h2>
         <div className="flex items-center gap-2">
           {lastUpdated && !loading && (
-            <span className="text-[10px] text-gray-300">
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
               {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s ago
             </span>
           )}
           <button
             onClick={fetchData}
             disabled={loading}
-            className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
+            className="p-2 rounded-xl transition-colors disabled:opacity-40"
+            style={{ color: 'var(--text-muted)' }}
           >
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
           </button>
@@ -69,7 +70,7 @@ export default function MyPlans({ address }: Props) {
       {loading ? (
         <div className="flex flex-col gap-3">
           {[1, 2].map((i) => (
-            <div key={i} className="h-28 rounded-2xl bg-gray-100 animate-pulse" />
+            <div key={i} className="h-28 rounded-2xl animate-pulse" style={{ backgroundColor: 'var(--bg-elevated)' }} />
           ))}
         </div>
       ) : plans.length === 0 ? (

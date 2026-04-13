@@ -100,6 +100,9 @@ export default function Home() {
   const statsRef = useRef<HTMLElement>(null);
   const statItemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const statValueRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const featuresRef = useRef<HTMLElement>(null);
+  const featuresHeadingRef = useRef<HTMLDivElement>(null);
+  const featureCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   async function handleConnect() {
     setConnecting(true);
@@ -246,6 +249,36 @@ export default function Home() {
                   el.textContent = `${stat.prefix}${formatted}${stat.suffix}`;
                 },
               });
+            });
+          },
+        });
+      }
+
+      // ── Features heading ──
+      if (featuresHeadingRef.current) {
+        gsap.set(featuresHeadingRef.current, { opacity: 0, y: 20 });
+        ScrollTrigger.create({
+          trigger: featuresHeadingRef.current,
+          start: "top 85%",
+          once: true,
+          onEnter: () => {
+            gsap.to(featuresHeadingRef.current, {
+              opacity: 1, y: 0, duration: 0.55, ease: "power3.out",
+            });
+          },
+        });
+      }
+
+      // ── Features batch stagger ──
+      const featureCards = featureCardRefs.current.filter(Boolean) as HTMLDivElement[];
+      if (featureCards.length > 0) {
+        gsap.set(featureCards, { opacity: 0, y: 24 });
+        ScrollTrigger.batch(featureCards, {
+          start: "top 85%",
+          once: true,
+          onEnter: (batch) => {
+            gsap.to(batch, {
+              opacity: 1, y: 0, duration: 0.55, ease: "power3.out", stagger: 0.1,
             });
           },
         });
@@ -552,9 +585,9 @@ export default function Home() {
       {/* ══════════════════════════════════════
           FEATURES
       ══════════════════════════════════════ */}
-      <section id="features" className="py-24 px-5 md:px-8">
+      <section ref={featuresRef} id="features" className="py-24 px-5 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-14">
+          <div ref={featuresHeadingRef} className="mb-14">
             <p
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: '#00E5A0', letterSpacing: '0.12em' }}
@@ -572,12 +605,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map(({ icon: Icon, label, desc, color }, i) => (
-              <motion.div
+              <div
                 key={label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.07, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                ref={(el) => { featureCardRefs.current[i] = el; }}
                 className="rounded-2xl p-6 group"
                 style={{
                   backgroundColor: '#0E1E30',
@@ -601,7 +631,7 @@ export default function Home() {
                 </div>
                 <h3 className="font-bold text-base mb-2" style={{ color: '#DDE8F8' }}>{label}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'rgba(221,232,248,0.40)' }}>{desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

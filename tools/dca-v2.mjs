@@ -281,3 +281,130 @@ async function fetchSwapQuote(stxAmountMicro) {
   }
   throw new Error(`Unexpected CV type from get-dx: ${JSON.stringify(cv)}`);
 }
+
+// ── Commands ────────────────────────────────────────────────────────────────
+
+async function cmdCreate(rl, accounts) {
+  const amountStx = parseFloat(flagVal("--amount") ?? "0");
+  const intervalKey = (flagVal("--interval") ?? "").toLowerCase();
+  const depositStx = parseFloat(flagVal("--deposit") ?? "0");
+
+  if (!amountStx || !intervalKey || !depositStx) {
+    console.error("Usage: node tools/dca-v2.mjs create --amount <STX> --interval <daily|weekly|monthly> --deposit <STX>");
+    process.exit(1);
+  }
+
+  const intervalBlocks = INTERVALS[intervalKey];
+  if (!intervalBlocks) {
+    console.error(`Invalid interval: ${intervalKey}. Use: daily, weekly, monthly`);
+    process.exit(1);
+  }
+
+  const amountMicro = BigInt(Math.floor(amountStx * 1e6));
+  const depositMicro = BigInt(Math.floor(depositStx * 1e6));
+
+  // Contract validations
+  if (amountMicro < 1_000_000n) {
+    console.error("Amount must be >= 1 STX");
+    process.exit(1);
+  }
+  if (depositMicro < 2_000_000n) {
+    console.error("Deposit must be >= 2 STX");
+    process.exit(1);
+  }
+  if (depositMicro < amountMicro) {
+    console.error("Deposit must be >= amount per swap");
+    process.exit(1);
+  }
+
+  console.log(`\n  Action      : CREATE plan`);
+  console.log(`  Target      : sBTC (${SBTC.address}.${SBTC.name})`);
+  console.log(`  Amount/swap : ${amountStx} STX (${amountMicro} uSTX)`);
+  console.log(`  Interval    : ${intervalKey} (${intervalBlocks} blocks)`);
+  console.log(`  Deposit     : ${depositStx} STX (${depositMicro} uSTX)`);
+  console.log(`  Tx fee      : ${formatStx(TX_FEE)} STX per tx\n`);
+
+  // Scan balances
+  console.log("  Scanning STX balances...\n");
+  console.log("  #   Address          STX Balance       Status");
+  console.log("  --- ---------------- ---------------- --------");
+
+  const eligible = [];
+  const needed = depositMicro + TX_FEE;
+
+  for (const acct of accounts) {
+    const bal = await fetchStxBalance(acct.address);
+    const ok = bal >= needed;
+    const status = ok ? "OK" : "LOW";
+    if (ok) eligible.push({ ...acct, bal });
+
+    console.log(
+      `  ${String(acct.index).padStart(3)}  ${shortAddr(acct.address).padEnd(16)} ${formatStx(bal).padStart(16)}  ${status}`
+    );
+    await sleep(500);
+  }
+
+  console.log(`\n  Eligible: ${eligible.length} / ${accounts.length} accounts`);
+  console.log(`  Total deposit: ${formatStx(depositMicro * BigInt(eligible.length))} STX`);
+  console.log(`  Total fees   : ${formatStx(TX_FEE * BigInt(eligible.length))} STX\n`);
+
+  if (eligible.length === 0) {
+    console.log("  No accounts with sufficient balance.");
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log("  Dry run complete — no transactions sent.");
+    return;
+  }
+
+  const answer = await rl.question(`  Create ${eligible.length} plan(s)? (yes/no): `);
+  if (answer.trim().toLowerCase() !== "yes") {
+    console.log("  Cancelled.");
+    return;
+  }
+
+  // Broadcast
+  console.log("\n  Creating plans...\n");
+  let success = 0;
+  let failed = 0;
+
+  for (const { index, address, stxPrivateKey } of eligible) {
+    const label = `  [${String(index).padStart(3)}] ${shortAddr(address)}`;
+    try {
+      const nonce = await fetchNonceWithRetry(address);
+      const tx = await makeContractCall({
+        contractAddress: DCA_VAULT.address,
+        contractName: DCA_VAULT.name,
+        functionName: "create-plan",
+        functionArgs: [
+          contractPrincipalCV(SBTC.address, SBTC.name),
+          uintCV(amountMicro),
+          uintCV(intervalBlocks),
+          uintCV(depositMicro),
+        ],
+        senderKey: stxPrivateKey,
+        network: STACKS_MAINNET,
+        fee: TX_FEE,
+        nonce,
+        postConditionMode: PostConditionMode.Allow,
+      });
+
+      const result = await broadcastTransaction({ transaction: tx, network: STACKS_MAINNET });
+      if (result.error) {
+        console.log(`${label}  FAIL  ${result.error}: ${result.reason ?? ""}`);
+        failed++;
+      } else {
+        const txid = typeof result === "string" ? result : result.txid;
+        console.log(`${label}  OK    tx: ${txid}`);
+        success++;
+      }
+    } catch (err) {
+      console.log(`${label}  FAIL  ${err.message}`);
+      failed++;
+    }
+    await sleep(1500);
+  }
+
+  console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${eligible.length}`);
+}

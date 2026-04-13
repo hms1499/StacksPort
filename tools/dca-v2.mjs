@@ -546,3 +546,117 @@ async function cmdExecute(rl, accounts) {
 
   console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${executable.length}`);
 }
+
+async function cmdCancel(rl, accounts) {
+  console.log(`\n  Action : CANCEL active plans (refund remaining balance)`);
+  console.log(`  Tx fee : ${formatStx(TX_FEE)} STX per tx\n`);
+
+  // Scan for active plans
+  console.log("  Scanning accounts for active plans...\n");
+  console.log("  #   Address          Plan  Balance          Swaps Done");
+  console.log("  --- ---------------- ----- ---------------- ----------");
+
+  const cancellable = []; // { account, planId, bal }
+  let totalRefund = 0n;
+
+  for (const acct of accounts) {
+    const planIds = await fetchUserPlans(acct.address);
+    if (planIds.length === 0) continue;
+
+    for (const planId of planIds) {
+      const plan = await fetchPlan(planId);
+      if (!plan || !plan.active) continue;
+
+      cancellable.push({ ...acct, planId, bal: plan.bal, tsd: plan.tsd });
+      totalRefund += plan.bal;
+
+      console.log(
+        `  ${String(acct.index).padStart(3)}  ${shortAddr(acct.address).padEnd(16)} ${String(planId).padStart(5)} ${formatStx(plan.bal).padStart(16)} ${String(plan.tsd).padStart(10)}`
+      );
+      await sleep(500);
+    }
+    await sleep(500);
+  }
+
+  console.log(`\n  Active plans  : ${cancellable.length}`);
+  console.log(`  Total refund  : ${formatStx(totalRefund)} STX`);
+  console.log(`  Total fees    : ${formatStx(TX_FEE * BigInt(cancellable.length))} STX\n`);
+
+  if (cancellable.length === 0) {
+    console.log("  No active plans found.");
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log("  Dry run complete — no transactions sent.");
+    return;
+  }
+
+  const answer = await rl.question(`  Cancel ${cancellable.length} plan(s) and refund ${formatStx(totalRefund)} STX? (yes/no): `);
+  if (answer.trim().toLowerCase() !== "yes") {
+    console.log("  Cancelled.");
+    return;
+  }
+
+  // Broadcast
+  console.log("\n  Cancelling plans...\n");
+  let success = 0;
+  let failed = 0;
+
+  // Group by address for nonce sequencing
+  const byAddress = new Map();
+  for (const item of cancellable) {
+    if (!byAddress.has(item.address)) byAddress.set(item.address, []);
+    byAddress.get(item.address).push(item);
+  }
+
+  for (const [address, items] of byAddress) {
+    let nonce;
+    try {
+      nonce = await fetchNonceWithRetry(address);
+    } catch (err) {
+      console.log(`  ${shortAddr(address)} — nonce error: ${err.message}`);
+      failed += items.length;
+      continue;
+    }
+
+    for (const { index, stxPrivateKey, planId, bal } of items) {
+      const label = `  [${String(index).padStart(3)}] ${shortAddr(address)} plan #${planId}`;
+
+      try {
+        const tx = await makeContractCall({
+          contractAddress: DCA_VAULT.address,
+          contractName: DCA_VAULT.name,
+          functionName: "cancel-plan",
+          functionArgs: [uintCV(planId)],
+          senderKey: stxPrivateKey,
+          network: STACKS_MAINNET,
+          fee: TX_FEE,
+          nonce,
+          postConditionMode: PostConditionMode.Allow,
+        });
+
+        const result = await broadcastTransaction({ transaction: tx, network: STACKS_MAINNET });
+        if (result.error) {
+          console.log(`${label}  FAIL  ${result.error}: ${result.reason ?? ""}`);
+          failed++;
+        } else {
+          const txid = typeof result === "string" ? result : result.txid;
+          console.log(`${label}  OK    refund: ${formatStx(bal)} STX  tx: ${txid}`);
+          success++;
+          nonce++;
+        }
+      } catch (err) {
+        console.log(`${label}  FAIL  ${err.message}`);
+        failed++;
+      }
+      await sleep(1500);
+    }
+    await sleep(1000);
+  }
+
+  console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${cancellable.length}`);
+  if (success > 0) {
+    console.log(`  Total refunded: ~${formatStx(totalRefund)} STX`);
+  }
+}

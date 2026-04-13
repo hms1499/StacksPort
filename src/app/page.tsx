@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -9,17 +9,9 @@ import {
 } from 'lucide-react';
 import { useWalletStore } from '@/store/walletStore';
 import { connect as stacksConnect } from '@stacks/connect';
+import { gsap } from '@/lib/gsap';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
-
-/* ─── animation helper ─── */
-function fadeUp(i: number) {
-  return {
-    initial: { opacity: 0, y: 28 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay: i * 0.1, duration: 0.65, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
-  };
-}
 
 const FEATURES = [
   {
@@ -83,6 +75,22 @@ export default function Home() {
   const { isConnected, connect } = useWalletStore();
   const [connecting, setConnecting] = useState(false);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const dotGridRef = useRef<HTMLDivElement>(null);
+  const ambientGlowRef = useRef<HTMLDivElement>(null);
+  const floatingCardsRef = useRef<HTMLDivElement>(null);
+  const heroBadgeRef = useRef<HTMLDivElement>(null);
+  const heroH1Ref = useRef<HTMLHeadingElement>(null);
+  const heroSubRef = useRef<HTMLParagraphElement>(null);
+  const heroButtonsRef = useRef<HTMLDivElement>(null);
+  const heroTrustRef = useRef<HTMLDivElement>(null);
+  const portfolioCardRef = useRef<HTMLDivElement>(null);
+  const dcaCardRef = useRef<HTMLDivElement>(null);
+  const execBadgeRef = useRef<HTMLDivElement>(null);
+  const svgPathRef = useRef<SVGPathElement>(null);
+  const svgFillRef = useRef<SVGPathElement>(null);
+
   async function handleConnect() {
     setConnecting(true);
     try {
@@ -105,8 +113,105 @@ export default function Home() {
     if (isConnected) router.push('/dashboard');
   }, [isConnected, router]);
 
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // ── Hero entry timeline ──
+      const heroEntryEls = [
+        heroBadgeRef.current,
+        heroH1Ref.current,
+        heroSubRef.current,
+        heroButtonsRef.current,
+        heroTrustRef.current,
+      ];
+
+      gsap.set(heroEntryEls, { opacity: 0, y: 28 });
+
+      const tl = gsap.timeline({ delay: 0.1 });
+      heroEntryEls.forEach((el, i) => {
+        if (!el) return;
+        tl.to(el, {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          ease: "power3.out",
+        }, i * 0.1);
+      });
+
+      // ── SVG chart draw-on (after entry completes) ──
+      if (svgPathRef.current) {
+        const path = svgPathRef.current;
+        const length = path.getTotalLength();
+        gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+        tl.to(path, {
+          strokeDashoffset: 0,
+          duration: 1.2,
+          ease: "power2.inOut",
+        }, 0.5);
+      }
+      if (svgFillRef.current) {
+        gsap.set(svgFillRef.current, { opacity: 0 });
+        tl.to(svgFillRef.current, {
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+        }, 1.0);
+      }
+
+      // ── Floating cards ──
+      if (portfolioCardRef.current) {
+        gsap.to(portfolioCardRef.current, {
+          y: -10, duration: 4.5, repeat: -1, yoyo: true, ease: "sine.inOut",
+        });
+      }
+      if (dcaCardRef.current) {
+        gsap.to(dcaCardRef.current, {
+          y: -7, duration: 5.5, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 0.8,
+        });
+      }
+      if (execBadgeRef.current) {
+        gsap.to(execBadgeRef.current, {
+          opacity: 0.6, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut",
+        });
+      }
+
+      // ── Hero parallax on scroll ──
+      if (heroRef.current) {
+        const parallaxTrigger = {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        };
+
+        if (dotGridRef.current) {
+          gsap.to(dotGridRef.current, {
+            y: -50,
+            scrollTrigger: parallaxTrigger,
+          });
+        }
+        if (ambientGlowRef.current) {
+          gsap.to(ambientGlowRef.current, {
+            y: -30,
+            scrollTrigger: parallaxTrigger,
+          });
+        }
+        if (floatingCardsRef.current) {
+          gsap.to(floatingCardsRef.current, {
+            y: 40,
+            scrollTrigger: parallaxTrigger,
+          });
+        }
+      }
+    }, containerRef.current);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: '#060C18', color: '#DDE8F8' }}
     >
@@ -115,9 +220,10 @@ export default function Home() {
       {/* ══════════════════════════════════════
           HERO
       ══════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden px-5 md:px-8 pt-16">
+      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden px-5 md:px-8 pt-16">
         {/* Ambient glow background */}
         <div
+          ref={ambientGlowRef}
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
@@ -128,6 +234,7 @@ export default function Home() {
         />
         {/* Dot grid */}
         <div
+          ref={dotGridRef}
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: 'radial-gradient(circle, rgba(28,49,80,0.5) 1px, transparent 1px)',
@@ -139,7 +246,7 @@ export default function Home() {
 
           {/* ── Left: copy ── */}
           <div>
-            <motion.div {...fadeUp(0)}>
+            <div ref={heroBadgeRef}>
               <span
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8"
                 style={{
@@ -155,10 +262,10 @@ export default function Home() {
                 />
                 Live on Stacks Mainnet
               </span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              {...fadeUp(1)}
+            <h1
+              ref={heroH1Ref}
               className="text-5xl md:text-6xl lg:text-7xl font-bold leading-none mb-6"
               style={{ letterSpacing: '-0.04em' }}
             >
@@ -173,19 +280,19 @@ export default function Home() {
               >
                 for Stacks
               </span>
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              {...fadeUp(2)}
+            <p
+              ref={heroSubRef}
               className="text-lg leading-relaxed mb-10 max-w-lg"
               style={{ color: 'rgba(221,232,248,0.55)' }}
             >
               Automate DCA plans, execute instant swaps, and track your portfolio
               — all non-custodial, all on-chain.
-            </motion.p>
+            </p>
 
-            <motion.div
-              {...fadeUp(3)}
+            <div
+              ref={heroButtonsRef}
               className="flex flex-col sm:flex-row gap-3 mb-10"
             >
               <button
@@ -224,10 +331,10 @@ export default function Home() {
               >
                 See Features
               </a>
-            </motion.div>
+            </div>
 
-            <motion.div
-              {...fadeUp(4)}
+            <div
+              ref={heroTrustRef}
               className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs"
               style={{ color: 'rgba(221,232,248,0.3)' }}
             >
@@ -237,15 +344,14 @@ export default function Home() {
                   {t}
                 </span>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* ── Right: floating preview UI ── */}
-          <div className="relative h-[440px] hidden lg:block">
+          <div ref={floatingCardsRef} className="relative h-[440px] hidden lg:block">
             {/* Portfolio balance card */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            <div
+              ref={portfolioCardRef}
               className="absolute top-4 left-0 right-16 rounded-2xl p-5"
               style={{
                 backgroundColor: '#0E1E30',
@@ -282,20 +388,21 @@ export default function Home() {
                   </linearGradient>
                 </defs>
                 <path
+                  ref={svgPathRef}
                   d="M0,38 C30,34 55,28 80,24 C105,20 130,16 160,12 C185,9 210,7 240,4 L260,3"
                   stroke="#00E5A0" strokeWidth="1.5"
                 />
                 <path
+                  ref={svgFillRef}
                   d="M0,38 C30,34 55,28 80,24 C105,20 130,16 160,12 C185,9 210,7 240,4 L260,3 L260,44 L0,44Z"
                   fill="url(#hg)"
                 />
               </svg>
-            </motion.div>
+            </div>
 
             {/* DCA plan card */}
-            <motion.div
-              animate={{ y: [0, -7, 0] }}
-              transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+            <div
+              ref={dcaCardRef}
               className="absolute bottom-8 right-0 left-20 rounded-2xl p-5"
               style={{
                 backgroundColor: '#142538',
@@ -342,12 +449,11 @@ export default function Home() {
                   68%
                 </span>
               </div>
-            </motion.div>
+            </div>
 
             {/* Executions badge */}
-            <motion.div
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            <div
+              ref={execBadgeRef}
               className="absolute top-1/2 -translate-y-1/2 right-0 rounded-2xl px-4 py-3 text-center"
               style={{
                 backgroundColor: '#0E1E30',
@@ -361,7 +467,7 @@ export default function Home() {
                 1,247
               </p>
               <p className="text-xs mt-0.5" style={{ color: 'rgba(221,232,248,0.3)' }}>Executions</p>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

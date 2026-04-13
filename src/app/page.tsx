@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useWalletStore } from '@/store/walletStore';
 import { connect as stacksConnect } from '@stacks/connect';
-import { gsap } from '@/lib/gsap';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 
@@ -70,6 +70,13 @@ const STEPS = [
   },
 ];
 
+const STATS = [
+  { label: 'DCA Plans Created', value: 847, prefix: '', suffix: '+', decimals: 0 },
+  { label: 'Volume Executed',   value: 2.1, prefix: '$', suffix: 'M', decimals: 1 },
+  { label: 'Active Users',      value: 1200, prefix: '', suffix: '+', decimals: 0, useComma: true },
+  { label: 'Avg Return',        value: 18.4, prefix: '+', suffix: '%', decimals: 1 },
+];
+
 export default function Home() {
   const router = useRouter();
   const { isConnected, connect } = useWalletStore();
@@ -90,6 +97,9 @@ export default function Home() {
   const execBadgeRef = useRef<HTMLDivElement>(null);
   const svgPathRef = useRef<SVGPathElement>(null);
   const svgFillRef = useRef<SVGPathElement>(null);
+  const statsRef = useRef<HTMLElement>(null);
+  const statItemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const statValueRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   async function handleConnect() {
     setConnecting(true);
@@ -203,6 +213,42 @@ export default function Home() {
             scrollTrigger: parallaxTrigger,
           });
         }
+      }
+
+      // ── Stats count-up ──
+      if (statsRef.current) {
+        gsap.set(statItemRefs.current, { opacity: 0, y: 16 });
+
+        ScrollTrigger.create({
+          trigger: statsRef.current,
+          start: "top 80%",
+          once: true,
+          onEnter: () => {
+            gsap.to(statItemRefs.current, {
+              opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.15,
+            });
+
+            STATS.forEach((stat, i) => {
+              const el = statValueRefs.current[i];
+              if (!el) return;
+              const obj = { val: 0 };
+              gsap.to(obj, {
+                val: stat.value,
+                duration: 2,
+                ease: "power2.out",
+                delay: i * 0.15,
+                onUpdate: () => {
+                  const formatted = stat.decimals > 0
+                    ? obj.val.toFixed(stat.decimals)
+                    : stat.useComma
+                      ? Math.round(obj.val).toLocaleString()
+                      : Math.round(obj.val).toString();
+                  el.textContent = `${stat.prefix}${formatted}${stat.suffix}`;
+                },
+              });
+            });
+          },
+        });
       }
     }, containerRef.current);
 
@@ -475,20 +521,22 @@ export default function Home() {
       {/* ══════════════════════════════════════
           STATS STRIP
       ══════════════════════════════════════ */}
-      <section style={{ borderTop: '1px solid rgba(28,49,80,0.6)', borderBottom: '1px solid rgba(28,49,80,0.6)' }}>
+      <section
+        ref={statsRef}
+        style={{ borderTop: '1px solid rgba(28,49,80,0.6)', borderBottom: '1px solid rgba(28,49,80,0.6)' }}
+      >
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { label: 'DCA Plans Created', value: '847+' },
-            { label: 'Volume Executed',   value: '$2.1M' },
-            { label: 'Active Users',      value: '1,200+' },
-            { label: 'Avg Return',        value: '+18.4%' },
-          ].map(({ label, value }) => (
-            <div key={label}>
+          {STATS.map(({ label, prefix, suffix }, i) => (
+            <div
+              key={label}
+              ref={(el) => { statItemRefs.current[i] = el; }}
+            >
               <p
+                ref={(el) => { statValueRefs.current[i] = el; }}
                 className="text-3xl md:text-4xl font-bold mb-1"
                 style={{ color: '#00E5A0', letterSpacing: '-0.04em', fontFamily: 'var(--font-mono)' }}
               >
-                {value}
+                {prefix}0{suffix}
               </p>
               <p
                 className="text-xs font-bold tracking-widest uppercase"

@@ -146,6 +146,22 @@ async function fetchStxBalance(address, retries = 10) {
   throw new Error(`API rate limited after ${retries} retries for ${address}`);
 }
 
+// ── Nonce Fetching ───────────────────────────────────────────────────────────
+
+async function fetchNonceWithRetry(address, retries = 10) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fetchNonce({ address, network: STACKS_MAINNET });
+    } catch (err) {
+      const is429 = err.message?.includes("429") || err.message?.includes("Rate limit") || err.message?.includes("rate limit");
+      if (!is429 || attempt === retries) throw err;
+      const wait = 30000 + attempt * 5000;
+      process.stdout.write(`  ⏳ 429 nonce retry ${attempt}/${retries} — waiting ${wait / 1000}s...    \r`);
+      await sleep(wait);
+    }
+  }
+}
+
 // ── Quote Fetching ───────────────────────────────────────────────────────────
 
 async function fetchSwapQuote(sbtcAmountSats, retries = 6) {
@@ -329,7 +345,7 @@ async function main() {
 
     try {
       // Fetch current nonce
-      const nonce = await fetchNonce({ address, network: STACKS_MAINNET });
+      const nonce = await fetchNonceWithRetry(address);
 
       const txOptions = {
         contractAddress: XYK_CORE.address,

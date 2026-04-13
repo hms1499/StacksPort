@@ -408,3 +408,141 @@ async function cmdCreate(rl, accounts) {
 
   console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${eligible.length}`);
 }
+
+async function cmdExecute(rl, accounts) {
+  const SLIPPAGE = parseFloat(flagVal("--slippage") ?? String(DEFAULT_SLIPPAGE));
+
+  console.log(`\n  Action   : EXECUTE eligible plans`);
+  console.log(`  Slippage : ${SLIPPAGE}%`);
+  console.log(`  Tx fee   : ${formatStx(TX_FEE)} STX per tx\n`);
+
+  // Scan each account for executable plans
+  console.log("  Scanning accounts for executable plans...\n");
+  console.log("  #   Address          Plan  Amt/Swap         Balance          sBTC Out (est.)");
+  console.log("  --- ---------------- ----- ---------------- ---------------- ----------------");
+
+  const executable = []; // { account, planId, amt, sbtcOut }
+
+  for (const acct of accounts) {
+    const planIds = await fetchUserPlans(acct.address);
+    if (planIds.length === 0) continue;
+
+    for (const planId of planIds) {
+      const ok = await canExecute(planId);
+      if (!ok) continue;
+
+      const plan = await fetchPlan(planId);
+      if (!plan) continue;
+
+      // Fetch quote: amt is uSTX per swap, deduct 0.3% protocol fee
+      const protocolFee = plan.amt * 30n / 10000n;
+      const netSwap = plan.amt - protocolFee;
+      let sbtcOut = 0n;
+      let estStr = "  (quote error)  ";
+
+      try {
+        await sleep(400);
+        sbtcOut = await fetchSwapQuote(netSwap);
+        estStr = formatSbtc(sbtcOut).padStart(16);
+      } catch {
+        // keep estStr as error
+      }
+
+      executable.push({ ...acct, planId, amt: plan.amt, bal: plan.bal, sbtcOut });
+
+      console.log(
+        `  ${String(acct.index).padStart(3)}  ${shortAddr(acct.address).padEnd(16)} ${String(planId).padStart(5)} ${formatStx(plan.amt).padStart(16)} ${formatStx(plan.bal).padStart(16)} ${estStr}`
+      );
+
+      await sleep(500);
+    }
+    await sleep(500);
+  }
+
+  console.log(`\n  Executable plans: ${executable.length}`);
+  console.log(`  Total fees      : ${formatStx(TX_FEE * BigInt(executable.length))} STX\n`);
+
+  if (executable.length === 0) {
+    console.log("  No plans eligible for execution.");
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log("  Dry run complete — no transactions sent.");
+    return;
+  }
+
+  const answer = await rl.question(`  Execute ${executable.length} plan(s)? (yes/no): `);
+  if (answer.trim().toLowerCase() !== "yes") {
+    console.log("  Cancelled.");
+    return;
+  }
+
+  // Broadcast
+  console.log("\n  Executing swaps...\n");
+  let success = 0;
+  let failed = 0;
+
+  // Group by address for nonce sequencing
+  const byAddress = new Map();
+  for (const item of executable) {
+    if (!byAddress.has(item.address)) byAddress.set(item.address, []);
+    byAddress.get(item.address).push(item);
+  }
+
+  for (const [address, items] of byAddress) {
+    let nonce;
+    try {
+      nonce = await fetchNonceWithRetry(address);
+    } catch (err) {
+      console.log(`  ${shortAddr(address)} — nonce error: ${err.message}`);
+      failed += items.length;
+      continue;
+    }
+
+    for (const { index, stxPrivateKey, planId, sbtcOut } of items) {
+      const label = `  [${String(index).padStart(3)}] ${shortAddr(address)} plan #${planId}`;
+
+      // min-amount-out with slippage
+      const minOut = sbtcOut > 0n
+        ? (sbtcOut * BigInt(Math.floor((1 - SLIPPAGE / 100) * 10000))) / 10000n
+        : 0n;
+
+      try {
+        const tx = await makeContractCall({
+          contractAddress: DCA_VAULT.address,
+          contractName: DCA_VAULT.name,
+          functionName: "execute-dca",
+          functionArgs: [
+            uintCV(planId),
+            contractPrincipalCV(SWAP_ROUTER.address, SWAP_ROUTER.name),
+            uintCV(minOut),
+          ],
+          senderKey: stxPrivateKey,
+          network: STACKS_MAINNET,
+          fee: TX_FEE,
+          nonce,
+          postConditionMode: PostConditionMode.Allow,
+        });
+
+        const result = await broadcastTransaction({ transaction: tx, network: STACKS_MAINNET });
+        if (result.error) {
+          console.log(`${label}  FAIL  ${result.error}: ${result.reason ?? ""}`);
+          failed++;
+        } else {
+          const txid = typeof result === "string" ? result : result.txid;
+          console.log(`${label}  OK    tx: ${txid}`);
+          success++;
+          nonce++;
+        }
+      } catch (err) {
+        console.log(`${label}  FAIL  ${err.message}`);
+        failed++;
+      }
+      await sleep(1500);
+    }
+    await sleep(1000);
+  }
+
+  console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${executable.length}`);
+}

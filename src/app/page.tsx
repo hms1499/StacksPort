@@ -103,6 +103,9 @@ export default function Home() {
   const featuresRef = useRef<HTMLElement>(null);
   const featuresHeadingRef = useRef<HTMLDivElement>(null);
   const featureCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const howRef = useRef<HTMLElement>(null);
+  const howHeadingRef = useRef<HTMLDivElement>(null);
+  const stepCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   async function handleConnect() {
     setConnecting(true);
@@ -279,6 +282,36 @@ export default function Home() {
           onEnter: (batch) => {
             gsap.to(batch, {
               opacity: 1, y: 0, duration: 0.55, ease: "power3.out", stagger: 0.1,
+            });
+          },
+        });
+      }
+
+      // ── How It Works ──
+      if (howHeadingRef.current) {
+        gsap.set(howHeadingRef.current, { opacity: 0, y: 16 });
+        ScrollTrigger.create({
+          trigger: howHeadingRef.current,
+          start: "top 85%",
+          once: true,
+          onEnter: () => {
+            gsap.to(howHeadingRef.current, {
+              opacity: 1, y: 0, duration: 0.55, ease: "power3.out",
+            });
+          },
+        });
+      }
+
+      const stepCards = stepCardRefs.current.filter(Boolean) as HTMLDivElement[];
+      if (stepCards.length > 0) {
+        gsap.set(stepCards, { opacity: 0, x: -24 });
+        ScrollTrigger.create({
+          trigger: howRef.current,
+          start: "top 75%",
+          once: true,
+          onEnter: () => {
+            gsap.to(stepCards, {
+              opacity: 1, x: 0, duration: 0.55, ease: "power3.out", stagger: 0.15,
             });
           },
         });
@@ -641,12 +674,13 @@ export default function Home() {
           HOW IT WORKS
       ══════════════════════════════════════ */}
       <section
+        ref={howRef}
         id="how-it-works"
         className="py-24 px-5 md:px-8"
         style={{ borderTop: '1px solid rgba(28,49,80,0.6)' }}
       >
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-14">
+          <div ref={howHeadingRef} className="text-center mb-14">
             <p
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: '#00E5A0', letterSpacing: '0.12em' }}
@@ -660,12 +694,9 @@ export default function Home() {
 
           <div className="space-y-3">
             {STEPS.map(({ n, title, desc }, i) => (
-              <motion.div
+              <div
                 key={n}
-                initial={{ opacity: 0, x: -24 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.12, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                ref={(el) => { stepCardRefs.current[i] = el; }}
                 className="flex gap-6 rounded-2xl p-6"
                 style={{ backgroundColor: '#0E1E30', border: '1px solid rgba(28,49,80,0.8)' }}
               >
@@ -679,7 +710,7 @@ export default function Home() {
                   <h3 className="font-bold text-lg mb-1.5" style={{ color: '#DDE8F8' }}>{title}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: 'rgba(221,232,248,0.40)' }}>{desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

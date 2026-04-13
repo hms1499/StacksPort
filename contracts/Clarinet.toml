@@ -81,6 +81,11 @@ path = 'mock-sbtc-swap-router.clar'
 clarity_version = 3
 epoch = '3.0'
 
+[contracts.dca-vault-v2]
+path = 'dca-vault-v2.clar'
+clarity_version = 3
+epoch = '3.0'
+
 [contracts.batch-dca-executor]
 path = 'batch-dca-executor.clar'
 clarity_version = 3

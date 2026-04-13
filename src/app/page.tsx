@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import {
   Repeat2, ArrowRight, Zap, Shield, TrendingUp,
   BarChart3, Bell, CheckCircle2, ArrowLeftRight,

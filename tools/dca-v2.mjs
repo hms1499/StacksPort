@@ -127,3 +127,157 @@ function intervalName(blocks) {
   }
   return `${blocks} blocks`;
 }
+
+// ── Wallet Derivation ───────────────────────────────────────────────────────
+
+function deriveXverseAccounts(mnemonic, numAccounts) {
+  const seed = mnemonicToSeedSync(mnemonic.trim());
+  const rootNode = HDKey.fromMasterSeed(seed);
+  const accounts = [];
+  for (let i = 0; i < numAccounts; i++) {
+    const path = `m/44'/5757'/${i}'/0/0`;
+    const childKey = rootNode.derive(path);
+    const privKeyHex = Buffer.from(childKey.privateKey).toString("hex") + "01";
+    const address = getAddressFromPrivateKey(privKeyHex);
+    accounts.push({ index: i, address, stxPrivateKey: privKeyHex });
+  }
+  return accounts;
+}
+
+async function deriveAccounts(mnemonic, numAccounts) {
+  const words = mnemonic.trim().split(/\s+/);
+  if (words.length === 12) {
+    console.log("  Mode: Xverse (BIP44 account-level derivation)");
+    return deriveXverseAccounts(mnemonic, numAccounts);
+  }
+  console.log("  Mode: Leather (wallet-sdk derivation)");
+  let wallet = await generateWallet({ secretKey: mnemonic.trim(), password: "" });
+  for (let i = 1; i < numAccounts; i++) {
+    wallet = generateNewAccount(wallet);
+  }
+  return wallet.accounts.map((account, i) => ({
+    index: i,
+    address: getStxAddress(account, NETWORK),
+    stxPrivateKey: account.stxPrivateKey,
+  }));
+}
+
+// ── API Helpers ─────────────────────────────────────────────────────────────
+
+async function fetchWithRetry(url, options, retries = 10) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    let res;
+    try {
+      res = await fetch(url, options);
+    } catch {
+      await sleep(5000 + attempt * 3000);
+      continue;
+    }
+    if (res.status === 429 || res.status === 503 || res.status === 522) {
+      const wait = 5000 + attempt * 3000;
+      process.stdout.write(`  rate limited, retry ${attempt}/${retries} — ${wait / 1000}s...\r`);
+      await sleep(wait);
+      continue;
+    }
+    if (!res.ok) {
+      await sleep(5000 + attempt * 3000);
+      continue;
+    }
+    try {
+      return await res.json();
+    } catch {
+      await sleep(5000 + attempt * 3000);
+      continue;
+    }
+  }
+  return null;
+}
+
+async function fetchNonceWithRetry(address, retries = 10) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fetchNonce({ address, network: STACKS_MAINNET });
+    } catch (err) {
+      const is429 = err.message?.includes("429") || err.message?.includes("rate limit");
+      if (!is429 || attempt === retries) throw err;
+      const wait = 30000 + attempt * 5000;
+      process.stdout.write(`  nonce 429 retry ${attempt}/${retries} — ${wait / 1000}s...\r`);
+      await sleep(wait);
+    }
+  }
+}
+
+async function fetchStxBalance(address) {
+  const data = await fetchWithRetry(`${API_BASE}/extended/v1/address/${address}/stx`);
+  if (!data) return 0n;
+  return BigInt(data.balance) - BigInt(data.locked);
+}
+
+async function readOnly(fn, args = []) {
+  const data = await fetchWithRetry(
+    `${HIRO_RO_API}/v2/contracts/call-read/${DCA_VAULT.address}/${DCA_VAULT.name}/${fn}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: DUMMY_SENDER, arguments: args }),
+    }
+  );
+  if (!data?.okay) return null;
+  return hexToCV(data.result);
+}
+
+async function fetchUserPlans(address) {
+  const cv = await readOnly("get-user-plans", [cvToHex(standardPrincipalCV(address))]);
+  if (!cv || !Array.isArray(cv.value)) return [];
+  return cv.value.map((v) => Number(v.value));
+}
+
+async function fetchPlan(planId) {
+  const cv = await readOnly("get-plan", [cvToHex(uintCV(planId))]);
+  if (!cv) return null;
+  const d = cv.value?.data ?? cv.value?.value;
+  if (!d) return null;
+  return {
+    id: planId,
+    active: d.active?.type === "true" || d.active?.type === "bool-true" || d.active === true,
+    bal: BigInt(d.bal?.value ?? 0),
+    amt: BigInt(d.amt?.value ?? 0),
+    ivl: Number(d.ivl?.value ?? 0),
+    tsd: Number(d.tsd?.value ?? 0),
+    tss: BigInt(d.tss?.value ?? 0),
+    leb: Number(d.leb?.value ?? 0),
+  };
+}
+
+async function canExecute(planId) {
+  const cv = await readOnly("can-execute", [cvToHex(uintCV(planId))]);
+  if (!cv) return false;
+  return cv.type === "true" || cv.type === "bool-true";
+}
+
+// Quote: DCA swaps STX→sBTC = swap-y-for-x on pool (x=sBTC, y=wSTX)
+// get-dx: input y-amount (uSTX), output x-amount (sBTC sats)
+async function fetchSwapQuote(stxAmountMicro) {
+  const callArgs = [
+    cvToHex(contractPrincipalCV(POOL_SBTC_STX.address, POOL_SBTC_STX.name)),
+    cvToHex(contractPrincipalCV(SBTC.address, SBTC.name)),
+    cvToHex(contractPrincipalCV(WSTX.address, WSTX.name)),
+    cvToHex(uintCV(stxAmountMicro)),
+  ];
+
+  const data = await fetchWithRetry(
+    `${HIRO_RO_API}/v2/contracts/call-read/${XYK_CORE.address}/${XYK_CORE.name}/get-dx`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: DUMMY_SENDER, arguments: callArgs }),
+    }
+  );
+  if (!data?.okay) throw new Error(`get-dx failed: ${data?.cause ?? "unknown"}`);
+
+  const cv = hexToCV(data.result);
+  if (cv.type === "ok" || (typeof cv.type === "number" && cv.type === 7)) {
+    return BigInt(cv.value?.value ?? cv.value ?? 0);
+  }
+  throw new Error(`Unexpected CV type from get-dx: ${JSON.stringify(cv)}`);
+}

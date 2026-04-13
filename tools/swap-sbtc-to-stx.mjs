@@ -22,8 +22,10 @@ const {
   uintCV,
   serializeCV,
   hexToCV,
+  fetchNonce,
   PostConditionMode,
 } = stxTx;
+import { STACKS_MAINNET } from "@stacks/network";
 import { HDKey } from "@scure/bip32";
 import { mnemonicToSeedSync } from "@scure/bip39";
 
@@ -115,9 +117,9 @@ function deriveXverseAccounts(mnemonic, numAccounts) {
 async function fetchSbtcBalance(address, retries = 10) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const res = await fetch(`${API_BASE}/extended/v1/address/${address}/balances`);
-    if (res.status === 429 || res.status === 503) {
+    if (res.status === 429 || res.status === 503 || res.status === 522) {
       const wait = 5000 + attempt * 3000;
-      process.stdout.write(`  ⏳ rate limited, retry ${attempt}/${retries} — waiting ${wait / 1000}s...    \r`);
+      process.stdout.write(`  ⏳ ${res.status} retry ${attempt}/${retries} — waiting ${wait / 1000}s...    \r`);
       await sleep(wait);
       continue;
     }
@@ -132,7 +134,7 @@ async function fetchSbtcBalance(address, retries = 10) {
 async function fetchStxBalance(address, retries = 10) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const res = await fetch(`${API_BASE}/extended/v1/address/${address}/stx`);
-    if (res.status === 429 || res.status === 503) {
+    if (res.status === 429 || res.status === 503 || res.status === 522) {
       const wait = 5000 + attempt * 3000;
       await sleep(wait);
       continue;
@@ -163,7 +165,7 @@ async function fetchSwapQuote(sbtcAmountSats, retries = 6) {
         body: JSON.stringify({ sender: DUMMY_SENDER, arguments: callArgs }),
       }
     );
-    if (res.status === 429 || res.status === 503) {
+    if (res.status === 429 || res.status === 503 || res.status === 522) {
       const wait = 5000 + attempt * 3000;
       await sleep(wait);
       continue;
@@ -312,6 +314,67 @@ async function main() {
   }
 
   rl.close();
+
+  // 5. Execute swaps
+  console.log("\n🚀 Executing swaps...\n");
+
+  let successCount = 0;
+  let failCount = 0;
+
+  for (const { index, address, stxPrivateKey, sbtcBalance, stxOutEst } of swappable) {
+    const label = `  [${String(index).padStart(3)}] ${shortAddr(address)}`;
+
+    // Calculate min-dy with slippage protection
+    const minDy = (stxOutEst * BigInt(Math.floor((1 - SLIPPAGE / 100) * 10000))) / 10000n;
+
+    try {
+      // Fetch current nonce
+      const nonce = await fetchNonce({ address, network: STACKS_MAINNET });
+
+      const txOptions = {
+        contractAddress: XYK_CORE.address,
+        contractName: XYK_CORE.name,
+        functionName: "swap-x-for-y",
+        functionArgs: [
+          contractPrincipalCV(POOL_SBTC_STX.address, POOL_SBTC_STX.name),
+          contractPrincipalCV(SBTC.address, SBTC.name),
+          contractPrincipalCV(WSTX.address, WSTX.name),
+          uintCV(sbtcBalance),
+          uintCV(minDy),
+        ],
+        senderKey: stxPrivateKey,
+        network: STACKS_MAINNET,
+        fee: TX_FEE,
+        nonce,
+        postConditionMode: PostConditionMode.Allow,
+      };
+
+      const tx = await makeContractCall(txOptions);
+      const result = await broadcastTransaction({ transaction: tx, network: STACKS_MAINNET });
+
+      if (result.error) {
+        console.log(`${label}  ❌ ${result.error}: ${result.reason ?? ""}`);
+        failCount++;
+      } else {
+        const txid = typeof result === "string" ? result : result.txid;
+        console.log(`${label}  ✅ ${formatSbtc(sbtcBalance)} sBTC → ~${formatStx(stxOutEst)} STX  tx: ${txid}`);
+        successCount++;
+      }
+    } catch (err) {
+      console.log(`${label}  ❌ ${err.message}`);
+      failCount++;
+    }
+
+    await sleep(1500); // pace between transactions
+  }
+
+  console.log("\n════════════════════════════════════════════════════════════════");
+  console.log(`  ✅ Success: ${successCount}    ❌ Failed: ${failCount}    Total: ${swappable.length}`);
+  console.log("════════════════════════════════════════════════════════════════\n");
+
+  if (successCount > 0) {
+    console.log(`  Track txs: ${EXPLORER}/<txid>`);
+  }
 }
 
 main().catch((err) => {

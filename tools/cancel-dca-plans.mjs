@@ -125,6 +125,26 @@ async function fetchWithRetry(url, options, retries = 10) {
   return null;
 }
 
+async function fetchNonceWithRetry(address, retries = 15) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fetchNonce({ address, network: STACKS_MAINNET });
+    } catch (err) {
+      const msg = err.message ?? "";
+      const is429 = msg.includes("429") || msg.toLowerCase().includes("rate limit");
+      if (!is429 || attempt === retries) throw err;
+
+      // Parse "Please try again in N seconds" from API message
+      const secondsMatch = msg.match(/try again in (\d+) second/i);
+      const suggestedMs = secondsMatch ? parseInt(secondsMatch[1], 10) * 1000 : 0;
+      const wait = Math.max(suggestedMs + 500, 3000 + attempt * 1000);
+
+      process.stdout.write(`  nonce 429 retry ${attempt}/${retries} — ${wait / 1000}s...\r`);
+      await sleep(wait);
+    }
+  }
+}
+
 // ── Fetch user plans ─��──────────────────────────────────────────────────────
 
 async function fetchUserPlans(address) {
@@ -261,7 +281,7 @@ async function main() {
       // Cancellable: active plans with empty balance, OR inactive plans still in uids (v2 will free slot)
       const toCancel = CONTRACT_VERSION === "v2"
         ? plans.filter((p) => !p.active || p.bal === 0n) // v2: cancel inactive to free slots + cancel empty active
-        : plans.filter((p) => p.active && p.bal === 0n);  // v1: can only cancel active plans
+        : plans.filter((p) => p.active);  // v1: cancel all active plans (balance refunded to owner)
 
       totalPlans += plans.length;
       totalActive += active.length;
@@ -330,7 +350,7 @@ async function main() {
   for (const [address, items] of byAddress) {
     let nonce;
     try {
-      nonce = await fetchNonce({ address, network: STACKS_MAINNET });
+      nonce = await fetchNonceWithRetry(address);
     } catch (err) {
       console.log(`  ${shortAddr(address)} -- failed to fetch nonce: ${err.message}`);
       failCount += items.length;

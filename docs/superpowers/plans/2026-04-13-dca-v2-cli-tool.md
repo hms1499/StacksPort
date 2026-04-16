@@ -1,3 +1,35 @@
+# DCA Vault V2 CLI Tool — Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build `tools/dca-v2.mjs` — a single-command CLI tool covering the full dca-vault-v2 lifecycle: create plan, execute swap, cancel/refund. Each derived account signs its own transactions.
+
+**Architecture:** Single `.mjs` file with 3 subcommands (`create`, `execute`, `cancel`). Reuses the same wallet derivation, retry, and nonce patterns as existing tools (`swap-sbtc-to-stx.mjs`, `cancel-dca-plans.mjs`). Each account signs its own tx using its private key.
+
+**Tech Stack:** Node.js ESM, `@stacks/transactions` v7, `@stacks/wallet-sdk`, `@stacks/network`, `@scure/bip32`, `@scure/bip39`
+
+**Spec:** `docs/superpowers/specs/2026-04-13-dca-v2-cli-tool-design.md`
+
+---
+
+## File Structure
+
+| Action | File | Responsibility |
+|--------|------|---------------|
+| Create | `tools/dca-v2.mjs` | Complete CLI tool — imports, constants, helpers, wallet derivation, API helpers, 3 command handlers, main dispatcher |
+
+---
+
+### Task 1: Scaffold file — imports, constants, args, helpers
+
+**Files:**
+- Create: `tools/dca-v2.mjs`
+
+- [ ] **Step 1: Create the file with shebang, imports, constants, arg parsing, and shared helpers**
+
+Create `tools/dca-v2.mjs`:
+
+```javascript
 #!/usr/bin/env node
 
 /**
@@ -127,7 +159,33 @@ function intervalName(blocks) {
   }
   return `${blocks} blocks`;
 }
+```
 
+- [ ] **Step 2: Verify syntax**
+
+```bash
+node --check tools/dca-v2.mjs && echo "syntax OK"
+```
+
+Expected: `syntax OK`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add tools/dca-v2.mjs
+git commit -m "feat(tools): scaffold dca-v2 CLI with imports, constants, args"
+```
+
+---
+
+### Task 2: Wallet derivation and API helpers
+
+**Files:**
+- Modify: `tools/dca-v2.mjs`
+
+- [ ] **Step 1: Append wallet derivation function after helpers section**
+
+```javascript
 // ── Wallet Derivation ───────────────────────────────────────────────────────
 
 function deriveXverseAccounts(mnemonic, numAccounts) {
@@ -161,7 +219,11 @@ async function deriveAccounts(mnemonic, numAccounts) {
     stxPrivateKey: account.stxPrivateKey,
   }));
 }
+```
 
+- [ ] **Step 2: Append API helpers with retry logic**
+
+```javascript
 // ── API Helpers ─────────────────────────────────────────────────────────────
 
 async function fetchWithRetry(url, options, retries = 10) {
@@ -193,20 +255,14 @@ async function fetchWithRetry(url, options, retries = 10) {
   return null;
 }
 
-async function fetchNonceWithRetry(address, retries = 15) {
+async function fetchNonceWithRetry(address, retries = 10) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       return await fetchNonce({ address, network: STACKS_MAINNET });
     } catch (err) {
-      const msg = err.message ?? "";
-      const is429 = msg.includes("429") || msg.toLowerCase().includes("rate limit");
+      const is429 = err.message?.includes("429") || err.message?.includes("rate limit");
       if (!is429 || attempt === retries) throw err;
-
-      // Parse "Please try again in N seconds" from API message
-      const secondsMatch = msg.match(/try again in (\d+) second/i);
-      const suggestedMs = secondsMatch ? parseInt(secondsMatch[1], 10) * 1000 : 0;
-      const wait = Math.max(suggestedMs + 500, 3000 + attempt * 1000);
-
+      const wait = 30000 + attempt * 5000;
       process.stdout.write(`  nonce 429 retry ${attempt}/${retries} — ${wait / 1000}s...\r`);
       await sleep(wait);
     }
@@ -287,7 +343,33 @@ async function fetchSwapQuote(stxAmountMicro) {
   }
   throw new Error(`Unexpected CV type from get-dx: ${JSON.stringify(cv)}`);
 }
+```
 
+- [ ] **Step 3: Verify syntax**
+
+```bash
+node --check tools/dca-v2.mjs && echo "syntax OK"
+```
+
+Expected: `syntax OK`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add tools/dca-v2.mjs
+git commit -m "feat(tools): add wallet derivation and API helpers to dca-v2"
+```
+
+---
+
+### Task 3: `create` command handler
+
+**Files:**
+- Modify: `tools/dca-v2.mjs`
+
+- [ ] **Step 1: Append the create command handler**
+
+```javascript
 // ── Commands ────────────────────────────────────────────────────────────────
 
 async function cmdCreate(rl, accounts) {
@@ -414,7 +496,33 @@ async function cmdCreate(rl, accounts) {
 
   console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${eligible.length}`);
 }
+```
 
+- [ ] **Step 2: Verify syntax**
+
+```bash
+node --check tools/dca-v2.mjs && echo "syntax OK"
+```
+
+Expected: `syntax OK`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add tools/dca-v2.mjs
+git commit -m "feat(tools): add create command to dca-v2"
+```
+
+---
+
+### Task 4: `execute` command handler
+
+**Files:**
+- Modify: `tools/dca-v2.mjs`
+
+- [ ] **Step 1: Append the execute command handler after `cmdCreate`**
+
+```javascript
 async function cmdExecute(rl, accounts) {
   const SLIPPAGE = parseFloat(flagVal("--slippage") ?? String(DEFAULT_SLIPPAGE));
 
@@ -552,7 +660,33 @@ async function cmdExecute(rl, accounts) {
 
   console.log(`\n  Done! Success: ${success}  Failed: ${failed}  Total: ${executable.length}`);
 }
+```
 
+- [ ] **Step 2: Verify syntax**
+
+```bash
+node --check tools/dca-v2.mjs && echo "syntax OK"
+```
+
+Expected: `syntax OK`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add tools/dca-v2.mjs
+git commit -m "feat(tools): add execute command to dca-v2"
+```
+
+---
+
+### Task 5: `cancel` command handler
+
+**Files:**
+- Modify: `tools/dca-v2.mjs`
+
+- [ ] **Step 1: Append the cancel command handler after `cmdExecute`**
+
+```javascript
 async function cmdCancel(rl, accounts) {
   console.log(`\n  Action : CANCEL active plans (refund remaining balance)`);
   console.log(`  Tx fee : ${formatStx(TX_FEE)} STX per tx\n`);
@@ -666,7 +800,33 @@ async function cmdCancel(rl, accounts) {
     console.log(`  Total refunded: ~${formatStx(totalRefund)} STX`);
   }
 }
+```
 
+- [ ] **Step 2: Verify syntax**
+
+```bash
+node --check tools/dca-v2.mjs && echo "syntax OK"
+```
+
+Expected: `syntax OK`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add tools/dca-v2.mjs
+git commit -m "feat(tools): add cancel command to dca-v2"
+```
+
+---
+
+### Task 6: Main dispatcher and end-to-end verification
+
+**Files:**
+- Modify: `tools/dca-v2.mjs`
+
+- [ ] **Step 1: Append main dispatcher after all command handlers**
+
+```javascript
 // ── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -723,3 +883,41 @@ main().catch((err) => {
   console.error("Fatal:", err);
   process.exit(1);
 });
+```
+
+- [ ] **Step 2: Verify final syntax**
+
+```bash
+node --check tools/dca-v2.mjs && echo "syntax OK"
+```
+
+Expected: `syntax OK`
+
+- [ ] **Step 3: Test help output (no mnemonic needed)**
+
+```bash
+node tools/dca-v2.mjs 2>&1 | head -10
+```
+
+Expected output includes:
+```
+DCA Vault V2 CLI Tool
+
+Usage:
+  node tools/dca-v2.mjs create  --amount <STX> --interval <daily|weekly|monthly> --deposit <STX>
+```
+
+- [ ] **Step 4: Test invalid command**
+
+```bash
+node tools/dca-v2.mjs foo 2>&1 | head -3
+```
+
+Expected: shows usage help and exits.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add tools/dca-v2.mjs
+git commit -m "feat(tools): add main dispatcher, complete dca-v2 CLI tool"
+```

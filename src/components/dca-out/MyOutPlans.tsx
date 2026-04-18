@@ -9,10 +9,20 @@ interface Props {
   address: string;
 }
 
+const PRESETS = [
+  { label: "0.001 sBTC daily",  amount: "0.001", interval: "Daily",  deposit: "0.005" },
+  { label: "0.005 sBTC weekly", amount: "0.005", interval: "Weekly", deposit: "0.025" },
+];
+
+function fireFillForm(p: typeof PRESETS[number]) {
+  window.dispatchEvent(new CustomEvent("dca-out:fill-form", { detail: p }));
+}
+
 export default function MyOutPlans({ address }: Props) {
-  const [plans, setPlans] = useState<DCA_SBTCPlan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [plans, setPlans] = useState<DCA_SBTCPlan[] | null>(null);
   const [currentBlock, setCurrentBlock] = useState(0);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -23,10 +33,11 @@ export default function MyOutPlans({ address }: Props) {
         fetch("https://api.hiro.so/v2/info").then((r) => r.json()),
       ]);
       setPlans(userPlans);
-      setCurrentBlock(blockRes.stacks_tip_height ?? 0);
+      setCurrentBlock(blockRes?.stacks_tip_height ?? 0);
       setLastUpdated(new Date());
     } catch (err) {
       console.error("Failed to fetch plans:", err);
+      setPlans([]);
     } finally {
       setLoading(false);
     }
@@ -36,61 +47,104 @@ export default function MyOutPlans({ address }: Props) {
     fetchData();
   }, [fetchData]);
 
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-gray-900">
-          My Plans
-          {plans.length > 0 && (
-            <span className="ml-2 text-xs font-medium text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
-              {plans.length}
-            </span>
-          )}
-        </h2>
-        <div className="flex items-center gap-2">
-          {lastUpdated && !loading && (
-            <span className="text-[10px] text-gray-300">
-              {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s ago
-            </span>
-          )}
-          <button
-            onClick={fetchData}
-            disabled={loading}
-            className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
+  const header = (
+    <div className="flex items-center justify-between">
+      <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>
+        My Plans
+        {plans && plans.length > 0 && (
+          <span
+            className="ml-2 text-xs font-medium rounded-full px-2 py-0.5"
+            style={{ color: "var(--text-muted)", backgroundColor: "var(--bg-elevated)" }}
           >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-          </button>
-        </div>
+            {plans.length}
+          </span>
+        )}
+      </h2>
+      <div className="flex items-center gap-2">
+        {lastUpdated && !loading && (
+          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+            {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s ago
+          </span>
+        )}
+        <button
+          onClick={fetchData}
+          disabled={loading}
+          className="p-2 rounded-xl transition-colors disabled:opacity-40"
+          style={{ color: "var(--text-muted)" }}
+        >
+          <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+        </button>
       </div>
+    </div>
+  );
 
-      {loading ? (
+  if (plans === null) {
+    return (
+      <div className="flex flex-col gap-4">
+        {header}
         <div className="flex flex-col gap-3">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-28 rounded-2xl bg-gray-100 animate-pulse" />
-          ))}
-        </div>
-      ) : plans.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 flex flex-col items-center gap-3 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center">
-            <Inbox size={22} className="text-gray-300" />
-          </div>
-          <p className="text-sm font-medium text-gray-500">No plans yet</p>
-          <p className="text-xs text-gray-400">
-            Create your first DCA Out plan to start selling sBTC for USDCx
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {plans.map((plan) => (
-            <OutPlanCard
-              key={plan.id}
-              plan={plan}
-              currentBlock={currentBlock}
-              onRefresh={fetchData}
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="glass-card rounded-2xl h-20 animate-pulse"
+              style={{ boxShadow: "var(--shadow-card)" }}
             />
           ))}
         </div>
-      )}
+      </div>
+    );
+  }
+
+  if (plans.length === 0) {
+    return (
+      <div className="flex flex-col gap-4">
+        {header}
+        <div
+          className="glass-card rounded-2xl p-8 flex flex-col items-center gap-3 text-center"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center"
+            style={{ background: "var(--dca-out-dim)" }}
+          >
+            <Inbox size={22} style={{ color: "var(--dca-out-primary)" }} />
+          </div>
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>No plans yet</p>
+          <p className="text-xs max-w-xs" style={{ color: "var(--text-muted)" }}>
+            Create your first DCA Out plan on the left to start selling sBTC for USDCx.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 mt-2">
+            {PRESETS.map((p) => (
+              <button
+                key={p.label}
+                onClick={() => fireFillForm(p)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium"
+                style={{ background: "var(--dca-out-dim)", color: "var(--dca-out-primary)", border: "1px solid var(--border-subtle)" }}
+              >
+                Try: {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {header}
+      <div className="flex flex-col gap-3">
+        {plans.map((plan) => (
+          <OutPlanCard
+            key={plan.id}
+            plan={plan}
+            currentBlock={currentBlock}
+            onRefresh={fetchData}
+            isExpanded={expandedId === plan.id}
+            onToggle={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

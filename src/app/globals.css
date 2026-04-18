@@ -28,6 +28,27 @@
   --negative: #F04A6E;
   --warning:  #F59E0B;
 
+  /* DCA dual-gradient tokens */
+  --dca-in-from:   #00C27A;
+  --dca-in-to:     #06B6D4;
+  --dca-in-glow:   rgba(6, 182, 212, 0.25);
+
+  --dca-out-from:  #F59E0B;
+  --dca-out-to:    #EC4899;
+  --dca-out-glow:  rgba(236, 72, 153, 0.22);
+
+  --hero-bg-dca-in:  radial-gradient(ellipse 100% 80% at 50% 0%,
+                       rgba(0, 194, 122, 0.12) 0%,
+                       rgba(6, 182, 212, 0.08) 50%,
+                       transparent 100%);
+  --hero-bg-dca-out: radial-gradient(ellipse 100% 80% at 50% 0%,
+                       rgba(245, 158, 11, 0.10) 0%,
+                       rgba(236, 72, 153, 0.08) 50%,
+                       transparent 100%);
+
+  --shadow-card:       0 1px 3px rgba(10, 22, 40, 0.04);
+  --shadow-card-hover: 0 8px 24px rgba(10, 22, 40, 0.08);
+
   --background: var(--bg-base);
   --foreground: var(--text-primary);
 }
@@ -54,6 +75,27 @@
   --positive: #00E5A0;
   --negative: #FF5B6E;
   --warning:  #FBBF24;
+
+  /* DCA dual-gradient tokens — dark overrides */
+  --dca-in-from:   #00E5A0;
+  --dca-in-to:     #22D3EE;
+  --dca-in-glow:   rgba(34, 211, 238, 0.28);
+
+  --dca-out-from:  #FBBF24;
+  --dca-out-to:    #F472B6;
+  --dca-out-glow:  rgba(244, 114, 182, 0.28);
+
+  --hero-bg-dca-in:  radial-gradient(ellipse 100% 80% at 50% 0%,
+                       rgba(0, 229, 160, 0.10) 0%,
+                       rgba(34, 211, 238, 0.06) 50%,
+                       transparent 100%);
+  --hero-bg-dca-out: radial-gradient(ellipse 100% 80% at 50% 0%,
+                       rgba(251, 191, 36, 0.08) 0%,
+                       rgba(244, 114, 182, 0.06) 50%,
+                       transparent 100%);
+
+  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 
   --background: var(--bg-base);
   --foreground: var(--text-primary);
@@ -123,6 +165,44 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+/* ══════════════════════════════════════════════════════
+   DCA DUAL-GRADIENT UTILITIES
+══════════════════════════════════════════════════════ */
+.gradient-dca-in  { background: linear-gradient(135deg, var(--dca-in-from),  var(--dca-in-to)); }
+.gradient-dca-out { background: linear-gradient(135deg, var(--dca-out-from), var(--dca-out-to)); }
+
+.gradient-text-dca-in {
+  background: linear-gradient(135deg, var(--dca-in-from), var(--dca-in-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gradient-text-dca-out {
+  background: linear-gradient(135deg, var(--dca-out-from), var(--dca-out-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-border-dca-in {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(135deg, var(--dca-in-from), var(--dca-in-to)) border-box;
+}
+.gradient-border-dca-out {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(135deg, var(--dca-out-from), var(--dca-out-to)) border-box;
+}
+
+.glow-dca-in  { box-shadow: 0 0 24px var(--dca-in-glow); }
+.glow-dca-out { box-shadow: 0 0 24px var(--dca-out-glow); }
+
+.hero-bg-dca-in  { background-image: var(--hero-bg-dca-in); }
+.hero-bg-dca-out { background-image: var(--hero-bg-dca-out); }
 
 /* ══════════════════════════════════════════════════════
    SCROLLBAR

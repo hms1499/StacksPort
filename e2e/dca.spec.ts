@@ -13,17 +13,19 @@ test.describe("DCA Page (Connected)", () => {
   });
 
   test("renders DCA Vault page title", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "DCA Vault" })).toBeVisible();
+    await expect(
+      page.locator("[data-dca-hero]").getByRole("heading", { name: "DCA Vault" })
+    ).toBeVisible();
   });
 
   test("renders DCA In/Out tab navigator", async ({ page }) => {
-    await expect(page.getByRole("button", { name: /DCA In/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /DCA Out/i })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /DCA In/i })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /DCA Out/i })).toBeVisible();
   });
 
   test("DCA In tab is active by default", async ({ page }) => {
-    const dcaInButton = page.getByRole("button", { name: /DCA In/i });
-    await expect(dcaInButton).toHaveCSS("background-color", "rgb(64, 138, 113)");
+    const dcaInButton = page.getByRole("tab", { name: /DCA In/i });
+    await expect(dcaInButton).toHaveAttribute("aria-selected", "true");
   });
 
   test("renders description for DCA In", async ({ page }) => {
@@ -33,14 +35,15 @@ test.describe("DCA Page (Connected)", () => {
   });
 
   test("switching to DCA Out tab updates content", async ({ page }) => {
-    await page.getByRole("button", { name: /DCA Out/i }).click();
+    await page.getByRole("tab", { name: /DCA Out/i }).click();
     await expect(
       page.getByText(/Automatically sell sBTC for USDCx/)
     ).toBeVisible();
   });
 
-  test("renders DCA stats section", async ({ page }) => {
-    await expect(page.locator("text=/Total Plans|Plans Created|Volume/i").first()).toBeVisible();
+  test("renders hero stats section", async ({ page }) => {
+    await expect(page.locator("[data-dca-hero]")).toBeVisible();
+    await expect(page.getByText(/Total Volume|Swaps Executed/i).first()).toBeVisible();
   });
 
   test("renders create plan form when connected", async ({ page }) => {
@@ -57,7 +60,7 @@ test.describe("DCA Page (Connected)", () => {
   });
 
   test("DCA Out tab shows different info footer", async ({ page }) => {
-    await page.getByRole("button", { name: /DCA Out/i }).click();
+    await page.getByRole("tab", { name: /DCA Out/i }).click();
     await expect(page.getByText("Dollar-Cost Averaging Out")).toBeVisible();
     await expect(page.getByText("3-Hop Swap", { exact: true })).toBeVisible();
   });

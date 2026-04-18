@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PlusCircle, Info, AlertTriangle } from "lucide-react";
+import { PlusCircle, ArrowRight } from "lucide-react";
 import {
   createSBTCPlan,
   SBTC_INTERVALS,
@@ -12,8 +12,15 @@ import {
 } from "@/lib/dca-sbtc";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import LivePreviewCard from "../dca/LivePreviewCard";
 
 const USDCX = SBTC_TARGET_TOKENS[0].value;
+const AMOUNT_PRESETS = [0.001, 0.005, 0.01]; // sBTC per swap
+const DEPOSIT_PERCENTS: Array<{ label: string; pct: number }> = [
+  { label: "25%", pct: 0.25 },
+  { label: "50%", pct: 0.50 },
+  { label: "Max", pct: 1.00 },
+];
 
 interface Props {
   onCreated: () => void;
@@ -27,13 +34,23 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
   const [initialDeposit, setInitialDeposit] = useState("");
   const [loading, setLoading] = useState(false);
   const [txId, setTxId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [sbtcBalance, setSbtcBalance] = useState<number | null>(null);
 
   useEffect(() => {
     if (!stxAddress) return;
     getSBTCBalance(stxAddress).then((sats) => setSbtcBalance(satsToBTC(sats)));
   }, [stxAddress]);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { amount, interval: intv, deposit } = (e as CustomEvent).detail;
+      setAmountPerSwap(amount);
+      setInterval(intv as keyof typeof SBTC_INTERVALS);
+      setInitialDeposit(deposit);
+    };
+    window.addEventListener("dca-out:fill-form", handler);
+    return () => window.removeEventListener("dca-out:fill-form", handler);
+  }, []);
 
   const amt = parseFloat(amountPerSwap) || 0;
   const dep = parseFloat(initialDeposit) || 0;
@@ -48,15 +65,14 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
       return `Insufficient sBTC. Current balance: ${sbtcBalance?.toFixed(8)} sBTC`;
     return null;
   };
+  const invalid = validate();
 
   const handleSubmit = () => {
     const err = validate();
     if (err) {
-      setError(err);
       addNotification(err, "error", "dca-out", 5000);
       return;
     }
-    setError(null);
     setLoading(true);
 
     createSBTCPlan(
@@ -85,13 +101,19 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
 
   if (txId) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3">
-        <div className="w-10 h-10 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center">
-          <PlusCircle size={18} className="text-[#408A71]" />
+      <div className="glass-card rounded-2xl p-5 flex flex-col gap-3" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center"
+          style={{ background: "var(--accent-dim)" }}
+        >
+          <PlusCircle size={18} style={{ color: "var(--accent)" }} />
         </div>
-        <p className="font-semibold text-gray-900">Plan submitted!</p>
-        <p className="text-xs text-gray-400 break-all">Tx: {txId}</p>
-        <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+        <p className="font-semibold" style={{ color: "var(--text-primary)" }}>Plan submitted!</p>
+        <p className="text-xs break-all" style={{ color: "var(--text-muted)" }}>Tx: {txId}</p>
+        <p
+          className="text-xs rounded-lg px-3 py-2"
+          style={{ background: "var(--bg-elevated)", color: "var(--warning)" }}
+        >
           Plan will appear after the transaction is confirmed (~1-2 min). Click refresh to update.
         </p>
         <button
@@ -100,7 +122,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
             setAmountPerSwap("");
             setInitialDeposit("");
           }}
-          className="mt-1 text-sm text-[#285A48] hover:underline text-left"
+          className="mt-1 text-sm gradient-text-dca-out font-medium text-left hover:underline"
         >
           + Create new plan
         </button>
@@ -109,163 +131,188 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">
-      <h2 className="font-semibold text-gray-900">Create DCA Out Plan</h2>
+    <div className="glass-card rounded-2xl p-5 flex flex-col gap-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>Create DCA Out Plan</h2>
 
-      {/* Source token (fixed = sBTC) */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-gray-500">Spend (Source Token)</label>
-        <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200">
-          <span className="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
-            &#8383;
-          </span>
-          <span className="text-sm font-semibold text-gray-900">sBTC</span>
-          <span className="text-xs text-gray-400 ml-auto">Bitcoin on Stacks</span>
-        </div>
-      </div>
-
-      {/* Target token — fixed to USDCx */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-gray-500">Buy (Target Token)</label>
-        <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200">
-          <span className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
-            $
-          </span>
-          <span className="text-sm font-semibold text-gray-900">USDCx</span>
-          <span className="text-xs text-gray-400 ml-auto">USD Coin on Stacks</span>
-        </div>
-      </div>
+      {/* Source (sBTC) */}
+      <TokenRow symbol="sBTC" colorHex="#F7931A" description="Bitcoin on Stacks" label="Spend" glyph="₿" />
+      {/* Target (USDCx) */}
+      <TokenRow symbol="USDCx" colorHex="#2775CA" description="USD Coin on Stacks" label="Buy" glyph="$" />
 
       {/* Amount per swap */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-gray-500">Amount per Swap <span className="text-gray-400">(min: 334 sats = 0.00000334 sBTC)</span></label>
-        <div className="relative">
-          <input
-            type="number"
-            value={amountPerSwap}
-            onChange={(e) => setAmountPerSwap(e.target.value)}
-            placeholder="Min 334 sats (0.00000334)"
-            step="0.00000001"
-            min="0.00000334"
-            className="w-full px-3 py-2.5 pr-14 rounded-xl border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#B0E4CC]"
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">
-            sBTC
-          </span>
-        </div>
-        {/* Recommended amounts */}
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            { label: "10k sats", value: "0.0001", usd: "~$10" },
-            { label: "50k sats", value: "0.0005", usd: "~$50" },
-            { label: "100k sats", value: "0.001", usd: "~$100" },
-            { label: "500k sats", value: "0.005", usd: "~$500" },
-            { label: "0.01 BTC", value: "0.01", usd: "~$1k" },
-          ].map((preset) => (
-            <button
-              key={preset.value}
-              type="button"
-              onClick={() => setAmountPerSwap(preset.value)}
-              className={`px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors ${
-                amountPerSwap === preset.value
-                  ? "bg-[#B0E4CC]/20 border-[#B0E4CC] text-[#285A48]"
-                  : "border-gray-200 text-gray-400 hover:border-[#B0E4CC] hover:text-gray-600"
-              }`}
-            >
-              {preset.label} <span className="text-gray-300">{preset.usd}</span>
-            </button>
-          ))}
+        <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+          Amount per Swap
+        </label>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <input
+              type="number"
+              value={amountPerSwap}
+              onChange={(e) => setAmountPerSwap(e.target.value)}
+              placeholder="0.001"
+              step="0.00000001"
+              min="0.00000334"
+              className="w-full px-3 py-2.5 pr-16 rounded-xl text-sm focus:outline-none focus:ring-2"
+              style={{
+                border: "1px solid var(--border-default)",
+                background: "var(--bg-card)",
+                color: "var(--text-primary)",
+              }}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium" style={{ color: "var(--text-muted)" }}>sBTC</span>
+          </div>
+          <div className="flex gap-1">
+            {AMOUNT_PRESETS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setAmountPerSwap(String(p))}
+                className="px-2 py-1 rounded-lg text-xs font-semibold transition-colors"
+                style={{
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-secondary)",
+                  border: "1px solid var(--border-subtle)",
+                }}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Interval */}
+      {/* Interval chips */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-gray-500">Interval</label>
+        <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Frequency</label>
         <div className="grid grid-cols-3 gap-2">
-          {(Object.keys(SBTC_INTERVALS) as (keyof typeof SBTC_INTERVALS)[]).map((key) => (
-            <button
-              key={key}
-              onClick={() => setInterval(key)}
-              className={`py-2 rounded-xl text-sm font-medium border transition-colors ${
-                interval === key
-                  ? "bg-[#408A71] text-white border-[#408A71]"
-                  : "border-gray-200 text-gray-500 hover:border-[#B0E4CC]"
-              }`}
-            >
-              {key}
-            </button>
-          ))}
+          {(Object.keys(SBTC_INTERVALS) as (keyof typeof SBTC_INTERVALS)[]).map((key) => {
+            const active = interval === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setInterval(key)}
+                className="py-2 rounded-xl text-sm font-medium transition-all"
+                style={
+                  active
+                    ? { background: "var(--accent)", color: "#fff", border: "1px solid var(--accent)" }
+                    : { border: "1px solid var(--border-default)", color: "var(--text-secondary)", background: "var(--bg-card)" }
+                }
+              >
+                {key}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Initial deposit */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-medium text-gray-500">Initial Deposit</label>
+          <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Initial Deposit</label>
           {sbtcBalance != null && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>
               Balance:{" "}
-              <span
-                className={
-                  insufficientBalance ? "text-red-500 font-medium" : "text-gray-600 font-medium"
-                }
-              >
+              <span style={{ color: insufficientBalance ? "var(--negative)" : "var(--text-secondary)", fontWeight: 500 }}>
                 {sbtcBalance.toFixed(8)} sBTC
               </span>
             </span>
           )}
         </div>
-        <div className="relative">
-          <input
-            type="number"
-            value={initialDeposit}
-            onChange={(e) => setInitialDeposit(e.target.value)}
-            placeholder="0.00000668"
-            step="0.00000001"
-            min="0.00000668"
-            className={`w-full px-3 py-2.5 pr-20 rounded-xl border text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] ${
-              insufficientBalance ? "border-red-300 bg-red-50" : "border-gray-200"
-            }`}
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-            {sbtcBalance != null && (
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <input
+              type="number"
+              value={initialDeposit}
+              onChange={(e) => setInitialDeposit(e.target.value)}
+              placeholder="0.00000668"
+              step="0.00000001"
+              min="0.00000668"
+              className="w-full px-3 py-2.5 pr-16 rounded-xl text-sm focus:outline-none focus:ring-2"
+              style={{
+                border: `1px solid ${insufficientBalance ? "var(--negative)" : "var(--border-default)"}`,
+                background: insufficientBalance ? "var(--bg-elevated)" : "var(--bg-card)",
+                color: "var(--text-primary)",
+              }}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium" style={{ color: "var(--text-muted)" }}>sBTC</span>
+          </div>
+          <div className="flex gap-1">
+            {DEPOSIT_PERCENTS.map(({ label, pct }) => (
               <button
+                key={label}
                 type="button"
-                onClick={() => setInitialDeposit(String(maxDeposit))}
-                className="text-[10px] font-semibold text-[#285A48] bg-[#B0E4CC]/20 border border-[#B0E4CC] px-1.5 py-0.5 rounded hover:bg-[#B0E4CC]/30 transition-colors"
+                disabled={sbtcBalance == null}
+                onClick={() => setInitialDeposit((maxDeposit * pct).toFixed(8))}
+                className="px-2 py-1 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40"
+                style={{
+                  background: "var(--accent-dim)",
+                  color: "var(--accent)",
+                  border: "1px solid var(--border-subtle)",
+                }}
               >
-                Max
+                {label}
               </button>
-            )}
-            <span className="text-xs font-medium text-gray-400">sBTC</span>
+            ))}
           </div>
         </div>
-        {insufficientBalance && (
-          <p className="text-xs text-red-500 flex items-center gap-1">
-            <AlertTriangle size={11} /> Insufficient sBTC in wallet
-          </p>
-        )}
-        {!insufficientBalance && amt > 0 && dep >= amt && (
-          <p className="text-xs text-gray-400 flex items-center gap-1">
-            <Info size={11} />~{Math.floor(dep / amt)} swaps
-          </p>
-        )}
       </div>
 
-      {error && <p className="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+      {/* Live preview */}
+      <LivePreviewCard
+        mode="out"
+        amountStx={amt}
+        depositStx={dep}
+        intervalKey={interval as never}
+        estimatedOutput={null}
+        outputLabel="USDCx"
+        inputLabel="sBTC"
+        invalidReason={amt > 0 && dep > 0 ? invalid : null}
+      />
 
       <button
         onClick={handleSubmit}
-        disabled={loading}
-        className="w-full py-3 rounded-xl bg-[#408A71] hover:bg-[#285A48] disabled:opacity-50 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+        disabled={loading || !!invalid}
+        className="gradient-dca-out w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:brightness-110"
       >
-        <PlusCircle size={16} />
-        {loading ? "Waiting for wallet..." : "Create Plan"}
+        {loading ? "Waiting for wallet…" : <>Create Plan <ArrowRight size={14} /></>}
       </button>
-
-      <p className="text-[11px] text-gray-400 text-center">
+      <p className="text-[11px] text-center" style={{ color: "var(--text-muted)" }}>
         Mainnet · 0.3% protocol fee per swap · 3-hop swap via Bitflow
       </p>
+    </div>
+  );
+}
+
+function TokenRow({
+  symbol,
+  colorHex,
+  description,
+  label,
+  glyph,
+}: {
+  symbol: string;
+  colorHex: string;
+  description: string;
+  label: string;
+  glyph?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label} (Source Token)</label>
+      <div
+        className="flex items-center gap-2 px-3 py-2.5 rounded-xl"
+        style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
+      >
+        <span
+          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0"
+          style={{ background: colorHex }}
+        >
+          {glyph ?? symbol[0]}
+        </span>
+        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{symbol}</span>
+        <span className="text-xs ml-auto" style={{ color: "var(--text-muted)" }}>{description}</span>
+      </div>
     </div>
   );
 }

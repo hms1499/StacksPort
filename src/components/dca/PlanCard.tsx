@@ -15,6 +15,7 @@ import {
   TARGET_TOKENS,
   DEFAULT_SWAP_ROUTER,
 } from "@/lib/dca";
+import { quoteSbtcForUstx, netUstxAfterFee } from "@/lib/dca-quote";
 import { useNotificationStore } from "@/store/notificationStore";
 
 interface Props {
@@ -50,61 +51,19 @@ export default function PlanCard({ plan, currentBlock, onRefresh }: Props) {
   const blocksLeft = Math.max(0, nextBlock - currentBlock);
   const canExecuteNow = plan.active && plan.bal >= plan.amt && blocksLeft === 0;
   // net uSTX after vault's 0.3% protocol fee (matches what router actually receives)
-  const netUstx = plan.amt - Math.floor(plan.amt * 30 / 10000);
+  const netUstx = netUstxAfterFee(plan.amt);
 
-  // Query xyk-core.get-dx directly on mainnet — exact sBTC output for our specific pool
-  // get-dx(pool, x-token=sBTC, y-token=wSTX, y-amount=uSTX) → (ok uint) satoshis
   useEffect(() => {
     if (!expanded || !canExecuteNow) return;
     setQuoteLoading(true);
     setQuoteError(null);
     setQuotedSbtc(null);
 
-    async function fetchPoolQuote() {
-
-      const { contractPrincipalCV, uintCV, serializeCV, hexToCV } = await import("@stacks/transactions");
-
-      const toHex = (cv: unknown) => {
-        const bytes = serializeCV(cv as Parameters<typeof serializeCV>[0]);
-        const hex = typeof bytes === "string" ? bytes : Buffer.from(bytes).toString("hex");
-        return "0x" + hex;
-      };
-
-      const args = [
-        toHex(contractPrincipalCV("SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", "xyk-pool-sbtc-stx-v-1-1")),
-        toHex(contractPrincipalCV("SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4", "sbtc-token")),
-        toHex(contractPrincipalCV("SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", "token-stx-v-1-2")),
-        toHex(uintCV(netUstx)),
-      ];
-
-      const res = await fetch(
-        "https://api.hiro.so/v2/contracts/call-read/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR/xyk-core-v-1-2/get-dx",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sender: "SP000000000000000000002Q6VF78", arguments: args }),
-        }
-      );
-
-      const data = await res.json();
-      if (!data.okay) throw new Error(data.cause ?? "get-dx failed");
-
-      // result is (ok uint) — unwrap to get satoshis
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cv = hexToCV(data.result) as any;
-      const sats = Number(cv?.value?.value ?? cv?.value ?? 0);
-      if (!sats || sats <= 0) throw new Error("No liquidity in pool");
-
-      setQuotedSbtc(sats / 1e8); // convert sats → sBTC normal units for display
-    }
-
-    fetchPoolQuote()
-      .catch((e: Error) => {
-        const error = e.message ?? "Failed to get quote";
-        setQuoteError(error);
-      })
+    quoteSbtcForUstx(netUstx)
+      .then((sbtc) => setQuotedSbtc(sbtc))
+      .catch((e: Error) => setQuoteError(e.message ?? "Failed to get quote"))
       .finally(() => setQuoteLoading(false));
-  }, [expanded, canExecuteNow, plan.amt]);
+  }, [expanded, canExecuteNow, netUstx]);
 
   // minAmountOut in satoshis (sBTC 8 decimals), applying slippage on pool's real quote
   const minAmountOut = quotedSbtc != null

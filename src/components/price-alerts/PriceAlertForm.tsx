@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, Plus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Plus, Bell } from 'lucide-react';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { usePriceAlertStore } from '@/store/priceAlertStore';
 import { PRICE_ALERT_TOKENS, type PriceAlertCondition } from '@/types/priceAlerts';
 import { cn } from '@/lib/utils';
@@ -9,10 +10,13 @@ import { cn } from '@/lib/utils';
 export default function PriceAlertForm() {
   const { addAlert } = usePriceAlertStore();
 
+  const { permission, isSupported, subscribe } = usePushNotifications();
   const [selectedToken, setSelectedToken] = useState(PRICE_ALERT_TOKENS[0]);
   const [condition, setCondition] = useState<PriceAlertCondition>('above');
   const [targetPrice, setTargetPrice] = useState('');
   const [error, setError] = useState('');
+  const [justCreated, setJustCreated] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +28,14 @@ export default function PriceAlertForm() {
     setError('');
     addAlert(selectedToken.symbol, selectedToken.geckoId, condition, price);
     setTargetPrice('');
+    setJustCreated(true);
+  };
+
+  const handleEnablePush = async () => {
+    setSubscribing(true);
+    await subscribe();
+    setSubscribing(false);
+    setJustCreated(false);
   };
 
   return (
@@ -125,6 +137,29 @@ export default function PriceAlertForm() {
           <Plus size={16} />
           Create Alert
         </button>
+        {justCreated && isSupported && permission !== 'granted' && (
+          <div className="flex items-center gap-3 mt-3 p-3 bg-[#B0E4CC]/20 border border-[#408A71]/30 rounded-xl">
+            <Bell size={16} className="text-[#408A71] shrink-0" />
+            <span className="text-xs text-gray-600 flex-1">
+              Nhận alert ngay cả khi đóng app?
+            </span>
+            <button
+              type="button"
+              onClick={handleEnablePush}
+              disabled={subscribing}
+              className="text-xs font-medium text-[#408A71] hover:text-[#285A48] disabled:opacity-50"
+            >
+              {subscribing ? 'Đang bật...' : 'Bật thông báo'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setJustCreated(false)}
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              Bỏ qua
+            </button>
+          </div>
+        )}
       </div>
     </form>
   );

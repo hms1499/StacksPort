@@ -13,6 +13,8 @@ export interface PriceAlert {
 
 export interface PriceAlertStoreState {
   alerts: PriceAlert[];
+  walletAddress: string;
+  setWalletAddress: (addr: string) => void;
   addAlert: (
     tokenSymbol: string,
     geckoId: string,

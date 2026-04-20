@@ -8,9 +8,18 @@ import ToastContainer from '@/components/notifications/ToastContainer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { usePriceAlertPolling } from '@/hooks/usePriceAlertPolling';
 import { AnimatePresence } from 'framer-motion';
+import { useWalletStore } from '@/store/walletStore';
+import { usePriceAlertStore } from '@/store/priceAlertStore';
 
 function PriceAlertPoller() {
   usePriceAlertPolling();
+  return null;
+}
+
+function WalletAddressSync() {
+  const stxAddress = useWalletStore((s) => s.stxAddress);
+  const setWalletAddress = usePriceAlertStore((s) => s.setWalletAddress);
+  useEffect(() => { setWalletAddress(stxAddress ?? ''); }, [stxAddress, setWalletAddress]);
   return null;
 }
 
@@ -49,6 +58,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
       {/* Background services */}
       <PriceAlertPoller />
+      <WalletAddressSync />
     </div>
     </ThemeProvider>
   );

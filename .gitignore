@@ -50,3 +50,4 @@ next-env.d.ts
 # Clarinet generated files
 contracts/node_modules/
 contracts/history.txt
+.superpowers/

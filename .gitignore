@@ -51,3 +51,6 @@ next-env.d.ts
 contracts/node_modules/
 contracts/history.txt
 .superpowers/
+
+# Push subscription runtime data
+data/push-subscriptions.json

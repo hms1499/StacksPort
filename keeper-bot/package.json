@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc --outDir dist",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "push": "ts-node src/push-worker.ts",
+    "push:prod": "node dist/push-worker.js"
   },
   "dependencies": {
     "@stacks/network": "^7.3.1",

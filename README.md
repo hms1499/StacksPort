@@ -13,18 +13,26 @@ stacks-portfolio/
 │   │   ├── dca/            # DCA vault management
 │   │   ├── assets/         # Holdings, PnL, stacking tracker
 │   │   ├── notifications/  # Alerts & notification history
-│   │   └── api/            # Backend proxies (Bitflow, CoinGecko, news)
-│   ├── components/         # 44 React components
-│   ├── lib/                # Blockchain utils, Bitflow SDK, DCA helpers
-│   ├── store/              # Zustand stores (wallet, notifications, alerts)
+│   │   └── api/            # Backend proxies (Bitflow, CoinGecko, news, push)
+│   ├── components/         # React components
+│   ├── hooks/              # usePushNotifications, usePriceAlertPolling, etc.
+│   ├── lib/                # Blockchain utils, Bitflow SDK, DCA helpers, push-storage
+│   ├── store/              # Zustand stores (wallet, notifications, price alerts)
 │   └── types/              # TypeScript type definitions
 ├── contracts/              # Clarity smart contracts
 │   ├── dca-vault.clar      # DCA vault for STX → sBTC
 │   ├── dca-vault-sbtc.clar # DCA vault for sBTC → USDCx
 │   ├── bitflow-sbtc-swap-router.clar  # STX → sBTC swap via Bitflow xyk pool
 │   └── bitflow-usdcx-swap-router.clar # sBTC → USDCx 3-hop swap router
-├── keeper-bot/             # Automated DCA executor
-│   └── src/                # Bot logic (scan plans, build & broadcast txs)
+├── keeper-bot/             # Automated DCA executor + push notification daemon
+│   └── src/
+│       ├── index.ts        # DCA batch executor (one-shot, runs via cron)
+│       ├── price-push.ts   # Price check & Web Push loop
+│       └── push-worker.ts  # Push daemon entry point (long-running)
+├── public/
+│   └── sw.js              # Service Worker (receives push, shows notification)
+├── data/                   # Runtime storage (gitignored)
+│   └── push-subscriptions.json  # Push subscription store (wallet → sub + alerts)
 └── .github/workflows/      # GitHub Actions (2 keeper-bot crons every 10min)
 ```
 
@@ -34,9 +42,10 @@ stacks-portfolio/
 - **DCA Vault (sBTC → USDCx)** - Automate sBTC-to-USDCx swaps via 3-hop route (sBTC → STX → aeUSDC → USDCx). Same pause/resume/cancel features.
 - **Swap** - Instant token swaps via Bitflow DEX with real-time quotes.
 - **Portfolio Tracker** - Real-time balances, PnL tracking, portfolio health score, stacking & sBTC monitoring.
-- **Price Alerts** - Set target prices and get notified via toast/drawer notifications.
+- **Price Alerts** - Set target prices and receive native push notifications (via Web Push API) even when the browser tab is closed or the app is in the background.
 - **Market Intelligence** - Fear & Greed Index, trending tokens, live crypto news, STX market stats.
 - **Keeper Bot** - Serverless bot (GitHub Actions) that automatically executes DCA plans when they're due.
+- **Push Worker** - Long-running daemon that polls CoinGecko every 10 seconds and sends Web Push notifications when price alerts trigger.
 
 ## Tech Stack
 
@@ -49,6 +58,7 @@ stacks-portfolio/
 | DEX | Bitflow SDK |
 | Smart Contracts | Clarity 3 (Stacks) |
 | Keeper Bot | Node.js, @stacks/wallet-sdk |
+| Push Notifications | Web Push API, VAPID, `web-push` npm package |
 | Deployment | Vercel (frontend), GitHub Actions (keeper bot) |
 
 ## Smart Contracts
@@ -87,16 +97,25 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Keeper Bot
+### Keeper Bot (DCA executor)
 
 ```bash
 cd keeper-bot
-cp .env.example .env   # Fill in KEEPER_PRIVATE_KEY and KEEPER_ADDRESS
+cp .env.example .env   # Fill in KEEPER_PRIVATE_KEY, KEEPER_ADDRESS, and VAPID vars
 npm install
 npm run dev
 ```
 
 `KEEPER_PRIVATE_KEY` accepts either a 64-char hex private key or a 24-word mnemonic seed phrase.
+
+### Push Worker (price alert daemon)
+
+```bash
+cd keeper-bot
+npm run push
+```
+
+The push worker polls CoinGecko every 10 seconds and sends Web Push notifications when a price alert triggers. Run this as a long-running process alongside (or separately from) the keeper bot. Subscriptions inactive for more than 8 hours are automatically evicted.
 
 ### Smart Contracts
 
@@ -116,6 +135,7 @@ clarinet test
 |----------|-------------|
 | `NEXT_PUBLIC_CONTRACT_ADDRESS` | Deployed contract address |
 | `BITFLOW_API_KEY` | Bitflow DEX API key |
+| `VAPID_PUBLIC_KEY` | VAPID public key (shared with browser for push subscription) |
 
 ### Keeper Bot
 
@@ -128,6 +148,15 @@ clarinet test
 | `SWAP_ROUTER` | No | Swap router contract (default: bitflow-usdcx-swap-router) |
 | `HIRO_API_URL` | No | Stacks API (default: https://api.hiro.so) |
 | `MIN_AMOUNT_OUT` | No | Min output for slippage (default: 1) |
+| `VAPID_PUBLIC_KEY` | Yes (push) | VAPID public key (same as frontend) |
+| `VAPID_PRIVATE_KEY` | Yes (push) | VAPID private key |
+| `VAPID_SUBJECT` | Yes (push) | Contact URI, e.g. `mailto:you@example.com` |
+| `PUSH_CHECK_INTERVAL_MS` | No | Price check interval for push worker (default: 10000) |
+
+Generate VAPID keys:
+```bash
+cd keeper-bot && node -e "const wp = await import('web-push'); const k = wp.generateVAPIDKeys(); console.log(k);"
+```
 
 ## Deployment
 

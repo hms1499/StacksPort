@@ -27,6 +27,44 @@ export function usePushNotifications() {
     }
   }, []);
 
+  // Auto-resync alerts to server whenever alerts/walletAddress change and permission is already granted
+  useEffect(() => {
+    if (!walletAddress || !('Notification' in window) || Notification.permission !== 'granted') return;
+    if (!('serviceWorker' in navigator)) return;
+
+    const sync = async () => {
+      let sub: PushSubscription | null = null;
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        sub = await reg.pushManager.getSubscription();
+      } catch {
+        return;
+      }
+      if (!sub) return;
+
+      const subJson = sub.toJSON() as { endpoint: string; keys: { auth: string; p256dh: string } };
+      const pushAlerts: PushAlertEntry[] = alerts
+        .filter((a) => a.isActive)
+        .map((a) => ({
+          id: a.id,
+          tokenSymbol: a.tokenSymbol,
+          geckoId: a.geckoId,
+          condition: a.condition,
+          targetPrice: a.targetPrice,
+          isActive: a.isActive,
+          lastPushedAt: null,
+        }));
+
+      fetch('/api/push/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress, subscription: subJson, alerts: pushAlerts }),
+      }).catch(() => {});
+    };
+
+    sync();
+  }, [walletAddress, alerts]);
+
   async function subscribe(): Promise<boolean> {
     if (!isSupported || !walletAddress) return false;
 

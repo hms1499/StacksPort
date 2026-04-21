@@ -7,12 +7,18 @@ import BottomNav from '@/components/layout/BottomNav';
 import ToastContainer from '@/components/notifications/ToastContainer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { usePriceAlertPolling } from '@/hooks/usePriceAlertPolling';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { AnimatePresence } from 'framer-motion';
 import { useWalletStore } from '@/store/walletStore';
 import { usePriceAlertStore } from '@/store/priceAlertStore';
 
 function PriceAlertPoller() {
   usePriceAlertPolling();
+  return null;
+}
+
+function PushSyncer() {
+  usePushNotifications();
   return null;
 }
 
@@ -59,6 +65,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       {/* Background services */}
       <PriceAlertPoller />
       <WalletAddressSync />
+      <PushSyncer />
     </div>
     </ThemeProvider>
   );

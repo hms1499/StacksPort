@@ -80,7 +80,8 @@ export default function PriceAlertForm() {
               )}
             >
               <TrendingUp size={16} />
-              Price goes above
+              <span className="hidden sm:inline">Price goes above</span>
+              <span className="sm:hidden">Above</span>
             </button>
             <button
               type="button"
@@ -93,7 +94,8 @@ export default function PriceAlertForm() {
               )}
             >
               <TrendingDown size={16} />
-              Price goes below
+              <span className="hidden sm:inline">Price goes below</span>
+              <span className="sm:hidden">Below</span>
             </button>
           </div>
         </div>

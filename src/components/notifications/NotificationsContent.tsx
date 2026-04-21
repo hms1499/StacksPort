@@ -149,14 +149,14 @@ export default function NotificationsContent() {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Filter tabs + unread badge */}
-        <div className="px-4 md:px-6" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-1">
+        <div style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
+          <div className="flex items-center justify-between px-4 md:px-6">
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide">
               {TABS.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="px-4 py-3 text-sm font-medium border-b-2 transition-colors"
+                  className="px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap shrink-0"
                   style={{
                     borderBottomColor: activeTab === tab.key ? 'var(--accent)' : 'transparent',
                     color: activeTab === tab.key ? 'var(--accent)' : 'var(--text-muted)',
@@ -168,16 +168,18 @@ export default function NotificationsContent() {
             </div>
 
             {unreadCount > 0 && (
-              <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+              <span className="text-xs font-medium shrink-0 pl-3" style={{ color: 'var(--text-muted)' }}>
                 <span className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ backgroundColor: 'var(--accent)' }} />
-                {unreadCount} unread
+                <span className="hidden sm:inline">{unreadCount} unread</span>
+                <span className="sm:hidden">{unreadCount}</span>
               </span>
             )}
           </div>
         </div>
 
         {/* Search and controls */}
-        <div className="px-4 py-3 md:px-6" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
+        <div className="px-4 py-3 md:px-6 space-y-2" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
+          {/* Row 1: Search (full width on mobile) */}
           <div className="flex items-center gap-2">
             {/* Filter button — mobile */}
             <button
@@ -190,7 +192,7 @@ export default function NotificationsContent() {
               }}
             >
               <SlidersHorizontal size={16} />
-              Filters
+              <span className="hidden sm:inline">Filters</span>
               {activeFilterCount > 0 && (
                 <span className="text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center" style={{ backgroundColor: 'var(--accent)' }}>
                   {activeFilterCount}
@@ -199,11 +201,11 @@ export default function NotificationsContent() {
             </button>
 
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 md:max-w-md">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
-                placeholder="Search notifications..."
+                placeholder="Search..."
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-sm"
                 style={{
@@ -214,50 +216,52 @@ export default function NotificationsContent() {
               />
             </div>
 
-            {/* Sort */}
-            <div className="relative ml-auto">
-              <button
-                onClick={() => setIsSortOpen(!isSortOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
-                style={{ border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}
-              >
-                Sort
-                <ChevronDown size={15} />
-              </button>
+            {/* Sort + Bulk delete */}
+            <div className="flex items-center gap-2 ml-auto shrink-0">
+              <div className="relative">
+                <button
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
+                  style={{ border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}
+                >
+                  <span className="hidden sm:inline">Sort</span>
+                  <ChevronDown size={15} />
+                </button>
 
-              {isSortOpen && (
-                <>
-                  <div className="fixed inset-0 z-30" onClick={() => setIsSortOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg py-1 z-40" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
-                    {(['newest', 'oldest'] as const).map((sort) => (
-                      <button
-                        key={sort}
-                        onClick={() => { setSortBy(sort); setIsSortOpen(false); }}
-                        className="w-full text-left px-4 py-2 text-sm transition-colors"
-                        style={{
-                          backgroundColor: filters.sortBy === sort ? 'var(--accent-dim)' : 'transparent',
-                          color: filters.sortBy === sort ? 'var(--accent)' : 'var(--text-secondary)',
-                          fontWeight: filters.sortBy === sort ? 500 : 400,
-                        }}
-                      >
-                        {sort === 'newest' ? 'Newest first' : 'Oldest first'}
-                      </button>
-                    ))}
-                  </div>
-                </>
+                {isSortOpen && (
+                  <>
+                    <div className="fixed inset-0 z-30" onClick={() => setIsSortOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg py-1 z-40" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+                      {(['newest', 'oldest'] as const).map((sort) => (
+                        <button
+                          key={sort}
+                          onClick={() => { setSortBy(sort); setIsSortOpen(false); }}
+                          className="w-full text-left px-4 py-2 text-sm transition-colors"
+                          style={{
+                            backgroundColor: filters.sortBy === sort ? 'var(--accent-dim)' : 'transparent',
+                            color: filters.sortBy === sort ? 'var(--accent)' : 'var(--text-secondary)',
+                            fontWeight: filters.sortBy === sort ? 500 : 400,
+                          }}
+                        >
+                          {sort === 'newest' ? 'Newest first' : 'Oldest first'}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {selectedIds.size > 0 && (
+                <button
+                  onClick={handleDeleteSelected}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm font-medium"
+                >
+                  <Trash2 size={15} />
+                  <span className="hidden sm:inline">Delete ({selectedIds.size})</span>
+                  <span className="sm:hidden">{selectedIds.size}</span>
+                </button>
               )}
             </div>
-
-            {/* Bulk delete */}
-            {selectedIds.size > 0 && (
-              <button
-                onClick={handleDeleteSelected}
-                className="flex items-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm font-medium"
-              >
-                <Trash2 size={15} />
-                Delete ({selectedIds.size})
-              </button>
-            )}
           </div>
         </div>
 

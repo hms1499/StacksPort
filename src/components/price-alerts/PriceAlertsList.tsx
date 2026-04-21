@@ -39,7 +39,7 @@ export default function PriceAlertsList() {
             <li
               key={alert.id}
               className={cn(
-                'flex items-center gap-4 px-6 py-4 transition-colors',
+                'flex items-center gap-3 px-4 md:px-6 py-4 transition-colors',
                 !alert.isActive && 'opacity-50'
               )}
             >
@@ -57,43 +57,43 @@ export default function PriceAlertsList() {
                 )}
               </div>
 
-              {/* Info */}
+              {/* Info + status badge stacked */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-semibold text-gray-900 truncate">
                   {alert.tokenSymbol}{' '}
                   <span className="font-normal text-gray-500">
                     {alert.condition === 'above' ? 'above' : 'below'}
                   </span>{' '}
                   ${alert.targetPrice.toLocaleString()}
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {isTriggered
-                    ? `Triggered ${new Date(alert.triggeredAt!).toLocaleString('vi-VN')}`
-                    : `Created ${new Date(alert.createdAt).toLocaleDateString('vi-VN')}`}
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span
+                    className={cn(
+                      'text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full',
+                      isTriggered
+                        ? 'bg-[#B0E4CC]/20 text-[#285A48]'
+                        : alert.isActive
+                          ? 'bg-green-50 text-green-600'
+                          : 'bg-gray-100 text-gray-400'
+                    )}
+                  >
+                    {isTriggered ? 'Triggered' : alert.isActive ? 'Active' : 'Paused'}
+                  </span>
+                  <p className="text-xs text-gray-400 truncate">
+                    {isTriggered
+                      ? new Date(alert.triggeredAt!).toLocaleString('vi-VN')
+                      : new Date(alert.createdAt).toLocaleDateString('vi-VN')}
+                  </p>
+                </div>
               </div>
 
-              {/* Status badge */}
-              <span
-                className={cn(
-                  'text-[10px] font-semibold uppercase tracking-wide px-2 py-1 rounded-full',
-                  isTriggered
-                    ? 'bg-[#B0E4CC]/20 text-[#285A48]'
-                    : alert.isActive
-                      ? 'bg-green-50 text-green-600'
-                      : 'bg-gray-100 text-gray-400'
-                )}
-              >
-                {isTriggered ? 'Triggered' : alert.isActive ? 'Active' : 'Paused'}
-              </span>
-
               {/* Actions */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 {isTriggered ? (
                   <button
                     onClick={() => resetAlert(alert.id)}
                     title="Reset alert"
-                    className="p-1.5 text-gray-400 hover:text-[#285A48] hover:bg-[#B0E4CC]/20 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 hover:text-[#285A48] hover:bg-[#B0E4CC]/20 rounded-lg transition-colors"
                   >
                     <RotateCcw size={15} />
                   </button>
@@ -101,7 +101,7 @@ export default function PriceAlertsList() {
                   <button
                     onClick={() => toggleAlert(alert.id)}
                     title={alert.isActive ? 'Pause alert' : 'Resume alert'}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     {alert.isActive ? <BellOff size={15} /> : <Bell size={15} />}
                   </button>
@@ -109,7 +109,7 @@ export default function PriceAlertsList() {
                 <button
                   onClick={() => removeAlert(alert.id)}
                   title="Delete alert"
-                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
                   <Trash2 size={15} />
                 </button>

@@ -41,6 +41,7 @@ async function writeStore(store: PushStore): Promise<void> {
 
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price';
 const PUSH_COOLDOWN_MS = 60 * 60 * 1000;
+const SUBSCRIPTION_TTL_MS = 8 * 60 * 60 * 1000; // 8 tiếng
 
 webpush.setVapidDetails(
   process.env.VAPID_SUBJECT!,
@@ -63,6 +64,17 @@ async function fetchPrices(geckoIds: string[]): Promise<Record<string, number>> 
 
 async function runOnce(): Promise<void> {
   const store = await readStore();
+
+  const now = Date.now();
+  let evicted = false;
+  for (const addr of Object.keys(store)) {
+    if (now - store[addr].updatedAt > SUBSCRIPTION_TTL_MS) {
+      delete store[addr];
+      evicted = true;
+    }
+  }
+  if (evicted) await writeStore(store);
+
   const walletAddresses = Object.keys(store);
   if (walletAddresses.length === 0) return;
 

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useAIInsights } from "@/hooks/useAIInsights";
 import Topbar from "@/components/layout/Topbar";
 import SentimentCard from "./SentimentCard";
-import TrendAnalysisCard from "./TrendAnalysisCard";
+import KOLSignalsCard from "./KOLSignalsCard";
 import SmartAlertsCard from "./SmartAlertsCard";
 import NewsDigestCard from "./NewsDigestCard";
 
@@ -96,7 +96,7 @@ export default function AIPageContent() {
         {data && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <SentimentCard data={data.sentiment} />
-            <TrendAnalysisCard data={data.trends} />
+            <KOLSignalsCard data={data.kolSignals} />
             <div className="lg:col-span-2">
               <SmartAlertsCard items={data.alerts.items} />
             </div>

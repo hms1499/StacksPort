@@ -136,6 +136,9 @@ export default function Home() {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const mainEl = containerRef.current.closest('main') as HTMLElement | null;
+    if (mainEl) ScrollTrigger.defaults({ scroller: mainEl });
+
     const ctx = gsap.context(() => {
       // ── Hero entry timeline ──
       const heroEntryEls = [
@@ -351,7 +354,10 @@ export default function Home() {
       }
     }, containerRef.current);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      ScrollTrigger.defaults({ scroller: window });
+    };
   }, []);
 
   return (

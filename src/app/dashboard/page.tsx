@@ -123,7 +123,7 @@ export default function DashboardPage() {
           </MotionCard>
 
           {/* Greed Index + Trending side by side */}
-          <MotionCard disableHover>
+          <MotionCard >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
               <GreedIndexCard />
               <TrendingTokens />
@@ -131,7 +131,7 @@ export default function DashboardPage() {
           </MotionCard>
 
           {/* Crypto News + Recent Activity side by side */}
-          <MotionCard disableHover>
+          <MotionCard >
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5 items-start">
               <div className="lg:col-span-2">
                 <CryptoNews />

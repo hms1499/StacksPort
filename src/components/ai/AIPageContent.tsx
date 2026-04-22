@@ -95,13 +95,13 @@ export default function AIPageContent() {
         {/* Data */}
         {data && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="lg:col-span-2">
+              <NewsDigestCard summary={data.newsDigest.summary} items={data.newsDigest.items} />
+            </div>
             <SentimentCard data={data.sentiment} />
             <KOLSignalsCard data={data.kolSignals} />
             <div className="lg:col-span-2">
               <SmartAlertsCard items={data.alerts.items} />
-            </div>
-            <div className="lg:col-span-2">
-              <NewsDigestCard summary={data.newsDigest.summary} items={data.newsDigest.items} />
             </div>
           </div>
         )}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink, Newspaper, ChevronDown } from "lucide-react";
+import { ExternalLink, Newspaper, ChevronDown, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { NewsDigestItem } from "@/lib/ai";
 
@@ -27,7 +27,8 @@ function NewsImage({ src, alt, className = "w-14 h-14" }: { src?: string; alt: s
         unoptimized
         onError={(e) => {
           const parent = (e.currentTarget as HTMLImageElement).parentElement;
-          if (parent) parent.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-elevated)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v2"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>`;
+          if (parent)
+            parent.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-elevated)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v2"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>`;
         }}
       />
     </div>
@@ -36,16 +37,42 @@ function NewsImage({ src, alt, className = "w-14 h-14" }: { src?: string; alt: s
 
 function NewsItem({ item }: { item: NewsDigestItem }) {
   const [open, setOpen] = useState(false);
+  const [content, setContent] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleToggle = async () => {
+    const next = !open;
+    setOpen(next);
+
+    if (next && content === null && !loading) {
+      setLoading(true);
+      setError(false);
+      try {
+        const res = await fetch(`/api/news/article?url=${encodeURIComponent(item.url)}`);
+        const data = await res.json();
+        if (res.ok && data.content) {
+          setContent(data.content);
+        } else {
+          setError(true);
+        }
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <div
-      className="rounded-xl overflow-hidden transition-colors"
+      className="rounded-xl overflow-hidden"
       style={{ backgroundColor: "var(--bg-elevated)" }}
     >
-      {/* Summary row — click to toggle */}
+      {/* Summary row */}
       <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-start gap-3 p-3 text-left group"
+        onClick={handleToggle}
+        className="w-full flex items-start gap-3 p-3 text-left"
       >
         <NewsImage src={item.imageUrl} alt={item.headline} />
 
@@ -85,12 +112,12 @@ function NewsItem({ item }: { item: NewsDigestItem }) {
             style={{ overflow: "hidden" }}
           >
             <div
-              className="px-3 pb-3 pt-0"
+              className="px-3 pb-4 pt-2"
               style={{ borderTop: "1px solid var(--border-subtle)" }}
             >
               {/* Large image */}
               {item.imageUrl && (
-                <div className="relative w-full h-40 rounded-xl overflow-hidden mt-3 mb-3">
+                <div className="relative w-full h-40 rounded-xl overflow-hidden mb-3">
                   <Image
                     src={item.imageUrl}
                     alt={item.headline}
@@ -101,10 +128,29 @@ function NewsItem({ item }: { item: NewsDigestItem }) {
                 </div>
               )}
 
-              {/* Insight */}
-              <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--text-secondary)" }}>
-                {item.insight}
-              </p>
+              {/* Article content */}
+              {loading && (
+                <div className="flex items-center gap-2 py-4 justify-center">
+                  <Loader2 size={15} className="animate-spin" style={{ color: "var(--text-muted)" }} />
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading article…</span>
+                </div>
+              )}
+
+              {error && (
+                <p className="text-xs py-2" style={{ color: "var(--text-muted)" }}>
+                  Could not load article content.
+                </p>
+              )}
+
+              {content && (
+                <div className="space-y-2 mb-3">
+                  {content.split("\n\n").map((para, i) => (
+                    <p key={i} className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              )}
 
               {/* Read more */}
               <a

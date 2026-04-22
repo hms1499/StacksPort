@@ -142,9 +142,44 @@ async function fetchNews(): Promise<NewsItem[]> {
   return items.slice(0, 10);
 }
 
-// ─── Gemini AI ───────────────────────────────────────────────────────────────
+// ─── LunarCrush ──────────────────────────────────────────────────────────────
 
-function buildPrompt(market: MarketData, fearGreed: FearGreed, news: NewsItem[]): string {
+interface LunarCrushCoin {
+  symbol: string;
+  name: string;
+  galaxy_score: number;
+  social_volume_24h: number;
+  price_change_24h: number;
+}
+
+async function fetchLunarCrushSignals(): Promise<LunarCrushCoin[]> {
+  const apiKey = process.env.LUNARCRUSH_API_KEY;
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(
+      "https://lunarcrush.com/api4/public/coins/list/v2?sort=social_score&limit=10",
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+        signal: AbortSignal.timeout(10_000),
+      }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return (json.data ?? []).map((c: Record<string, unknown>) => ({
+      symbol: String(c.symbol ?? ""),
+      name: String(c.name ?? ""),
+      galaxy_score: Number(c.galaxy_score ?? 0),
+      social_volume_24h: Number(c.social_volume_24h ?? 0),
+      price_change_24h: Number(c.price_change_24h ?? 0),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// ─── Groq AI ─────────────────────────────────────────────────────────────────
+
+function buildPrompt(market: MarketData, fearGreed: FearGreed, news: NewsItem[], lunarcrushCoins: LunarCrushCoin[]): string {
   const newsText = news.map((n, i) => `${i + 1}. [${n.source}] ${n.title}`).join("\n");
 
   const price7dChange = market.priceHistory7d.length >= 2
@@ -154,6 +189,14 @@ function buildPrompt(market: MarketData, fearGreed: FearGreed, news: NewsItem[])
   const price30dChange = market.priceHistory30d.length >= 2
     ? ((market.priceHistory30d[market.priceHistory30d.length - 1] - market.priceHistory30d[0]) / market.priceHistory30d[0] * 100).toFixed(2)
     : "N/A";
+
+  const lunarSection = lunarcrushCoins.length > 0
+    ? `\n## Top Social Signals (LunarCrush)\n${lunarcrushCoins
+        .map((c, i) =>
+          `${i + 1}. ${c.symbol} (${c.name}) — Galaxy Score: ${c.galaxy_score}, Social Volume 24h: ${c.social_volume_24h.toLocaleString()}, Price 24h: ${c.price_change_24h >= 0 ? "+" : ""}${c.price_change_24h.toFixed(2)}%`
+        )
+        .join("\n")}`
+    : "";
 
   return `Analyze the following Stacks (STX) and crypto market data and provide insights.
 
@@ -171,7 +214,7 @@ function buildPrompt(market: MarketData, fearGreed: FearGreed, news: NewsItem[])
 ## Fear & Greed Index
 - Value: ${fearGreed.value}/100
 - Classification: ${fearGreed.classification}
-
+${lunarSection}
 ## Latest Crypto News
 ${newsText}
 
@@ -183,11 +226,10 @@ Respond with a JSON object matching this exact structure (no markdown, just raw 
     "fearGreedValue": ${fearGreed.value},
     "signals": [{"label": "<signal name>", "type": "<bullish|bearish|neutral>"}]
   },
-  "trends": {
-    "summary": "2-3 sentence trend analysis",
-    "tokens": [
-      {"symbol": "STX", "direction": "<up|down|sideways>", "insight": "1 sentence", "changePercent": ${market.stxChange24h.toFixed(2)}},
-      {"symbol": "BTC", "direction": "<up|down|sideways>", "insight": "1 sentence", "changePercent": ${market.btcChange24h.toFixed(2)}}
+  "kolSignals": {
+    "summary": "2-3 sentence overview of which coins are gaining social momentum and why",
+    "coins": [
+      {"symbol": "STX", "name": "Stacks", "galaxyScore": 72, "socialVolume": 12400, "sentiment": "<bullish|bearish|neutral>", "insight": "1 sentence on social relevance"}
     ]
   },
   "alerts": {
@@ -207,13 +249,15 @@ Important:
 - Provide 2-4 actionable alerts
 - Keep insights concise and actionable
 - For news items, update the "insight" field with your analysis of relevance to Stacks
+- For kolSignals, include all coins from the LunarCrush data provided; if no LunarCrush data, return empty coins array
 - Return ONLY valid JSON, no markdown fences`;
 }
 
 async function generateInsights(
   market: MarketData,
   fearGreed: FearGreed,
-  news: NewsItem[]
+  news: NewsItem[],
+  lunarcrushCoins: LunarCrushCoin[]
 ): Promise<AIInsightsResponse> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("GROQ_API_KEY not configured");
@@ -229,7 +273,7 @@ async function generateInsights(
       },
       {
         role: "user",
-        content: buildPrompt(market, fearGreed, news),
+        content: buildPrompt(market, fearGreed, news, lunarcrushCoins),
       },
     ],
     temperature: 0.3,
@@ -243,7 +287,7 @@ async function generateInsights(
   return {
     generatedAt: new Date().toISOString(),
     sentiment: parsed.sentiment,
-    trends: parsed.trends,
+    kolSignals: parsed.kolSignals ?? { summary: "", coins: [] },
     alerts: parsed.alerts,
     newsDigest: parsed.newsDigest,
   };
@@ -265,13 +309,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [market, fearGreed, news] = await Promise.all([
+    const [market, fearGreed, news, lunarcrushCoins] = await Promise.all([
       fetchMarketData(),
       fetchFearGreed(),
       fetchNews(),
+      fetchLunarCrushSignals(),
     ]);
 
-    const insights = await generateInsights(market, fearGreed, news);
+    const insights = await generateInsights(market, fearGreed, news, lunarcrushCoins);
 
     cached = { data: insights, timestamp: Date.now() };
 

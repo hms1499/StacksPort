@@ -7,14 +7,18 @@ export interface SentimentData {
   signals: { label: string; type: "bullish" | "bearish" | "neutral" }[];
 }
 
-export interface TrendData {
-  summary: string;
-  tokens: {
-    symbol: string;
-    direction: "up" | "down" | "sideways";
-    insight: string;
-    changePercent: number;
-  }[];
+export interface KOLSignalCoin {
+  symbol: string;
+  name: string;
+  galaxyScore: number;          // 0–100, LunarCrush Galaxy Score
+  socialVolume: number;         // 24h social post volume
+  sentiment: "bullish" | "bearish" | "neutral";
+  insight: string;              // 1-sentence Groq analysis
+}
+
+export interface KOLSignalsData {
+  summary: string;              // 2-3 sentence overview from Groq
+  coins: KOLSignalCoin[];
 }
 
 export interface AlertItem {
@@ -34,7 +38,7 @@ export interface NewsDigestItem {
 export interface AIInsightsResponse {
   generatedAt: string;
   sentiment: SentimentData;
-  trends: TrendData;
+  kolSignals: KOLSignalsData;
   alerts: { items: AlertItem[] };
   newsDigest: {
     summary: string;

@@ -33,6 +33,7 @@ export interface NewsDigestItem {
   insight: string;
   source: string;
   url: string;
+  imageUrl?: string;
 }
 
 export interface AIInsightsResponse {

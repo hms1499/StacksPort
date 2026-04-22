@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "**" },
+    ],
+  },
   webpack: (config, { isServer }) => {
     // pino-pretty is an optional dev dependency of walletconnect — not needed at runtime
     config.resolve.fallback = {

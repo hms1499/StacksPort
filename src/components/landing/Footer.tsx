@@ -36,7 +36,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2">
               {[
-                { href: 'https://github.com', icon: GitHubSVG, label: 'GitHub' },
+                { href: 'https://github.com/hms1499/StacksPort', icon: GitHubSVG, label: 'GitHub' },
                 { href: 'https://twitter.com', icon: XIcon, label: 'Twitter' },
               ].map(({ href, icon: Icon, label }) => (
                 <a
@@ -72,7 +72,7 @@ export default function Footer() {
                 {[
                   { label: 'Features', href: '#features' },
                   { label: 'How it works', href: '#how-it-works' },
-                  { label: 'GitHub', href: 'https://github.com' },
+                  { label: 'GitHub', href: 'https://github.com/hms1499/StacksPort' },
                 ].map(({ label, href }) => (
                   <li key={label}>
                     <a

@@ -53,7 +53,7 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
           {[
             { label: 'Features', href: '#features' },
             { label: 'How it works', href: '#how-it-works' },
-            { label: 'GitHub', href: 'https://github.com', external: true },
+            { label: 'GitHub', href: 'https://github.com/hms1499/StacksPort', external: true },
           ].map(({ label, href, external }) => (
             <a
               key={label}
@@ -111,7 +111,7 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
           {[
             { label: 'Features', href: '#features' },
             { label: 'How it works', href: '#how-it-works' },
-            { label: 'GitHub', href: 'https://github.com' },
+            { label: 'GitHub', href: 'https://github.com/hms1499/StacksPort' },
           ].map(({ label, href }) => (
             <a
               key={label}

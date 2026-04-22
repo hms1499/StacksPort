@@ -45,6 +45,7 @@ interface NewsItem {
   title: string;
   source: string;
   url: string;
+  imageUrl?: string;
 }
 
 async function fetchMarketData(): Promise<MarketData> {
@@ -127,9 +128,16 @@ async function fetchNews(): Promise<NewsItem[]> {
         .then((text) => {
           const items = [...text.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
           return items.slice(0, 6).map((m) => {
-            const title = m[1].match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1]?.trim() ?? "";
-            const link = m[1].match(/<link>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/i)?.[1]?.trim() ?? "";
-            return { title, url: link, source: f.source };
+            const body = m[1];
+            const title = body.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1]?.trim() ?? "";
+            const link = body.match(/<link>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/i)?.[1]?.trim() ?? "";
+            const imageUrl =
+              body.match(/<enclosure[^>]+url="([^"]+)"[^>]+type="image/i)?.[1] ??
+              body.match(/<media:content[^>]+url="([^"]+)"/i)?.[1] ??
+              body.match(/<media:thumbnail[^>]+url="([^"]+)"/i)?.[1] ??
+              body.match(/<description>[^<]*<!\[CDATA\[[^<]*<img[^>]+src="([^"]+)"/i)?.[1] ??
+              undefined;
+            return { title, url: link, source: f.source, imageUrl };
           }).filter((item) => item.title);
         })
     )
@@ -239,7 +247,7 @@ Respond with a JSON object matching this exact structure (no markdown, just raw 
   },
   "newsDigest": {
     "summary": "2-3 sentence overview of the most important news",
-    "items": [${news.slice(0, 5).map(n => `{"headline": "${n.title.replace(/"/g, '\\"')}", "insight": "1 sentence relevance to Stacks/STX", "source": "${n.source}", "url": "${n.url}"}`).join(", ")}]
+    "items": [${news.slice(0, 5).map(n => `{"headline": "${n.title.replace(/"/g, '\\"')}", "insight": "1 sentence relevance to Stacks/STX", "source": "${n.source}", "url": "${n.url}"${n.imageUrl ? `, "imageUrl": "${n.imageUrl}"` : ""}}`).join(", ")}]
   }
 }
 

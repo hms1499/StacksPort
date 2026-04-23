@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut } from "lucide-react";
+import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut, Compass } from "lucide-react";
+import Link from "next/link";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { shortenAddress, cn } from "@/lib/utils";
@@ -166,6 +167,21 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     <RefreshCw size={14} />
                     Switch Account
                   </button>
+
+                  <Link
+                    href={`https://explorer.hiro.so/address/${stxAddress}?chain=mainnet`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setDropdownOpen(false)}
+                    className={cn(
+                      "w-full text-left px-3 py-2 text-sm flex items-center gap-2.5",
+                      "transition-[background-color] duration-150",
+                      "text-[var(--text-secondary)] hover:bg-[var(--border-subtle)]",
+                    )}
+                  >
+                    <Compass size={14} />
+                    Explore
+                  </Link>
 
                   <div style={{ borderTop: '1px solid var(--border-subtle)', marginTop: '4px', paddingTop: '4px' }}>
                     <button

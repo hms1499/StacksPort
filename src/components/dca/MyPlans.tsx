@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Inbox, RefreshCw } from "lucide-react";
-import { getUserPlans, type DCAPlan } from "@/lib/dca";
+import { getUserPlans, getUserCompletedPlans, type DCAPlan } from "@/lib/dca";
 import PlanCard from "./PlanCard";
 
 interface Props {
@@ -20,6 +20,7 @@ function fireFillForm(p: typeof PRESETS[number]) {
 
 export default function MyPlans({ address }: Props) {
   const [plans, setPlans] = useState<DCAPlan[] | null>(null);
+  const [completedPlans, setCompletedPlans] = useState<DCAPlan[]>([]);
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,16 +29,19 @@ export default function MyPlans({ address }: Props) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [userPlans, blockRes] = await Promise.all([
+      const [userPlans, completed, blockRes] = await Promise.all([
         getUserPlans(address),
+        getUserCompletedPlans(address).catch(() => [] as DCAPlan[]),
         fetch("https://api.hiro.so/v2/info").then((r) => r.json()),
       ]);
       setPlans(userPlans);
+      setCompletedPlans(completed);
       setCurrentBlock(blockRes?.stacks_tip_height ?? 0);
       setLastUpdated(new Date());
     } catch (err) {
       console.error("Failed to fetch plans:", err);
       setPlans([]);
+      setCompletedPlans([]);
     } finally {
       setLoading(false);
     }
@@ -47,16 +51,17 @@ export default function MyPlans({ address }: Props) {
     fetchData();
   }, [fetchData]);
 
+  const totalCount = (plans?.length ?? 0) + completedPlans.length;
   const header = (
     <div className="flex items-center justify-between">
       <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>
         My Plans
-        {plans && plans.length > 0 && (
+        {totalCount > 0 && (
           <span
             className="ml-2 text-xs font-medium rounded-full px-2 py-0.5"
             style={{ color: "var(--text-muted)", backgroundColor: "var(--bg-elevated)" }}
           >
-            {plans.length}
+            {totalCount}
           </span>
         )}
       </h2>
@@ -95,7 +100,35 @@ export default function MyPlans({ address }: Props) {
     );
   }
 
-  if (plans.length === 0) {
+  const renderPlanCard = (plan: DCAPlan) => (
+    <PlanCard
+      key={plan.id}
+      plan={plan}
+      currentBlock={currentBlock}
+      onRefresh={fetchData}
+      isExpanded={expandedId === plan.id}
+      onToggle={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
+    />
+  );
+
+  const completedSection = completedPlans.length > 0 && (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2 pt-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+          Completed
+        </h3>
+        <span
+          className="text-[10px] font-medium rounded-full px-2 py-0.5"
+          style={{ color: "var(--text-muted)", backgroundColor: "var(--bg-elevated)" }}
+        >
+          {completedPlans.length}
+        </span>
+      </div>
+      {completedPlans.map(renderPlanCard)}
+    </div>
+  );
+
+  if (plans.length === 0 && completedPlans.length === 0) {
     return (
       <div className="flex flex-col gap-4">
         {header}
@@ -133,18 +166,17 @@ export default function MyPlans({ address }: Props) {
   return (
     <div className="flex flex-col gap-4">
       {header}
-      <div className="flex flex-col gap-3">
-        {plans.map((plan) => (
-          <PlanCard
-            key={plan.id}
-            plan={plan}
-            currentBlock={currentBlock}
-            onRefresh={fetchData}
-            isExpanded={expandedId === plan.id}
-            onToggle={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
-          />
-        ))}
-      </div>
+      {plans.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {plans.length > 0 && completedPlans.length > 0 && (
+            <h3 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+              Active
+            </h3>
+          )}
+          {plans.map(renderPlanCard)}
+        </div>
+      )}
+      {completedSection}
     </div>
   );
 }

@@ -221,6 +221,58 @@ export async function getUserPlans(address: string): Promise<DCAPlan[]> {
   return plans.filter(Boolean) as DCAPlan[];
 }
 
+/**
+ * Scan a user's recent transactions for successful create-plan calls to the
+ * DCA contract and extract the plan IDs. The contract removes plan IDs from
+ * its `uids` list when a plan is depleted or cancelled (to free slots under
+ * the 10-plan cap), so this is the only way to surface those past plans.
+ */
+export async function getUserCreatedPlanIds(
+  userAddress: string,
+  limit = 50
+): Promise<number[]> {
+  const res = await fetch(
+    `${HIRO_API}/extended/v1/address/${userAddress}/transactions_with_transfers?limit=${limit}`,
+    { signal: AbortSignal.timeout(10_000) }
+  );
+  if (!res.ok) return [];
+  const json = (await res.json()) as {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    results?: any[];
+  };
+  const contractId = `${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}`;
+  const ids = new Set<number>();
+  for (const item of json.results ?? []) {
+    const tx = item.tx ?? item;
+    if (tx.tx_type !== "contract_call") continue;
+    const cc = tx.contract_call;
+    if (cc?.contract_id !== contractId) continue;
+    if (cc.function_name !== "create-plan") continue;
+    if (tx.tx_status !== "success") continue;
+    // tx_result.repr looks like "(ok u123)"
+    const m = (tx.tx_result?.repr ?? "").match(/\(ok u(\d+)\)/);
+    if (m) ids.add(Number(m[1]));
+  }
+  return [...ids];
+}
+
+/**
+ * Return plans the user created in the past that are NOT in the contract's
+ * active `uids` list (i.e., depleted or cancelled). Complements
+ * `getUserPlans` which only returns active/paused plans.
+ */
+export async function getUserCompletedPlans(address: string): Promise<DCAPlan[]> {
+  const [activeIds, historicalIds] = await Promise.all([
+    getUserPlanIds(address).catch(() => [] as number[]),
+    getUserCreatedPlanIds(address).catch(() => [] as number[]),
+  ]);
+  const activeSet = new Set(activeIds);
+  const completedIds = historicalIds.filter((id) => !activeSet.has(id));
+  if (completedIds.length === 0) return [];
+  const plans = await Promise.all(completedIds.map(getPlan));
+  return plans.filter(Boolean) as DCAPlan[];
+}
+
 export async function getNextExecutionBlock(planId: number): Promise<number | null> {
   try {
     const cv = await readOnly("next-execution-block", [cvHex(uintCV(planId))]);

@@ -239,6 +239,76 @@ export async function getSTXBalance(address: string): Promise<number> {
   return Number(json.stx?.balance ?? 0);
 }
 
+// ─── Execution history ────────────────────────────────────────────────────────
+
+export interface PlanExecutionEvent {
+  txId: string;
+  blockHeight: number;
+  blockTime: number; // unix seconds; 0 if pending
+  status: "success" | "pending" | "failed";
+  netSwapped?: number;   // micro-STX actually swapped (from tx_result)
+  protocolFee?: number;  // micro-STX fee
+}
+
+// tx_result.repr looks like:
+//   (ok (tuple (bal-remaining u...) (net-swapped u...) (protocol-fee u...) (swaps-done u...)))
+function parseExecuteResult(repr: string | undefined): { netSwapped?: number; protocolFee?: number } {
+  if (!repr) return {};
+  const net = repr.match(/net-swapped u(\d+)/);
+  const fee = repr.match(/protocol-fee u(\d+)/);
+  return {
+    netSwapped: net ? Number(net[1]) : undefined,
+    protocolFee: fee ? Number(fee[1]) : undefined,
+  };
+}
+
+/**
+ * Fetch recent `execute-dca` transactions targeting a specific plan.
+ * Looks at the last `limit` txs sent to the DCA contract and filters by
+ * function_name + first arg. Keeper bot invocations are included since
+ * the contract principal is the address we query, not the user.
+ */
+export async function getPlanExecutionHistory(
+  planId: number,
+  limit = 50
+): Promise<PlanExecutionEvent[]> {
+  const contractId = `${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}`;
+  const res = await fetch(
+    `${HIRO_API}/extended/v1/address/${contractId}/transactions_with_transfers?limit=${limit}`,
+    { signal: AbortSignal.timeout(10_000) }
+  );
+  if (!res.ok) throw new Error(`Failed to fetch history: ${res.status}`);
+  const json = (await res.json()) as {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    results?: any[];
+  };
+
+  const events: PlanExecutionEvent[] = [];
+  for (const item of json.results ?? []) {
+    const tx = item.tx ?? item;
+    if (tx.tx_type !== "contract_call") continue;
+    const cc = tx.contract_call;
+    if (cc?.function_name !== "execute-dca") continue;
+    const firstArg = cc.function_args?.[0];
+    if (!firstArg || firstArg.repr !== `u${planId}`) continue;
+
+    const status =
+      tx.tx_status === "success" ? "success" :
+      tx.tx_status === "pending" ? "pending" : "failed";
+    const { netSwapped, protocolFee } = parseExecuteResult(tx.tx_result?.repr);
+
+    events.push({
+      txId: tx.tx_id,
+      blockHeight: Number(tx.block_height ?? 0),
+      blockTime: Number(tx.burn_block_time ?? tx.block_time ?? 0),
+      status,
+      netSwapped,
+      protocolFee,
+    });
+  }
+  return events;
+}
+
 // ─── Write functions ──────────────────────────────────────────────────────────
 
 export function createPlan(

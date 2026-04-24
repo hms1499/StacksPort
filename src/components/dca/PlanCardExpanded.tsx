@@ -66,7 +66,7 @@ export default function PlanCardExpanded({
       {active === "execute" && (
         <ExecuteTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} />
       )}
-      {active === "history" && <HistoryTab />}
+      {active === "history" && <HistoryTab planId={plan.id} />}
     </div>
   );
 }

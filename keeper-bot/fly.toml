@@ -1,0 +1,13 @@
+app = "stacksport-push-worker"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[processes]
+  worker = "node dist/push-worker.js"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory_mb = 256
+  processes = ["worker"]

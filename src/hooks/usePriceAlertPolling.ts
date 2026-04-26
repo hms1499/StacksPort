@@ -27,6 +27,18 @@ async function fetchPrices(geckoIds: string[]): Promise<Record<string, number>> 
   }
 }
 
+async function hasActivePushSubscription(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+  if (!('serviceWorker' in navigator)) return false;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    return (await reg.pushManager.getSubscription()) !== null;
+  } catch {
+    return false;
+  }
+}
+
 export function usePriceAlertPolling() {
   const { alerts, markTriggered } = usePriceAlertStore();
   const { addNotification } = useNotificationStore();
@@ -42,6 +54,7 @@ export function usePriceAlertPolling() {
 
   useEffect(() => {
     const check = async () => {
+      if (await hasActivePushSubscription()) return;
       const activeAlerts = alertsRef.current.filter((a) => a.isActive);
       if (activeAlerts.length === 0) return;
 

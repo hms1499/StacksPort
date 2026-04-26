@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { putSub, type PushAlertEntry, type SubEntry } from '@/lib/push-redis';
+import { getSub, putSub, type PushAlertEntry, type SubEntry } from '@/lib/push-redis';
 
 interface RegisterBody {
   walletAddress: string;
@@ -18,9 +18,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
+  // Preserve worker-written lastPushedAt across syncs.
+  // Frontend always sends lastPushedAt: null; merge from existing entry by alert id.
+  const existing = await getSub(walletAddress);
+  const existingByID = new Map<string, number | null>();
+  if (existing) {
+    for (const a of existing.alerts) existingByID.set(a.id, a.lastPushedAt ?? null);
+  }
+  const mergedAlerts: PushAlertEntry[] = alerts.map((a) => ({
+    ...a,
+    lastPushedAt: existingByID.has(a.id) ? existingByID.get(a.id)! : (a.lastPushedAt ?? null),
+  }));
+
   const entry: SubEntry = {
     subscription,
-    alerts,
+    alerts: mergedAlerts,
     updatedAt: Date.now(),
   };
   await putSub(walletAddress, entry);

@@ -16,7 +16,6 @@ import {
   isBaselined,
   markBaselined,
   markSeen,
-  hasSeen,
 } from '@/lib/dca-watcher-storage';
 
 const POLL_INTERVAL_MS = 60_000;
@@ -113,6 +112,7 @@ async function runTick(address: string, addNotification: AddNotificationFn): Pro
 
   let store = loadSeen(address);
   const newTxids: string[] = [];
+  const seenSet = new Set(store.txids);
 
   for (const plan of plans) {
     let events: PlanExecutionEvent[];
@@ -123,7 +123,7 @@ async function runTick(address: string, addNotification: AddNotificationFn): Pro
     }
 
     const fresh = events
-      .filter((e) => !hasSeen(store, e.txId) && !newTxids.includes(e.txId))
+      .filter((e) => !seenSet.has(e.txId) && !newTxids.includes(e.txId))
       .filter((e) => e.status === 'success' || e.status === 'failed')
       .sort((a, b) => a.blockTime - b.blockTime);
 

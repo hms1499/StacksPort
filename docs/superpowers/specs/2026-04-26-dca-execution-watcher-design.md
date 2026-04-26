@@ -52,7 +52,7 @@ Một hook + một storage helper, chạy ở app shell.
 
 - `useWalletStore` — `address`
 - `useNotificationStore` — `addNotification`
-- `getDcaUserPlans(address)` từ `src/lib/dca.ts`
+- `getUserPlans(address)` từ `src/lib/dca.ts`
 - `getPlanExecutionHistory(planId)` từ `src/lib/dca.ts`
 
 Không thêm dependency npm mới.
@@ -62,14 +62,14 @@ Không thêm dependency npm mới.
 ### Polling tick (60s, chỉ khi `document.hidden === false`)
 
 ```
-1. plans = await getDcaUserPlans(address)
+1. plans = await getUserPlans(address)
 2. seen = loadSeen(address)
 3. for each plan:
      try:
        events = await getPlanExecutionHistory(plan.id)
        newEvents = events
          .filter(e => !seen.txids.has(e.txId))
-         .filter(e => e.status !== "pending")
+         .filter(e => e.status === "success" || e.status === "failed")
          .sort(asc by blockTime)
        for each newEvent:
          notify(newEvent, plan)
@@ -82,10 +82,13 @@ Không thêm dependency npm mới.
 
 ### Notify mapping
 
+`PlanExecutionEvent.status` enum là `"success" | "pending" | "failed"`.
+
 | `event.status`      | Notification type | Message                                                 |
 | ------------------- | ----------------- | ------------------------------------------------------- |
 | `success`           | `success`         | `Plan #{id} executed — swapped {netSwapped} STX → sBTC` |
-| anything else       | `error`           | `Plan #{id} execution failed`                           |
+| `failed`            | `error`           | `Plan #{id} execution failed`                           |
+| `pending`           | (filtered out)    | —                                                       |
 
 Mọi notification: `category: "dca"`, `context: { planId: String(id), txId, action: "executed" }`.
 
@@ -198,7 +201,7 @@ on unmount:
 - `src/lib/dca-watcher-storage.ts`
 
 **Modified**:
-- `src/components/layout/AppShell.tsx` (hoặc file mount point chính xác — xác định trong plan): thêm 1 dòng `useDcaExecutionWatcher()`
+- `src/app/layout-client.tsx`: thêm sentinel component `<DcaExecutionWatcher />` giống pattern `<PriceAlertPoller />` hiện có
 
 **Unchanged**:
 - `keeper-bot/*` — không sửa

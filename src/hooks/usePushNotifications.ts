@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useWalletStore } from '@/store/walletStore';
 import { usePriceAlertStore } from '@/store/priceAlertStore';
-import type { PushAlertEntry } from '@/lib/push-storage';
+import type { PushAlertEntry } from '@/lib/push-redis';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -111,5 +111,24 @@ export function usePushNotifications() {
     }
   }
 
-  return { permission, isSupported, subscribe };
+  async function unsubscribe(): Promise<boolean> {
+    if (!('serviceWorker' in navigator)) return false;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) await sub.unsubscribe();
+      if (walletAddress) {
+        await fetch('/api/push/unregister', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress }),
+        }).catch(() => {});
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  return { permission, isSupported, subscribe, unsubscribe };
 }

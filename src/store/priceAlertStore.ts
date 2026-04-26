@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { PriceAlert, PriceAlertCondition, PriceAlertStoreState } from '@/types/priceAlerts';
-import type { PushAlertEntry } from '@/lib/push-storage';
+import type { PushAlertEntry } from '@/lib/push-redis';
 
 const generateId = () => `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 

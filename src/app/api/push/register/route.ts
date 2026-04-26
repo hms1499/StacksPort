@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readPushStore, writePushStore, type PushAlertEntry } from '@/lib/push-storage';
+import { putSub, type PushAlertEntry, type SubEntry } from '@/lib/push-redis';
 
 interface RegisterBody {
   walletAddress: string;
@@ -18,9 +18,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const store = await readPushStore();
-  store[walletAddress] = { subscription, alerts, updatedAt: Date.now() };
-  await writePushStore(store);
+  const entry: SubEntry = {
+    subscription,
+    alerts,
+    updatedAt: Date.now(),
+  };
+  await putSub(walletAddress, entry);
 
   return NextResponse.json({ ok: true });
 }

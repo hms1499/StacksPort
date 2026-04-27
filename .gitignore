@@ -58,3 +58,4 @@ data/push-subscriptions.json
 
 tools/
 /tools/
+.env*.local

@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "dev": "node --loader ts-node/esm src/index.ts",
     "push": "node --loader ts-node/esm src/push-worker.ts",
-    "push:prod": "node dist/push-worker.js"
+    "push:prod": "node dist/push-worker.js",
+    "push:once": "node dist/push-once.js"
   },
   "dependencies": {
     "@stacks/network": "^7.3.1",

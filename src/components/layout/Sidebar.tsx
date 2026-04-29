@@ -14,6 +14,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Zap,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sidebarSpring } from "@/lib/animations";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/dca",           label: "DCA Vault",  icon: Repeat2 },
   { href: "/notifications", label: "Alerts",     icon: Bell },
   { href: "/ai",            label: "Stacks AI",  icon: Sparkles },
+  { href: "/apps",          label: "Connected Apps", icon: Globe },
 ];
 
 export default function Sidebar() {

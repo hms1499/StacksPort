@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Wallet, ArrowLeftRight, Bell, Repeat2, Sparkles } from "lucide-react";
+import { LayoutDashboard, Wallet, ArrowLeftRight, Bell, Repeat2, Sparkles, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
@@ -13,6 +13,7 @@ const navItems = [
   { href: "/dca",           label: "DCA",    icon: Repeat2 },
   { href: "/notifications", label: "Alerts", icon: Bell },
   { href: "/ai",            label: "AI",     icon: Sparkles },
+  { href: "/apps",          label: "Apps",   icon: Globe },
 ];
 
 export default function BottomNav() {

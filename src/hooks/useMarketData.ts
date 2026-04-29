@@ -11,10 +11,12 @@ import {
   getTransactions,
   getFungibleTokens,
   getTokenMetadata,
+  getConnectedApps,
   type PortfolioValue,
   type TrendingToken,
   type STXMarketStats,
   type STXMarketHistory,
+  type ConnectedAppsResult,
 } from "@/lib/stacks";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
@@ -141,6 +143,14 @@ export function useTokenMetadata(contractId: string | undefined) {
     contractId ? ["token-metadata", contractId] : null,
     () => getTokenMetadata(contractId!),
     { dedupingInterval: 300_000 } // token metadata rarely changes
+  );
+}
+
+export function useConnectedApps(address: string | undefined) {
+  return useSWR<ConnectedAppsResult>(
+    address ? ["connected-apps", address] : null,
+    () => getConnectedApps(address!),
+    { refreshInterval: 300_000, dedupingInterval: 60_000 }
   );
 }
 

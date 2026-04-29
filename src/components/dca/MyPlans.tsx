@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Inbox, RefreshCw } from "lucide-react";
-import { getUserPlans, getUserCompletedPlans, type DCAPlan } from "@/lib/dca";
+import { getAllUserPlans, type DCAPlan } from "@/lib/dca";
 import PlanCard from "./PlanCard";
 
 interface Props {
   address: string;
+  onPlansLoaded?: (plans: DCAPlan[], currentBlock: number) => void;
 }
 
 const PRESETS = [
@@ -18,37 +19,45 @@ function fireFillForm(p: typeof PRESETS[number]) {
   window.dispatchEvent(new CustomEvent("dca:fill-form", { detail: p }));
 }
 
-export default function MyPlans({ address }: Props) {
+export default function MyPlans({ address, onPlansLoaded }: Props) {
   const [plans, setPlans] = useState<DCAPlan[] | null>(null);
   const [completedPlans, setCompletedPlans] = useState<DCAPlan[]>([]);
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchData = useCallback(async () => {
+    // Cancel any in-flight request from a previous address
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
     setLoading(true);
     try {
-      const [userPlans, completed, blockRes] = await Promise.all([
-        getUserPlans(address),
-        getUserCompletedPlans(address).catch(() => [] as DCAPlan[]),
-        fetch("https://api.hiro.so/v2/info").then((r) => r.json()),
+      const [{ active, completed }, blockRes] = await Promise.all([
+        getAllUserPlans(address),
+        fetch("https://api.hiro.so/v2/info", { signal: abortRef.current.signal }).then((r) => r.json()),
       ]);
-      setPlans(userPlans);
+      const block = blockRes?.stacks_tip_height ?? 0;
+      setPlans(active);
       setCompletedPlans(completed);
-      setCurrentBlock(blockRes?.stacks_tip_height ?? 0);
+      setCurrentBlock(block);
       setLastUpdated(new Date());
+      onPlansLoaded?.(active, block);
     } catch (err) {
+      if ((err as Error).name === "AbortError") return;
       console.error("Failed to fetch plans:", err);
       setPlans([]);
       setCompletedPlans([]);
     } finally {
       setLoading(false);
     }
-  }, [address]);
+  }, [address, onPlansLoaded]);
 
   useEffect(() => {
     fetchData();
+    return () => { abortRef.current?.abort(); };
   }, [fetchData]);
 
   const totalCount = (plans?.length ?? 0) + completedPlans.length;

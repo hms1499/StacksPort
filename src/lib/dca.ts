@@ -26,6 +26,24 @@ export const TARGET_TOKENS = [
 const HIRO_API = "https://api.hiro.so";
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78"; // Stacks burn address (always valid on mainnet)
 
+function hiroHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const key = process.env.NEXT_PUBLIC_HIRO_API_KEY;
+  return { ...extra, ...(key ? { "x-hiro-api-key": key } : {}) };
+}
+
+async function batchedMap<T, R>(
+  items: T[],
+  fn: (item: T) => Promise<R>,
+  concurrency = 3
+): Promise<R[]> {
+  const results: R[] = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    results.push(...await Promise.all(batch.map(fn)));
+  }
+  return results;
+}
+
 // Nakamoto Stacks produces ~6.5 blocks/minute
 // Daily  = 650 blocks (~1.7 hours)
 // Weekly = 4,550 blocks (~11.7 hours)
@@ -143,7 +161,7 @@ async function readOnly(fn: string, args: string[] = []): Promise<ClarityValue> 
     `${HIRO_API}/v2/contracts/call-read/${DCA_CONTRACT_ADDRESS}/${DCA_CONTRACT_NAME}/${fn}`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: hiroHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ sender: DUMMY_SENDER, arguments: args }),
     }
   );
@@ -217,7 +235,7 @@ export async function getPlan(planId: number): Promise<DCAPlan | null> {
 export async function getUserPlans(address: string): Promise<DCAPlan[]> {
   const ids = await getUserPlanIds(address);
   if (ids.length === 0) return [];
-  const plans = await Promise.all(ids.map(getPlan));
+  const plans = await batchedMap(ids, getPlan, 3);
   return plans.filter(Boolean) as DCAPlan[];
 }
 
@@ -233,7 +251,7 @@ export async function getUserCreatedPlanIds(
 ): Promise<number[]> {
   const res = await fetch(
     `${HIRO_API}/extended/v1/address/${userAddress}/transactions_with_transfers?limit=${limit}`,
-    { signal: AbortSignal.timeout(10_000) }
+    { headers: hiroHeaders(), signal: AbortSignal.timeout(10_000) }
   );
   if (!res.ok) return [];
   const json = (await res.json()) as {
@@ -261,16 +279,28 @@ export async function getUserCreatedPlanIds(
  * active `uids` list (i.e., depleted or cancelled). Complements
  * `getUserPlans` which only returns active/paused plans.
  */
-export async function getUserCompletedPlans(address: string): Promise<DCAPlan[]> {
+export async function getUserCompletedPlans(
+  address: string,
+  knownActiveIds?: number[]
+): Promise<DCAPlan[]> {
   const [activeIds, historicalIds] = await Promise.all([
-    getUserPlanIds(address).catch(() => [] as number[]),
+    knownActiveIds ? Promise.resolve(knownActiveIds) : getUserPlanIds(address).catch(() => [] as number[]),
     getUserCreatedPlanIds(address).catch(() => [] as number[]),
   ]);
   const activeSet = new Set(activeIds);
   const completedIds = historicalIds.filter((id) => !activeSet.has(id));
   if (completedIds.length === 0) return [];
-  const plans = await Promise.all(completedIds.map(getPlan));
+  const plans = await batchedMap(completedIds, getPlan, 3);
   return plans.filter(Boolean) as DCAPlan[];
+}
+
+export async function getAllUserPlans(address: string): Promise<{ active: DCAPlan[]; completed: DCAPlan[] }> {
+  const activeIds = await getUserPlanIds(address);
+  const [activePlans, completedPlans] = await Promise.all([
+    activeIds.length > 0 ? batchedMap(activeIds, getPlan, 3).then((p) => p.filter(Boolean) as DCAPlan[]) : Promise.resolve([]),
+    getUserCompletedPlans(address, activeIds),
+  ]);
+  return { active: activePlans, completed: completedPlans };
 }
 
 export async function getNextExecutionBlock(planId: number): Promise<number | null> {
@@ -284,7 +314,8 @@ export async function getNextExecutionBlock(planId: number): Promise<number | nu
 
 export async function getSTXBalance(address: string): Promise<number> {
   const res = await fetch(
-    `${HIRO_API}/extended/v1/address/${address}/balances`
+    `${HIRO_API}/extended/v1/address/${address}/balances`,
+    { headers: hiroHeaders() }
   );
   if (!res.ok) return 0;
   const json = await res.json();

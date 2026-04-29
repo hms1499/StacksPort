@@ -9,7 +9,7 @@ import MotionCard from "@/components/motion/MotionCard";
 import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import { Wallet } from "lucide-react";
-import { getUserPlans, type DCAPlan } from "@/lib/dca";
+import { type DCAPlan } from "@/lib/dca";
 import { nextSwapCountdown } from "@/lib/dca-preview";
 
 import DCAHeroSection, { type DCATab } from "./DCAHeroSection";
@@ -25,23 +25,27 @@ export default function DCAPageContent() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [outRefreshKey, setOutRefreshKey] = useState(0);
 
+  // Debounce address changes by 400ms to prevent burst requests on rapid wallet switching
+  const [debouncedAddress, setDebouncedAddress] = useState(stxAddress);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedAddress(stxAddress), 400);
+    return () => clearTimeout(t);
+  }, [stxAddress]);
+
+  // Plans are fetched inside MyPlans; hero stats are reported back via onPlansLoaded
   const [userPlans, setUserPlans] = useState<DCAPlan[]>([]);
   const [currentBlock, setCurrentBlock] = useState(0);
-
-  useEffect(() => {
-    if (!stxAddress) { setUserPlans([]); return; }
-    getUserPlans(stxAddress).then(setUserPlans).catch(() => setUserPlans([]));
-    fetch("https://api.hiro.so/v2/info")
-      .then((r) => r.json())
-      .then((d) => setCurrentBlock(d?.stacks_tip_height ?? 0))
-      .catch(() => {});
-  }, [stxAddress, refreshKey, outRefreshKey]);
 
   const activePlans = userPlans.filter((p) => p.active).length;
   const nextSwapLabel = nextSwapCountdown(userPlans, currentBlock);
 
   const handleRefresh    = useCallback(() => setRefreshKey((k) => k + 1), []);
   const handleOutRefresh = useCallback(() => setOutRefreshKey((k) => k + 1), []);
+
+  const handlePlansLoaded = useCallback((plans: DCAPlan[], block: number) => {
+    setUserPlans(plans);
+    setCurrentBlock(block);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -74,7 +78,7 @@ export default function DCAPageContent() {
                   <CreatePlanForm onCreated={handleRefresh} />
                 </div>
                 <div>
-                  <MyPlans key={refreshKey} address={stxAddress!} />
+                  <MyPlans key={`${debouncedAddress}-${refreshKey}`} address={debouncedAddress!} onPlansLoaded={handlePlansLoaded} />
                 </div>
               </div>
             ) : (

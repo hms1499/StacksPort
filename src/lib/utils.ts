@@ -37,3 +37,17 @@ export function formatAmount(n: number, decimals = 6): string {
   if (n >= 1) return n.toFixed(Math.min(4, decimals));
   return n.toFixed(Math.min(6, decimals));
 }
+
+export function timeAgo(unixSeconds: number): string {
+  const diff = Date.now() / 1000 - unixSeconds;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+export function truncateContractId(contractId: string): string {
+  const [principal, name] = contractId.split(".");
+  if (!name) return contractId;
+  const short = `${principal.slice(0, 8)}...${principal.slice(-4)}`;
+  return `${short}.${name}`;
+}

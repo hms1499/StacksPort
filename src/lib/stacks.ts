@@ -450,8 +450,10 @@ export async function getConnectedApps(address: string): Promise<ConnectedAppsRe
   // Map contractId → most recent block_time for deduplication
   const seenContracts = new Map<string, number>();
 
-  for (const tx of txs) {
+  for (const item of txs) {
+    const tx = (item.tx ?? item) as Record<string, unknown>;
     if (tx.tx_type !== "contract_call") continue;
+    if (tx.tx_status !== "success") continue;
     const contractCall = tx.contract_call as Record<string, unknown> | undefined;
     const contractId = contractCall?.contract_id as string | undefined;
     if (!contractId) continue;
@@ -464,17 +466,20 @@ export async function getConnectedApps(address: string): Promise<ConnectedAppsRe
 
   const knownProtocols: KnownProtocol[] = [];
   const unknownContracts: UnknownContract[] = [];
-  const seenDeployers = new Set<string>();
+  const deployerMaxTime = new Map<string, number>();
 
   for (const [contractId, lastInteractedAt] of seenContracts) {
     const deployer = contractId.split(".")[0];
     const info = PROTOCOL_REGISTRY[deployer];
     if (info) {
-      // One card per protocol deployer even if multiple contracts matched
-      if (!seenDeployers.has(deployer)) {
-        seenDeployers.add(deployer);
+      const prev = deployerMaxTime.get(deployer) ?? 0;
+      if (prev === 0) {
         knownProtocols.push({ contractId, ...info, lastInteractedAt });
+      } else if (lastInteractedAt > prev) {
+        const entry = knownProtocols.find((p) => p.contractId.split(".")[0] === deployer);
+        if (entry) entry.lastInteractedAt = lastInteractedAt;
       }
+      deployerMaxTime.set(deployer, Math.max(prev, lastInteractedAt));
     } else {
       unknownContracts.push({ contractId, lastInteractedAt });
     }

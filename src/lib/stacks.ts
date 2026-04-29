@@ -368,6 +368,121 @@ export async function getTransactions(address: string, limit = 10, offset = 0) {
   return res.json();
 }
 
+// ─── Connected Apps ───────────────────────────────────────────────────────────
+
+interface ProtocolInfo {
+  name: string;
+  logoUrl: string;
+  url: string;
+  category: string;
+}
+
+// Keys are deployer principal addresses (the part before "." in a contract ID).
+// Any contract deployed by that principal is attributed to that protocol.
+const PROTOCOL_REGISTRY: Record<string, ProtocolInfo> = {
+  "SP20X3DC5R091J8B6YPQT638J8NR1W83KN6TN5BJY": {
+    name: "Bitflow",
+    logoUrl: "https://bitflow.finance/favicon.ico",
+    url: "https://bitflow.finance",
+    category: "DEX",
+  },
+  "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM": {
+    name: "ALEX",
+    logoUrl: "https://alexgo.io/favicon.ico",
+    url: "https://app.alexgo.io",
+    category: "DEX / Lending",
+  },
+  "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR": {
+    name: "Arkadiko",
+    logoUrl: "https://arkadiko.finance/favicon.ico",
+    url: "https://app.arkadiko.finance",
+    category: "CDP",
+  },
+  "SP1NQBQ82XF7BRFM5DNZ62NRQPJGDPK9ZC3Q9S07J": {
+    name: "Zest Protocol",
+    logoUrl: "https://www.zestprotocol.com/favicon.ico",
+    url: "https://www.zestprotocol.com",
+    category: "Lending",
+  },
+  "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG": {
+    name: "StackingDAO",
+    logoUrl: "https://stackingdao.com/favicon.ico",
+    url: "https://stackingdao.com",
+    category: "Liquid Staking",
+  },
+  "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1": {
+    name: "Velar",
+    logoUrl: "https://www.velar.co/favicon.ico",
+    url: "https://app.velar.co",
+    category: "DEX",
+  },
+  "SM3KNVZS30WM7F89SXKVVFY4SN9RMPZZ9FX929DZT": {
+    name: "Lisa",
+    logoUrl: "https://lisa.finance/favicon.ico",
+    url: "https://lisa.finance",
+    category: "Liquid Staking",
+  },
+};
+
+export interface KnownProtocol {
+  contractId: string;
+  name: string;
+  logoUrl: string;
+  url: string;
+  category: string;
+  lastInteractedAt: number;
+}
+
+export interface UnknownContract {
+  contractId: string;
+  lastInteractedAt: number;
+}
+
+export interface ConnectedAppsResult {
+  knownProtocols: KnownProtocol[];
+  unknownContracts: UnknownContract[];
+}
+
+export async function getConnectedApps(address: string): Promise<ConnectedAppsResult> {
+  const data = await getTransactions(address, 50);
+  const txs = (data.results ?? []) as Record<string, unknown>[];
+
+  // Map contractId → most recent block_time for deduplication
+  const seenContracts = new Map<string, number>();
+
+  for (const tx of txs) {
+    if (tx.tx_type !== "contract_call") continue;
+    const contractCall = tx.contract_call as Record<string, unknown> | undefined;
+    const contractId = contractCall?.contract_id as string | undefined;
+    if (!contractId) continue;
+    const blockTime = (tx.block_time as number) ?? 0;
+    const existing = seenContracts.get(contractId);
+    if (existing === undefined || blockTime > existing) {
+      seenContracts.set(contractId, blockTime);
+    }
+  }
+
+  const knownProtocols: KnownProtocol[] = [];
+  const unknownContracts: UnknownContract[] = [];
+  const seenDeployers = new Set<string>();
+
+  for (const [contractId, lastInteractedAt] of seenContracts) {
+    const deployer = contractId.split(".")[0];
+    const info = PROTOCOL_REGISTRY[deployer];
+    if (info) {
+      // One card per protocol deployer even if multiple contracts matched
+      if (!seenDeployers.has(deployer)) {
+        seenDeployers.add(deployer);
+        knownProtocols.push({ contractId, ...info, lastInteractedAt });
+      }
+    } else {
+      unknownContracts.push({ contractId, lastInteractedAt });
+    }
+  }
+
+  return { knownProtocols, unknownContracts };
+}
+
 // ─── sBTC ─────────────────────────────────────────────────────────────────────
 
 const SBTC_CONTRACT_NAME = "sbtc-token";

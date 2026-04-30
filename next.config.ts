@@ -14,14 +14,34 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**" },
     ],
   },
+  async headers() {
+    return [
+      {
+        // Allow Chrome extension to embed the app in Side Panel
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self' chrome-extension://*",
+          },
+        ],
+      },
+      {
+        // Allow extension background service worker to call API routes
+        source: "/api/(.*)",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET, OPTIONS" },
+        ],
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
-    // pino-pretty is an optional dev dependency of walletconnect — not needed at runtime
     config.resolve.fallback = {
       ...config.resolve.fallback,
       "pino-pretty": false,
     };
 
-    // Handle @stacks/connect-ui ESM module for client-side rendering
     if (!isServer) {
       config.resolve.alias = {
         ...config.resolve.alias,

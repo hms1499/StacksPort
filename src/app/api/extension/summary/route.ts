@@ -15,6 +15,15 @@ export async function OPTIONS() {
 export async function GET(req: NextRequest) {
   const address = req.nextUrl.searchParams.get("address");
 
+  const STACKS_ADDRESS_RE = /^S[MP][A-Z0-9]{1,40}$/;
+
+  if (address && !STACKS_ADDRESS_RE.test(address)) {
+    return NextResponse.json(
+      { error: "Invalid address" },
+      { status: 400, headers: CORS }
+    );
+  }
+
   try {
     // Prices: STX + BTC in one call
     const priceRes = await fetch(
@@ -49,7 +58,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ prices, portfolio }, { headers: CORS });
-  } catch {
+  } catch (err) {
+    console.error("[extension/summary]", err);
     return NextResponse.json(
       { error: "Failed to fetch data" },
       { status: 500, headers: CORS }

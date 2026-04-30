@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "StacksPort",
+  "version": "1.0.0",
+  "description": "DCA & portfolio management on Stacks blockchain",
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    },
+    "default_title": "StacksPort"
+  },
+  "side_panel": {
+    "default_path": "side_panel.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://stack-sport.vercel.app/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "permissions": ["sidePanel", "notifications", "alarms", "storage", "tabs"],
+  "host_permissions": ["https://stack-sport.vercel.app/*"],
+  "options_page": "options.html"
+}

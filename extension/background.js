@@ -6,6 +6,9 @@ const DEFAULT_APP_URL = 'https://stack-sport.vercel.app';
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create('pollPrice', { periodInMinutes: 5 });
   chrome.alarms.create('checkAlerts', { periodInMinutes: 5 });
+  // Reset confirmCount so a stale prevStxPrice from a prior session can't
+  // produce a false-positive swing notification on the first poll.
+  chrome.storage.local.set({ confirmCount: 0 });
 });
 
 // ─── Message handler (content script → background) ────────────────────────────
@@ -34,7 +37,7 @@ async function pollPrice() {
   try {
     const appUrl = await getAppUrl();
     const res = await fetch(
-      `${appUrl}/api/coingecko/simple/price?ids=blockstack,bitcoin&vs_currencies=usd&include_24hr_change=true`
+      `${appUrl}/api/coingecko/simple/price?ids=blockstack&vs_currencies=usd&include_24hr_change=true`
     );
     if (!res.ok) return;
     const data = await res.json();
@@ -90,9 +93,18 @@ async function checkAlerts() {
       'firedAlertIds',
     ]);
 
+    // Prune firedAlertIds to drop IDs no longer in priceAlerts — otherwise
+    // deleting an alert and creating a new one with a recycled id would
+    // silently never fire.
+    const currentIds = new Set(priceAlerts.map((a) => a.id));
+    const prunedFiredIds = firedAlertIds.filter((id) => currentIds.has(id));
+    if (prunedFiredIds.length !== firedAlertIds.length) {
+      await chrome.storage.local.set({ firedAlertIds: prunedFiredIds });
+    }
+
     const newlyFired = [];
     for (const alert of priceAlerts) {
-      if (firedAlertIds.includes(alert.id)) continue;
+      if (prunedFiredIds.includes(alert.id)) continue;
 
       const currentPrice =
         alert.tokenSymbol === 'STX' ? prices?.stx :
@@ -117,7 +129,7 @@ async function checkAlerts() {
     }
 
     if (newlyFired.length) {
-      await chrome.storage.local.set({ firedAlertIds: [...firedAlertIds, ...newlyFired] });
+      await chrome.storage.local.set({ firedAlertIds: [...prunedFiredIds, ...newlyFired] });
     }
   } catch {
     // Network error — retry next alarm cycle

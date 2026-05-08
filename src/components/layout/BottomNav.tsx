@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Wallet, ArrowLeftRight, Bell, Repeat2, Sparkles, Globe } from "lucide-react";
+import { LayoutDashboard, Wallet, ArrowLeftRight, Bell, Repeat2, Sparkles, Globe, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 const navItems = [
-  { href: "/dashboard",     label: "Home",   icon: LayoutDashboard },
-  { href: "/assets",        label: "Assets", icon: Wallet },
+  { href: "/dashboard",     label: "Home",    icon: LayoutDashboard },
+  { href: "/bubbles",       label: "Bubbles", icon: Circle },
+  { href: "/assets",        label: "Assets",  icon: Wallet },
   { href: "/trade",         label: "Swap",   icon: ArrowLeftRight },
   { href: "/dca",           label: "DCA",    icon: Repeat2 },
   { href: "/notifications", label: "Alerts", icon: Bell },

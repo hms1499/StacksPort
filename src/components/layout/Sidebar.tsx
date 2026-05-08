@@ -15,12 +15,14 @@ import {
   PanelLeftOpen,
   Zap,
   Globe,
+  Circle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sidebarSpring } from "@/lib/animations";
 
 const navItems = [
   { href: "/dashboard",     label: "Dashboard",  icon: LayoutDashboard },
+  { href: "/bubbles",       label: "Bubbles",    icon: Circle },
   { href: "/assets",        label: "My Assets",  icon: Wallet },
   { href: "/trade",         label: "Swap",       icon: ArrowLeftRight },
   { href: "/dca",           label: "DCA Vault",  icon: Repeat2 },

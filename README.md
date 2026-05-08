@@ -36,6 +36,13 @@ StacksPort/
 │       ├── stacks-client.ts # Stacks API client
 │       ├── config.ts       # Centralised env config
 │       └── logger.ts       # Structured logger
+├── extension/              # Chrome extension (local install)
+│   ├── manifest.json       # Manifest V3 config
+│   ├── popup.html/js/css   # Toolbar popup (prices, portfolio, notifications)
+│   ├── side_panel.html/js  # Side panel with embedded app iframe
+│   ├── background.js       # Price polling & alert notifications
+│   ├── content_script.js   # Syncs wallet/alerts from app localStorage
+│   └── options.html/js     # Settings page (custom app URL)
 ├── public/
 │   └── sw.js              # Service Worker (receives push, shows notification)
 └── .github/workflows/      # GitHub Actions (keeper bot + push worker, every 15 min)
@@ -53,6 +60,7 @@ StacksPort/
 - **AI Insights** - Groq-powered Stacks market analysis.
 - **Keeper Bot** - Serverless bot (GitHub Actions cron, every 15 min) that automatically executes DCA plans when they're due.
 - **Push Worker** - Serverless one-shot job (GitHub Actions cron, every 15 min) that checks CoinGecko prices and sends Web Push notifications when price alerts trigger. Subscriptions are stored in Upstash Redis.
+- **Chrome Extension** - Toolbar popup with live prices and portfolio, side panel with full app embed, background price polling with swing notifications, and auto-sync of wallet/alerts from the web app.
 
 ## Tech Stack
 
@@ -69,6 +77,7 @@ StacksPort/
 | Keeper Bot | Node.js, @stacks/wallet-sdk |
 | Push Notifications | Web Push API, VAPID, `web-push` npm package |
 | Push Storage | Upstash Redis |
+| Extension | Chrome Manifest V3, Side Panel API, Alarms API |
 | Deployment | Vercel (frontend), GitHub Actions (keeper bot + push worker) |
 
 ## Smart Contracts
@@ -98,6 +107,32 @@ Key parameters:
 
 - Node.js 20+
 - A Stacks wallet (Leather or Xverse)
+
+### Chrome Extension (Local Install)
+
+The extension is not published on the Chrome Web Store. To install it locally:
+
+1. Open Chrome and navigate to `chrome://extensions`
+2. Enable **Developer mode** (toggle in the top-right corner)
+3. Click **Load unpacked**
+4. Select the `extension/` folder from this repository
+
+The extension icon will appear in your toolbar. It includes:
+
+- **Popup** — live STX/sBTC/BTC prices, portfolio value, recent notifications
+- **Side Panel** — full app embedded in Chrome's side panel (click "Open App" in popup)
+- **Price Alerts** — background notifications when prices cross your targets
+- **Auto-sync** — wallet address and alerts sync automatically when the app is open
+
+> **Note:** Wallet connection (Leather/Xverse) requires opening the app in a full browser tab, not in the side panel iframe. Click **"Open in tab"** in the side panel to connect.
+
+To point the extension at a local dev server instead of the deployed app:
+
+1. Right-click the extension icon → **Options**
+2. Set the App URL to `http://localhost:3000`
+3. Click **Save**
+
+After updating extension files, go back to `chrome://extensions` and click the reload button (↻) on the StacksPort card.
 
 ### Frontend
 

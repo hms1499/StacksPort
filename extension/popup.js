@@ -42,7 +42,7 @@ function escHtml(s) {
 function renderPrices(prices) {
   if (!prices) return;
   document.getElementById('stx-price').textContent = fmtUsd(prices.stx);
-  document.getElementById('sbtc-price').textContent = fmtUsd(prices.btc);
+  document.getElementById('sbtc-price').textContent = fmtUsd(prices.sbtc ?? prices.btc);
   document.getElementById('btc-price').textContent = fmtUsd(prices.btc);
 
   const stxChg = fmtPct(prices.stxChange24h);

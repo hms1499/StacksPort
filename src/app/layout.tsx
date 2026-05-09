@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+declare module "*.css";
 import { Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import LayoutClient from "./layout-client";

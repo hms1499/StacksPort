@@ -43,6 +43,18 @@ StacksPort/
 │   ├── background.js       # Price polling & alert notifications
 │   ├── content_script.js   # Syncs wallet/alerts from app localStorage
 │   └── options.html/js     # Settings page (custom app URL)
+├── e2e/                    # Playwright E2E tests
+│   ├── dca.spec.ts         # DCA vault feature tests
+│   ├── trade.spec.ts       # Swap widget tests
+│   ├── assets.spec.ts      # Portfolio & holdings tests
+│   ├── dashboard.spec.ts   # Dashboard & market data tests
+│   ├── ai.spec.ts          # AI insights tests
+│   ├── notifications.spec.ts # Price alerts tests
+│   ├── landing.spec.ts     # Landing page tests
+│   ├── navigation.spec.ts  # Navigation tests
+│   └── fixtures/           # Test utilities & mock wallet
+├── docs/                   # Documentation
+│   └── superpowers/        # Feature specs & plans
 ├── public/
 │   └── sw.js              # Service Worker (receives push, shows notification)
 └── .github/workflows/      # GitHub Actions (keeper bot + push worker, every 15 min)

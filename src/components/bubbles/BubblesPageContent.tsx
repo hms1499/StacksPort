@@ -41,7 +41,7 @@ export default function BubblesPageContent() {
         <TimeframeToggle value={timeframe} onChange={setTimeframe} />
       </div>
 
-      <div className="flex-1 relative">
+      <div className="flex-1 relative bg-black">
         {isLoading && !tokens && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div

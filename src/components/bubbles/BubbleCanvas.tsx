@@ -228,7 +228,7 @@ export default function BubbleCanvas({
   }
 
   return (
-    <div ref={containerRef} className="w-full flex-1 min-h-[400px] relative">
+    <div ref={containerRef} className="w-full h-full relative">
       <canvas
         ref={canvasRef}
         onClick={handleClick}

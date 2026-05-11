@@ -18,6 +18,16 @@ interface LayoutBubble {
   radius: number;
 }
 
+interface SimulationNode {
+  id: string;
+  token: BubbleToken;
+  radius: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
+
 function getChange(token: BubbleToken, tf: Timeframe): number {
   if (tf === "1h") return token.change1h;
   if (tf === "7d") return token.change7d;
@@ -46,7 +56,7 @@ function packCircles(
   const cx = width / 2;
   const cy = height / 2;
 
-  const nodes: any[] = tokens.map((t, i) => ({
+  const nodes: SimulationNode[] = tokens.map((t, i) => ({
     id: t.id,
     token: t,
     radius: radii[i],
@@ -58,7 +68,7 @@ function packCircles(
 
   const simulation = forceSimulation(nodes)
     .force("collide",
-      forceCollide((d: any) => d.radius + 6).strength(1)
+      forceCollide((d: SimulationNode) => d.radius + 6).strength(1)
     )
     .force("center", forceCenter(cx, cy).strength(0.15))
     .force("charge", forceManyBody().strength(-300).distanceMax(500))

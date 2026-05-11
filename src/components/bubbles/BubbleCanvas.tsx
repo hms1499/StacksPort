@@ -5,8 +5,8 @@ import { forceSimulation, forceCollide, forceCenter, forceManyBody } from "d3-fo
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
 
-const MIN_RADIUS = 20;
-const MAX_RADIUS = 120;
+const MIN_RADIUS = 22;
+const MAX_RADIUS = 110;
 const STACKS_BORDER_COLOR = "#408A71";
 const POSITIVE_COLOR = "#34d399";
 const NEGATIVE_COLOR = "#f87171";
@@ -24,14 +24,14 @@ function getChange(token: BubbleToken, tf: Timeframe): number {
   return token.change24h;
 }
 
-function computeRadii(tokens: BubbleToken[]): number[] {
+function computeRadii(tokens: BubbleToken[], timeframe: Timeframe): number[] {
   if (tokens.length === 0) return [];
-  const caps = tokens.map((t) => t.marketCap);
-  const logMin = Math.log(Math.max(Math.min(...caps), 1));
-  const logMax = Math.log(Math.max(...caps));
-  const range = logMax - logMin || 1;
-  return caps.map((cap) => {
-    const norm = (Math.log(Math.max(cap, 1)) - logMin) / range;
+  const changes = tokens.map((t) => Math.abs(getChange(t, timeframe)));
+  const minChange = Math.min(...changes);
+  const maxChange = Math.max(...changes);
+  const range = maxChange - minChange || 1;
+  return changes.map((change) => {
+    const norm = (change - minChange) / range;
     return MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * norm;
   });
 }
@@ -50,22 +50,55 @@ function packCircles(
     id: t.id,
     token: t,
     radius: radii[i],
-    x: cx + (Math.random() - 0.5) * 10,
-    y: cy + (Math.random() - 0.5) * 10,
+    x: cx + (Math.random() - 0.5) * width * 0.3,
+    y: cy + (Math.random() - 0.5) * height * 0.3,
+    vx: 0,
+    vy: 0,
   }));
 
   const simulation = forceSimulation(nodes)
     .force("collide",
-      forceCollide((d: any) => d.radius + 2).strength(1)
+      forceCollide((d: any) => d.radius + 6).strength(1)
     )
-    .force("center", forceCenter(cx, cy))
-    .force("charge", forceManyBody().strength(-30))
+    .force("center", forceCenter(cx, cy).strength(0.15))
+    .force("charge", forceManyBody().strength(-300).distanceMax(500))
+    .velocityDecay(0.5)
     .stop();
 
   // run a fixed number of ticks to stabilize layout
-  const TICKS = 300;
+  const TICKS = 1000;
   for (let i = 0; i < TICKS; i++) simulation.tick();
 
+  // Post-processing: push overlapping bubbles apart
+  const maxIterations = 10;
+  for (let iter = 0; iter < maxIterations; iter++) {
+    let hasOverlap = false;
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const ni = nodes[i];
+        const nj = nodes[j];
+        const dx = nj.x - ni.x;
+        const dy = nj.y - ni.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const minDist = ni.radius + nj.radius + 2;
+
+        if (dist < minDist) {
+          hasOverlap = true;
+          const angle = Math.atan2(dy, dx);
+          const overlap = minDist - dist;
+          const push = overlap / 2 + 0.5;
+
+          ni.x -= Math.cos(angle) * push;
+          ni.y -= Math.sin(angle) * push;
+          nj.x += Math.cos(angle) * push;
+          nj.y += Math.sin(angle) * push;
+        }
+      }
+    }
+    if (!hasOverlap) break;
+  }
+
+  // Constrain to canvas bounds
   const result: LayoutBubble[] = nodes.map((n) => ({
     token: n.token as BubbleToken,
     x: Math.max(n.radius, Math.min(width - n.radius, n.x)),
@@ -158,7 +191,7 @@ export default function BubbleCanvas({
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
-    const radii = computeRadii(tokens);
+    const radii = computeRadii(tokens, timeframe);
     bubblesRef.current = packCircles(tokens, radii, width, height);
 
     const ctx = canvas.getContext("2d");

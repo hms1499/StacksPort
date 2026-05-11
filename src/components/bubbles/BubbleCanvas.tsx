@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useCallback } from "react";
+import { forceSimulation, forceCollide, forceCenter, forceManyBody } from "d3-force";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
 
@@ -41,60 +42,38 @@ function packCircles(
   width: number,
   height: number
 ): LayoutBubble[] {
+  // Use d3-force to compute non-overlapping positions
   const cx = width / 2;
   const cy = height / 2;
-  const bubbles: LayoutBubble[] = [];
 
-  const indices = radii.map((_, i) => i).sort((a, b) => radii[b] - radii[a]);
+  const nodes: any[] = tokens.map((t, i) => ({
+    id: t.id,
+    token: t,
+    radius: radii[i],
+    x: cx + (Math.random() - 0.5) * 10,
+    y: cy + (Math.random() - 0.5) * 10,
+  }));
 
-  for (const idx of indices) {
-    const r = radii[idx];
-    if (bubbles.length === 0) {
-      bubbles.push({ token: tokens[idx], x: cx, y: cy, radius: r });
-      continue;
-    }
+  const simulation = forceSimulation(nodes)
+    .force("collide",
+      forceCollide((d: any) => d.radius + 2).strength(1)
+    )
+    .force("center", forceCenter(cx, cy))
+    .force("charge", forceManyBody().strength(-30))
+    .stop();
 
-    let bestX = cx;
-    let bestY = cy;
-    let bestDist = Infinity;
-    let placed = false;
+  // run a fixed number of ticks to stabilize layout
+  const TICKS = 300;
+  for (let i = 0; i < TICKS; i++) simulation.tick();
 
-    for (let angle = 0; angle < Math.PI * 20; angle += 0.3) {
-      const dist = r + angle * 4;
-      const tryX = cx + Math.cos(angle) * dist;
-      const tryY = cy + Math.sin(angle) * dist;
+  const result: LayoutBubble[] = nodes.map((n) => ({
+    token: n.token as BubbleToken,
+    x: Math.max(n.radius, Math.min(width - n.radius, n.x)),
+    y: Math.max(n.radius, Math.min(height - n.radius, n.y)),
+    radius: n.radius,
+  }));
 
-      let overlaps = false;
-      for (const b of bubbles) {
-        const dx = tryX - b.x;
-        const dy = tryY - b.y;
-        if (Math.sqrt(dx * dx + dy * dy) < r + b.radius + 2) {
-          overlaps = true;
-          break;
-        }
-      }
-
-      if (!overlaps) {
-        const d = Math.sqrt((tryX - cx) ** 2 + (tryY - cy) ** 2);
-        if (d < bestDist) {
-          bestDist = d;
-          bestX = tryX;
-          bestY = tryY;
-          placed = true;
-          break;
-        }
-      }
-    }
-
-    if (!placed) {
-      bestX = cx + (Math.random() - 0.5) * width * 0.8;
-      bestY = cy + (Math.random() - 0.5) * height * 0.8;
-    }
-
-    bubbles.push({ token: tokens[idx], x: bestX, y: bestY, radius: r });
-  }
-
-  return bubbles;
+  return result;
 }
 
 function drawBubbles(

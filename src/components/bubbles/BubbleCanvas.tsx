@@ -46,79 +46,6 @@ function computeRadii(tokens: BubbleToken[], timeframe: Timeframe): number[] {
   });
 }
 
-function packCircles(
-  tokens: BubbleToken[],
-  radii: number[],
-  width: number,
-  height: number
-): LayoutBubble[] {
-  // Use d3-force to compute non-overlapping positions
-  const cx = width / 2;
-  const cy = height / 2;
-
-  const nodes: SimulationNode[] = tokens.map((t, i) => ({
-    id: t.id,
-    token: t,
-    radius: radii[i],
-    x: cx + (Math.random() - 0.5) * width * 0.3,
-    y: cy + (Math.random() - 0.5) * height * 0.3,
-    vx: 0,
-    vy: 0,
-  }));
-
-  const simulation = forceSimulation(nodes)
-    .force("collide",
-      forceCollide((d: SimulationNode) => d.radius + 6).strength(1)
-    )
-    .force("center", forceCenter(cx, cy).strength(0.15))
-    .force("charge", forceManyBody().strength(-300).distanceMax(500))
-    .velocityDecay(0.5)
-    .stop();
-
-  // run a fixed number of ticks to stabilize layout
-  const TICKS = 1000;
-  for (let i = 0; i < TICKS; i++) simulation.tick();
-
-  // Post-processing: push overlapping bubbles apart
-  const maxIterations = 10;
-  for (let iter = 0; iter < maxIterations; iter++) {
-    let hasOverlap = false;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const ni = nodes[i];
-        const nj = nodes[j];
-        const dx = nj.x - ni.x;
-        const dy = nj.y - ni.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const minDist = ni.radius + nj.radius + 2;
-
-        if (dist < minDist) {
-          hasOverlap = true;
-          const angle = Math.atan2(dy, dx);
-          const overlap = minDist - dist;
-          const push = overlap / 2 + 0.5;
-
-          ni.x -= Math.cos(angle) * push;
-          ni.y -= Math.sin(angle) * push;
-          nj.x += Math.cos(angle) * push;
-          nj.y += Math.sin(angle) * push;
-        }
-      }
-    }
-    if (!hasOverlap) break;
-  }
-
-  // Constrain to canvas bounds
-  const result: LayoutBubble[] = nodes.map((n) => ({
-    token: n.token as BubbleToken,
-    x: Math.max(n.radius, Math.min(width - n.radius, n.x)),
-    y: Math.max(n.radius, Math.min(height - n.radius, n.y)),
-    radius: n.radius,
-  }));
-
-  return result;
-}
-
 function drawBubbles(
   ctx: CanvasRenderingContext2D,
   bubbles: LayoutBubble[],
@@ -173,7 +100,97 @@ function drawBubbles(
     );
   }
 }
+function packCircles(
+  tokens: BubbleToken[],
+  radii: number[],
+  width: number,
+  height: number
+): LayoutBubble[] {
+  const cx = width / 2;
+  const cy = height / 2;
 
+  // Scale radii down if bubbles would otherwise overfill the canvas
+  const totalBubbleArea = radii.reduce((sum, r) => sum + Math.PI * r * r, 0);
+  const canvasArea = Math.max(1, width * height);
+  const maxFill = 0.55;
+  const scaleFactor = totalBubbleArea > 0 ? Math.min(1, Math.sqrt((canvasArea * maxFill) / totalBubbleArea)) : 1;
+  const scaledRadii = radii.map((r) => r * scaleFactor);
+
+  const nodes: SimulationNode[] = tokens.map((t, i) => ({
+    id: t.id,
+    token: t,
+    radius: scaledRadii[i],
+    x: cx + (Math.random() - 0.5) * width * 0.45,
+    y: cy + (Math.random() - 0.5) * height * 0.45,
+    vx: 0,
+    vy: 0,
+  }));
+
+  const simulation = forceSimulation(nodes)
+    .force("collide", forceCollide((d: SimulationNode) => d.radius + 12).strength(1))
+    .force("center", forceCenter(cx, cy).strength(0.28))
+    .force("charge", forceManyBody().strength(-800).distanceMax(1000))
+    .velocityDecay(0.4)
+    .stop();
+
+  const TICKS = 2000;
+  for (let i = 0; i < TICKS; i++) simulation.tick();
+
+  // Post-processing: iterative relaxation to remove any remaining overlaps
+  const maxIterations = 200;
+  const padding = 6;
+
+  for (let iter = 0; iter < maxIterations; iter++) {
+    let maxOverlap = 0;
+
+    for (let i = 0; i < nodes.length; i++) {
+      const ni = nodes[i];
+
+      // keep inside bounds during relaxation
+      if (ni.x < ni.radius) ni.x = ni.radius + (Math.random() - 0.5) * 1.5;
+      if (ni.x > width - ni.radius) ni.x = width - ni.radius - (Math.random() - 0.5) * 1.5;
+      if (ni.y < ni.radius) ni.y = ni.radius + (Math.random() - 0.5) * 1.5;
+      if (ni.y > height - ni.radius) ni.y = height - ni.radius - (Math.random() - 0.5) * 1.5;
+
+      for (let j = i + 1; j < nodes.length; j++) {
+        const nj = nodes[j];
+        const dx = nj.x - ni.x;
+        const dy = nj.y - ni.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+        const minDist = ni.radius + nj.radius + padding;
+
+        if (dist < minDist) {
+          const overlap = minDist - dist;
+          maxOverlap = Math.max(maxOverlap, overlap);
+
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const push = Math.max(1, overlap * 0.6);
+
+          const total = ni.radius + nj.radius || 1;
+          const niShare = nj.radius / total;
+          const njShare = ni.radius / total;
+
+          ni.x -= nx * push * niShare;
+          ni.y -= ny * push * niShare;
+          nj.x += nx * push * njShare;
+          nj.y += ny * push * njShare;
+        }
+      }
+    }
+
+    if (maxOverlap < 0.5) break;
+  }
+
+  const result: LayoutBubble[] = nodes.map((n) => ({
+    token: n.token as BubbleToken,
+    x: Math.max(n.radius, Math.min(width - n.radius, n.x)),
+    y: Math.max(n.radius, Math.min(height - n.radius, n.y)),
+    radius: n.radius,
+  }));
+
+  return result;
+}
 interface BubbleCanvasProps {
   tokens: BubbleToken[];
   timeframe: Timeframe;

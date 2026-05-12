@@ -67,8 +67,8 @@ function drawBubbles(
     ctx.save();
 
     if (b.token.isStacks) {
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = "rgba(64,138,113,0.4)";
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = "rgba(64,138,113,0.5)";
     }
 
     ctx.beginPath();
@@ -80,21 +80,22 @@ function drawBubbles(
         .padStart(2, "0");
     ctx.fill();
 
-    // Inner shadow: radial gradient overlay clipped to the circle
+    // Inner shadow: stronger radial gradient overlay clipped to the circle
     ctx.save();
-    const offsetX = b.radius * dpr * 0.12;
-    const offsetY = b.radius * dpr * 0.08;
+    const offsetX = b.radius * dpr * 0.18;
+    const offsetY = b.radius * dpr * 0.12;
     const grad = ctx.createRadialGradient(
       b.x * dpr - offsetX,
       b.y * dpr - offsetY,
-      b.radius * dpr * 0.15,
+      b.radius * dpr * 0.12,
       b.x * dpr,
       b.y * dpr,
       b.radius * dpr
     );
     grad.addColorStop(0, "rgba(0,0,0,0)");
-    grad.addColorStop(0.7, "rgba(0,0,0,0.12)");
-    grad.addColorStop(1, "rgba(0,0,0,0.28)");
+    grad.addColorStop(0.5, "rgba(0,0,0,0.18)");
+    grad.addColorStop(0.85, "rgba(0,0,0,0.34)");
+    grad.addColorStop(1, "rgba(0,0,0,0.6)");
     ctx.globalCompositeOperation = "source-atop";
     ctx.fillStyle = grad;
     ctx.beginPath();

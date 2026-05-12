@@ -50,7 +50,8 @@ function drawBubbles(
   ctx: CanvasRenderingContext2D,
   bubbles: LayoutBubble[],
   timeframe: Timeframe,
-  dpr: number
+  dpr: number,
+  hoveredId: string | null = null
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -76,28 +77,73 @@ function drawBubbles(
         .padStart(2, "0");
     ctx.fill();
 
-    ctx.strokeStyle = b.token.isStacks ? STACKS_BORDER_COLOR : color;
-    ctx.lineWidth = (b.token.isStacks ? 3 : 1.5) * dpr;
+    const isHovered = hoveredId === b.token.id;
+    ctx.strokeStyle = isHovered ? "#ffffff" : (b.token.isStacks ? STACKS_BORDER_COLOR : color);
+    ctx.lineWidth = (isHovered ? 3.5 : (b.token.isStacks ? 3 : 1.5)) * dpr;
     ctx.stroke();
 
     ctx.restore();
 
-    const fontSize = Math.max(10, Math.min(b.radius * 0.35, 16));
-    ctx.font = `bold ${fontSize * dpr}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
-    ctx.fillStyle = b.token.isStacks ? STACKS_BORDER_COLOR : "#f1f5f9";
+    // Ensure both symbol and percentage text fit inside the circle.
+    const diameter = b.radius * 2;
+    const padding = Math.max(6, Math.round(b.radius * 0.12));
+    const maxTextWidth = Math.max(8, (diameter - padding * 2) * dpr);
+
+    // Helper: set font and measure, reducing size until it fits or hits min size
+    function fitFontSize(text: string, weight: string, startPx: number, minPx: number) {
+      let px = startPx;
+      while (px >= minPx) {
+        ctx.font = `${weight} ${px}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+        const w = ctx.measureText(text).width;
+        if (w <= maxTextWidth) return px;
+        px -= 1;
+      }
+      return minPx;
+    }
+
+    // Helper: truncate text with ellipsis to fit the current ctx.font
+    function truncateToFit(text: string) {
+      let t = text;
+      if (ctx.measureText(t).width <= maxTextWidth) return t;
+      while (t.length > 0) {
+        t = t.slice(0, -1);
+        if (ctx.measureText(t + "…").width <= maxTextWidth) return t + "…";
+      }
+      return "";
+    }
+
+    // Preferred sizes (in CSS px before DPR scaling)
+    const prefSymbolPx = Math.min(24, Math.max(12, Math.floor(b.radius * 0.5)));
+    const prefPercentPx = Math.min(16, Math.max(8, Math.floor(b.radius * 0.32)));
+
+    // Fit symbol
+    const symPx = fitFontSize(b.token.symbol, "bold", prefSymbolPx * dpr, 8 * dpr);
+    ctx.font = `bold ${symPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    let symbolText = b.token.symbol;
+    if (ctx.measureText(symbolText).width > maxTextWidth) symbolText = truncateToFit(symbolText);
+
+    // Fit percent
+    const sign = isPositive ? "+" : "";
+    const pctTextRaw = `${sign}${change.toFixed(1)}%`;
+    const pctPx = fitFontSize(pctTextRaw, "", prefPercentPx * dpr, 7 * dpr);
+    ctx.font = `${pctPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    let pctText = pctTextRaw;
+    if (ctx.measureText(pctText).width > maxTextWidth) pctText = truncateToFit(pctText);
+
+    // Draw texts, stacked vertically and centered
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(b.token.symbol, b.x * dpr, (b.y - fontSize * 0.3) * dpr);
+    const totalTextHeight = (symPx + pctPx) / dpr; // back to CSS px for spacing decisions
+    const symbolY = b.y - Math.max(0, (totalTextHeight / 2) * 0.6);
+    const percentY = b.y + Math.max(0, (totalTextHeight / 2) * 0.6);
 
-    const smallSize = Math.max(8, fontSize * 0.7);
-    ctx.font = `${smallSize * dpr}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    ctx.fillStyle = b.token.isStacks ? STACKS_BORDER_COLOR : "#f1f5f9";
+    ctx.font = `bold ${symPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    ctx.fillText(symbolText, b.x * dpr, symbolY * dpr);
+
     ctx.fillStyle = color;
-    const sign = isPositive ? "+" : "";
-    ctx.fillText(
-      `${sign}${change.toFixed(1)}%`,
-      b.x * dpr,
-      (b.y + fontSize * 0.5) * dpr
-    );
+    ctx.font = `${pctPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    ctx.fillText(pctText, b.x * dpr, percentY * dpr);
   }
 }
 function packCircles(
@@ -205,6 +251,8 @@ export default function BubbleCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const bubblesRef = useRef<LayoutBubble[]>([]);
+  const hoveredRef = useRef<string | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   const layout = useCallback(() => {
     const canvas = canvasRef.current;
@@ -222,7 +270,7 @@ export default function BubbleCanvas({
     bubblesRef.current = packCircles(tokens, radii, width, height);
 
     const ctx = canvas.getContext("2d");
-    if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr);
+    if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, hoveredRef.current);
   }, [tokens, timeframe]);
 
   useEffect(() => {
@@ -236,6 +284,47 @@ export default function BubbleCanvas({
     observer.observe(container);
     return () => observer.disconnect();
   }, [layout]);
+
+  // Schedule a redraw with current hovered state
+  function scheduleRedraw(dpr: number) {
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, hoveredRef.current);
+      rafRef.current = null;
+    });
+  }
+
+  function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    let found: string | null = null;
+    for (const b of bubblesRef.current) {
+      const dx = mx - b.x;
+      const dy = my - b.y;
+      if (Math.sqrt(dx * dx + dy * dy) <= b.radius) {
+        found = b.token.id;
+        break;
+      }
+    }
+    if (found !== hoveredRef.current) {
+      hoveredRef.current = found;
+      const dpr = window.devicePixelRatio || 1;
+      scheduleRedraw(dpr);
+    }
+  }
+
+  function handleMouseLeave() {
+    if (hoveredRef.current === null) return;
+    hoveredRef.current = null;
+    const dpr = window.devicePixelRatio || 1;
+    scheduleRedraw(dpr);
+  }
 
   function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
@@ -259,6 +348,8 @@ export default function BubbleCanvas({
       <canvas
         ref={canvasRef}
         onClick={handleClick}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         className="absolute inset-0 cursor-pointer"
       />
     </div>

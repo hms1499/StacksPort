@@ -253,6 +253,8 @@ export default function BubbleCanvas({
   const bubblesRef = useRef<LayoutBubble[]>([]);
   const hoveredRef = useRef<string | null>(null);
   const rafRef = useRef<number | null>(null);
+  const animRef = useRef<number | null>(null);
+  const seedsRef = useRef<Record<string, number>>({});
 
   const layout = useCallback(() => {
     const canvas = canvasRef.current;
@@ -270,6 +272,10 @@ export default function BubbleCanvas({
     bubblesRef.current = packCircles(tokens, radii, width, height);
 
     const ctx = canvas.getContext("2d");
+    // ensure deterministic seeds for subtle per-bubble motion
+    for (const b of bubblesRef.current) {
+      if (!seedsRef.current[b.token.id]) seedsRef.current[b.token.id] = Math.random() * Math.PI * 2;
+    }
     if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, hoveredRef.current);
   }, [tokens, timeframe]);
 
@@ -325,6 +331,45 @@ export default function BubbleCanvas({
     const dpr = window.devicePixelRatio || 1;
     scheduleRedraw(dpr);
   }
+
+  // Continuous subtle motion: per-bubble sinusoidal offsets and redraw
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let last = performance.now();
+
+    function tick(now: number) {
+      const dpr = window.devicePixelRatio || 1;
+      const t = now / 1000;
+
+      // build moved bubble positions with tiny offsets
+      const moved = bubblesRef.current.map((b) => {
+        const seed = seedsRef.current[b.token.id] ?? 0;
+        const freq = 0.6 + (b.radius % 5) * 0.05; // variation by radius
+        const ampX = Math.max(1, b.radius * 0.05);
+        const ampY = Math.max(1, b.radius * 0.03);
+        return {
+          ...b,
+          x: b.x + Math.cos(t * freq + seed) * ampX,
+          y: b.y + Math.sin(t * (freq * 1.1) + seed) * ampY,
+        } as LayoutBubble;
+      });
+
+      drawBubbles(ctx, moved, timeframe, dpr, hoveredRef.current);
+      last = now;
+      animRef.current = requestAnimationFrame(tick);
+    }
+
+    animRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      animRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeframe, tokens.length]);
 
   function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;

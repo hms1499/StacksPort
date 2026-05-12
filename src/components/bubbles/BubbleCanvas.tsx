@@ -51,6 +51,7 @@ function drawBubbles(
   bubbles: LayoutBubble[],
   timeframe: Timeframe,
   dpr: number,
+  images: Record<string, HTMLImageElement | null>,
   hoveredId: string | null = null
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -76,6 +77,28 @@ function drawBubbles(
         .toString(16)
         .padStart(2, "0");
     ctx.fill();
+
+    // Inner shadow: radial gradient overlay clipped to the circle
+    ctx.save();
+    const offsetX = b.radius * dpr * 0.12;
+    const offsetY = b.radius * dpr * 0.08;
+    const grad = ctx.createRadialGradient(
+      b.x * dpr - offsetX,
+      b.y * dpr - offsetY,
+      b.radius * dpr * 0.15,
+      b.x * dpr,
+      b.y * dpr,
+      b.radius * dpr
+    );
+    grad.addColorStop(0, "rgba(0,0,0,0)");
+    grad.addColorStop(0.7, "rgba(0,0,0,0.12)");
+    grad.addColorStop(1, "rgba(0,0,0,0.28)");
+    ctx.globalCompositeOperation = "source-atop";
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(b.x * dpr, b.y * dpr, b.radius * dpr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
     const isHovered = hoveredId === b.token.id;
     ctx.strokeStyle = isHovered ? "#ffffff" : (b.token.isStacks ? STACKS_BORDER_COLOR : color);
@@ -130,16 +153,38 @@ function drawBubbles(
     let pctText = pctTextRaw;
     if (ctx.measureText(pctText).width > maxTextWidth) pctText = truncateToFit(pctText);
 
-    // Draw texts, stacked vertically and centered
+    // Draw texts and optional icon stacked vertically and centered
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const totalTextHeight = (symPx + pctPx) / dpr; // back to CSS px for spacing decisions
-    const symbolY = b.y - Math.max(0, (totalTextHeight / 2) * 0.6);
-    const percentY = b.y + Math.max(0, (totalTextHeight / 2) * 0.6);
+
+    const img = images[b.token.id];
+    const hasImage = !!img && img instanceof HTMLImageElement && img.complete;
+
+    // Compute layout: symbol on top, image (if present) below symbol, percent at bottom
+    const imgHeight = hasImage ? Math.min(b.radius * 0.9, b.radius * 0.9) : 0; // CSS px
+    const spacing = Math.max(4, Math.floor(b.radius * 0.08));
+    const totalTextHeight = (symPx + pctPx) / dpr + imgHeight + spacing * (hasImage ? 2 : 1);
+
+    const symbolY = b.y - totalTextHeight / 2 + (symPx / dpr) / 2;
+    const imageY = symbolY + (symPx / dpr) / 2 + spacing + imgHeight / 2;
+    const percentY = imageY + imgHeight / 2 + spacing + (pctPx / dpr) / 2;
 
     ctx.fillStyle = b.token.isStacks ? STACKS_BORDER_COLOR : "#f1f5f9";
     ctx.font = `bold ${symPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
     ctx.fillText(symbolText, b.x * dpr, symbolY * dpr);
+
+    if (hasImage && img) {
+      const imgW = imgHeight * (img.width / img.height || 1);
+      const imgDrawW = Math.min(imgW, (b.radius * 2 - spacing * 2) * dpr);
+      const imgDrawH = Math.min(imgHeight * dpr, (b.radius * 2 - spacing * 2) * dpr);
+      ctx.save();
+      // mask to circle to ensure image stays inside
+      ctx.beginPath();
+      ctx.arc(b.x * dpr, b.y * dpr, b.radius * dpr, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, b.x * dpr - imgDrawW / 2, imageY * dpr - imgDrawH / 2, imgDrawW, imgDrawH);
+      ctx.restore();
+    }
 
     ctx.fillStyle = color;
     ctx.font = `${pctPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
@@ -255,6 +300,7 @@ export default function BubbleCanvas({
   const rafRef = useRef<number | null>(null);
   const animRef = useRef<number | null>(null);
   const seedsRef = useRef<Record<string, number>>({});
+  const imagesRef = useRef<Record<string, HTMLImageElement | null | 'loading'>>({});
 
   const layout = useCallback(() => {
     const canvas = canvasRef.current;
@@ -275,8 +321,29 @@ export default function BubbleCanvas({
     // ensure deterministic seeds for subtle per-bubble motion
     for (const b of bubblesRef.current) {
       if (!seedsRef.current[b.token.id]) seedsRef.current[b.token.id] = Math.random() * Math.PI * 2;
+      // start loading images for tokens if not already
+      const id = b.token.id;
+      if (imagesRef.current[id] === undefined) {
+        const imgUrl = b.token.image;
+        if (imgUrl) {
+          imagesRef.current[id] = 'loading';
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.src = imgUrl;
+          img.onload = () => {
+            imagesRef.current[id] = img;
+            const dpr = window.devicePixelRatio || 1;
+            scheduleRedraw(dpr);
+          };
+          img.onerror = () => {
+            imagesRef.current[id] = null;
+          };
+        } else {
+          imagesRef.current[id] = null;
+        }
+      }
     }
-    if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, hoveredRef.current);
+    if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
   }, [tokens, timeframe]);
 
   useEffect(() => {
@@ -298,7 +365,7 @@ export default function BubbleCanvas({
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
-      if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, hoveredRef.current);
+      if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
       rafRef.current = null;
     });
   }
@@ -358,7 +425,7 @@ export default function BubbleCanvas({
         } as LayoutBubble;
       });
 
-      drawBubbles(ctx, moved, timeframe, dpr, hoveredRef.current);
+      drawBubbles(ctx, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
       last = now;
       animRef.current = requestAnimationFrame(tick);
     }

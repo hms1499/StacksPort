@@ -8,7 +8,7 @@ import type { Timeframe } from "./TimeframeToggle";
 const MIN_RADIUS = 22;
 const MAX_RADIUS = 110;
 // Global scale for bubble sizes (1 = original, >1 increases size)
-const BUBBLE_SIZE_SCALE = 1.25;
+const BUBBLE_SIZE_SCALE = 1.5;
 const STACKS_BORDER_COLOR = "#408A71";
 const POSITIVE_COLOR = "#34d399";
 const NEGATIVE_COLOR = "#f87171";

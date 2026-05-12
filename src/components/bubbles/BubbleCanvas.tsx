@@ -436,7 +436,7 @@ export default function BubbleCanvas({
         } as LayoutBubble;
       });
 
-      drawBubbles(ctx, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
+      drawBubbles(ctx as CanvasRenderingContext2D, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
       last = now;
       animRef.current = requestAnimationFrame(tick);
     }

@@ -160,23 +160,35 @@ function drawBubbles(
     const img = images[b.token.id];
     const hasImage = !!img && img instanceof HTMLImageElement && img.complete;
 
-    // Compute layout: symbol on top, image (if present) below symbol, percent at bottom
-    const imgHeight = hasImage ? Math.min(b.radius * 0.9, b.radius * 0.9) : 0; // CSS px
-    const spacing = Math.max(4, Math.floor(b.radius * 0.08));
-    const totalTextHeight = (symPx + pctPx) / dpr + imgHeight + spacing * (hasImage ? 2 : 1);
+    // Icon size: 60% of radius (CSS px)
+    const imgSize = hasImage ? Math.max(8, b.radius * 0.6) : 0;
+    const spacing = Math.max(4, Math.floor(b.radius * 0.06));
 
-    const symbolY = b.y - totalTextHeight / 2 + (symPx / dpr) / 2;
-    const imageY = symbolY + (symPx / dpr) / 2 + spacing + imgHeight / 2;
-    const percentY = imageY + imgHeight / 2 + spacing + (pctPx / dpr) / 2;
+    // total height: percent on top, symbol middle, icon (optional) bottom
+    const pctHeightCss = pctPx / dpr;
+    const symHeightCss = symPx / dpr;
+    const totalHeight = pctHeightCss + symHeightCss + (hasImage ? imgSize + spacing * 2 : spacing);
 
+    const topY = b.y - totalHeight / 2;
+    const pctY = topY + pctHeightCss / 2;
+    const symbolY = pctY + pctHeightCss / 2 + spacing + symHeightCss / 2;
+    const imageY = symbolY + symHeightCss / 2 + spacing + imgSize / 2;
+
+    // Draw percent (subprint) above the symbol
+    ctx.fillStyle = color;
+    ctx.font = `${pctPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    ctx.fillText(pctText, b.x * dpr, pctY * dpr);
+
+    // Draw symbol (word)
     ctx.fillStyle = b.token.isStacks ? STACKS_BORDER_COLOR : "#f1f5f9";
     ctx.font = `bold ${symPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
     ctx.fillText(symbolText, b.x * dpr, symbolY * dpr);
 
+    // Draw icon under the symbol
     if (hasImage && img) {
-      const imgW = imgHeight * (img.width / img.height || 1);
-      const imgDrawW = Math.min(imgW, (b.radius * 2 - spacing * 2) * dpr);
-      const imgDrawH = Math.min(imgHeight * dpr, (b.radius * 2 - spacing * 2) * dpr);
+      const imgDrawH = Math.min(imgSize * dpr, (b.radius * 2 - spacing * 2) * dpr);
+      const imgW = img.width / img.height || 1;
+      const imgDrawW = Math.min(imgDrawH * imgW, (b.radius * 2 - spacing * 2) * dpr);
       ctx.save();
       // mask to circle to ensure image stays inside
       ctx.beginPath();
@@ -185,10 +197,6 @@ function drawBubbles(
       ctx.drawImage(img, b.x * dpr - imgDrawW / 2, imageY * dpr - imgDrawH / 2, imgDrawW, imgDrawH);
       ctx.restore();
     }
-
-    ctx.fillStyle = color;
-    ctx.font = `${pctPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
-    ctx.fillText(pctText, b.x * dpr, percentY * dpr);
   }
 }
 function packCircles(

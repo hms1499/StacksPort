@@ -126,9 +126,9 @@ function drawBubbles(
       b.radius * dpr
     );
     grad.addColorStop(0, "rgba(0,0,0,0)");
-    grad.addColorStop(0.5, `rgba(0,0,0,${Math.min(0.18 * shadowStrength, 0.55)})`);
-    grad.addColorStop(0.85, `rgba(0,0,0,${Math.min(0.34 * shadowStrength, 0.8)})`);
-    grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.6 * shadowStrength, 1)})`);
+    grad.addColorStop(0.5, `rgba(0,0,0,${Math.min(0.35 * shadowStrength, 0.75)})`);
+    grad.addColorStop(0.85, `rgba(0,0,0,${Math.min(0.6 * shadowStrength, 0.92)})`);
+    grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.8 * shadowStrength, 1)})`);
     ctx.globalCompositeOperation = "source-atop";
     ctx.fillStyle = grad;
     ctx.beginPath();

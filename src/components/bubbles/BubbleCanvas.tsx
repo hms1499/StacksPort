@@ -112,10 +112,10 @@ function drawBubbles(
       b.x * dpr, b.y * dpr, b.radius * dpr
     );
     innerGrad.addColorStop(0,    `rgba(${glowRgb},0)`);
-    innerGrad.addColorStop(0.6,  `rgba(${glowRgb},0)`);
-    innerGrad.addColorStop(0.82, `rgba(${glowRgb},${0.3 * glowIntensity})`);
-    innerGrad.addColorStop(0.94, `rgba(${glowRgb},${0.7 * glowIntensity})`);
-    innerGrad.addColorStop(1,    `rgba(${glowRgb},${0.95 * glowIntensity})`);
+    innerGrad.addColorStop(0.5,  `rgba(${glowRgb},0)`);
+    innerGrad.addColorStop(0.75, `rgba(${glowRgb},${0.5 * glowIntensity})`);
+    innerGrad.addColorStop(0.9,  `rgba(${glowRgb},${0.85 * glowIntensity})`);
+    innerGrad.addColorStop(1,    `rgba(${glowRgb},${1.0 * glowIntensity})`);
     ctx.globalCompositeOperation = "source-atop";
     ctx.fillStyle = innerGrad;
     ctx.beginPath();
@@ -125,10 +125,10 @@ function drawBubbles(
 
     // Layer 3: glowing neon stroke + outer halo
     const isHovered = hoveredId === b.token.id;
-    ctx.shadowBlur = (isHovered ? 30 : 20) * glowIntensity * dpr;
+    ctx.shadowBlur = (isHovered ? 50 : 35) * glowIntensity * dpr;
     ctx.shadowColor = color;
     ctx.strokeStyle = isHovered ? "#ffffff" : color;
-    ctx.lineWidth = (isHovered ? 3 : 2) * dpr;
+    ctx.lineWidth = (isHovered ? 4 : 3) * dpr;
     ctx.stroke();
 
     ctx.restore();

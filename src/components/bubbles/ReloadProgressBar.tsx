@@ -77,7 +77,7 @@ export default function ReloadProgressBar({ tokens, isRefreshing }: Props) {
 
       <div
         className="absolute bottom-0 left-0 right-0 overflow-hidden"
-        style={{ height: 2, zIndex: 10 }}
+        style={{ height: 4, zIndex: 10 }}
       >
         {/* Track */}
         <div
@@ -96,10 +96,10 @@ export default function ReloadProgressBar({ tokens, isRefreshing }: Props) {
             width: "100%",
             background: isRefreshing
               ? "rgba(255,255,255,0.45)"
-              : "linear-gradient(90deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.7) 55%, rgba(168,85,247,1) 100%)",
+              : "linear-gradient(90deg, rgba(22,163,74,0.5) 0%, rgba(22,163,74,0.9) 55%, rgba(22,163,74,1) 100%)",
             boxShadow: isRefreshing
               ? "0 0 5px rgba(255,255,255,0.5)"
-              : "0 0 8px rgba(168,85,247,0.65)",
+              : "0 0 12px rgba(22,163,74,0.9)",
             transition: "background 0.3s, box-shadow 0.3s",
           }}
         />

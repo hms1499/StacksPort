@@ -6,9 +6,10 @@ import type { BubbleToken } from "@/hooks/useBubblesData";
 import BubbleCanvas from "./BubbleCanvas";
 import BubbleTooltip from "./BubbleTooltip";
 import TimeframeToggle, { type Timeframe } from "./TimeframeToggle";
+import ReloadProgressBar from "./ReloadProgressBar";
 
 export default function BubblesPageContent() {
-  const { data: tokens, isLoading, error } = useBubblesData();
+  const { data: tokens, isLoading, error, isValidating } = useBubblesData();
   const [timeframe, setTimeframe] = useState<Timeframe>("24h");
   const [selected, setSelected] = useState<{
     token: BubbleToken;
@@ -29,7 +30,8 @@ export default function BubblesPageContent() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-3"
+      <div
+        className="flex items-center justify-between px-4 py-3 relative"
         style={{ borderBottom: "1px solid var(--border-subtle)" }}
       >
         <h1
@@ -39,6 +41,13 @@ export default function BubblesPageContent() {
           Crypto Bubbles
         </h1>
         <TimeframeToggle value={timeframe} onChange={setTimeframe} />
+
+        {tokens && tokens.length > 0 && (
+          <ReloadProgressBar
+            tokens={tokens}
+            isRefreshing={isValidating}
+          />
+        )}
       </div>
 
       <div className="flex-1 relative bg-black">

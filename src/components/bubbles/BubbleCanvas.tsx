@@ -94,51 +94,41 @@ function drawBubbles(
     const change = getChange(b.token, timeframe);
     const isPositive = change >= 0;
     const color = isPositive ? POSITIVE_COLOR : NEGATIVE_COLOR;
-    const opacity = Math.min(0.1 + Math.abs(change) * 0.01, 0.35);
-    const shadowStrength = 1.0 + (Math.abs(change) / maxChange) * 1.5;
+    const glowRgb = isPositive ? "52,211,153" : "248,113,113";
+    const glowIntensity = Math.min(0.6 + (Math.abs(change) / maxChange) * 0.4, 1);
 
     ctx.save();
 
-    if (b.token.isStacks) {
-      ctx.shadowBlur = 18;
-      ctx.shadowColor = "rgba(64,138,113,0.5)";
-    }
-
+    // Layer 1: dark base fill (near black, very faint color tint)
     ctx.beginPath();
     ctx.arc(b.x * dpr, b.y * dpr, b.radius * dpr, 0, Math.PI * 2);
-    ctx.fillStyle =
-      color +
-      Math.round(opacity * 255)
-        .toString(16)
-        .padStart(2, "0");
+    ctx.fillStyle = `rgba(${glowRgb},0.06)`;
     ctx.fill();
 
-    // Inner shadow: colored radial gradient from center → edge, tinted by change direction
+    // Layer 2: inner rim glow — transparent center fading to bright color at edge
     ctx.save();
-    const shadowRgb = isPositive ? "52,211,153" : "248,113,113";
-    const grad = ctx.createRadialGradient(
-      b.x * dpr,
-      b.y * dpr,
-      b.radius * dpr * 0.35,
-      b.x * dpr,
-      b.y * dpr,
-      b.radius * dpr
+    const innerGrad = ctx.createRadialGradient(
+      b.x * dpr, b.y * dpr, b.radius * dpr * 0.45,
+      b.x * dpr, b.y * dpr, b.radius * dpr
     );
-    grad.addColorStop(0,    `rgba(${shadowRgb},0)`);
-    grad.addColorStop(0.55, `rgba(${shadowRgb},0)`);
-    grad.addColorStop(0.78, `rgba(${shadowRgb},${Math.min(0.25 * shadowStrength, 0.55)})`);
-    grad.addColorStop(0.92, `rgba(${shadowRgb},${Math.min(0.5  * shadowStrength, 0.82)})`);
-    grad.addColorStop(1,    `rgba(${shadowRgb},${Math.min(0.7  * shadowStrength, 1)})`);
+    innerGrad.addColorStop(0,    `rgba(${glowRgb},0)`);
+    innerGrad.addColorStop(0.6,  `rgba(${glowRgb},0)`);
+    innerGrad.addColorStop(0.82, `rgba(${glowRgb},${0.3 * glowIntensity})`);
+    innerGrad.addColorStop(0.94, `rgba(${glowRgb},${0.7 * glowIntensity})`);
+    innerGrad.addColorStop(1,    `rgba(${glowRgb},${0.95 * glowIntensity})`);
     ctx.globalCompositeOperation = "source-atop";
-    ctx.fillStyle = grad;
+    ctx.fillStyle = innerGrad;
     ctx.beginPath();
     ctx.arc(b.x * dpr, b.y * dpr, b.radius * dpr, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
+    // Layer 3: glowing neon stroke + outer halo
     const isHovered = hoveredId === b.token.id;
-    ctx.strokeStyle = isHovered ? "#ffffff" : (b.token.isStacks ? STACKS_BORDER_COLOR : color);
-    ctx.lineWidth = (isHovered ? 3.5 : (b.token.isStacks ? 3 : 1.5)) * dpr;
+    ctx.shadowBlur = (isHovered ? 30 : 20) * glowIntensity * dpr;
+    ctx.shadowColor = color;
+    ctx.strokeStyle = isHovered ? "#ffffff" : color;
+    ctx.lineWidth = (isHovered ? 3 : 2) * dpr;
     ctx.stroke();
 
     ctx.restore();

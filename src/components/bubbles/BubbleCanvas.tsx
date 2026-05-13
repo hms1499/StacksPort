@@ -7,11 +7,41 @@ import type { Timeframe } from "./TimeframeToggle";
 
 const MIN_RADIUS = 22;
 const MAX_RADIUS = 110;
-// Global scale for bubble sizes (1 = original, >1 increases size)
 const BUBBLE_SIZE_SCALE = 1.5;
 const STACKS_BORDER_COLOR = "#408A71";
 const POSITIVE_COLOR = "#34d399";
 const NEGATIVE_COLOR = "#f87171";
+
+function fitFontSize(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  weight: string,
+  startPx: number,
+  minPx: number,
+  maxTextWidth: number
+): number {
+  let px = startPx;
+  while (px >= minPx) {
+    ctx.font = `${weight} ${px}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    if (ctx.measureText(text).width <= maxTextWidth) return px;
+    px -= 1;
+  }
+  return minPx;
+}
+
+function truncateToFit(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxTextWidth: number
+): string {
+  if (ctx.measureText(text).width <= maxTextWidth) return text;
+  let t = text;
+  while (t.length > 0) {
+    t = t.slice(0, -1);
+    if (ctx.measureText(t + "…").width <= maxTextWidth) return t + "…";
+  }
+  return "";
+}
 
 interface LayoutBubble {
   token: BubbleToken;
@@ -115,46 +145,23 @@ function drawBubbles(
     const padding = Math.max(6, Math.round(b.radius * 0.12));
     const maxTextWidth = Math.max(8, (diameter - padding * 2) * dpr);
 
-    // Helper: set font and measure, reducing size until it fits or hits min size
-    function fitFontSize(text: string, weight: string, startPx: number, minPx: number) {
-      let px = startPx;
-      while (px >= minPx) {
-        ctx.font = `${weight} ${px}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
-        const w = ctx.measureText(text).width;
-        if (w <= maxTextWidth) return px;
-        px -= 1;
-      }
-      return minPx;
-    }
-
-    // Helper: truncate text with ellipsis to fit the current ctx.font
-    function truncateToFit(text: string) {
-      let t = text;
-      if (ctx.measureText(t).width <= maxTextWidth) return t;
-      while (t.length > 0) {
-        t = t.slice(0, -1);
-        if (ctx.measureText(t + "…").width <= maxTextWidth) return t + "…";
-      }
-      return "";
-    }
-
     // Preferred sizes (in CSS px before DPR scaling)
     const prefSymbolPx = Math.min(24, Math.max(12, Math.floor(b.radius * 0.5)));
     const prefPercentPx = Math.min(16, Math.max(8, Math.floor(b.radius * 0.32)));
 
     // Fit symbol
-    const symPx = fitFontSize(b.token.symbol, "bold", prefSymbolPx * dpr, 8 * dpr);
+    const symPx = fitFontSize(ctx, b.token.symbol, "bold", prefSymbolPx * dpr, 8 * dpr, maxTextWidth);
     ctx.font = `bold ${symPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
     let symbolText = b.token.symbol;
-    if (ctx.measureText(symbolText).width > maxTextWidth) symbolText = truncateToFit(symbolText);
+    if (ctx.measureText(symbolText).width > maxTextWidth) symbolText = truncateToFit(ctx, symbolText, maxTextWidth);
 
     // Fit percent
     const sign = isPositive ? "+" : "";
     const pctTextRaw = `${sign}${change.toFixed(1)}%`;
-    const pctPx = fitFontSize(pctTextRaw, "", prefPercentPx * dpr, 7 * dpr);
+    const pctPx = fitFontSize(ctx, pctTextRaw, "", prefPercentPx * dpr, 7 * dpr, maxTextWidth);
     ctx.font = `${pctPx}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
     let pctText = pctTextRaw;
-    if (ctx.measureText(pctText).width > maxTextWidth) pctText = truncateToFit(pctText);
+    if (ctx.measureText(pctText).width > maxTextWidth) pctText = truncateToFit(ctx, pctText, maxTextWidth);
 
     // Draw texts and optional icon stacked vertically and centered
     ctx.textAlign = "center";
@@ -308,7 +315,6 @@ export default function BubbleCanvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const bubblesRef = useRef<LayoutBubble[]>([]);
   const hoveredRef = useRef<string | null>(null);
-  const rafRef = useRef<number | null>(null);
   const animRef = useRef<number | null>(null);
   const seedsRef = useRef<Record<string, number>>({});
   const imagesRef = useRef<Record<string, HTMLImageElement | null | 'loading'>>({});
@@ -343,8 +349,6 @@ export default function BubbleCanvas({
           img.src = imgUrl;
           img.onload = () => {
             imagesRef.current[id] = img;
-            const dpr = window.devicePixelRatio || 1;
-            scheduleRedraw(dpr);
           };
           img.onerror = () => {
             imagesRef.current[id] = null;
@@ -369,18 +373,6 @@ export default function BubbleCanvas({
     return () => observer.disconnect();
   }, [layout]);
 
-  // Schedule a redraw with current hovered state
-  function scheduleRedraw(dpr: number) {
-    if (rafRef.current) return;
-    rafRef.current = requestAnimationFrame(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
-      rafRef.current = null;
-    });
-  }
-
   function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -396,18 +388,11 @@ export default function BubbleCanvas({
         break;
       }
     }
-    if (found !== hoveredRef.current) {
-      hoveredRef.current = found;
-      const dpr = window.devicePixelRatio || 1;
-      scheduleRedraw(dpr);
-    }
+    hoveredRef.current = found;
   }
 
   function handleMouseLeave() {
-    if (hoveredRef.current === null) return;
     hoveredRef.current = null;
-    const dpr = window.devicePixelRatio || 1;
-    scheduleRedraw(dpr);
   }
 
   // Continuous subtle motion: per-bubble sinusoidal offsets and redraw
@@ -417,16 +402,13 @@ export default function BubbleCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let last = performance.now();
-
     function tick(now: number) {
       const dpr = window.devicePixelRatio || 1;
       const t = now / 1000;
 
-      // build moved bubble positions with tiny offsets
       const moved = bubblesRef.current.map((b) => {
         const seed = seedsRef.current[b.token.id] ?? 0;
-        const freq = 0.6 + (b.radius % 5) * 0.05; // variation by radius
+        const freq = 0.6 + (b.radius % 5) * 0.05;
         const ampX = Math.max(1, b.radius * 0.05);
         const ampY = Math.max(1, b.radius * 0.03);
         return {
@@ -437,7 +419,6 @@ export default function BubbleCanvas({
       });
 
       drawBubbles(ctx as CanvasRenderingContext2D, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
-      last = now;
       animRef.current = requestAnimationFrame(tick);
     }
 
@@ -449,21 +430,31 @@ export default function BubbleCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeframe, tokens.length]);
 
+  function hitTest(mx: number, my: number): LayoutBubble | null {
+    for (const b of bubblesRef.current) {
+      const dx = mx - b.x;
+      const dy = my - b.y;
+      if (Math.sqrt(dx * dx + dy * dy) <= b.radius) return b;
+    }
+    return null;
+  }
+
   function handleClick(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+    const hit = hitTest(e.clientX - rect.left, e.clientY - rect.top);
+    if (hit) onBubbleClick(hit.token, e.clientX, e.clientY);
+  }
 
-    for (const b of bubblesRef.current) {
-      const dx = mx - b.x;
-      const dy = my - b.y;
-      if (Math.sqrt(dx * dx + dy * dy) <= b.radius) {
-        onBubbleClick(b.token, e.clientX, e.clientY);
-        return;
-      }
-    }
+  function handleTouchEnd(e: React.TouchEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    if (!canvas || e.changedTouches.length === 0) return;
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    const hit = hitTest(touch.clientX - rect.left, touch.clientY - rect.top);
+    if (hit) onBubbleClick(hit.token, touch.clientX, touch.clientY);
   }
 
   return (
@@ -473,7 +464,9 @@ export default function BubbleCanvas({
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        onTouchEnd={handleTouchEnd}
         className="absolute inset-0 cursor-pointer"
+        style={{ touchAction: "none" }}
       />
     </div>
   );

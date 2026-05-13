@@ -415,14 +415,24 @@ export default function BubbleCanvas({
 
       const moved = bubblesRef.current.map((b) => {
         const seed = seedsRef.current[b.token.id] ?? 0;
-        const freq = 0.6 + (b.radius % 5) * 0.05;
-        const ampX = Math.max(1, b.radius * 0.05);
-        const ampY = Math.max(1, b.radius * 0.03);
-        return {
-          ...b,
-          x: b.x + Math.cos(t * freq + seed) * ampX,
-          y: b.y + Math.sin(t * (freq * 1.1) + seed) * ampY,
-        } as LayoutBubble;
+
+        // Bubble nhỏ nổi nhanh hơn bubble lớn (mass proportional)
+        const massScale = 1 - (b.radius / (MAX_RADIUS * BUBBLE_SIZE_SCALE)) * 0.45;
+        const freqBase = (0.28 + massScale * 0.22);
+
+        // Hai sin wave chồng nhau → quỹ đạo lemniscate tự nhiên
+        const ampX = b.radius * 0.10;
+        const ampY = b.radius * 0.07;
+        const driftAmp = b.radius * 0.04;
+
+        const x = b.x
+          + Math.cos(t * freqBase + seed) * ampX
+          + Math.cos(t * freqBase * 0.37 + seed * 1.7) * driftAmp;
+        const y = b.y
+          + Math.sin(t * freqBase * 1.13 + seed + Math.PI * 0.4) * ampY
+          + Math.sin(t * freqBase * 0.29 + seed * 2.1) * driftAmp;
+
+        return { ...b, x, y } as LayoutBubble;
       });
 
       drawBubbles(ctx as CanvasRenderingContext2D, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);

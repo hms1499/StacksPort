@@ -20,14 +20,25 @@ export default function ReloadProgressBar({ tokens, isRefreshing }: Props) {
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     startRef.current = Date.now();
 
+    const bar = barRef.current;
+    if (bar) {
+      bar.removeAttribute("data-waiting");
+      bar.style.width = "100%";
+    }
+
     function tick() {
-      const bar = barRef.current;
-      if (!bar) return;
+      const b = barRef.current;
+      if (!b) return;
       const elapsed = Date.now() - startRef.current;
       const pct = Math.max(0, 1 - elapsed / REFRESH_INTERVAL) * 100;
-      bar.style.width = `${pct}%`;
+      b.style.width = `${pct}%`;
+
       if (elapsed < REFRESH_INTERVAL) {
         rafRef.current = requestAnimationFrame(tick);
+      } else {
+        // Bar hit 0% — enter waiting state until new data arrives
+        b.style.width = "100%";
+        b.setAttribute("data-waiting", "true");
       }
     }
 
@@ -53,34 +64,46 @@ export default function ReloadProgressBar({ tokens, isRefreshing }: Props) {
   }, [tokens]);
 
   return (
-    <div
-      className="absolute bottom-0 left-0 right-0 overflow-hidden"
-      style={{ height: 2, zIndex: 10 }}
-    >
-      {/* Track */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "rgba(255,255,255,0.06)" }}
-      />
+    <>
+      <style>{`
+        @keyframes bar-waiting {
+          0%, 100% { opacity: 0.15; }
+          50%       { opacity: 0.45; }
+        }
+        [data-waiting="true"] {
+          animation: bar-waiting 1.2s ease-in-out infinite;
+        }
+      `}</style>
 
-      {/* Progress fill — width is driven by rAF, not React state */}
       <div
-        ref={barRef}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: "100%",
-          width: "100%",
-          background: isRefreshing
-            ? "rgba(255,255,255,0.45)"
-            : "linear-gradient(90deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.7) 55%, rgba(168,85,247,1) 100%)",
-          boxShadow: isRefreshing
-            ? "0 0 5px rgba(255,255,255,0.5)"
-            : "0 0 8px rgba(168,85,247,0.65)",
-          transition: "background 0.3s, box-shadow 0.3s",
-        }}
-      />
-    </div>
+        className="absolute bottom-0 left-0 right-0 overflow-hidden"
+        style={{ height: 2, zIndex: 10 }}
+      >
+        {/* Track */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "rgba(255,255,255,0.06)" }}
+        />
+
+        {/* Progress fill — width driven by rAF; pulse driven by CSS when waiting */}
+        <div
+          ref={barRef}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: "100%",
+            background: isRefreshing
+              ? "rgba(255,255,255,0.45)"
+              : "linear-gradient(90deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.7) 55%, rgba(168,85,247,1) 100%)",
+            boxShadow: isRefreshing
+              ? "0 0 5px rgba(255,255,255,0.5)"
+              : "0 0 8px rgba(168,85,247,0.65)",
+            transition: "background 0.3s, box-shadow 0.3s",
+          }}
+        />
+      </div>
+    </>
   );
 }

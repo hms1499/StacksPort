@@ -88,14 +88,28 @@ function drawBubbles(
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  const maxChange = Math.max(1, ...bubbles.map((b) => Math.abs(getChange(b.token, timeframe))));
+  // Glow parameters keyed by absolute % change bracket (every 5%)
+  // { shadowBlur (px), innerOpacity at [75%, 90%, 100%] radius }
+  const GLOW_STEPS: { maxPct: number; blur: number; op75: number; op90: number; op100: number }[] = [
+    { maxPct:  5, blur:  8, op75: 0.10, op90: 0.22, op100: 0.35 },
+    { maxPct: 10, blur: 14, op75: 0.18, op90: 0.38, op100: 0.55 },
+    { maxPct: 15, blur: 20, op75: 0.28, op90: 0.55, op100: 0.72 },
+    { maxPct: 20, blur: 28, op75: 0.38, op90: 0.68, op100: 0.85 },
+    { maxPct: 25, blur: 35, op75: 0.48, op90: 0.80, op100: 0.93 },
+    { maxPct: 35, blur: 42, op75: 0.56, op90: 0.88, op100: 0.97 },
+    { maxPct: Infinity, blur: 50, op75: 0.65, op90: 0.95, op100: 1.00 },
+  ];
+
+  function getGlow(absPct: number) {
+    return GLOW_STEPS.find((s) => absPct <= s.maxPct) ?? GLOW_STEPS[GLOW_STEPS.length - 1];
+  }
 
   for (const b of bubbles) {
     const change = getChange(b.token, timeframe);
     const isPositive = change >= 0;
     const color = isPositive ? POSITIVE_COLOR : NEGATIVE_COLOR;
     const glowRgb = isPositive ? "52,211,153" : "248,113,113";
-    const glowIntensity = Math.min(0.6 + (Math.abs(change) / maxChange) * 0.4, 1);
+    const glow = getGlow(Math.abs(change));
 
     ctx.save();
 
@@ -113,9 +127,9 @@ function drawBubbles(
     );
     innerGrad.addColorStop(0,    `rgba(${glowRgb},0)`);
     innerGrad.addColorStop(0.5,  `rgba(${glowRgb},0)`);
-    innerGrad.addColorStop(0.75, `rgba(${glowRgb},${0.5 * glowIntensity})`);
-    innerGrad.addColorStop(0.9,  `rgba(${glowRgb},${0.85 * glowIntensity})`);
-    innerGrad.addColorStop(1,    `rgba(${glowRgb},${1.0 * glowIntensity})`);
+    innerGrad.addColorStop(0.75, `rgba(${glowRgb},${glow.op75})`);
+    innerGrad.addColorStop(0.9,  `rgba(${glowRgb},${glow.op90})`);
+    innerGrad.addColorStop(1,    `rgba(${glowRgb},${glow.op100})`);
     ctx.globalCompositeOperation = "source-atop";
     ctx.fillStyle = innerGrad;
     ctx.beginPath();
@@ -125,7 +139,7 @@ function drawBubbles(
 
     // Layer 3: glowing neon stroke + outer halo
     const isHovered = hoveredId === b.token.id;
-    ctx.shadowBlur = (isHovered ? 50 : 35) * glowIntensity * dpr;
+    ctx.shadowBlur = (isHovered ? glow.blur * 1.5 : glow.blur) * dpr;
     ctx.shadowColor = color;
     ctx.strokeStyle = isHovered ? "#ffffff" : color;
     ctx.lineWidth = (isHovered ? 4 : 3) * dpr;

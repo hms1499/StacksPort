@@ -88,11 +88,14 @@ function drawBubbles(
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+  const maxChange = Math.max(1, ...bubbles.map((b) => Math.abs(getChange(b.token, timeframe))));
+
   for (const b of bubbles) {
     const change = getChange(b.token, timeframe);
     const isPositive = change >= 0;
     const color = isPositive ? POSITIVE_COLOR : NEGATIVE_COLOR;
     const opacity = Math.min(0.1 + Math.abs(change) * 0.01, 0.35);
+    const shadowStrength = 1.0 + (Math.abs(change) / maxChange) * 1.5;
 
     ctx.save();
 
@@ -123,9 +126,9 @@ function drawBubbles(
       b.radius * dpr
     );
     grad.addColorStop(0, "rgba(0,0,0,0)");
-    grad.addColorStop(0.5, "rgba(0,0,0,0.18)");
-    grad.addColorStop(0.85, "rgba(0,0,0,0.34)");
-    grad.addColorStop(1, "rgba(0,0,0,0.6)");
+    grad.addColorStop(0.5, `rgba(0,0,0,${Math.min(0.18 * shadowStrength, 0.55)})`);
+    grad.addColorStop(0.85, `rgba(0,0,0,${Math.min(0.34 * shadowStrength, 0.8)})`);
+    grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.6 * shadowStrength, 1)})`);
     ctx.globalCompositeOperation = "source-atop";
     ctx.fillStyle = grad;
     ctx.beginPath();

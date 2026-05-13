@@ -113,22 +113,22 @@ function drawBubbles(
         .padStart(2, "0");
     ctx.fill();
 
-    // Inner shadow: stronger radial gradient overlay clipped to the circle
+    // Inner shadow: colored radial gradient from center → edge, tinted by change direction
     ctx.save();
-    const offsetX = b.radius * dpr * 0.18;
-    const offsetY = b.radius * dpr * 0.12;
+    const shadowRgb = isPositive ? "52,211,153" : "248,113,113";
     const grad = ctx.createRadialGradient(
-      b.x * dpr - offsetX,
-      b.y * dpr - offsetY,
-      b.radius * dpr * 0.12,
+      b.x * dpr,
+      b.y * dpr,
+      b.radius * dpr * 0.35,
       b.x * dpr,
       b.y * dpr,
       b.radius * dpr
     );
-    grad.addColorStop(0, "rgba(0,0,0,0)");
-    grad.addColorStop(0.5, `rgba(0,0,0,${Math.min(0.35 * shadowStrength, 0.75)})`);
-    grad.addColorStop(0.85, `rgba(0,0,0,${Math.min(0.6 * shadowStrength, 0.92)})`);
-    grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.8 * shadowStrength, 1)})`);
+    grad.addColorStop(0,    `rgba(${shadowRgb},0)`);
+    grad.addColorStop(0.55, `rgba(${shadowRgb},0)`);
+    grad.addColorStop(0.78, `rgba(${shadowRgb},${Math.min(0.25 * shadowStrength, 0.55)})`);
+    grad.addColorStop(0.92, `rgba(${shadowRgb},${Math.min(0.5  * shadowStrength, 0.82)})`);
+    grad.addColorStop(1,    `rgba(${shadowRgb},${Math.min(0.7  * shadowStrength, 1)})`);
     ctx.globalCompositeOperation = "source-atop";
     ctx.fillStyle = grad;
     ctx.beginPath();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
 
@@ -39,6 +39,11 @@ export default function BubbleTooltip({
   onClose,
 }: BubbleTooltipProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [token.id]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -58,14 +63,13 @@ export default function BubbleTooltip({
   }, [onClose]);
 
   const tooltipWidth = 200;
-  const tooltipHeight = 160;
   let left = x + 12;
-  let top = y - tooltipHeight / 2;
+  let top = y - 80;
 
   if (typeof window !== "undefined") {
     if (left + tooltipWidth > window.innerWidth - 16) left = x - tooltipWidth - 12;
     if (top < 8) top = 8;
-    if (top + tooltipHeight > window.innerHeight - 8) top = window.innerHeight - tooltipHeight - 8;
+    if (top + 160 > window.innerHeight - 8) top = window.innerHeight - 160 - 8;
   }
 
   const change = getChange(token, timeframe);
@@ -83,8 +87,22 @@ export default function BubbleTooltip({
       }}
     >
       <div className="flex items-center gap-2 mb-2">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={token.image} alt={token.symbol} className="w-6 h-6 rounded-full" />
+        {!imgError && token.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={token.image}
+            alt={token.symbol}
+            className="w-6 h-6 rounded-full"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
+            style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+          >
+            {token.symbol.slice(0, 2)}
+          </div>
+        )}
         <div>
           <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
             {token.name}

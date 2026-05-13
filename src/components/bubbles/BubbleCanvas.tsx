@@ -91,13 +91,13 @@ function drawBubbles(
   // Glow parameters keyed by absolute % change bracket (every 5%)
   // { shadowBlur (px), innerOpacity at [75%, 90%, 100%] radius }
   const GLOW_STEPS: { maxPct: number; blur: number; op75: number; op90: number; op100: number }[] = [
-    { maxPct:  5, blur:  8, op75: 0.10, op90: 0.22, op100: 0.35 },
-    { maxPct: 10, blur: 14, op75: 0.18, op90: 0.38, op100: 0.55 },
-    { maxPct: 15, blur: 20, op75: 0.28, op90: 0.55, op100: 0.72 },
-    { maxPct: 20, blur: 28, op75: 0.38, op90: 0.68, op100: 0.85 },
-    { maxPct: 25, blur: 35, op75: 0.48, op90: 0.80, op100: 0.93 },
-    { maxPct: 35, blur: 42, op75: 0.56, op90: 0.88, op100: 0.97 },
-    { maxPct: Infinity, blur: 50, op75: 0.65, op90: 0.95, op100: 1.00 },
+    { maxPct:  5, blur: 18, op75: 0.30, op90: 0.55, op100: 0.72 },
+    { maxPct: 10, blur: 26, op75: 0.42, op90: 0.68, op100: 0.82 },
+    { maxPct: 15, blur: 34, op75: 0.52, op90: 0.78, op100: 0.90 },
+    { maxPct: 20, blur: 42, op75: 0.60, op90: 0.86, op100: 0.95 },
+    { maxPct: 25, blur: 52, op75: 0.68, op90: 0.92, op100: 0.97 },
+    { maxPct: 35, blur: 62, op75: 0.75, op90: 0.96, op100: 0.99 },
+    { maxPct: Infinity, blur: 75, op75: 0.82, op90: 1.00, op100: 1.00 },
   ];
 
   function getGlow(absPct: number) {

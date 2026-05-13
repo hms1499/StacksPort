@@ -46,7 +46,7 @@ function mapCoin(
 export async function GET() {
   try {
     const topRes = await fetch(
-      `${COINGECKO}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=false&price_change_percentage=1h,7d`,
+      `${COINGECKO}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=1h,7d`,
       { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!topRes.ok) {

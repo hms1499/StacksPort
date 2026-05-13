@@ -228,7 +228,7 @@ function packCircles(
   // Scale radii down if bubbles would otherwise overfill the canvas
   const totalBubbleArea = radii.reduce((sum, r) => sum + Math.PI * r * r, 0);
   const canvasArea = Math.max(1, width * height);
-  const maxFill = 0.55;
+  const maxFill = 0.72;
   const scaleFactor = totalBubbleArea > 0 ? Math.min(1, Math.sqrt((canvasArea * maxFill) / totalBubbleArea)) : 1;
   const scaledRadii = radii.map((r) => r * scaleFactor);
 

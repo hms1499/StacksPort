@@ -19,6 +19,20 @@ function fmtPrice(v: number): string {
   return `$${v.toFixed(6)}`;
 }
 
+// Maps CoinGecko coin id → SwapWidget token id when the token is tradeable on Bitflow.
+const COINGECKO_TO_SWAP_ID: Record<string, string> = {
+  blockstack: "stx",
+  "sbtc-2": "sbtc",
+};
+
+function getSwapHref(coingeckoId: string): string {
+  const swapId = COINGECKO_TO_SWAP_ID[coingeckoId];
+  if (!swapId) return "/trade";
+  // Intent: acquire this token, so it's the destination.
+  const fromId = swapId === "stx" ? "sbtc" : "stx";
+  return `/trade?from=${fromId}&to=${swapId}`;
+}
+
 function getChange(token: BubbleToken, tf: Timeframe): number {
   if (tf === "1h") return token.change1h;
   if (tf === "7d") return token.change7d;
@@ -156,14 +170,24 @@ export default function BubbleTooltip({
         </div>
 
         <div className="flex gap-2">
-          {token.isStacks ? (
+          {token.isStacks && COINGECKO_TO_SWAP_ID[token.id] ? (
             <Link
-              href="/trade"
+              href={getSwapHref(token.id)}
               className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
               style={{ backgroundColor: "#408A71", color: "white" }}
             >
               Swap on Bitflow
             </Link>
+          ) : token.isStacks ? (
+            <a
+              href="https://app.bitflow.finance/trade"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
+              style={{ backgroundColor: "#408A71", color: "white" }}
+            >
+              Trade on Bitflow ↗
+            </a>
           ) : (
             <a
               href={`https://www.coingecko.com/en/coins/${token.id}`}

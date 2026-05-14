@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Topbar from "@/components/layout/Topbar";
 import SwapWidget from "@/components/trade/SwapWidget";
 import MigrationWidget from "@/components/trade/MigrationWidget";
@@ -24,7 +25,9 @@ export default function TradePage() {
               </div>
               <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Swap</h2>
             </div>
-            <SwapWidget />
+            <Suspense fallback={null}>
+              <SwapWidget />
+            </Suspense>
           </MotionCard>
 
           {/* aeUSDC ↔ USDCx Migration Widget */}

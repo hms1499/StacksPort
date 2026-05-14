@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowDownUp,
   Loader2,
@@ -173,12 +174,50 @@ type Status = "idle" | "quoting" | "ready" | "swapping" | "success" | "error";
 
 const fromTokens = getSwappableFromTokens();
 
+function resolveInitialPair(
+  fromParam: string | null,
+  toParam: string | null
+): { from: SwapToken; to: SwapToken | null } {
+  const fromMatch = fromParam
+    ? fromTokens.find((t) => t.id === fromParam.toLowerCase())
+    : undefined;
+
+  // If only `to` provided, pick a sensible source: STX for sBTC, sBTC otherwise.
+  if (!fromMatch && toParam) {
+    const toId = toParam.toLowerCase();
+    const sourcesForTo = fromTokens.filter((t) =>
+      getValidDestinations(t.id).some((d) => d.id === toId)
+    );
+    const preferred =
+      sourcesForTo.find((t) => t.id === "stx") ?? sourcesForTo[0];
+    if (preferred) {
+      const dest = getValidDestinations(preferred.id).find((d) => d.id === toId);
+      if (dest) return { from: preferred, to: dest };
+    }
+  }
+
+  const from = fromMatch ?? fromTokens[0];
+  const dests = getValidDestinations(from.id);
+  const toMatch = toParam
+    ? dests.find((d) => d.id === toParam.toLowerCase())
+    : null;
+  return { from, to: toMatch ?? null };
+}
+
 export default function SwapWidget() {
+  const searchParams = useSearchParams();
   const { stxAddress, isConnected, network } = useWalletStore();
   const { addNotification } = useNotificationStore();
 
-  const [fromToken, setFromToken] = useState<SwapToken>(fromTokens[0]);
-  const [toToken, setToToken] = useState<SwapToken | null>(null);
+  const initialPair = (() => {
+    return resolveInitialPair(
+      searchParams.get("from"),
+      searchParams.get("to")
+    );
+  })();
+
+  const [fromToken, setFromToken] = useState<SwapToken>(initialPair.from);
+  const [toToken, setToToken] = useState<SwapToken | null>(initialPair.to);
   const [amountIn, setAmountIn] = useState("");
   const [slippage, setSlippage] = useState(0.5);
 

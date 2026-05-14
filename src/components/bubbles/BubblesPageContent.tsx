@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import BubbleCanvas from "./BubbleCanvas";
@@ -9,10 +10,42 @@ import TimeframeToggle, { type Timeframe } from "./TimeframeToggle";
 import ScopeToggle, { type Scope } from "./ScopeToggle";
 import ReloadProgressBar from "./ReloadProgressBar";
 
+const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
+const VALID_SCOPE: Scope[] = ["all", "stacks"];
+
 export default function BubblesPageContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const tfParam = searchParams.get("tf") as Timeframe | null;
+  const scopeParam = searchParams.get("scope") as Scope | null;
+  const timeframe: Timeframe =
+    tfParam && VALID_TF.includes(tfParam) ? tfParam : "24h";
+  const scope: Scope =
+    scopeParam && VALID_SCOPE.includes(scopeParam) ? scopeParam : "all";
+
+  const updateParam = useCallback(
+    (key: "tf" | "scope", value: string, defaultValue: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value === defaultValue) params.delete(key);
+      else params.set(key, value);
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
+
+  const setTimeframe = useCallback(
+    (tf: Timeframe) => updateParam("tf", tf, "24h"),
+    [updateParam]
+  );
+  const setScope = useCallback(
+    (s: Scope) => updateParam("scope", s, "all"),
+    [updateParam]
+  );
+
   const { data: tokens, isLoading, error, isValidating } = useBubblesData();
-  const [timeframe, setTimeframe] = useState<Timeframe>("24h");
-  const [scope, setScope] = useState<Scope>("all");
   const [selected, setSelected] = useState<{
     token: BubbleToken;
     x: number;

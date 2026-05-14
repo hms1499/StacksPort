@@ -4,13 +4,11 @@ const COINGECKO = "https://api.coingecko.com/api/v3";
 
 const STACKS_TOKEN_IDS = [
   "blockstack",
+  "sbtc-2",
   "alexgo",
-  "welshcorgicoin",
   "velar",
-  "staked-stx",
   "hermetica-usdh",
-  "arkadiko-protocol",
-  "lisa-staked-stx",
+  "welsh-corgi-coin",
 ];
 
 export interface BubbleToken {

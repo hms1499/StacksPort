@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "stacksport.bubbles.watchlist.v1";
 
@@ -25,35 +25,73 @@ function writeStorage(ids: Set<string>) {
   }
 }
 
+// Shared in-memory state so every useWatchlist() consumer sees the same Set
+// without waiting for a re-render or another tab's storage event.
+let current: Set<string> = new Set();
+let hydrated = false;
+const listeners = new Set<() => void>();
+
+function emit() {
+  for (const l of listeners) l();
+}
+
+function ensureHydrated() {
+  if (hydrated || typeof window === "undefined") return;
+  current = readStorage();
+  hydrated = true;
+}
+
+function subscribe(listener: () => void): () => void {
+  ensureHydrated();
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function getSnapshot(): Set<string> {
+  return current;
+}
+
+function getServerSnapshot(): Set<string> {
+  return current;
+}
+
+function setIds(next: Set<string>) {
+  current = next;
+  writeStorage(next);
+  emit();
+}
+
+// Sync from other tabs/windows. Attached once at module load.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== STORAGE_KEY) return;
+    current = readStorage();
+    emit();
+  });
+}
+
 export function useWatchlist() {
-  const [ids, setIds] = useState<Set<string>>(() => new Set());
-  const [hydrated, setHydrated] = useState(false);
+  const ids = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
+  // Trigger hydration on mount so the first paint matches localStorage.
   useEffect(() => {
-    setIds(readStorage());
-    setHydrated(true);
-  }, []);
-
-  // Sync across tabs
-  useEffect(() => {
-    function onStorage(e: StorageEvent) {
-      if (e.key === STORAGE_KEY) setIds(readStorage());
+    if (!hydrated) {
+      current = readStorage();
+      hydrated = true;
+      emit();
     }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   const toggle = useCallback((id: string) => {
-    setIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      writeStorage(next);
-      return next;
-    });
+    const next = new Set(current);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setIds(next);
   }, []);
 
   const has = useCallback((id: string) => ids.has(id), [ids]);
 
-  return { ids, has, toggle, hydrated, size: ids.size };
+  return { ids, has, toggle, size: ids.size };
 }

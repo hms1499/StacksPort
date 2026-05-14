@@ -100,25 +100,27 @@ export default function BubblesPageContent() {
   return (
     <div className="flex flex-col h-full">
       <div
-        className="flex items-center justify-between px-4 py-3 relative"
+        className="px-4 py-3 relative flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
         style={{ borderBottom: "1px solid var(--border-subtle)" }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <h1
-            className="text-base font-semibold"
+            className="text-base font-semibold shrink-0"
             style={{ color: "var(--text-primary)" }}
           >
             Crypto Bubbles
           </h1>
-          <ScopeToggle
-            value={scope}
-            onChange={setScope}
-            stacksCount={stacksCount}
-            watchlistCount={watchlistCount}
-          />
+          <div className="flex-1 sm:flex-initial overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <ScopeToggle
+              value={scope}
+              onChange={setScope}
+              stacksCount={stacksCount}
+              watchlistCount={watchlistCount}
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap justify-end">
-          <SearchInput value={search} onChange={setSearch} placeholder="Search symbol…" />
+        <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:flex-wrap sm:justify-end *:shrink-0">
+          <SearchInput value={search} onChange={setSearch} placeholder="Search…" />
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
         </div>

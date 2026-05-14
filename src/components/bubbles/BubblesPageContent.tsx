@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useHoldings } from "@/hooks/useHoldings";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import BubbleCanvas from "./BubbleCanvas";
 import BubbleTooltip from "./BubbleTooltip";
@@ -58,6 +59,8 @@ export default function BubblesPageContent() {
 
   const { data: tokens, isLoading, error, isValidating } = useBubblesData();
   const { ids: watchlistIds, size: watchlistCount } = useWatchlist();
+  const { holdings } = useHoldings();
+  const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<{
     token: BubbleToken;
@@ -156,6 +159,8 @@ export default function BubblesPageContent() {
             tokens={visibleTokens}
             timeframe={timeframe}
             metric={metric}
+            focusedId={selected?.token.id ?? null}
+            heldIds={heldIds}
             onBubbleClick={handleBubbleClick}
           />
         )}

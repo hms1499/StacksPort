@@ -102,9 +102,12 @@ function drawBubbles(
   timeframe: Timeframe,
   dpr: number,
   images: Record<string, HTMLImageElement | null>,
-  hoveredId: string | null = null
+  hoveredId: string | null = null,
+  focusedId: string | null = null,
+  heldIds: Set<string> = new Set()
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  const hasFocus = focusedId !== null;
 
   // Glow parameters keyed by absolute % change bracket (every 5%)
   // { shadowBlur (px), innerOpacity at [75%, 90%, 100%] radius }
@@ -128,8 +131,12 @@ function drawBubbles(
     const color = isPositive ? POSITIVE_COLOR : NEGATIVE_COLOR;
     const glowRgb = isPositive ? "52,211,153" : "248,113,113";
     const glow = getGlow(Math.abs(change));
+    const isFocused = focusedId === b.token.id;
+    const isDimmed = hasFocus && !isFocused;
+    const isHeld = heldIds.has(b.token.id);
 
     ctx.save();
+    if (isDimmed) ctx.globalAlpha = 0.22;
 
     // Layer 1: dark base fill (near black, very faint color tint)
     ctx.beginPath();
@@ -157,11 +164,24 @@ function drawBubbles(
 
     // Layer 3: glowing neon stroke + outer halo
     const isHovered = hoveredId === b.token.id;
-    ctx.shadowBlur = (isHovered ? glow.blur * 1.5 : glow.blur) * dpr;
+    const boost = isFocused || isHovered;
+    ctx.shadowBlur = (boost ? glow.blur * 1.6 : glow.blur) * dpr;
     ctx.shadowColor = color;
-    ctx.strokeStyle = isHovered ? "#ffffff" : color;
-    ctx.lineWidth = (isHovered ? 4 : 3) * dpr;
+    ctx.strokeStyle = boost ? "#ffffff" : color;
+    ctx.lineWidth = (isFocused ? 4.5 : isHovered ? 4 : 3) * dpr;
     ctx.stroke();
+
+    // Layer 4: dashed white ring for tokens the user holds
+    if (isHeld) {
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(b.x * dpr, b.y * dpr, (b.radius + 5) * dpr, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.lineWidth = 1.5 * dpr;
+      ctx.setLineDash([5 * dpr, 4 * dpr]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
 
     ctx.restore();
 
@@ -329,6 +349,8 @@ interface BubbleCanvasProps {
   tokens: BubbleToken[];
   timeframe: Timeframe;
   metric: Metric;
+  focusedId?: string | null;
+  heldIds?: Set<string>;
   onBubbleClick: (token: BubbleToken, x: number, y: number) => void;
 }
 
@@ -336,8 +358,14 @@ export default function BubbleCanvas({
   tokens,
   timeframe,
   metric,
+  focusedId = null,
+  heldIds,
   onBubbleClick,
 }: BubbleCanvasProps) {
+  const heldRef = useRef<Set<string>>(heldIds ?? new Set());
+  heldRef.current = heldIds ?? new Set();
+  const focusedRef = useRef<string | null>(focusedId);
+  focusedRef.current = focusedId;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const bubblesRef = useRef<LayoutBubble[]>([]);
@@ -385,7 +413,7 @@ export default function BubbleCanvas({
         }
       }
     }
-    if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
+    if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current, focusedRef.current, heldRef.current);
   }, [tokens, timeframe, metric]);
 
   useEffect(() => {
@@ -455,7 +483,7 @@ export default function BubbleCanvas({
         return { ...b, x, y } as LayoutBubble;
       });
 
-      drawBubbles(ctx as CanvasRenderingContext2D, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
+      drawBubbles(ctx as CanvasRenderingContext2D, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current, focusedRef.current, heldRef.current);
       animRef.current = requestAnimationFrame(tick);
     }
 

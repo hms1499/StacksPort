@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useHoldings } from "@/hooks/useHoldings";
 import type { Timeframe } from "./TimeframeToggle";
 import Sparkline from "./Sparkline";
 
@@ -19,6 +20,12 @@ function fmtUsd(v: number): string {
 function fmtPrice(v: number): string {
   if (v >= 1) return `$${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   return `$${v.toFixed(6)}`;
+}
+
+function fmtAmount(v: number): string {
+  if (v >= 1000) return v.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  if (v >= 1) return v.toLocaleString("en-US", { maximumFractionDigits: 4 });
+  return v.toFixed(6).replace(/\.?0+$/, "");
 }
 
 // Maps CoinGecko coin id → SwapWidget token id when the token is tradeable on Bitflow.
@@ -66,6 +73,8 @@ export default function BubbleTooltip({
   const [isMobile, setIsMobile] = useState(false);
   const { has: isStarred, toggle: toggleStar } = useWatchlist();
   const starred = isStarred(token.id);
+  const { holdings } = useHoldings();
+  const held = holdings[token.id];
 
   useEffect(() => {
     setImgError(false);
@@ -223,6 +232,26 @@ export default function BubbleTooltip({
             7d price
           </div>
         </div>
+
+        {held && (
+          <div
+            className="flex items-center justify-between text-xs mb-3 px-2.5 py-1.5 rounded-lg"
+            style={{
+              backgroundColor: "rgba(64,138,113,0.12)",
+              border: "1px solid rgba(64,138,113,0.35)",
+            }}
+          >
+            <span className="font-semibold" style={{ color: "#5fb594" }}>
+              You hold
+            </span>
+            <span className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              {fmtAmount(held.amount)} {token.symbol}
+              <span className="ml-1.5" style={{ color: "var(--text-muted)" }}>
+                ≈ {fmtPrice(held.amount * token.price)}
+              </span>
+            </span>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs mb-3">
           <Stat label="MCap" value={fmtUsd(token.marketCap)} />

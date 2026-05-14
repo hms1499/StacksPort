@@ -8,6 +8,9 @@ const STACKS_TOKEN_IDS = [
   "welshcorgicoin",
   "velar",
   "staked-stx",
+  "hermetica-usdh",
+  "arkadiko-protocol",
+  "lisa-staked-stx",
 ];
 
 export interface BubbleToken {
@@ -21,6 +24,9 @@ export interface BubbleToken {
   change1h: number;
   change24h: number;
   change7d: number;
+  change30d: number;
+  change1y: number;
+  sparkline7d: number[];
   isStacks: boolean;
 }
 
@@ -39,6 +45,10 @@ function mapCoin(
     change1h: (coin.price_change_percentage_1h_in_currency as number) ?? 0,
     change24h: (coin.price_change_percentage_24h as number) ?? 0,
     change7d: (coin.price_change_percentage_7d_in_currency as number) ?? 0,
+    change30d: (coin.price_change_percentage_30d_in_currency as number) ?? 0,
+    change1y: (coin.price_change_percentage_1y_in_currency as number) ?? 0,
+    sparkline7d:
+      ((coin.sparkline_in_7d as { price?: number[] } | undefined)?.price ?? []) as number[],
     isStacks: forceStacks || STACKS_TOKEN_IDS.includes(coin.id as string),
   };
 }
@@ -46,7 +56,7 @@ function mapCoin(
 export async function GET() {
   try {
     const topRes = await fetch(
-      `${COINGECKO}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=1h,7d`,
+      `${COINGECKO}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=true&price_change_percentage=1h,7d,30d,1y`,
       { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
     );
     if (!topRes.ok) {
@@ -67,7 +77,7 @@ export async function GET() {
     if (missingStacks.length > 0) {
       const ids = missingStacks.join(",");
       const stacksRes = await fetch(
-        `${COINGECKO}/coins/markets?vs_currency=usd&ids=${ids}&sparkline=false&price_change_percentage=1h,7d`,
+        `${COINGECKO}/coins/markets?vs_currency=usd&ids=${ids}&sparkline=true&price_change_percentage=1h,7d,30d,1y`,
         { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
       );
       if (stacksRes.ok) {

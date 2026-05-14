@@ -63,6 +63,8 @@ interface SimulationNode {
 function getChange(token: BubbleToken, tf: Timeframe): number {
   if (tf === "1h") return token.change1h;
   if (tf === "7d") return token.change7d;
+  if (tf === "30d") return token.change30d;
+  if (tf === "1y") return token.change1y;
   return token.change24h;
 }
 

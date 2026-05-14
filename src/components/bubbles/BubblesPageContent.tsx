@@ -1,21 +1,33 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import BubbleCanvas from "./BubbleCanvas";
 import BubbleTooltip from "./BubbleTooltip";
 import TimeframeToggle, { type Timeframe } from "./TimeframeToggle";
+import ScopeToggle, { type Scope } from "./ScopeToggle";
 import ReloadProgressBar from "./ReloadProgressBar";
 
 export default function BubblesPageContent() {
   const { data: tokens, isLoading, error, isValidating } = useBubblesData();
   const [timeframe, setTimeframe] = useState<Timeframe>("24h");
+  const [scope, setScope] = useState<Scope>("all");
   const [selected, setSelected] = useState<{
     token: BubbleToken;
     x: number;
     y: number;
   } | null>(null);
+
+  const stacksCount = useMemo(
+    () => tokens?.filter((t) => t.isStacks).length ?? 0,
+    [tokens]
+  );
+
+  const visibleTokens = useMemo(() => {
+    if (!tokens) return tokens;
+    return scope === "stacks" ? tokens.filter((t) => t.isStacks) : tokens;
+  }, [tokens, scope]);
 
   const handleBubbleClick = useCallback(
     (token: BubbleToken, x: number, y: number) => {
@@ -34,12 +46,15 @@ export default function BubblesPageContent() {
         className="flex items-center justify-between px-4 py-3 relative"
         style={{ borderBottom: "1px solid var(--border-subtle)" }}
       >
-        <h1
-          className="text-base font-semibold"
-          style={{ color: "var(--text-primary)" }}
-        >
-          Crypto Bubbles
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1
+            className="text-base font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Crypto Bubbles
+          </h1>
+          <ScopeToggle value={scope} onChange={setScope} stacksCount={stacksCount} />
+        </div>
         <TimeframeToggle value={timeframe} onChange={setTimeframe} />
 
         {tokens && tokens.length > 0 && (
@@ -68,12 +83,20 @@ export default function BubblesPageContent() {
           </div>
         )}
 
-        {tokens && tokens.length > 0 && (
+        {visibleTokens && visibleTokens.length > 0 && (
           <BubbleCanvas
-            tokens={tokens}
+            tokens={visibleTokens}
             timeframe={timeframe}
             onBubbleClick={handleBubbleClick}
           />
+        )}
+
+        {visibleTokens && visibleTokens.length === 0 && tokens && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              No Stacks ecosystem tokens available.
+            </p>
+          </div>
         )}
 
         {selected && (

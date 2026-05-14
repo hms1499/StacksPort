@@ -2,12 +2,14 @@
 
 import { cn } from "@/lib/utils";
 
-export type Timeframe = "1h" | "24h" | "7d";
+export type Timeframe = "1h" | "24h" | "7d" | "30d" | "1y";
 
 const OPTIONS: { value: Timeframe; label: string }[] = [
   { value: "1h", label: "1H" },
   { value: "24h", label: "24H" },
   { value: "7d", label: "7D" },
+  { value: "30d", label: "30D" },
+  { value: "1y", label: "1Y" },
 ];
 
 interface TimeframeToggleProps {

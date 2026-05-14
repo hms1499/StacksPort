@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
+import Sparkline from "./Sparkline";
 
 function fmtUsd(v: number): string {
   if (v >= 1_000_000_000_000) return `$${(v / 1_000_000_000_000).toFixed(2)}T`;
@@ -20,6 +22,8 @@ function fmtPrice(v: number): string {
 function getChange(token: BubbleToken, tf: Timeframe): number {
   if (tf === "1h") return token.change1h;
   if (tf === "7d") return token.change7d;
+  if (tf === "30d") return token.change30d;
+  if (tf === "1y") return token.change1y;
   return token.change24h;
 }
 
@@ -30,6 +34,9 @@ interface BubbleTooltipProps {
   timeframe: Timeframe;
   onClose: () => void;
 }
+
+const CARD_W = 280;
+const CARD_H = 320;
 
 export default function BubbleTooltip({
   token,
@@ -62,88 +69,125 @@ export default function BubbleTooltip({
     };
   }, [onClose]);
 
-  const tooltipWidth = 200;
   let left = x + 12;
-  let top = y - 80;
+  let top = y - CARD_H / 2;
 
   if (typeof window !== "undefined") {
-    if (left + tooltipWidth > window.innerWidth - 16) left = x - tooltipWidth - 12;
+    if (left + CARD_W > window.innerWidth - 16) left = x - CARD_W - 12;
+    if (left < 8) left = 8;
     if (top < 8) top = 8;
-    if (top + 160 > window.innerHeight - 8) top = window.innerHeight - 160 - 8;
+    if (top + CARD_H > window.innerHeight - 8) top = window.innerHeight - CARD_H - 8;
   }
 
   const change = getChange(token, timeframe);
   const isPositive = change >= 0;
+  const accent = isPositive ? "#34d399" : "#f87171";
 
   return (
     <div
       ref={ref}
-      className="fixed z-50 rounded-xl border shadow-2xl p-3 min-w-[200px]"
+      className="fixed z-50 rounded-2xl border shadow-2xl overflow-hidden"
       style={{
         left,
         top,
+        width: CARD_W,
         backgroundColor: "var(--bg-card)",
         borderColor: "var(--border-subtle)",
       }}
     >
-      <div className="flex items-center gap-2 mb-2">
-        {!imgError && token.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={token.image}
-            alt={token.symbol}
-            className="w-6 h-6 rounded-full"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-            style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
-          >
-            {token.symbol.slice(0, 2)}
-          </div>
-        )}
-        <div>
-          <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            {token.name}
-          </div>
-          <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-            {token.symbol}
+      <div className="p-3.5">
+        <div className="flex items-center gap-2.5 mb-3">
+          {!imgError && token.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={token.image}
+              alt={token.symbol}
+              className="w-8 h-8 rounded-full"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+              style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+            >
+              {token.symbol.slice(0, 2)}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold truncate flex items-center gap-1.5" style={{ color: "var(--text-primary)" }}>
+              {token.name}
+              {token.isStacks && (
+                <span
+                  className="text-[9px] px-1.5 py-0.5 rounded font-semibold"
+                  style={{ backgroundColor: "rgba(64,138,113,0.18)", color: "#5fb594" }}
+                >
+                  STACKS
+                </span>
+              )}
+            </div>
+            <div className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {token.symbol}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-        <div>
-          <span style={{ color: "var(--text-muted)" }}>Price</span>
-          <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
+
+        <div className="flex items-baseline justify-between mb-2">
+          <div className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
             {fmtPrice(token.price)}
           </div>
-        </div>
-        <div>
-          <span style={{ color: "var(--text-muted)" }}>
-            {timeframe.toUpperCase()}
-          </span>
-          <div
-            className="font-semibold"
-            style={{ color: isPositive ? "#34d399" : "#f87171" }}
-          >
+          <div className="text-sm font-semibold" style={{ color: accent }}>
             {isPositive ? "+" : ""}
-            {change.toFixed(1)}%
+            {change.toFixed(2)}% · {timeframe.toUpperCase()}
           </div>
         </div>
-        <div>
-          <span style={{ color: "var(--text-muted)" }}>MCap</span>
-          <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
-            {fmtUsd(token.marketCap)}
+
+        <div className="-mx-1 mb-3">
+          <Sparkline data={token.sparkline7d} width={CARD_W - 20} height={56} />
+          <div className="text-[10px] mt-0.5 px-1" style={{ color: "var(--text-muted)" }}>
+            7d price
           </div>
         </div>
-        <div>
-          <span style={{ color: "var(--text-muted)" }}>Vol 24h</span>
-          <div className="font-semibold" style={{ color: "var(--text-primary)" }}>
-            {fmtUsd(token.volume24h)}
-          </div>
+
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs mb-3">
+          <Stat label="MCap" value={fmtUsd(token.marketCap)} />
+          <Stat label="Vol 24h" value={fmtUsd(token.volume24h)} />
+          <Stat label="30d" value={`${token.change30d >= 0 ? "+" : ""}${token.change30d.toFixed(1)}%`} color={token.change30d >= 0 ? "#34d399" : "#f87171"} />
+          <Stat label="1y" value={`${token.change1y >= 0 ? "+" : ""}${token.change1y.toFixed(1)}%`} color={token.change1y >= 0 ? "#34d399" : "#f87171"} />
+        </div>
+
+        <div className="flex gap-2">
+          {token.isStacks ? (
+            <Link
+              href="/trade"
+              className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
+              style={{ backgroundColor: "#408A71", color: "white" }}
+            >
+              Swap on Bitflow
+            </Link>
+          ) : (
+            <a
+              href={`https://www.coingecko.com/en/coins/${token.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
+              style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-primary)" }}
+            >
+              View on CoinGecko
+            </a>
+          )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div className="flex justify-between items-baseline">
+      <span style={{ color: "var(--text-muted)" }}>{label}</span>
+      <span className="font-semibold" style={{ color: color ?? "var(--text-primary)" }}>
+        {value}
+      </span>
     </div>
   );
 }

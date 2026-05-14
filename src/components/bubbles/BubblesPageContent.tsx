@@ -3,15 +3,17 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
+import { useWatchlist } from "@/hooks/useWatchlist";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import BubbleCanvas from "./BubbleCanvas";
 import BubbleTooltip from "./BubbleTooltip";
 import TimeframeToggle, { type Timeframe } from "./TimeframeToggle";
 import ScopeToggle, { type Scope } from "./ScopeToggle";
+import SearchInput from "./SearchInput";
 import ReloadProgressBar from "./ReloadProgressBar";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
-const VALID_SCOPE: Scope[] = ["all", "stacks"];
+const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
 
 export default function BubblesPageContent() {
   const router = useRouter();
@@ -46,6 +48,8 @@ export default function BubblesPageContent() {
   );
 
   const { data: tokens, isLoading, error, isValidating } = useBubblesData();
+  const { ids: watchlistIds, size: watchlistCount } = useWatchlist();
+  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<{
     token: BubbleToken;
     x: number;
@@ -59,8 +63,19 @@ export default function BubblesPageContent() {
 
   const visibleTokens = useMemo(() => {
     if (!tokens) return tokens;
-    return scope === "stacks" ? tokens.filter((t) => t.isStacks) : tokens;
-  }, [tokens, scope]);
+    let filtered = tokens;
+    if (scope === "stacks") filtered = filtered.filter((t) => t.isStacks);
+    else if (scope === "watchlist") filtered = filtered.filter((t) => watchlistIds.has(t.id));
+    const q = search.trim().toLowerCase();
+    if (q) {
+      filtered = filtered.filter(
+        (t) =>
+          t.symbol.toLowerCase().includes(q) ||
+          t.name.toLowerCase().includes(q)
+      );
+    }
+    return filtered;
+  }, [tokens, scope, watchlistIds, search]);
 
   const handleBubbleClick = useCallback(
     (token: BubbleToken, x: number, y: number) => {
@@ -86,9 +101,17 @@ export default function BubblesPageContent() {
           >
             Crypto Bubbles
           </h1>
-          <ScopeToggle value={scope} onChange={setScope} stacksCount={stacksCount} />
+          <ScopeToggle
+            value={scope}
+            onChange={setScope}
+            stacksCount={stacksCount}
+            watchlistCount={watchlistCount}
+          />
         </div>
-        <TimeframeToggle value={timeframe} onChange={setTimeframe} />
+        <div className="flex items-center gap-2">
+          <SearchInput value={search} onChange={setSearch} placeholder="Search symbol…" />
+          <TimeframeToggle value={timeframe} onChange={setTimeframe} />
+        </div>
 
         {tokens && tokens.length > 0 && (
           <ReloadProgressBar
@@ -138,9 +161,13 @@ export default function BubblesPageContent() {
         )}
 
         {visibleTokens && visibleTokens.length === 0 && tokens && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-              No Stacks ecosystem tokens available.
+              {search.trim()
+                ? `No tokens match "${search}".`
+                : scope === "watchlist"
+                ? "Your watchlist is empty. Tap the ⭐ on any bubble to add it."
+                : "No Stacks ecosystem tokens available."}
             </p>
           </div>
         )}

@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Star } from "lucide-react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
+import { useWatchlist } from "@/hooks/useWatchlist";
 import type { Timeframe } from "./TimeframeToggle";
 import Sparkline from "./Sparkline";
 
@@ -61,6 +63,8 @@ export default function BubbleTooltip({
 }: BubbleTooltipProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [imgError, setImgError] = useState(false);
+  const { has: isStarred, toggle: toggleStar } = useWatchlist();
+  const starred = isStarred(token.id);
 
   useEffect(() => {
     setImgError(false);
@@ -143,6 +147,21 @@ export default function BubbleTooltip({
               {token.symbol}
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => toggleStar(token.id)}
+            aria-label={starred ? "Remove from watchlist" : "Add to watchlist"}
+            aria-pressed={starred}
+            className="p-1.5 rounded-md transition-colors hover:bg-white/5"
+            title={starred ? "Remove from watchlist" : "Add to watchlist"}
+          >
+            <Star
+              size={16}
+              strokeWidth={2}
+              fill={starred ? "#fbbf24" : "transparent"}
+              color={starred ? "#fbbf24" : "var(--text-muted)"}
+            />
+          </button>
         </div>
 
         <div className="flex items-baseline justify-between mb-2">

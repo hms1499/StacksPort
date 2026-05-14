@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { forceSimulation, forceCollide, forceCenter, forceManyBody } from "d3-force";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
+import type { Metric } from "./MetricToggle";
 
 const MIN_RADIUS = 22;
 const MAX_RADIUS = 110;
@@ -68,14 +69,29 @@ function getChange(token: BubbleToken, tf: Timeframe): number {
   return token.change24h;
 }
 
-function computeRadii(tokens: BubbleToken[], timeframe: Timeframe): number[] {
+function getMetricValue(token: BubbleToken, metric: Metric, timeframe: Timeframe): number {
+  if (metric === "marketCap") return token.marketCap;
+  if (metric === "volume") return token.volume24h;
+  return Math.abs(getChange(token, timeframe));
+}
+
+function computeRadii(
+  tokens: BubbleToken[],
+  timeframe: Timeframe,
+  metric: Metric
+): number[] {
   if (tokens.length === 0) return [];
-  const changes = tokens.map((t) => Math.abs(getChange(t, timeframe)));
-  const minChange = Math.min(...changes);
-  const maxChange = Math.max(...changes);
-  const range = maxChange - minChange || 1;
-  return changes.map((change) => {
-    const norm = (change - minChange) / range;
+  // For MCap/Volume, use sqrt to compress wide ranges (area-style scaling).
+  const useSqrt = metric === "marketCap" || metric === "volume";
+  const values = tokens.map((t) => {
+    const v = getMetricValue(t, metric, timeframe);
+    return useSqrt ? Math.sqrt(Math.max(0, v)) : v;
+  });
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const range = maxV - minV || 1;
+  return values.map((v) => {
+    const norm = (v - minV) / range;
     return (MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * norm) * BUBBLE_SIZE_SCALE;
   });
 }
@@ -312,12 +328,14 @@ function packCircles(
 interface BubbleCanvasProps {
   tokens: BubbleToken[];
   timeframe: Timeframe;
+  metric: Metric;
   onBubbleClick: (token: BubbleToken, x: number, y: number) => void;
 }
 
 export default function BubbleCanvas({
   tokens,
   timeframe,
+  metric,
   onBubbleClick,
 }: BubbleCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -340,7 +358,7 @@ export default function BubbleCanvas({
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
-    const radii = computeRadii(tokens, timeframe);
+    const radii = computeRadii(tokens, timeframe, metric);
     bubblesRef.current = packCircles(tokens, radii, width, height);
 
     const ctx = canvas.getContext("2d");
@@ -368,7 +386,7 @@ export default function BubbleCanvas({
       }
     }
     if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current);
-  }, [tokens, timeframe]);
+  }, [tokens, timeframe, metric]);
 
   useEffect(() => {
     layout();

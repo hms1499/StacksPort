@@ -9,11 +9,13 @@ import BubbleCanvas from "./BubbleCanvas";
 import BubbleTooltip from "./BubbleTooltip";
 import TimeframeToggle, { type Timeframe } from "./TimeframeToggle";
 import ScopeToggle, { type Scope } from "./ScopeToggle";
+import MetricToggle, { type Metric } from "./MetricToggle";
 import SearchInput from "./SearchInput";
 import ReloadProgressBar from "./ReloadProgressBar";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
+const VALID_METRIC: Metric[] = ["change", "marketCap", "volume"];
 
 export default function BubblesPageContent() {
   const router = useRouter();
@@ -22,13 +24,16 @@ export default function BubblesPageContent() {
 
   const tfParam = searchParams.get("tf") as Timeframe | null;
   const scopeParam = searchParams.get("scope") as Scope | null;
+  const metricParam = searchParams.get("metric") as Metric | null;
   const timeframe: Timeframe =
     tfParam && VALID_TF.includes(tfParam) ? tfParam : "24h";
   const scope: Scope =
     scopeParam && VALID_SCOPE.includes(scopeParam) ? scopeParam : "all";
+  const metric: Metric =
+    metricParam && VALID_METRIC.includes(metricParam) ? metricParam : "change";
 
   const updateParam = useCallback(
-    (key: "tf" | "scope", value: string, defaultValue: string) => {
+    (key: "tf" | "scope" | "metric", value: string, defaultValue: string) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value === defaultValue) params.delete(key);
       else params.set(key, value);
@@ -44,6 +49,10 @@ export default function BubblesPageContent() {
   );
   const setScope = useCallback(
     (s: Scope) => updateParam("scope", s, "all"),
+    [updateParam]
+  );
+  const setMetric = useCallback(
+    (m: Metric) => updateParam("metric", m, "change"),
     [updateParam]
   );
 
@@ -108,8 +117,9 @@ export default function BubblesPageContent() {
             watchlistCount={watchlistCount}
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           <SearchInput value={search} onChange={setSearch} placeholder="Search symbol…" />
+          <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
         </div>
 
@@ -143,6 +153,7 @@ export default function BubblesPageContent() {
           <BubbleCanvas
             tokens={visibleTokens}
             timeframe={timeframe}
+            metric={metric}
             onBubbleClick={handleBubbleClick}
           />
         )}

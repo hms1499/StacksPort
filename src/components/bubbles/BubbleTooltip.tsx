@@ -63,12 +63,21 @@ export default function BubbleTooltip({
 }: BubbleTooltipProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [imgError, setImgError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { has: isStarred, toggle: toggleStar } = useWatchlist();
   const starred = isStarred(token.id);
 
   useEffect(() => {
     setImgError(false);
   }, [token.id]);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -90,7 +99,7 @@ export default function BubbleTooltip({
   let left = x + 12;
   let top = y - CARD_H / 2;
 
-  if (typeof window !== "undefined") {
+  if (!isMobile && typeof window !== "undefined") {
     if (left + CARD_W > window.innerWidth - 16) left = x - CARD_W - 12;
     if (left < 8) left = 8;
     if (top < 8) top = 8;
@@ -101,18 +110,52 @@ export default function BubbleTooltip({
   const isPositive = change >= 0;
   const accent = isPositive ? "#34d399" : "#f87171";
 
+  const sparklineWidth = isMobile
+    ? typeof window !== "undefined"
+      ? Math.min(window.innerWidth - 56, 600)
+      : 320
+    : CARD_W - 20;
+
   return (
-    <div
-      ref={ref}
-      className="fixed z-50 rounded-2xl border shadow-2xl overflow-hidden"
-      style={{
-        left,
-        top,
-        width: CARD_W,
-        backgroundColor: "var(--bg-card)",
-        borderColor: "var(--border-subtle)",
-      }}
-    >
+    <>
+      {isMobile && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+          onClick={onClose}
+          aria-hidden
+        />
+      )}
+      <div
+        ref={ref}
+        className={
+          isMobile
+            ? "fixed left-0 right-0 bottom-0 z-50 rounded-t-2xl border-t border-x shadow-2xl overflow-hidden animate-[slideUp_180ms_ease-out]"
+            : "fixed z-50 rounded-2xl border shadow-2xl overflow-hidden"
+        }
+        style={
+          isMobile
+            ? {
+                backgroundColor: "var(--bg-card)",
+                borderColor: "var(--border-subtle)",
+                paddingBottom: "env(safe-area-inset-bottom)",
+              }
+            : {
+                left,
+                top,
+                width: CARD_W,
+                backgroundColor: "var(--bg-card)",
+                borderColor: "var(--border-subtle)",
+              }
+        }
+      >
+        {isMobile && (
+          <div className="flex justify-center pt-2 pb-1">
+            <div
+              className="h-1 w-10 rounded-full"
+              style={{ backgroundColor: "var(--border-subtle)" }}
+            />
+          </div>
+        )}
       <div className="p-3.5">
         <div className="flex items-center gap-2.5 mb-3">
           {!imgError && token.image ? (
@@ -175,7 +218,7 @@ export default function BubbleTooltip({
         </div>
 
         <div className="-mx-1 mb-3">
-          <Sparkline data={token.sparkline7d} width={CARD_W - 20} height={56} />
+          <Sparkline data={token.sparkline7d} width={sparklineWidth} height={isMobile ? 72 : 56} />
           <div className="text-[10px] mt-0.5 px-1" style={{ color: "var(--text-muted)" }}>
             7d price
           </div>
@@ -220,7 +263,8 @@ export default function BubbleTooltip({
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

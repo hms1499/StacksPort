@@ -281,6 +281,11 @@ body {
   to   { outline-color: var(--accent); }
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
 /* ══════════════════════════════════════════════════════
    MOBILE SAFE AREA
 ══════════════════════════════════════════════════════ */

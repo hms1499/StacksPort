@@ -91,6 +91,19 @@ export default function BubblesPageContent() {
           />
         )}
 
+        {scope === "stacks" && visibleTokens && visibleTokens.length > 0 && (
+          <div
+            className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] px-2.5 py-1 rounded-full pointer-events-none"
+            style={{
+              backgroundColor: "rgba(0,0,0,0.55)",
+              color: "var(--text-muted)",
+              border: "1px solid var(--border-subtle)",
+            }}
+          >
+            Showing Stacks tokens with a CoinGecko price feed · DEX-only tokens not included
+          </div>
+        )}
+
         {visibleTokens && visibleTokens.length === 0 && tokens && (
           <div className="absolute inset-0 flex items-center justify-center">
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>

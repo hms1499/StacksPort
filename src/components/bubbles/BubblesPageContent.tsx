@@ -279,7 +279,10 @@ export default function BubblesPageContent() {
         )}
 
         {visibleTokens && visibleTokens.length === 0 && tokens && (
-          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+            <div className="text-3xl opacity-60">
+              {search.trim() ? "🔎" : scope === "watchlist" ? "⭐" : "📭"}
+            </div>
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
               {search.trim()
                 ? `No tokens match "${search}".`
@@ -287,6 +290,34 @@ export default function BubblesPageContent() {
                 ? "Your watchlist is empty. Tap the ⭐ on any bubble to add it."
                 : "No Stacks ecosystem tokens available."}
             </p>
+            {search.trim() && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="text-xs px-3 py-1 rounded-md hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--bg-card)",
+                  border: "1px solid var(--border-subtle)",
+                  color: "var(--text-primary)",
+                }}
+              >
+                Clear search
+              </button>
+            )}
+            {!search.trim() && scope === "watchlist" && (
+              <button
+                type="button"
+                onClick={() => setScope("all")}
+                className="text-xs px-3 py-1 rounded-md hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--bg-card)",
+                  border: "1px solid var(--border-subtle)",
+                  color: "var(--text-primary)",
+                }}
+              >
+                Browse all tokens
+              </button>
+            )}
           </div>
         )}
 

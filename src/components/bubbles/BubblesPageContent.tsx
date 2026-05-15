@@ -242,7 +242,18 @@ export default function BubblesPageContent() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("bubbles:paused") === "1";
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("bubbles:paused", paused ? "1" : "0");
+    } catch {
+      // ignore
+    }
+  }, [paused]);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 639px)");

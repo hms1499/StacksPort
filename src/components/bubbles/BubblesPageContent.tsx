@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";
@@ -26,6 +26,7 @@ export default function BubblesPageContent() {
   const tfParam = searchParams.get("tf") as Timeframe | null;
   const scopeParam = searchParams.get("scope") as Scope | null;
   const metricParam = searchParams.get("metric") as Metric | null;
+  const qParam = searchParams.get("q") ?? "";
   const timeframe: Timeframe =
     tfParam && VALID_TF.includes(tfParam) ? tfParam : "24h";
   const scope: Scope =
@@ -61,7 +62,21 @@ export default function BubblesPageContent() {
   const { ids: watchlistIds, size: watchlistCount } = useWatchlist();
   const { holdings } = useHoldings();
   const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(qParam);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const trimmed = search.trim();
+    if (trimmed) params.set("q", trimmed);
+    else params.delete("q");
+    const qs = params.toString();
+    const current = searchParams.toString();
+    if (qs === current) return;
+    const t = setTimeout(() => {
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }, 250);
+    return () => clearTimeout(t);
+  }, [search, router, pathname, searchParams]);
   const [selected, setSelected] = useState<{
     token: BubbleToken;
     x: number;

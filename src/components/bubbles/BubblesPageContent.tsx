@@ -26,6 +26,7 @@ import FilterMenu, {
 import ShareButton from "./ShareButton";
 import RefreshButton from "./RefreshButton";
 import UpdatedAt from "./UpdatedAt";
+import ActiveFilterChips from "./ActiveFilterChips";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -356,6 +357,8 @@ export default function BubblesPageContent() {
           />
         )}
       </div>
+
+      <ActiveFilterChips filters={filters} onChange={setFilters} />
 
       <div className="flex-1 relative bg-black">
         {isLoading && !tokens && <BubblesSkeleton />}

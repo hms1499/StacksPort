@@ -31,7 +31,7 @@ export default function ShareButton() {
       }}
     >
       {copied ? <Check size={12} /> : <Link2 size={12} />}
-      <span>{copied ? "Copied" : "Share"}</span>
+      <span className="hidden sm:inline">{copied ? "Copied" : "Share"}</span>
     </button>
   );
 }

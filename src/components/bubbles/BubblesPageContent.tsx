@@ -14,6 +14,7 @@ import MetricToggle, { type Metric } from "./MetricToggle";
 import SearchInput from "./SearchInput";
 import ReloadProgressBar from "./ReloadProgressBar";
 import ShortcutsHelp from "./ShortcutsHelp";
+import ColorLegend from "./ColorLegend";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
@@ -244,6 +245,8 @@ export default function BubblesPageContent() {
             </p>
           </div>
         )}
+
+        {visibleTokens && visibleTokens.length > 0 && <ColorLegend />}
 
         {visibleTokens && visibleTokens.length > 0 && (
           <BubbleCanvas

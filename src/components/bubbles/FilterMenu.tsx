@@ -58,11 +58,12 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
-  const active =
-    value.minMarketCap > 0 ||
-    value.excludeStables ||
-    value.topN > 0 ||
-    value.moversThreshold > 0;
+  const activeCount =
+    (value.minMarketCap > 0 ? 1 : 0) +
+    (value.excludeStables ? 1 : 0) +
+    (value.topN > 0 ? 1 : 0) +
+    (value.moversThreshold > 0 ? 1 : 0);
+  const active = activeCount > 0;
 
   return (
     <div ref={ref} className="relative">
@@ -85,7 +86,7 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
             className="ml-0.5 text-[10px] font-mono px-1 rounded"
             style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
           >
-            ●
+            {activeCount}
           </span>
         )}
       </button>

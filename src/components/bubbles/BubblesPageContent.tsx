@@ -18,6 +18,23 @@ import ColorLegend from "./ColorLegend";
 import BubblesSkeleton from "./BubblesSkeleton";
 import FilterMenu, { DEFAULT_FILTERS, type BubbleFilters } from "./FilterMenu";
 
+const STABLECOIN_IDS = new Set([
+  "tether",
+  "usd-coin",
+  "dai",
+  "first-digital-usd",
+  "true-usd",
+  "paxos-standard",
+  "frax",
+  "ethena-usde",
+  "usdd",
+  "binance-usd",
+  "gemini-dollar",
+  "liquity-usd",
+  "blackrock-usd-institutional-digital-liquidity-fund",
+  "hermetica-usdh",
+]);
+
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
 const VALID_METRIC: Metric[] = ["change", "marketCap", "volume"];
@@ -100,6 +117,9 @@ export default function BubblesPageContent() {
     else if (scope === "watchlist") filtered = filtered.filter((t) => watchlistIds.has(t.id));
     if (filters.minMarketCap > 0) {
       filtered = filtered.filter((t) => t.marketCap >= filters.minMarketCap);
+    }
+    if (filters.excludeStables) {
+      filtered = filtered.filter((t) => !STABLECOIN_IDS.has(t.id));
     }
     const q = search.trim().toLowerCase();
     if (q) {

@@ -18,12 +18,12 @@ const ROWS: Array<{ keys: string[]; label: string }> = [
 export default function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
   return (
     <div
-      className="absolute inset-0 z-30 flex items-center justify-center px-4"
+      className="absolute inset-0 z-30 flex items-center justify-center px-4 motion-safe:animate-[fadeIn_150ms_ease-out]"
       style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
       onClick={onClose}
     >
       <div
-        className="rounded-lg p-4 w-full max-w-sm"
+        className="rounded-lg p-4 w-full max-w-sm motion-safe:animate-[popIn_180ms_ease-out]"
         style={{
           backgroundColor: "var(--bg-card)",
           border: "1px solid var(--border-subtle)",

@@ -15,6 +15,7 @@ import SearchInput from "./SearchInput";
 import ReloadProgressBar from "./ReloadProgressBar";
 import ShortcutsHelp from "./ShortcutsHelp";
 import ColorLegend from "./ColorLegend";
+import BubblesSkeleton from "./BubblesSkeleton";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
@@ -229,14 +230,7 @@ export default function BubblesPageContent() {
       </div>
 
       <div className="flex-1 relative bg-black">
-        {isLoading && !tokens && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-              style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
-            />
-          </div>
-        )}
+        {isLoading && !tokens && <BubblesSkeleton />}
 
         {error && !tokens && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">

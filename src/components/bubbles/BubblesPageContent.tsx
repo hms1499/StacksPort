@@ -13,6 +13,7 @@ import ScopeToggle, { type Scope } from "./ScopeToggle";
 import MetricToggle, { type Metric } from "./MetricToggle";
 import SearchInput from "./SearchInput";
 import ReloadProgressBar from "./ReloadProgressBar";
+import ShortcutsHelp from "./ShortcutsHelp";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
@@ -116,6 +117,7 @@ export default function BubblesPageContent() {
   const handleCloseTooltip = useCallback(() => setSelected(null), []);
 
   const searchRef = useRef<HTMLInputElement>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -129,6 +131,10 @@ export default function BubblesPageContent() {
       if (e.key === "Escape") {
         if (isTyping) {
           (target as HTMLInputElement).blur();
+          return;
+        }
+        if (showHelp) {
+          setShowHelp(false);
           return;
         }
         if (selected) {
@@ -146,6 +152,10 @@ export default function BubblesPageContent() {
         searchRef.current?.focus();
         return;
       }
+      if (e.key === "?") {
+        setShowHelp((v) => !v);
+        return;
+      }
       if (e.key === "1") setMetric("change");
       else if (e.key === "2") setMetric("marketCap");
       else if (e.key === "3") setMetric("volume");
@@ -160,7 +170,7 @@ export default function BubblesPageContent() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, search, setMetric, setTimeframe, setScope]);
+  }, [selected, search, showHelp, setMetric, setTimeframe, setScope]);
 
   return (
     <div className="flex flex-col h-full">
@@ -256,6 +266,8 @@ export default function BubblesPageContent() {
             </p>
           </div>
         )}
+
+        {showHelp && <ShortcutsHelp onClose={() => setShowHelp(false)} />}
 
         {selected && (
           <BubbleTooltip

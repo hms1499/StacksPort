@@ -138,10 +138,26 @@ export default function BubblesPageContent() {
     if (filters.excludeStables) {
       filtered = filtered.filter((t) => !STABLECOIN_IDS.has(t.id));
     }
+    const getC = (t: typeof filtered[number]) =>
+      timeframe === "1h"
+        ? t.change1h
+        : timeframe === "7d"
+        ? t.change7d
+        : timeframe === "30d"
+        ? t.change30d
+        : timeframe === "1y"
+        ? t.change1y
+        : t.change24h;
+    const sorted = [...filtered];
+    if (filters.sortBy === "volume") sorted.sort((a, b) => b.volume24h - a.volume24h);
+    else if (filters.sortBy === "gainers") sorted.sort((a, b) => getC(b) - getC(a));
+    else if (filters.sortBy === "losers") sorted.sort((a, b) => getC(a) - getC(b));
+    else if (filters.sortBy === "name")
+      sorted.sort((a, b) => a.symbol.localeCompare(b.symbol));
+    else sorted.sort((a, b) => b.marketCap - a.marketCap);
+    filtered = sorted;
     if (filters.topN > 0) {
-      filtered = [...filtered]
-        .sort((a, b) => b.marketCap - a.marketCap)
-        .slice(0, filters.topN);
+      filtered = filtered.slice(0, filters.topN);
     }
     if (filters.moversThreshold > 0) {
       const th = filters.moversThreshold;

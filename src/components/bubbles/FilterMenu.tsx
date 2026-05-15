@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 
+export type SortBy = "mcap" | "volume" | "gainers" | "losers" | "name";
+
 export interface BubbleFilters {
   minMarketCap: number;
   excludeStables: boolean;
   topN: number;
   moversThreshold: number;
+  sortBy: SortBy;
 }
 
 export const DEFAULT_FILTERS: BubbleFilters = {
@@ -15,6 +18,7 @@ export const DEFAULT_FILTERS: BubbleFilters = {
   excludeStables: false,
   topN: 0,
   moversThreshold: 0,
+  sortBy: "mcap",
 };
 
 const MCAP_OPTIONS: Array<{ label: string; value: number }> = [
@@ -69,7 +73,8 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
     (value.minMarketCap > 0 ? 1 : 0) +
     (value.excludeStables ? 1 : 0) +
     (value.topN > 0 ? 1 : 0) +
-    (value.moversThreshold > 0 ? 1 : 0);
+    (value.moversThreshold > 0 ? 1 : 0) +
+    (value.sortBy !== "mcap" ? 1 : 0);
   const active = activeCount > 0;
 
   return (
@@ -121,6 +126,37 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
               value={value.topN}
               onChange={(v) => onChange({ ...value, topN: v })}
             />
+          </Group>
+
+          <Group label="Sort by">
+            <div className="flex flex-wrap gap-1">
+              {(
+                [
+                  ["mcap", "Market cap"],
+                  ["volume", "Volume"],
+                  ["gainers", "Top gainers"],
+                  ["losers", "Top losers"],
+                  ["name", "Name (A-Z)"],
+                ] as Array<[SortBy, string]>
+              ).map(([k, label]) => {
+                const a = value.sortBy === k;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => onChange({ ...value, sortBy: k })}
+                    className="text-[11px] px-2 py-0.5 rounded hover:opacity-80"
+                    style={{
+                      backgroundColor: a ? "var(--accent)" : "var(--bg-base)",
+                      color: a ? "#000" : "var(--text-primary)",
+                      border: "1px solid var(--border-subtle)",
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </Group>
 
           <Group label="Movers only">

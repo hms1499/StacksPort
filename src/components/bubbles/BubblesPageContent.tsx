@@ -17,6 +17,7 @@ import ShortcutsHelp from "./ShortcutsHelp";
 import ColorLegend from "./ColorLegend";
 import BubblesSkeleton from "./BubblesSkeleton";
 import FilterMenu, { DEFAULT_FILTERS, type BubbleFilters } from "./FilterMenu";
+import ShareButton from "./ShareButton";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -293,6 +294,7 @@ export default function BubblesPageContent() {
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
           <FilterMenu value={filters} onChange={setFilters} />
+          <ShareButton />
           <button
             type="button"
             onClick={() => setShowHelp(true)}

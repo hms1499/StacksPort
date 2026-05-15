@@ -16,6 +16,7 @@ import ReloadProgressBar from "./ReloadProgressBar";
 import ShortcutsHelp from "./ShortcutsHelp";
 import ColorLegend from "./ColorLegend";
 import BubblesSkeleton from "./BubblesSkeleton";
+import FilterMenu, { DEFAULT_FILTERS, type BubbleFilters } from "./FilterMenu";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
@@ -66,6 +67,7 @@ export default function BubblesPageContent() {
   const { holdings } = useHoldings();
   const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
   const [search, setSearch] = useState(qParam);
+  const [filters, setFilters] = useState<BubbleFilters>(DEFAULT_FILTERS);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -96,6 +98,9 @@ export default function BubblesPageContent() {
     let filtered = tokens;
     if (scope === "stacks") filtered = filtered.filter((t) => t.isStacks);
     else if (scope === "watchlist") filtered = filtered.filter((t) => watchlistIds.has(t.id));
+    if (filters.minMarketCap > 0) {
+      filtered = filtered.filter((t) => t.marketCap >= filters.minMarketCap);
+    }
     const q = search.trim().toLowerCase();
     if (q) {
       filtered = filtered.filter(
@@ -105,7 +110,7 @@ export default function BubblesPageContent() {
       );
     }
     return filtered;
-  }, [tokens, scope, watchlistIds, search]);
+  }, [tokens, scope, watchlistIds, search, filters]);
 
   const handleBubbleClick = useCallback(
     (token: BubbleToken, x: number, y: number) => {
@@ -205,6 +210,7 @@ export default function BubblesPageContent() {
           />
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
+          <FilterMenu value={filters} onChange={setFilters} />
           <button
             type="button"
             onClick={() => setShowHelp(true)}

@@ -216,6 +216,15 @@ export default function BubblesPageContent() {
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -305,7 +314,7 @@ export default function BubblesPageContent() {
             ref={searchRef}
             value={search}
             onChange={setSearch}
-            placeholder="Search…  ( / )"
+            placeholder={isMobile ? "Search…" : "Search…  ( / )"}
           />
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />

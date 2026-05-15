@@ -13,7 +13,7 @@ export default function RefreshButton({ onClick, isRefreshing }: RefreshButtonPr
       type="button"
       onClick={onClick}
       aria-label="Refresh data"
-      title="Refresh (R)"
+      title="Refresh (G)"
       disabled={isRefreshing}
       className="h-7 w-7 rounded-lg flex items-center justify-center hover:opacity-80 disabled:opacity-50"
       style={{

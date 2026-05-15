@@ -275,10 +275,11 @@ export default function BubblesPageContent() {
       else if (e.key === "a") setScope("all");
       else if (e.key === "s") setScope("stacks");
       else if (e.key === "d") setScope("watchlist");
+      else if (e.key === "g") mutate();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, search, showHelp, setMetric, setTimeframe, setScope]);
+  }, [selected, search, showHelp, setMetric, setTimeframe, setScope, mutate]);
 
   return (
     <div className="flex flex-col h-full">

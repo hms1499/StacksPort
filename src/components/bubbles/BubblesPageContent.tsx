@@ -203,6 +203,20 @@ export default function BubblesPageContent() {
           />
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
+          <button
+            type="button"
+            onClick={() => setShowHelp(true)}
+            aria-label="Keyboard shortcuts"
+            title="Keyboard shortcuts (?)"
+            className="h-7 w-7 rounded-lg flex items-center justify-center text-xs font-mono hover:opacity-80"
+            style={{
+              backgroundColor: "var(--bg-card)",
+              border: "1px solid var(--border-subtle)",
+              color: "var(--text-muted)",
+            }}
+          >
+            ?
+          </button>
         </div>
 
         {tokens && tokens.length > 0 && (

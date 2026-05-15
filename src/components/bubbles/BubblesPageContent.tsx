@@ -25,6 +25,7 @@ import FilterMenu, {
 } from "./FilterMenu";
 import ShareButton from "./ShareButton";
 import RefreshButton from "./RefreshButton";
+import UpdatedAt from "./UpdatedAt";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -88,6 +89,11 @@ export default function BubblesPageContent() {
   );
 
   const { data: tokens, isLoading, error, isValidating, mutate } = useBubblesData();
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (tokens && !isValidating) setUpdatedAt(Date.now());
+  }, [tokens, isValidating]);
   const { ids: watchlistIds, size: watchlistCount } = useWatchlist();
   const { holdings } = useHoldings();
   const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
@@ -301,6 +307,7 @@ export default function BubblesPageContent() {
                 {visibleTokens.length}
               </span>
             )}
+            <UpdatedAt timestamp={updatedAt} />
           </h1>
           <div className="flex-1 sm:flex-initial overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <ScopeToggle

@@ -7,7 +7,7 @@ interface ColorLegendProps {
 export default function ColorLegend({ range = 10 }: ColorLegendProps) {
   return (
     <div
-      className="absolute bottom-2 right-2 pointer-events-none flex items-center gap-1.5 px-2 py-1 rounded-md"
+      className="absolute bottom-2 right-2 pointer-events-none hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md"
       style={{
         backgroundColor: "rgba(0,0,0,0.55)",
         border: "1px solid var(--border-subtle)",

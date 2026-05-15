@@ -30,6 +30,8 @@ import ActiveFilterChips from "./ActiveFilterChips";
 import SnapshotButton from "./SnapshotButton";
 import PauseButton from "./PauseButton";
 import WatchlistBar from "./WatchlistBar";
+import ViewToggle, { type View } from "./ViewToggle";
+import BubbleList from "./BubbleList";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -51,6 +53,7 @@ const STABLECOIN_IDS = new Set([
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
 const VALID_METRIC: Metric[] = ["change", "marketCap", "volume"];
+const VALID_VIEW: View[] = ["bubbles", "list"];
 
 export default function BubblesPageContent() {
   const router = useRouter();
@@ -60,6 +63,7 @@ export default function BubblesPageContent() {
   const tfParam = searchParams.get("tf") as Timeframe | null;
   const scopeParam = searchParams.get("scope") as Scope | null;
   const metricParam = searchParams.get("metric") as Metric | null;
+  const viewParam = searchParams.get("view") as View | null;
   const qParam = searchParams.get("q") ?? "";
   const timeframe: Timeframe =
     tfParam && VALID_TF.includes(tfParam) ? tfParam : "24h";
@@ -67,9 +71,15 @@ export default function BubblesPageContent() {
     scopeParam && VALID_SCOPE.includes(scopeParam) ? scopeParam : "all";
   const metric: Metric =
     metricParam && VALID_METRIC.includes(metricParam) ? metricParam : "change";
+  const view: View =
+    viewParam && VALID_VIEW.includes(viewParam) ? viewParam : "bubbles";
 
   const updateParam = useCallback(
-    (key: "tf" | "scope" | "metric", value: string, defaultValue: string) => {
+    (
+      key: "tf" | "scope" | "metric" | "view",
+      value: string,
+      defaultValue: string
+    ) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value === defaultValue) params.delete(key);
       else params.set(key, value);
@@ -89,6 +99,10 @@ export default function BubblesPageContent() {
   );
   const setMetric = useCallback(
     (m: Metric) => updateParam("metric", m, "change"),
+    [updateParam]
+  );
+  const setView = useCallback(
+    (v: View) => updateParam("view", v, "bubbles"),
     [updateParam]
   );
 
@@ -341,6 +355,7 @@ export default function BubblesPageContent() {
             onChange={setSearch}
             placeholder={isMobile ? "Search…" : "Search…  ( / )"}
           />
+          <ViewToggle value={view} onChange={setView} />
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
           <FilterMenu value={filters} onChange={setFilters} />
@@ -402,9 +417,11 @@ export default function BubblesPageContent() {
           </div>
         )}
 
-        {visibleTokens && visibleTokens.length > 0 && <ColorLegend />}
+        {view === "bubbles" && visibleTokens && visibleTokens.length > 0 && (
+          <ColorLegend />
+        )}
 
-        {visibleTokens && visibleTokens.length > 0 && (
+        {view === "bubbles" && visibleTokens && visibleTokens.length > 0 && (
           <BubbleCanvas
             tokens={visibleTokens}
             timeframe={timeframe}
@@ -413,6 +430,15 @@ export default function BubblesPageContent() {
             heldIds={heldIds}
             paused={paused}
             onBubbleClick={handleBubbleClick}
+          />
+        )}
+
+        {view === "list" && visibleTokens && visibleTokens.length > 0 && (
+          <BubbleList
+            tokens={visibleTokens}
+            timeframe={timeframe}
+            heldIds={heldIds}
+            onRowClick={handleBubbleClick}
           />
         )}
 

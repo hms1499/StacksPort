@@ -418,7 +418,7 @@ export default function BubblesPageContent() {
         )}
 
         {view === "bubbles" && visibleTokens && visibleTokens.length > 0 && (
-          <ColorLegend />
+          <ColorLegend timeframe={timeframe} />
         )}
 
         {view === "bubbles" && visibleTokens && visibleTokens.length > 0 && (

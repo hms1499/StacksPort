@@ -35,6 +35,7 @@ const COINGECKO_TO_SWAP_ID: Record<string, string> = {
   "sbtc-2": "sbtc",
 };
 
+
 function getSwapHref(coingeckoId: string): string {
   const swapId = COINGECKO_TO_SWAP_ID[coingeckoId];
   if (!swapId) return "/trade";

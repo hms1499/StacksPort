@@ -1,10 +1,13 @@
 "use client";
 
+import type { Timeframe } from "./TimeframeToggle";
+
 interface ColorLegendProps {
   range?: number;
+  timeframe?: Timeframe;
 }
 
-export default function ColorLegend({ range = 10 }: ColorLegendProps) {
+export default function ColorLegend({ range = 10, timeframe }: ColorLegendProps) {
   return (
     <div
       className="absolute bottom-2 right-2 pointer-events-none hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md"
@@ -13,6 +16,14 @@ export default function ColorLegend({ range = 10 }: ColorLegendProps) {
         border: "1px solid var(--border-subtle)",
       }}
     >
+      {timeframe && (
+        <span
+          className="text-[10px] font-mono mr-1"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {timeframe.toUpperCase()}
+        </span>
+      )}
       <span className="text-[10px] font-mono" style={{ color: "#f87171" }}>
         −{range}%
       </span>

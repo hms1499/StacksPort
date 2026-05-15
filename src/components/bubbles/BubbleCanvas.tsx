@@ -351,6 +351,7 @@ interface BubbleCanvasProps {
   metric: Metric;
   focusedId?: string | null;
   heldIds?: Set<string>;
+  paused?: boolean;
   onBubbleClick: (token: BubbleToken, x: number, y: number) => void;
 }
 
@@ -360,6 +361,7 @@ export default function BubbleCanvas({
   metric,
   focusedId = null,
   heldIds,
+  paused = false,
   onBubbleClick,
 }: BubbleCanvasProps) {
   const heldRef = useRef<Set<string>>(heldIds ?? new Set());
@@ -457,6 +459,21 @@ export default function BubbleCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    if (paused) {
+      const dpr = window.devicePixelRatio || 1;
+      drawBubbles(
+        ctx,
+        bubblesRef.current,
+        timeframe,
+        dpr,
+        imagesRef.current as Record<string, HTMLImageElement | null>,
+        hoveredRef.current,
+        focusedRef.current,
+        heldRef.current
+      );
+      return;
+    }
+
     function tick(now: number) {
       const dpr = window.devicePixelRatio || 1;
       const t = now / 1000;
@@ -493,7 +510,7 @@ export default function BubbleCanvas({
       animRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeframe, tokens.length]);
+  }, [timeframe, tokens.length, paused]);
 
   function hitTest(mx: number, my: number): LayoutBubble | null {
     for (const b of bubblesRef.current) {

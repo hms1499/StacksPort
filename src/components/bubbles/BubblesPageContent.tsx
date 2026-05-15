@@ -28,6 +28,7 @@ import RefreshButton from "./RefreshButton";
 import UpdatedAt from "./UpdatedAt";
 import ActiveFilterChips from "./ActiveFilterChips";
 import SnapshotButton from "./SnapshotButton";
+import PauseButton from "./PauseButton";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -226,6 +227,7 @@ export default function BubblesPageContent() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 639px)");
@@ -284,6 +286,7 @@ export default function BubblesPageContent() {
       else if (e.key === "s") setScope("stacks");
       else if (e.key === "d") setScope("watchlist");
       else if (e.key === "g") mutate();
+      else if (e.key === "p") setPaused((v) => !v);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -334,6 +337,7 @@ export default function BubblesPageContent() {
             onClick={() => mutate()}
             isRefreshing={isValidating}
           />
+          <PauseButton paused={paused} onToggle={() => setPaused((v) => !v)} />
           <SnapshotButton />
           <ShareButton />
           <button
@@ -394,6 +398,7 @@ export default function BubblesPageContent() {
             metric={metric}
             focusedId={selected?.token.id ?? null}
             heldIds={heldIds}
+            paused={paused}
             onBubbleClick={handleBubbleClick}
           />
         )}

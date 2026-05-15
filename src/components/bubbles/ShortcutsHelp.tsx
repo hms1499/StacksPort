@@ -13,6 +13,7 @@ const ROWS: Array<{ keys: string[]; label: string }> = [
   { keys: ["Q", "W", "E", "R", "T"], label: "Timeframe: 1h · 24h · 7d · 30d · 1y" },
   { keys: ["A", "S", "D"], label: "Scope: All · Stacks · Watchlist" },
   { keys: ["G"], label: "Refresh data" },
+  { keys: ["P"], label: "Pause / resume motion" },
   { keys: ["?"], label: "Toggle this help" },
 ];
 

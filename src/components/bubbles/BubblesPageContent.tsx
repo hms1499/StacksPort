@@ -238,6 +238,16 @@ export default function BubblesPageContent() {
   }, []);
 
   useEffect(() => {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mql.matches) setPaused(true);
+    const update = (e: MediaQueryListEvent) => {
+      if (e.matches) setPaused(true);
+    };
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const isTyping =

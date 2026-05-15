@@ -16,7 +16,13 @@ import ReloadProgressBar from "./ReloadProgressBar";
 import ShortcutsHelp from "./ShortcutsHelp";
 import ColorLegend from "./ColorLegend";
 import BubblesSkeleton from "./BubblesSkeleton";
-import FilterMenu, { DEFAULT_FILTERS, type BubbleFilters } from "./FilterMenu";
+import FilterMenu, {
+  DEFAULT_FILTERS,
+  filtersFromParams,
+  filtersToParams,
+  hasAnyFilterParam,
+  type BubbleFilters,
+} from "./FilterMenu";
 import ShareButton from "./ShareButton";
 
 const STABLECOIN_IDS = new Set([
@@ -87,6 +93,8 @@ export default function BubblesPageContent() {
   const [search, setSearch] = useState(qParam);
   const [filters, setFilters] = useState<BubbleFilters>(() => {
     if (typeof window === "undefined") return DEFAULT_FILTERS;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (hasAnyFilterParam(urlParams)) return filtersFromParams(urlParams);
     try {
       const raw = window.localStorage.getItem("bubbles:filters");
       if (!raw) return DEFAULT_FILTERS;
@@ -103,6 +111,14 @@ export default function BubblesPageContent() {
       // ignore
     }
   }, [filters]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    filtersToParams(params, filters);
+    const qs = params.toString();
+    if (qs === searchParams.toString()) return;
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [filters, router, pathname, searchParams]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());

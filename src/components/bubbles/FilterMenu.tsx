@@ -21,6 +21,54 @@ export const DEFAULT_FILTERS: BubbleFilters = {
   sortBy: "mcap",
 };
 
+const VALID_SORT: SortBy[] = ["mcap", "volume", "gainers", "losers", "name"];
+
+export function filtersFromParams(params: URLSearchParams): BubbleFilters {
+  const mcap = Number(params.get("mcap")) || 0;
+  const top = Number(params.get("top")) || 0;
+  const mv = Number(params.get("mv")) || 0;
+  const ns = params.get("ns") === "1";
+  const sortRaw = params.get("sort");
+  const sortBy: SortBy =
+    sortRaw && (VALID_SORT as string[]).includes(sortRaw)
+      ? (sortRaw as SortBy)
+      : "mcap";
+  return {
+    minMarketCap: mcap > 0 ? mcap : 0,
+    excludeStables: ns,
+    topN: top > 0 ? top : 0,
+    moversThreshold: mv > 0 ? mv : 0,
+    sortBy,
+  };
+}
+
+export function filtersToParams(
+  params: URLSearchParams,
+  filters: BubbleFilters
+): void {
+  if (filters.minMarketCap > 0) params.set("mcap", String(filters.minMarketCap));
+  else params.delete("mcap");
+  if (filters.topN > 0) params.set("top", String(filters.topN));
+  else params.delete("top");
+  if (filters.moversThreshold > 0)
+    params.set("mv", String(filters.moversThreshold));
+  else params.delete("mv");
+  if (filters.excludeStables) params.set("ns", "1");
+  else params.delete("ns");
+  if (filters.sortBy !== "mcap") params.set("sort", filters.sortBy);
+  else params.delete("sort");
+}
+
+export function hasAnyFilterParam(params: URLSearchParams): boolean {
+  return (
+    params.has("mcap") ||
+    params.has("top") ||
+    params.has("mv") ||
+    params.has("ns") ||
+    params.has("sort")
+  );
+}
+
 const MCAP_OPTIONS: Array<{ label: string; value: number }> = [
   { label: "Any", value: 0 },
   { label: "$10M+", value: 10_000_000 },

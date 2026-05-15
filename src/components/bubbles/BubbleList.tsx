@@ -47,8 +47,8 @@ export default function BubbleList({
   return (
     <div className="absolute inset-0 overflow-y-auto">
       <table className="w-full text-xs">
-        <thead className="sticky top-0 z-10" style={{ backgroundColor: "var(--bg-base)" }}>
-          <tr style={{ color: "var(--text-muted)" }} className="text-[10px] uppercase">
+        <thead className="sticky top-0 z-10" style={{ backgroundColor: "#000" }}>
+          <tr style={{ color: "rgba(255,255,255,0.55)" }} className="text-[10px] uppercase">
             <th className="text-left px-3 py-2 font-medium">#</th>
             <th className="text-left px-2 py-2 font-medium">Token</th>
             <th className="text-right px-2 py-2 font-medium">Price</th>
@@ -70,20 +70,20 @@ export default function BubbleList({
                 onClick={(e) => onRowClick(t, e.clientX, e.clientY)}
                 className="cursor-pointer hover:bg-white/[0.03]"
                 style={{
-                  borderBottom: "1px solid var(--border-subtle)",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
                   backgroundColor: isSelected
-                    ? "rgba(64,138,113,0.12)"
+                    ? "rgba(64,138,113,0.18)"
                     : undefined,
                 }}
               >
-                <td className="px-3 py-2 font-mono" style={{ color: "var(--text-muted)" }}>
+                <td className="px-3 py-2 font-mono" style={{ color: "rgba(255,255,255,0.55)" }}>
                   {i + 1}
                 </td>
                 <td className="px-2 py-2">
                   <div className="flex items-center gap-2">
                     <span
                       className="font-semibold"
-                      style={{ color: "var(--text-primary)" }}
+                      style={{ color: "#fff" }}
                     >
                       {t.symbol}
                     </span>
@@ -113,7 +113,7 @@ export default function BubbleList({
                 </td>
                 <td
                   className="px-2 py-2 text-right font-mono"
-                  style={{ color: "var(--text-primary)" }}
+                  style={{ color: "#fff" }}
                 >
                   {fmtPrice(t.price)}
                 </td>
@@ -136,13 +136,13 @@ export default function BubbleList({
                 </td>
                 <td
                   className="px-2 py-2 text-right font-mono hidden sm:table-cell"
-                  style={{ color: "var(--text-muted)" }}
+                  style={{ color: "rgba(255,255,255,0.55)" }}
                 >
                   {fmtUsd(t.marketCap)}
                 </td>
                 <td
                   className="px-3 py-2 text-right font-mono hidden md:table-cell"
-                  style={{ color: "var(--text-muted)" }}
+                  style={{ color: "rgba(255,255,255,0.55)" }}
                 >
                   {fmtUsd(t.volume24h)}
                 </td>

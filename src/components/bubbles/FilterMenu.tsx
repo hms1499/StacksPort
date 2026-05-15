@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 
 export type SortBy = "mcap" | "volume" | "gainers" | "losers" | "name";
 
@@ -99,12 +99,24 @@ interface FilterMenuProps {
 
 export default function FilterMenu({ value, onChange }: FilterMenuProps) {
   const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+      const inTrigger = ref.current?.contains(e.target as Node);
+      const inSheet = sheetRef.current?.contains(e.target as Node);
+      if (!inTrigger && !inSheet) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -151,8 +163,54 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
         )}
       </button>
 
-      {open && (
+      {open && isMobile && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] motion-safe:animate-[fadeIn_150ms_ease-out]"
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
+          <div
+            ref={sheetRef}
+            className="fixed left-0 right-0 bottom-0 z-50 rounded-t-2xl border-t border-x p-4 flex flex-col gap-3 motion-safe:animate-[slideUp_180ms_ease-out]"
+            style={{
+              backgroundColor: "var(--bg-card)",
+              borderColor: "var(--border-subtle)",
+              paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)",
+              maxHeight: "85vh",
+              overflowY: "auto",
+            }}
+          >
+            <div className="flex justify-center -mt-1 mb-1">
+              <div
+                className="h-1 w-10 rounded-full"
+                style={{ backgroundColor: "var(--border-subtle)" }}
+              />
+            </div>
+            <div className="flex items-center justify-between mb-1">
+              <h2
+                className="text-sm font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Filters
+              </h2>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="hover:opacity-80"
+              >
+                <X size={16} style={{ color: "var(--text-muted)" }} />
+              </button>
+            </div>
+            <FilterBody value={value} onChange={onChange} active={active} />
+          </div>
+        </>
+      )}
+
+      {open && !isMobile && (
         <div
+          ref={sheetRef}
           className="absolute right-0 mt-1.5 z-30 w-60 rounded-lg p-3 flex flex-col gap-3"
           style={{
             backgroundColor: "var(--bg-card)",
@@ -160,7 +218,25 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
             boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
           }}
         >
-          <Group label="Market cap">
+          <FilterBody value={value} onChange={onChange} active={active} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FilterBody({
+  value,
+  onChange,
+  active,
+}: {
+  value: BubbleFilters;
+  onChange: (v: BubbleFilters) => void;
+  active: boolean;
+}) {
+  return (
+    <>
+      <Group label="Market cap">
             <Choices
               options={MCAP_OPTIONS}
               value={value.minMarketCap}
@@ -226,19 +302,17 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
             />
           </label>
 
-          {active && (
-            <button
-              type="button"
-              onClick={() => onChange(DEFAULT_FILTERS)}
-              className="text-[11px] mt-1 self-end hover:opacity-80"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Reset all
-            </button>
-          )}
-        </div>
+      {active && (
+        <button
+          type="button"
+          onClick={() => onChange(DEFAULT_FILTERS)}
+          className="text-[11px] mt-1 self-end hover:opacity-80"
+          style={{ color: "var(--text-muted)" }}
+        >
+          Reset all
+        </button>
       )}
-    </div>
+    </>
   );
 }
 

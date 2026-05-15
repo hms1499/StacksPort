@@ -363,8 +363,15 @@ export default function BubblesPageContent() {
             onClick={() => mutate()}
             isRefreshing={isValidating}
           />
-          <PauseButton paused={paused} onToggle={() => setPaused((v) => !v)} />
-          <SnapshotButton />
+          {view === "bubbles" && (
+            <>
+              <PauseButton
+                paused={paused}
+                onToggle={() => setPaused((v) => !v)}
+              />
+              <SnapshotButton />
+            </>
+          )}
           <ShareButton />
           <button
             type="button"

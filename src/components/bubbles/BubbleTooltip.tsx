@@ -257,8 +257,10 @@ export default function BubbleTooltip({
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs mb-3">
           <Stat label="MCap" value={fmtUsd(token.marketCap)} />
           <Stat label="Vol 24h" value={fmtUsd(token.volume24h)} />
+          <Stat label="1h" value={`${token.change1h >= 0 ? "+" : ""}${token.change1h.toFixed(1)}%`} color={token.change1h >= 0 ? "#34d399" : "#f87171"} />
+          <Stat label="24h" value={`${token.change24h >= 0 ? "+" : ""}${token.change24h.toFixed(1)}%`} color={token.change24h >= 0 ? "#34d399" : "#f87171"} />
+          <Stat label="7d" value={`${token.change7d >= 0 ? "+" : ""}${token.change7d.toFixed(1)}%`} color={token.change7d >= 0 ? "#34d399" : "#f87171"} />
           <Stat label="30d" value={`${token.change30d >= 0 ? "+" : ""}${token.change30d.toFixed(1)}%`} color={token.change30d >= 0 ? "#34d399" : "#f87171"} />
-          <Stat label="1y" value={`${token.change1y >= 0 ? "+" : ""}${token.change1y.toFixed(1)}%`} color={token.change1y >= 0 ? "#34d399" : "#f87171"} />
         </div>
 
         <div className="flex gap-2">

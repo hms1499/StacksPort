@@ -17,7 +17,7 @@ export default function BubblesSkeleton() {
       {PLACEHOLDERS.map((p, i) => (
         <div
           key={i}
-          className="absolute rounded-full animate-pulse"
+          className="absolute rounded-full motion-safe:animate-pulse"
           style={{
             top: p.top,
             left: p.left,

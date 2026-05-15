@@ -92,7 +92,7 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
         }}
       >
         <SlidersHorizontal size={12} />
-        <span>Filters</span>
+        <span className="hidden sm:inline">Filters</span>
         {active && (
           <span
             className="ml-0.5 text-[10px] font-mono px-1 rounded"

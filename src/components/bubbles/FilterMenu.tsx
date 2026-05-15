@@ -11,7 +11,10 @@ export interface BubbleFilters {
   topN: number;
   moversThreshold: number;
   sortBy: SortBy;
+  density: number;
 }
+
+export const DEFAULT_DENSITY = 1.5;
 
 export const DEFAULT_FILTERS: BubbleFilters = {
   minMarketCap: 0,
@@ -19,6 +22,7 @@ export const DEFAULT_FILTERS: BubbleFilters = {
   topN: 0,
   moversThreshold: 0,
   sortBy: "mcap",
+  density: DEFAULT_DENSITY,
 };
 
 const VALID_SORT: SortBy[] = ["mcap", "volume", "gainers", "losers", "name"];
@@ -33,12 +37,18 @@ export function filtersFromParams(params: URLSearchParams): BubbleFilters {
     sortRaw && (VALID_SORT as string[]).includes(sortRaw)
       ? (sortRaw as SortBy)
       : "mcap";
+  const densityRaw = Number(params.get("dens"));
+  const density =
+    Number.isFinite(densityRaw) && densityRaw >= 0.8 && densityRaw <= 2.5
+      ? densityRaw
+      : DEFAULT_DENSITY;
   return {
     minMarketCap: mcap > 0 ? mcap : 0,
     excludeStables: ns,
     topN: top > 0 ? top : 0,
     moversThreshold: mv > 0 ? mv : 0,
     sortBy,
+    density,
   };
 }
 
@@ -57,6 +67,9 @@ export function filtersToParams(
   else params.delete("ns");
   if (filters.sortBy !== "mcap") params.set("sort", filters.sortBy);
   else params.delete("sort");
+  if (filters.density !== DEFAULT_DENSITY)
+    params.set("dens", filters.density.toFixed(2));
+  else params.delete("dens");
 }
 
 export function hasAnyFilterParam(params: URLSearchParams): boolean {
@@ -65,7 +78,8 @@ export function hasAnyFilterParam(params: URLSearchParams): boolean {
     params.has("top") ||
     params.has("mv") ||
     params.has("ns") ||
-    params.has("sort")
+    params.has("sort") ||
+    params.has("dens")
   );
 }
 
@@ -134,7 +148,8 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
     (value.excludeStables ? 1 : 0) +
     (value.topN > 0 ? 1 : 0) +
     (value.moversThreshold > 0 ? 1 : 0) +
-    (value.sortBy !== "mcap" ? 1 : 0);
+    (value.sortBy !== "mcap" ? 1 : 0) +
+    (value.density !== DEFAULT_DENSITY ? 1 : 0);
   const active = activeCount > 0;
 
   return (
@@ -288,6 +303,21 @@ function FilterBody({
               options={MOVERS_OPTIONS}
               value={value.moversThreshold}
               onChange={(v) => onChange({ ...value, moversThreshold: v })}
+            />
+          </Group>
+
+          <Group label={`Bubble size (${value.density.toFixed(2)}×)`}>
+            <input
+              type="range"
+              min={0.8}
+              max={2.5}
+              step={0.1}
+              value={value.density}
+              onChange={(e) =>
+                onChange({ ...value, density: Number(e.target.value) })
+              }
+              className="w-full accent-current"
+              style={{ color: "var(--accent)" }}
             />
           </Group>
 

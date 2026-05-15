@@ -429,6 +429,7 @@ export default function BubblesPageContent() {
             focusedId={selected?.token.id ?? null}
             heldIds={heldIds}
             paused={paused}
+            density={filters.density}
             onBubbleClick={handleBubbleClick}
           />
         )}

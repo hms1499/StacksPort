@@ -8,7 +8,7 @@ import type { Metric } from "./MetricToggle";
 
 const MIN_RADIUS = 22;
 const MAX_RADIUS = 110;
-const BUBBLE_SIZE_SCALE = 1.5;
+const DEFAULT_BUBBLE_SIZE_SCALE = 1.5;
 const STACKS_BORDER_COLOR = "#408A71";
 const POSITIVE_COLOR = "#34d399";
 const NEGATIVE_COLOR = "#f87171";
@@ -78,7 +78,8 @@ function getMetricValue(token: BubbleToken, metric: Metric, timeframe: Timeframe
 function computeRadii(
   tokens: BubbleToken[],
   timeframe: Timeframe,
-  metric: Metric
+  metric: Metric,
+  sizeScale: number
 ): number[] {
   if (tokens.length === 0) return [];
   // For MCap/Volume, use sqrt to compress wide ranges (area-style scaling).
@@ -92,7 +93,7 @@ function computeRadii(
   const range = maxV - minV || 1;
   return values.map((v) => {
     const norm = (v - minV) / range;
-    return (MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * norm) * BUBBLE_SIZE_SCALE;
+    return (MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * norm) * sizeScale;
   });
 }
 
@@ -352,6 +353,7 @@ interface BubbleCanvasProps {
   focusedId?: string | null;
   heldIds?: Set<string>;
   paused?: boolean;
+  density?: number;
   onBubbleClick: (token: BubbleToken, x: number, y: number) => void;
 }
 
@@ -362,6 +364,7 @@ export default function BubbleCanvas({
   focusedId = null,
   heldIds,
   paused = false,
+  density = DEFAULT_BUBBLE_SIZE_SCALE,
   onBubbleClick,
 }: BubbleCanvasProps) {
   const heldRef = useRef<Set<string>>(heldIds ?? new Set());
@@ -388,7 +391,7 @@ export default function BubbleCanvas({
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
-    const radii = computeRadii(tokens, timeframe, metric);
+    const radii = computeRadii(tokens, timeframe, metric, density);
     bubblesRef.current = packCircles(tokens, radii, width, height);
 
     const ctx = canvas.getContext("2d");
@@ -416,7 +419,7 @@ export default function BubbleCanvas({
       }
     }
     if (ctx) drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current, focusedRef.current, heldRef.current);
-  }, [tokens, timeframe, metric]);
+  }, [tokens, timeframe, metric, density]);
 
   useEffect(() => {
     layout();
@@ -482,7 +485,7 @@ export default function BubbleCanvas({
         const seed = seedsRef.current[b.token.id] ?? 0;
 
         // Bubble nhỏ nổi nhanh hơn bubble lớn (mass proportional)
-        const massScale = 1 - (b.radius / (MAX_RADIUS * BUBBLE_SIZE_SCALE)) * 0.45;
+        const massScale = 1 - (b.radius / (MAX_RADIUS * DEFAULT_BUBBLE_SIZE_SCALE)) * 0.45;
         const freqBase = (0.28 + massScale * 0.22);
 
         // Hai sin wave chồng nhau → quỹ đạo lemniscate tự nhiên

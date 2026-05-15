@@ -149,10 +149,15 @@ export default function BubblesPageContent() {
       if (e.key === "1") setMetric("change");
       else if (e.key === "2") setMetric("marketCap");
       else if (e.key === "3") setMetric("volume");
+      else if (e.key === "q") setTimeframe("1h");
+      else if (e.key === "w") setTimeframe("24h");
+      else if (e.key === "e") setTimeframe("7d");
+      else if (e.key === "r") setTimeframe("30d");
+      else if (e.key === "t") setTimeframe("1y");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, search, setMetric]);
+  }, [selected, search, setMetric, setTimeframe]);
 
   return (
     <div className="flex flex-col h-full">

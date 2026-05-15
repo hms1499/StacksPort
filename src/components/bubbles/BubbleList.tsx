@@ -2,6 +2,7 @@
 
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
+import Sparkline from "./Sparkline";
 
 interface BubbleListProps {
   tokens: BubbleToken[];
@@ -52,6 +53,7 @@ export default function BubbleList({
             <th className="text-left px-2 py-2 font-medium">Token</th>
             <th className="text-right px-2 py-2 font-medium">Price</th>
             <th className="text-right px-2 py-2 font-medium">{timeframe.toUpperCase()}</th>
+            <th className="text-right px-2 py-2 font-medium hidden md:table-cell">7d</th>
             <th className="text-right px-2 py-2 font-medium hidden sm:table-cell">MCap</th>
             <th className="text-right px-3 py-2 font-medium hidden md:table-cell">Vol 24h</th>
           </tr>
@@ -121,6 +123,16 @@ export default function BubbleList({
                 >
                   {positive ? "+" : ""}
                   {c.toFixed(2)}%
+                </td>
+                <td className="px-2 py-2 hidden md:table-cell">
+                  <div className="flex justify-end">
+                    <Sparkline
+                      data={t.sparkline7d}
+                      width={80}
+                      height={24}
+                      positive={t.change7d >= 0}
+                    />
+                  </div>
                 </td>
                 <td
                   className="px-2 py-2 text-right font-mono hidden sm:table-cell"

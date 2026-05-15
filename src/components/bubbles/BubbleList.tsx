@@ -7,6 +7,7 @@ interface BubbleListProps {
   tokens: BubbleToken[];
   timeframe: Timeframe;
   heldIds?: Set<string>;
+  selectedId?: string | null;
   onRowClick: (token: BubbleToken, x: number, y: number) => void;
 }
 
@@ -39,6 +40,7 @@ export default function BubbleList({
   tokens,
   timeframe,
   heldIds,
+  selectedId,
   onRowClick,
 }: BubbleListProps) {
   return (
@@ -59,12 +61,18 @@ export default function BubbleList({
             const c = getChange(t, timeframe);
             const positive = c >= 0;
             const held = heldIds?.has(t.id);
+            const isSelected = selectedId === t.id;
             return (
               <tr
                 key={t.id}
                 onClick={(e) => onRowClick(t, e.clientX, e.clientY)}
                 className="cursor-pointer hover:bg-white/[0.03]"
-                style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                style={{
+                  borderBottom: "1px solid var(--border-subtle)",
+                  backgroundColor: isSelected
+                    ? "rgba(64,138,113,0.12)"
+                    : undefined,
+                }}
               >
                 <td className="px-3 py-2 font-mono" style={{ color: "var(--text-muted)" }}>
                   {i + 1}

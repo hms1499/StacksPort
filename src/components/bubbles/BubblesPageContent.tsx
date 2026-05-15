@@ -439,6 +439,7 @@ export default function BubblesPageContent() {
             tokens={visibleTokens}
             timeframe={timeframe}
             heldIds={heldIds}
+            selectedId={selected?.token.id ?? null}
             onRowClick={handleBubbleClick}
           />
         )}

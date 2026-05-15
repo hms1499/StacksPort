@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";
@@ -115,6 +115,45 @@ export default function BubblesPageContent() {
 
   const handleCloseTooltip = useCallback(() => setSelected(null), []);
 
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isTyping =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+
+      if (e.key === "Escape") {
+        if (isTyping) {
+          (target as HTMLInputElement).blur();
+          return;
+        }
+        if (selected) {
+          setSelected(null);
+          return;
+        }
+        if (search) setSearch("");
+        return;
+      }
+
+      if (isTyping || e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === "/") {
+        e.preventDefault();
+        searchRef.current?.focus();
+        return;
+      }
+      if (e.key === "1") setMetric("change");
+      else if (e.key === "2") setMetric("marketCap");
+      else if (e.key === "3") setMetric("volume");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected, search, setMetric]);
+
   return (
     <div className="flex flex-col h-full">
       <div
@@ -138,7 +177,12 @@ export default function BubblesPageContent() {
           </div>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:flex-wrap sm:justify-end *:shrink-0">
-          <SearchInput value={search} onChange={setSearch} placeholder="Search…" />
+          <SearchInput
+            ref={searchRef}
+            value={search}
+            onChange={setSearch}
+            placeholder="Search…  ( / )"
+          />
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
         </div>

@@ -154,10 +154,13 @@ export default function BubblesPageContent() {
       else if (e.key === "e") setTimeframe("7d");
       else if (e.key === "r") setTimeframe("30d");
       else if (e.key === "t") setTimeframe("1y");
+      else if (e.key === "a") setScope("all");
+      else if (e.key === "s") setScope("stacks");
+      else if (e.key === "d") setScope("watchlist");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, search, setMetric, setTimeframe]);
+  }, [selected, search, setMetric, setTimeframe, setScope]);
 
   return (
     <div className="flex flex-col h-full">

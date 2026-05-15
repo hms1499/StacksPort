@@ -121,6 +121,11 @@ export default function BubblesPageContent() {
     if (filters.excludeStables) {
       filtered = filtered.filter((t) => !STABLECOIN_IDS.has(t.id));
     }
+    if (filters.topN > 0) {
+      filtered = [...filtered]
+        .sort((a, b) => b.marketCap - a.marketCap)
+        .slice(0, filters.topN);
+    }
     const q = search.trim().toLowerCase();
     if (q) {
       filtered = filtered.filter(

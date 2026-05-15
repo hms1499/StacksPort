@@ -526,6 +526,7 @@ export default function BubbleCanvas({
     <div ref={containerRef} className="w-full h-full relative">
       <canvas
         ref={canvasRef}
+        data-bubble-canvas="true"
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}

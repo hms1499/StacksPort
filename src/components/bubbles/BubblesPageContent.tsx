@@ -27,6 +27,7 @@ import ShareButton from "./ShareButton";
 import RefreshButton from "./RefreshButton";
 import UpdatedAt from "./UpdatedAt";
 import ActiveFilterChips from "./ActiveFilterChips";
+import SnapshotButton from "./SnapshotButton";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -333,6 +334,7 @@ export default function BubblesPageContent() {
             onClick={() => mutate()}
             isRefreshing={isValidating}
           />
+          <SnapshotButton />
           <ShareButton />
           <button
             type="button"

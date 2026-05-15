@@ -60,7 +60,7 @@ export default function BubblesPageContent() {
     [updateParam]
   );
 
-  const { data: tokens, isLoading, error, isValidating } = useBubblesData();
+  const { data: tokens, isLoading, error, isValidating, mutate } = useBubblesData();
   const { ids: watchlistIds, size: watchlistCount } = useWatchlist();
   const { holdings } = useHoldings();
   const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
@@ -239,10 +239,22 @@ export default function BubblesPageContent() {
         )}
 
         {error && !tokens && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-              Failed to load data. Retrying...
+              Failed to load data.
             </p>
+            <button
+              type="button"
+              onClick={() => mutate()}
+              className="text-xs px-3 py-1 rounded-md hover:opacity-80"
+              style={{
+                backgroundColor: "var(--bg-card)",
+                border: "1px solid var(--border-subtle)",
+                color: "var(--text-primary)",
+              }}
+            >
+              Retry
+            </button>
           </div>
         )}
 

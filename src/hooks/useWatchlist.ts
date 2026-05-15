@@ -91,7 +91,13 @@ export function useWatchlist() {
     setIds(next);
   }, []);
 
+  const clear = useCallback(() => setIds(new Set()), []);
+
+  const replace = useCallback((next: Iterable<string>) => {
+    setIds(new Set(Array.from(next).filter((v) => typeof v === "string")));
+  }, []);
+
   const has = useCallback((id: string) => ids.has(id), [ids]);
 
-  return { ids, has, toggle, size: ids.size };
+  return { ids, has, toggle, clear, replace, size: ids.size };
 }

@@ -29,6 +29,7 @@ import UpdatedAt from "./UpdatedAt";
 import ActiveFilterChips from "./ActiveFilterChips";
 import SnapshotButton from "./SnapshotButton";
 import PauseButton from "./PauseButton";
+import WatchlistBar from "./WatchlistBar";
 
 const STABLECOIN_IDS = new Set([
   "tether",
@@ -375,6 +376,8 @@ export default function BubblesPageContent() {
       </div>
 
       <ActiveFilterChips filters={filters} onChange={setFilters} />
+
+      {scope === "watchlist" && <WatchlistBar />}
 
       <div className="flex-1 relative bg-black">
         {isLoading && !tokens && <BubblesSkeleton />}

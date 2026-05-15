@@ -84,7 +84,24 @@ export default function BubblesPageContent() {
   const { holdings } = useHoldings();
   const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
   const [search, setSearch] = useState(qParam);
-  const [filters, setFilters] = useState<BubbleFilters>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<BubbleFilters>(() => {
+    if (typeof window === "undefined") return DEFAULT_FILTERS;
+    try {
+      const raw = window.localStorage.getItem("bubbles:filters");
+      if (!raw) return DEFAULT_FILTERS;
+      return { ...DEFAULT_FILTERS, ...JSON.parse(raw) };
+    } catch {
+      return DEFAULT_FILTERS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("bubbles:filters", JSON.stringify(filters));
+    } catch {
+      // ignore
+    }
+  }, [filters]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());

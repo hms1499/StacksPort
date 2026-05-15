@@ -126,6 +126,22 @@ export default function BubblesPageContent() {
         .sort((a, b) => b.marketCap - a.marketCap)
         .slice(0, filters.topN);
     }
+    if (filters.moversThreshold > 0) {
+      const th = filters.moversThreshold;
+      filtered = filtered.filter((t) => {
+        const c =
+          timeframe === "1h"
+            ? t.change1h
+            : timeframe === "7d"
+            ? t.change7d
+            : timeframe === "30d"
+            ? t.change30d
+            : timeframe === "1y"
+            ? t.change1y
+            : t.change24h;
+        return Math.abs(c) >= th;
+      });
+    }
     const q = search.trim().toLowerCase();
     if (q) {
       filtered = filtered.filter(
@@ -135,7 +151,7 @@ export default function BubblesPageContent() {
       );
     }
     return filtered;
-  }, [tokens, scope, watchlistIds, search, filters]);
+  }, [tokens, scope, watchlistIds, search, filters, timeframe]);
 
   const handleBubbleClick = useCallback(
     (token: BubbleToken, x: number, y: number) => {

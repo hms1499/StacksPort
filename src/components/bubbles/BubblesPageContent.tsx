@@ -300,7 +300,7 @@ export default function BubblesPageContent() {
             onClick={() => setShowHelp(true)}
             aria-label="Keyboard shortcuts"
             title="Keyboard shortcuts (?)"
-            className="h-7 w-7 rounded-lg flex items-center justify-center text-xs font-mono hover:opacity-80"
+            className="hidden sm:flex h-7 w-7 rounded-lg items-center justify-center text-xs font-mono hover:opacity-80"
             style={{
               backgroundColor: "var(--bg-card)",
               border: "1px solid var(--border-subtle)",

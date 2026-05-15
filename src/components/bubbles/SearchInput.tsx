@@ -1,5 +1,6 @@
 "use client";
 
+import { forwardRef } from "react";
 import { Search, X } from "lucide-react";
 
 interface SearchInputProps {
@@ -8,38 +9,39 @@ interface SearchInputProps {
   placeholder?: string;
 }
 
-export default function SearchInput({
-  value,
-  onChange,
-  placeholder = "Search…",
-}: SearchInputProps) {
-  return (
-    <div
-      className="flex items-center gap-1.5 rounded-lg px-2.5 h-7"
-      style={{
-        backgroundColor: "var(--bg-card)",
-        border: "1px solid var(--border-subtle)",
-      }}
-    >
-      <Search size={12} style={{ color: "var(--text-muted)" }} />
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="bg-transparent outline-none text-xs w-24 sm:w-32"
-        style={{ color: "var(--text-primary)" }}
-      />
-      {value && (
-        <button
-          type="button"
-          onClick={() => onChange("")}
-          aria-label="Clear search"
-          className="hover:opacity-80"
-        >
-          <X size={12} style={{ color: "var(--text-muted)" }} />
-        </button>
-      )}
-    </div>
-  );
-}
+const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
+  function SearchInput({ value, onChange, placeholder = "Search…" }, ref) {
+    return (
+      <div
+        className="flex items-center gap-1.5 rounded-lg px-2.5 h-7"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-subtle)",
+        }}
+      >
+        <Search size={12} style={{ color: "var(--text-muted)" }} />
+        <input
+          ref={ref}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="bg-transparent outline-none text-xs w-24 sm:w-32"
+          style={{ color: "var(--text-primary)" }}
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            aria-label="Clear search"
+            className="hover:opacity-80"
+          >
+            <X size={12} style={{ color: "var(--text-muted)" }} />
+          </button>
+        )}
+      </div>
+    );
+  }
+);
+
+export default SearchInput;

@@ -245,10 +245,18 @@ export default function BubblesPageContent() {
       >
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <h1
-            className="text-base font-semibold shrink-0"
+            className="text-base font-semibold shrink-0 flex items-baseline gap-1.5"
             style={{ color: "var(--text-primary)" }}
           >
             Crypto Bubbles
+            {visibleTokens && (
+              <span
+                className="text-[11px] font-normal font-mono"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {visibleTokens.length}
+              </span>
+            )}
           </h1>
           <div className="flex-1 sm:flex-initial overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <ScopeToggle

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap } from "lucide-react";
 import { connect as stacksConnect } from "@stacks/connect";
 import {
@@ -42,6 +42,14 @@ function BalanceCard() {
   const chartData = isConnected ? portfolioHistory ?? [] : priceHistory ?? [];
   const loading = portfolioLoading && !portfolio;
 
+  const periodChange = useMemo(() => {
+    if (chartData.length < 2) return null;
+    const first = chartData[0].value;
+    const last = chartData[chartData.length - 1].value;
+    if (first === 0) return null;
+    return ((last - first) / first) * 100;
+  }, [chartData]);
+
   async function handleConnect() {
     setConnecting(true);
     try {
@@ -60,7 +68,7 @@ function BalanceCard() {
     }
   }
 
-  const isPositive = (portfolio?.stxChange24h ?? 0) >= 0;
+  const isPositive = (periodChange ?? portfolio?.stxChange24h ?? 0) >= 0;
 
   return (
     <div
@@ -146,7 +154,7 @@ function BalanceCard() {
                 }
               >
                 {isPositive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
-                {formatPercent(portfolio.stxChange24h)}
+                {formatPercent(periodChange ?? portfolio.stxChange24h)}
               </span>
             </div>
             <div

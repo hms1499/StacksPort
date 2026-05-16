@@ -187,20 +187,26 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
     return createPortal(
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 z-10 max-h-[85vh] flex flex-col">
+        <div className="glass-card relative rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 z-10 max-h-[85vh] flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Multi-Send Complete</h2>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-              <X size={17} className="text-gray-500" />
+            <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Multi-Send Complete</h2>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
+            >
+              <X size={17} />
             </button>
           </div>
 
           <div className="flex gap-4 mb-5">
-            <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
+            <div className="flex-1 bg-green-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-bold text-green-600">{successIds.length}</p>
               <p className="text-xs text-green-600 mt-0.5">Successful</p>
             </div>
-            <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-center">
+            <div className="flex-1 bg-red-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-bold text-red-500">{failIds.length}</p>
               <p className="text-xs text-red-500 mt-0.5">Failed / Cancelled</p>
             </div>
@@ -211,19 +217,20 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
               const result = rowResults[r.id];
               const success = rowStatuses[r.id] === "success";
               return (
-                <div key={r.id} className="flex items-start gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-xs">
+                <div key={r.id} className="flex items-start gap-2 p-3 rounded-xl text-xs" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                   {success
                     ? <CheckCircle2 size={14} className="text-green-500 shrink-0 mt-0.5" />
                     : <XCircle size={14} className="text-red-400 shrink-0 mt-0.5" />}
                   <div className="min-w-0">
-                    <p className="font-mono text-gray-600 dark:text-gray-300 truncate">{r.address}</p>
-                    <p className="text-gray-400">{r.amount} STX</p>
+                    <p className="font-mono truncate" style={{ color: 'var(--text-secondary)' }}>{r.address}</p>
+                    <p style={{ color: 'var(--text-muted)' }}>{r.amount} STX</p>
                     {success && result?.txId && (
                       <a
                         href={`https://explorer.hiro.so/txid/${result.txId}?chain=${network}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#408A71] hover:underline break-all"
+                        className="hover:underline break-all"
+                        style={{ color: 'var(--accent)' }}
                       >
                         {result.txId.slice(0, 20)}...
                       </a>
@@ -239,7 +246,10 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
 
           <button
             onClick={onClose}
-            className="mt-4 w-full py-2.5 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+            className="mt-4 w-full py-2.5 rounded-xl text-white text-sm font-medium transition-colors"
+            style={{ backgroundColor: 'var(--accent)' }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent-dim)')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent)')}
           >
             Done
           </button>
@@ -254,7 +264,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={!isRunning ? onClose : undefined} />
-      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 z-10 max-h-[90vh] flex flex-col">
+      <div className="glass-card relative rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 z-10 max-h-[90vh] flex flex-col">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -263,21 +273,27 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
               <ArrowUpRight size={16} className="text-orange-500" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-gray-900 dark:text-white">Multi-Send STX</h2>
-              <p className="text-xs text-gray-400">Balance: {humanBalance(rawStxBalance)} STX</p>
+              <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Multi-Send STX</h2>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Balance: {humanBalance(rawStxBalance)} STX</p>
             </div>
           </div>
           {!isRunning && (
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-              <X size={17} className="text-gray-500" />
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
+            >
+              <X size={17} />
             </button>
           )}
         </div>
 
         {/* Column headers */}
         <div className="grid grid-cols-[1fr_140px_32px] gap-2 mb-2 px-1">
-          <p className="text-xs font-medium text-gray-500">Recipient Address</p>
-          <p className="text-xs font-medium text-gray-500">Amount (STX)</p>
+          <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Recipient Address</p>
+          <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Amount (STX)</p>
           <span />
         </div>
 
@@ -292,7 +308,8 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
                   value={r.address}
                   onChange={(e) => updateRow(r.id, "address", e.target.value.trim())}
                   disabled={isRunning}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] placeholder:text-gray-300 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-60 pr-6"
+                  className="w-full px-3 py-2 rounded-xl border text-xs focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] placeholder:text-gray-400 disabled:opacity-60 pr-6"
+                  style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   <StatusIcon id={r.id} />
@@ -307,13 +324,15 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
                 value={r.amount}
                 onChange={(e) => updateRow(r.id, "amount", e.target.value)}
                 disabled={isRunning}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] placeholder:text-gray-300 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-60"
+                className="w-full px-3 py-2 rounded-xl border text-xs focus:outline-none focus:ring-2 focus:ring-[#B0E4CC] placeholder:text-gray-400 disabled:opacity-60"
+                style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
               />
 
               <button
                 onClick={() => removeRow(r.id)}
                 disabled={recipients.length <= 1 || isRunning}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-300 hover:text-red-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 hover:text-red-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                style={{ color: 'var(--border-default)' }}
               >
                 <Trash2 size={13} />
               </button>
@@ -333,22 +352,22 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
         )}
 
         {/* Summary */}
-        <div className="mt-4 px-3 py-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="mt-4 px-3 py-2.5 rounded-xl space-y-1.5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+          <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
             <div className="flex items-center gap-1.5">
               <Clock size={12} />
               {recipients.length} transaction{recipients.length > 1 ? "s" : ""} · approve each in wallet
             </div>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-500">Total sending</span>
-            <span className={`font-semibold ${totalSTX > maxSTX ? "text-red-500" : "text-gray-700 dark:text-gray-200"}`}>
+            <span style={{ color: 'var(--text-muted)' }}>Total sending</span>
+            <span className={`font-semibold ${totalSTX > maxSTX ? "text-red-500" : ""}`} style={totalSTX > maxSTX ? undefined : { color: 'var(--text-primary)' }}>
               {totalSTX.toFixed(6)} STX
             </span>
           </div>
-          <div className="flex items-center justify-between text-xs border-t border-gray-200 dark:border-gray-700 pt-1.5">
-            <span className="text-gray-500">Remaining balance</span>
-            <span className={`font-semibold ${maxSTX - totalSTX < 0 ? "text-red-500" : "text-[#285A48] dark:text-[#B0E4CC]"}`}>
+          <div className="flex items-center justify-between text-xs pt-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <span style={{ color: 'var(--text-muted)' }}>Remaining balance</span>
+            <span className={`font-semibold ${maxSTX - totalSTX < 0 ? "text-red-500" : ""}`} style={maxSTX - totalSTX < 0 ? undefined : { color: 'var(--accent)' }}>
               {(maxSTX - totalSTX).toFixed(6)} STX
             </span>
           </div>
@@ -356,7 +375,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
 
         {/* Error */}
         {globalError && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
+          <div className="mt-3 flex items-center gap-2 text-xs text-red-500 bg-red-50 rounded-xl px-3 py-2.5">
             <AlertCircle size={13} />
             {globalError}
           </div>
@@ -366,7 +385,10 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
         <button
           onClick={handleSend}
           disabled={isRunning || totalSTX === 0}
-          className="mt-4 w-full py-3 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="mt-4 w-full py-3 rounded-xl text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          style={{ backgroundColor: 'var(--accent)' }}
+          onMouseEnter={(e) => { if (!e.currentTarget.disabled) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent-dim)'; }}
+          onMouseLeave={(e) => { if (!e.currentTarget.disabled) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent)'; }}
         >
           {isRunning ? (
             <>

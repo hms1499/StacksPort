@@ -134,10 +134,14 @@ export default function DashboardPage() {
             <STXMarketStatsCard />
           </MotionCard>
 
-          {/* DCA Summary + Greed Index + Trending */}
+          {/* DCA Summary full-width on its own row */}
           <MotionCard>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
-              <DCASummaryCard />
+            <DCASummaryCard />
+          </MotionCard>
+
+          {/* Greed Index + Trending side by side */}
+          <MotionCard>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
               <GreedIndexCard />
               <TrendingTokens />
             </div>

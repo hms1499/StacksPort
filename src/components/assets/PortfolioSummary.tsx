@@ -75,7 +75,7 @@ const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }:
             </Pie>
             {/* Center label */}
             {activeIndex >= 0 && segments[activeIndex] && (
-              <text x="50%" y="46%" textAnchor="middle" dominantBaseline="middle" className="fill-gray-900 dark:fill-gray-100" fontSize={12} fontWeight={600}>
+              <text x="50%" y="46%" textAnchor="middle" dominantBaseline="middle" style={{ fill: 'var(--text-primary)' }} fontSize={12} fontWeight={600}>
                 {segments[activeIndex].label}
               </text>
             )}

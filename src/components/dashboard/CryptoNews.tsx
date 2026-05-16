@@ -13,8 +13,8 @@ function timeAgo(dateStr: string): string {
 }
 
 const SOURCE_COLORS: Record<string, string> = {
-  CoinTelegraph: "bg-orange-50 text-orange-500 dark:bg-orange-900/20",
-  CoinDesk: "bg-blue-50 text-blue-500 dark:bg-blue-900/20",
+  CoinTelegraph: "bg-orange-50 text-orange-500",
+  CoinDesk: "bg-blue-50 text-blue-500",
 };
 
 function NewsRow({ item }: { item: NewsItem }) {
@@ -53,9 +53,8 @@ function NewsRow({ item }: { item: NewsItem }) {
         </p>
         <div className="flex items-center gap-2 mt-1.5">
           <span
-            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-              SOURCE_COLORS[item.source] ?? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-            }`}
+            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${SOURCE_COLORS[item.source] ?? ""}`}
+            style={SOURCE_COLORS[item.source] ? undefined : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }}
           >
             {item.source}
           </span>

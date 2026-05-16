@@ -92,11 +92,11 @@ function parseTx(raw: any, myAddress: string): TxItem {
 }
 
 const TYPE_STYLES = {
-  send: { icon: ArrowUpRight, bg: "bg-red-50 dark:bg-red-900/20", color: "text-red-500" },
-  receive: { icon: ArrowDownLeft, bg: "bg-green-50 dark:bg-green-900/20", color: "text-green-500" },
-  contract_call: { icon: Code2, bg: "bg-blue-50 dark:bg-blue-900/20", color: "text-blue-500" },
-  smart_contract: { icon: Layers, bg: "bg-purple-50 dark:bg-purple-900/20", color: "text-purple-500" },
-  coinbase: { icon: Layers, bg: "bg-gray-50 dark:bg-gray-700", color: "text-gray-400" },
+  send:          { icon: ArrowUpRight,  bg: "bg-red-50",    color: "text-red-500"    },
+  receive:       { icon: ArrowDownLeft, bg: "bg-green-50",  color: "text-green-500"  },
+  contract_call: { icon: Code2,         bg: "bg-blue-50",   color: "text-blue-500"   },
+  smart_contract:{ icon: Layers,        bg: "bg-purple-50", color: "text-purple-500" },
+  coinbase:      { icon: Layers,        bg: "",             color: "text-gray-400"   },
 };
 
 const STATUS_DOT: Record<string, string> = {
@@ -116,7 +116,10 @@ const TxRow = React.memo(function TxRow({ tx }: { tx: TxItem }) {
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-elevated)')}
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
-      <div className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center flex-shrink-0`}>
+      <div
+        className={`w-9 h-9 rounded-full ${bg} flex items-center justify-center shrink-0`}
+        style={bg ? undefined : { backgroundColor: 'var(--bg-elevated)' }}
+      >
         <Icon size={15} className={color} />
       </div>
 

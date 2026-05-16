@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ArrowDownLeft, Users } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, ArrowDownLeft, Users, ArrowLeftRight, Repeat2 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useFungibleTokens } from "@/hooks/useMarketData";
 import SendModal, { SendTokenInfo } from "@/components/wallet/SendModal";
@@ -36,7 +37,27 @@ export default function QuickActions() {
 
   return (
     <>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
+        <Link href="/trade">
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all cursor-pointer"
+          >
+            <ArrowLeftRight size={16} className="text-blue-500" />
+            Swap
+          </motion.div>
+        </Link>
+        <Link href="/dca">
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all cursor-pointer"
+          >
+            <Repeat2 size={16} className="text-purple-500" />
+            DCA
+          </motion.div>
+        </Link>
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}

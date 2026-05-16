@@ -18,6 +18,7 @@ import {
   type STXMarketHistory,
   type ConnectedAppsResult,
 } from "@/lib/stacks";
+import { getUserPlans, type DCAPlan } from "@/lib/dca";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
 const SLOW_REFRESH = 120_000; // 2 min — market data
@@ -151,6 +152,14 @@ export function useConnectedApps(address: string | undefined) {
     address ? ["connected-apps", address] : null,
     () => getConnectedApps(address!),
     { refreshInterval: 300_000, dedupingInterval: 60_000 }
+  );
+}
+
+export function useUserDCAPlans(address: string | undefined) {
+  return useSWR<DCAPlan[]>(
+    address ? ["dca-plans", address] : null,
+    () => getUserPlans(address!),
+    { refreshInterval: 120_000, dedupingInterval: 60_000 }
   );
 }
 

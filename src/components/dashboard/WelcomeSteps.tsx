@@ -99,31 +99,32 @@ export default function WelcomeSteps() {
           transition={{ duration: 0.3 }}
           className="overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-[#408A71]/5 to-[#B0E4CC]/10 dark:from-[#285A48]/20 dark:to-[#285A48]/5 rounded-2xl border border-[#B0E4CC]/30 dark:border-[#285A48]/40 p-5">
+          <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(to right, var(--accent-glow), color-mix(in srgb, var(--accent-dim) 5%, transparent))', border: '1px solid var(--accent-glow)' }}>
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-[#408A71] flex items-center justify-center">
                   <Sparkles size={16} className="text-white" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                  <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                     Getting Started
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {completedCount}/{steps.length} completed
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleDismiss}
-                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="p-1 transition-colors"
+                style={{ color: 'var(--text-muted)' }}
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* Progress bar */}
-            <div className="h-1.5 bg-gray-200/50 dark:bg-gray-700/50 rounded-full mb-4 overflow-hidden">
+            <div className="h-1.5 rounded-full mb-4 overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
@@ -138,30 +139,29 @@ export default function WelcomeSteps() {
                 <Link
                   key={step.id}
                   href={step.href}
-                  className={`flex items-start gap-2.5 p-3 rounded-xl transition-all ${
-                    step.done
-                      ? "bg-[#408A71]/10 dark:bg-[#285A48]/30"
-                      : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
-                  }`}
+                  className="flex items-start gap-2.5 p-3 rounded-xl transition-all"
+                  style={step.done
+                    ? { backgroundColor: 'var(--accent-glow)' }
+                    : { backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }
+                  }
                 >
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      step.done
-                        ? "bg-[#408A71] text-white"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
-                    }`}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                    style={step.done
+                      ? { backgroundColor: '#408A71', color: '#fff' }
+                      : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }
+                    }
                   >
                     {step.done ? <CheckCircle2 size={14} /> : step.icon}
                   </div>
                   <div className="min-w-0">
                     <p
-                      className={`text-xs font-semibold ${
-                        step.done ? "text-[#408A71] dark:text-[#B0E4CC]" : "text-gray-700 dark:text-gray-200"
-                      }`}
+                      className="text-xs font-semibold"
+                      style={{ color: step.done ? 'var(--accent)' : 'var(--text-primary)' }}
                     >
                       {step.label}
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
                       {step.description}
                     </p>
                   </div>

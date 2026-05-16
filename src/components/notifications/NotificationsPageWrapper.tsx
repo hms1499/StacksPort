@@ -36,18 +36,17 @@ export default function NotificationsPageWrapper() {
       <Topbar title="Notifications" />
 
       {/* Tab bar */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 md:px-6">
+      <div className="px-4 md:px-6" style={{ backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="flex gap-1">
           {tabs.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => handleTabChange(id)}
-              className={cn(
-                'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors',
-                activeTab === id
-                  ? 'border-[#408A71] text-[#285A48] dark:text-[#B0E4CC]'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              )}
+              className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors')}
+              style={activeTab === id
+                ? { borderColor: '#408A71', color: 'var(--accent)' }
+                : { borderColor: 'transparent', color: 'var(--text-muted)' }
+              }
             >
               <Icon size={16} />
               {label}
@@ -57,7 +56,7 @@ export default function NotificationsPageWrapper() {
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 flex overflow-hidden bg-gray-50 dark:bg-gray-950">
+      <div className="flex-1 flex overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         {activeTab === 'activity' ? (
           <NotificationsContent />
         ) : (

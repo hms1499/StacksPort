@@ -18,59 +18,43 @@ export default function NotificationFilters({
   isMobileOpen = false,
   onMobileClose,
 }: NotificationFiltersProps) {
-  const {
-    filters,
-    setTypeFilter,
-    setCategoryFilter,
-    setDateRangeFilter,
-    clearFilters,
-  } = useNotificationStore();
+  const { filters, setTypeFilter, setCategoryFilter, setDateRangeFilter, clearFilters } = useNotificationStore();
 
   const hasActiveFilters =
-    filters.types.length > 0 ||
-    filters.categories.length > 0 ||
-    filters.dateRange !== 'all';
+    filters.types.length > 0 || filters.categories.length > 0 || filters.dateRange !== 'all';
 
   const handleTypeToggle = (type: NotificationType) => {
-    setTypeFilter(
-      filters.types.includes(type)
-        ? filters.types.filter((t) => t !== type)
-        : [...filters.types, type]
-    );
+    setTypeFilter(filters.types.includes(type) ? filters.types.filter((t) => t !== type) : [...filters.types, type]);
   };
 
   const handleCategoryToggle = (category: NotificationCategory) => {
-    setCategoryFilter(
-      filters.categories.includes(category)
-        ? filters.categories.filter((c) => c !== category)
-        : [...filters.categories, category]
-    );
+    setCategoryFilter(filters.categories.includes(category) ? filters.categories.filter((c) => c !== category) : [...filters.categories, category]);
   };
 
-  const getTypeLabel = (type: NotificationType) =>
-    type.charAt(0).toUpperCase() + type.slice(1);
+  const getTypeLabel = (type: NotificationType) => type.charAt(0).toUpperCase() + type.slice(1);
 
   const getCategoryLabel = (category: NotificationCategory) => {
     const labels: Record<NotificationCategory, string> = {
-      dca: 'DCA In',
-      'dca-out': 'DCA Out',
-      wallet: 'Wallet',
-      swap: 'Swap',
-      send: 'Send',
-      price: 'Price Alert',
+      dca: 'DCA In', 'dca-out': 'DCA Out', wallet: 'Wallet', swap: 'Swap', send: 'Send', price: 'Price Alert',
     };
     return labels[category];
+  };
+
+  const sidebarStyle: React.CSSProperties = {
+    backgroundColor: 'var(--bg-card)',
+    borderRight: '1px solid var(--border-subtle)',
   };
 
   const content = (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-900 dark:text-gray-100">Filters</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Filters</h2>
         <div className="flex items-center gap-3">
           {hasActiveFilters && (
             <button
               onClick={() => clearFilters()}
-              className="text-xs text-[#285A48] hover:text-[#285A48] dark:text-[#B0E4CC] dark:hover:text-[#B0E4CC] font-medium transition-colors"
+              className="text-xs font-medium transition-colors"
+              style={{ color: 'var(--accent)' }}
             >
               Clear
             </button>
@@ -78,7 +62,8 @@ export default function NotificationFilters({
           {onMobileClose && (
             <button
               onClick={onMobileClose}
-              className="lg:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              className="lg:hidden transition-colors"
+              style={{ color: 'var(--text-muted)' }}
               aria-label="Close filters"
             >
               <X size={20} />
@@ -89,7 +74,7 @@ export default function NotificationFilters({
 
       {/* Type filters */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Type</h3>
+        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Type</h3>
         <div className="space-y-2">
           {typeOptions.map((type) => (
             <label key={type} className="flex items-center gap-2 cursor-pointer">
@@ -99,7 +84,7 @@ export default function NotificationFilters({
                 onChange={() => handleTypeToggle(type)}
                 className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">{getTypeLabel(type)}</span>
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{getTypeLabel(type)}</span>
             </label>
           ))}
         </div>
@@ -107,7 +92,7 @@ export default function NotificationFilters({
 
       {/* Category filters */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Category</h3>
+        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Category</h3>
         <div className="space-y-2">
           {categoryOptions.map((category) => (
             <label key={category} className="flex items-center gap-2 cursor-pointer">
@@ -117,7 +102,7 @@ export default function NotificationFilters({
                 onChange={() => handleCategoryToggle(category)}
                 className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">{getCategoryLabel(category)}</span>
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{getCategoryLabel(category)}</span>
             </label>
           ))}
         </div>
@@ -125,7 +110,7 @@ export default function NotificationFilters({
 
       {/* Date range filters */}
       <div>
-        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Date Range</h3>
+        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Date Range</h3>
         <div className="space-y-2">
           {(['hour', 'day', 'week', 'all'] as const).map((range) => (
             <label key={range} className="flex items-center gap-2 cursor-pointer">
@@ -137,14 +122,8 @@ export default function NotificationFilters({
                 onChange={() => setDateRangeFilter(range)}
                 className="w-4 h-4 border-gray-300 text-[#285A48] focus:ring-[#408A71]"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                {range === 'hour'
-                  ? 'Last hour'
-                  : range === 'day'
-                    ? 'Last day'
-                    : range === 'week'
-                      ? 'Last week'
-                      : 'All time'}
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                {range === 'hour' ? 'Last hour' : range === 'day' ? 'Last day' : range === 'week' ? 'Last week' : 'All time'}
               </span>
             </label>
           ))}
@@ -152,8 +131,8 @@ export default function NotificationFilters({
       </div>
 
       {hasActiveFilters && (
-        <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
-          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+        <div className="mt-6 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
             {filters.types.length + filters.categories.length} filter
             {filters.types.length + filters.categories.length !== 1 ? 's' : ''} applied
           </p>
@@ -165,23 +144,17 @@ export default function NotificationFilters({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-64 overflow-y-auto" style={sidebarStyle}>
         {content}
       </aside>
 
       {/* Mobile overlay */}
       {isMobileOpen && (
         <>
-          <div
-            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
-            onClick={onMobileClose}
-            aria-hidden="true"
-          />
+          <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={onMobileClose} aria-hidden="true" />
           <aside
-            className={cn(
-              'fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 shadow-xl overflow-y-auto lg:hidden',
-              'animate-in slide-in-from-left duration-200'
-            )}
+            className={cn('fixed inset-y-0 left-0 z-50 w-72 shadow-xl overflow-y-auto lg:hidden animate-in slide-in-from-left duration-200')}
+            style={sidebarStyle}
           >
             {content}
           </aside>

@@ -293,22 +293,25 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         {/* Rows */}
         <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
           {loading ? (
-            [...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 animate-pulse">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-gray-100 shrink-0" />
-                  <div className="space-y-1.5">
-                    <div className="h-3 bg-gray-100 rounded w-16" />
-                    <div className="h-3 bg-gray-100 rounded w-10" />
+            [...Array(5)].map((_, i) => {
+              const sk = { backgroundColor: 'var(--border-subtle)' } as const;
+              return (
+                <div key={i} className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 animate-pulse">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full shrink-0" style={sk} />
+                    <div className="space-y-1.5">
+                      <div className="h-3 rounded w-16" style={sk} />
+                      <div className="h-3 rounded w-10" style={sk} />
+                    </div>
                   </div>
+                  <div className="hidden md:block h-3 rounded w-20 ml-auto self-center" style={sk} />
+                  <div className="hidden md:block h-3 rounded w-16 ml-auto self-center" style={sk} />
+                  <div className="hidden md:block h-3 rounded w-14 mx-auto self-center" style={sk} />
+                  <div className="h-3 rounded w-16 ml-auto self-center" style={sk} />
+                  <div className="h-3 rounded w-10 ml-auto self-center" style={sk} />
                 </div>
-                <div className="hidden md:block h-3 bg-gray-100 rounded w-20 ml-auto self-center" />
-                <div className="hidden md:block h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
-                <div className="hidden md:block h-3 bg-gray-100 rounded w-14 mx-auto self-center" />
-                <div className="h-3 bg-gray-100 rounded w-16 ml-auto self-center" />
-                <div className="h-3 bg-gray-100 rounded w-10 ml-auto self-center" />
-              </div>
-            ))
+              );
+            })
           ) : allTokens.length === 0 ? (
             <EmptyState
               icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
@@ -326,9 +329,12 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
                 <>
                   <button
                     onClick={() => setShowFlagged((v) => !v)}
-                    className="w-full flex items-center justify-between px-6 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                    className="w-full flex items-center justify-between px-6 py-3 transition-colors text-left"
+                    style={{ backgroundColor: 'var(--bg-elevated)' }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--border-subtle)')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
                   >
-                    <span className="flex items-center gap-2 text-xs font-medium text-gray-500">
+                    <span className="flex items-center gap-2 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
                       <ShieldAlert size={13} className="text-red-400" />
                       {flaggedTokens.length} flagged token{flaggedTokens.length > 1 ? "s" : ""} (spam / unverified)
                     </span>

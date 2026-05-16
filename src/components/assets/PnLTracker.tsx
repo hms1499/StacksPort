@@ -81,26 +81,28 @@ function TokenAvatar({ symbol, imageUri }: { symbol: string; imageUri?: string }
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function SkeletonLoader() {
+  const s = { backgroundColor: 'var(--border-subtle)' } as const;
+  const sElevated = { backgroundColor: 'var(--bg-elevated)' } as const;
   return (
     <div className="space-y-5 animate-pulse">
       <div className="grid grid-cols-3 gap-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-gray-50 rounded-xl p-4 space-y-2">
-            <div className="h-3 bg-gray-200 rounded w-20" />
-            <div className="h-6 bg-gray-200 rounded w-28" />
-            <div className="h-3 bg-gray-200 rounded w-14" />
+          <div key={i} className="rounded-xl p-4 space-y-2" style={sElevated}>
+            <div className="h-3 rounded w-20" style={s} />
+            <div className="h-6 rounded w-28" style={s} />
+            <div className="h-3 rounded w-14" style={s} />
           </div>
         ))}
       </div>
-      <div className="space-y-0 divide-y divide-gray-50">
+      <div className="space-y-0">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-3.5">
+          <div key={i} className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-3.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gray-100 flex-shrink-0" />
-              <div className="h-3 bg-gray-100 rounded w-16" />
+              <div className="w-8 h-8 rounded-full shrink-0" style={s} />
+              <div className="h-3 rounded w-16" style={s} />
             </div>
             {[...Array(5)].map((_, j) => (
-              <div key={j} className="h-3 bg-gray-100 rounded w-14 ml-auto self-center" />
+              <div key={j} className="h-3 rounded w-14 ml-auto self-center" style={s} />
             ))}
           </div>
         ))}
@@ -113,23 +115,28 @@ function SkeletonLoader() {
 
 function PnLRow({ entry }: { entry: PnLEntry }) {
   return (
-    <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-3.5 hover:bg-gray-50 transition-colors items-center border-b border-gray-50 last:border-0">
+    <div
+      className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-3.5 transition-colors items-center"
+      style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
+      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
+    >
       {/* Token */}
       <div className="flex items-center gap-2.5 min-w-0">
         <TokenAvatar symbol={entry.symbol} imageUri={entry.imageUri} />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900">{entry.symbol}</p>
-          <p className="text-xs text-gray-400 truncate">{entry.name}</p>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{entry.symbol}</p>
+          <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{entry.name}</p>
         </div>
       </div>
 
       {/* Avg Cost */}
-      <p className="text-sm text-gray-600 text-right tabular-nums">
+      <p className="text-sm text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>
         {entry.avgCostBasis > 0 ? formatPrice(entry.avgCostBasis) : "—"}
       </p>
 
       {/* Current Price */}
-      <p className="text-sm text-gray-600 text-right tabular-nums">
+      <p className="text-sm text-right tabular-nums" style={{ color: 'var(--text-secondary)' }}>
         {formatPrice(entry.currentPrice)}
       </p>
 
@@ -248,20 +255,20 @@ export default function PnLTracker() {
       {/* States */}
       {!isConnected ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <BarChart3 size={36} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">Connect your wallet to view PnL</p>
+          <BarChart3 size={36} className="mb-3" style={{ color: 'var(--border-default)' }} />
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Connect your wallet to view PnL</p>
         </div>
       ) : loading ? (
         <SkeletonLoader />
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <BarChart3 size={32} className="text-gray-200 mb-3" />
+          <BarChart3 size={32} className="mb-3" style={{ color: 'var(--border-default)' }} />
           <p className="text-sm text-red-400">{error}</p>
         </div>
       ) : !data || data.entries.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <BarChart3 size={32} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">No PnL data available</p>
+          <BarChart3 size={32} className="mb-3" style={{ color: 'var(--border-default)' }} />
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No PnL data available</p>
         </div>
       ) : (
         <div className="space-y-5">
@@ -283,7 +290,7 @@ export default function PnLTracker() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-2.5 text-xs font-medium text-gray-400 uppercase tracking-wide border-b border-gray-100">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-2.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
               <span>Token</span>
               <span className="text-right">Avg Cost</span>
               <span className="text-right">Cur. Price</span>
@@ -299,9 +306,9 @@ export default function PnLTracker() {
           </div>
 
           {/* Disclaimer */}
-          <div className="flex items-center gap-2 pt-2 border-t border-gray-50">
-            <Info size={11} className="text-gray-300 flex-shrink-0" />
-            <p className="text-xs text-gray-400">
+          <div className="flex items-center gap-2 pt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <Info size={11} className="shrink-0" style={{ color: 'var(--border-default)' }} />
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Based on on-chain history (max 1,000 txs). Results may be approximate.
             </p>
           </div>

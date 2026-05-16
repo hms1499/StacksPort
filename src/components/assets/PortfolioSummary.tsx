@@ -103,8 +103,8 @@ const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }:
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: s.color }}
             />
-            <span className="text-gray-600 dark:text-gray-300 font-medium truncate">{s.label}</span>
-            <span className="text-gray-400 dark:text-gray-500 ml-auto">{s.pct.toFixed(1)}%</span>
+            <span className="font-medium truncate" style={{ color: 'var(--text-secondary)' }}>{s.label}</span>
+            <span className="ml-auto" style={{ color: 'var(--text-muted)' }}>{s.pct.toFixed(1)}%</span>
           </div>
         ))}
       </div>

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Lightbulb, Wallet } from "lucide-react";
 import { TokenWithValue } from "@/lib/stacks";
+import { useThemeStore } from "@/store/themeStore";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -281,23 +281,25 @@ interface Props {
 }
 
 export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
+  const isDark = useThemeStore((s) => s.theme === "dark");
   const result = useMemo(
     () => (stx && totalUsd > 0 ? calcHealth(stx, tokens, totalUsd) : null),
     [stx, tokens, totalUsd]
   );
+  const s = { backgroundColor: 'var(--border-subtle)' } as const;
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse">
-        <div className="h-4 bg-gray-100 rounded w-44 mb-5" />
+      <div className="glass-card rounded-2xl p-6 shadow-sm animate-pulse">
+        <div className="h-4 rounded w-44 mb-5" style={s} />
         <div className="flex gap-8">
-          <div className="w-32 h-32 rounded-full bg-gray-100 flex-shrink-0" />
+          <div className="w-32 h-32 rounded-full shrink-0" style={s} />
           <div className="flex-1 space-y-4 pt-1">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="space-y-1.5">
-                <div className="h-3 bg-gray-100 rounded w-28" />
-                <div className="h-1.5 bg-gray-100 rounded-full" />
-                <div className="h-3 bg-gray-100 rounded w-40" />
+                <div className="h-3 rounded w-28" style={s} />
+                <div className="h-1.5 rounded-full" style={s} />
+                <div className="h-3 rounded w-40" style={s} />
               </div>
             ))}
           </div>
@@ -308,19 +310,19 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
 
   if (!stx || totalUsd === 0 || !result) {
     return (
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col items-center justify-center py-10 text-center">
-        <Wallet size={32} className="text-gray-200 mb-3" />
-        <p className="text-sm text-gray-400">Connect your wallet to see your health score</p>
+      <div className="glass-card rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center py-10 text-center">
+        <Wallet size={32} className="mb-3" style={{ color: 'var(--border-default)' }} />
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Connect your wallet to see your health score</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="glass-card rounded-2xl p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="font-semibold text-gray-700">Portfolio Health Score</h2>
-        <div className="flex items-center gap-3 text-xs text-gray-400">
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Portfolio Health Score</h2>
+        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           <span>
             <span className="inline-block w-2 h-2 rounded-full bg-[#B0E4CC] mr-1" />
             Volatile {(result.volatilePct * 100).toFixed(0)}%
@@ -334,8 +336,8 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
 
       <div className="flex gap-8 items-center">
         {/* Score ring */}
-        <div className="flex-shrink-0">
-          <ScoreRing score={result.score} color={result.color} label={result.label} />
+        <div className="shrink-0">
+          <ScoreRing score={result.score} color={result.color} label={result.label} isDark={isDark} />
         </div>
 
         {/* Metrics */}
@@ -347,9 +349,9 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
       </div>
 
       {/* Tip */}
-      <div className="mt-5 flex items-start gap-2.5 bg-gray-50 rounded-xl px-4 py-3">
-        <Lightbulb size={14} className="text-yellow-500 flex-shrink-0 mt-0.5" />
-        <p className="text-xs text-gray-500 leading-relaxed">{result.tip}</p>
+      <div className="mt-5 flex items-start gap-2.5 rounded-xl px-4 py-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+        <Lightbulb size={14} className="text-yellow-500 shrink-0 mt-0.5" />
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{result.tip}</p>
       </div>
     </div>
   );

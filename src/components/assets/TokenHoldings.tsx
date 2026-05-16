@@ -121,21 +121,22 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
 
   return (
     <div
-      className={`grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center ${
-        isFlagged ? "bg-gray-50/50 hover:bg-gray-50" : "hover:bg-gray-50"
-      }`}
+      className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center"
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
+      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = isFlagged ? 'var(--bg-elevated)' : 'transparent')}
+      style={isFlagged ? { backgroundColor: 'var(--bg-elevated)' } : undefined}
     >
       {/* Token info */}
       <div className="flex items-center gap-2.5 min-w-0">
         <TokenAvatar symbol={t.symbol} imageUri={t.imageUri} warning={t.warning} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <p className={`text-sm font-semibold ${isFlagged ? "text-gray-500" : "text-gray-900"}`}>
+            <p className="text-sm font-semibold" style={{ color: isFlagged ? 'var(--text-muted)' : 'var(--text-primary)' }}>
               {t.symbol}
             </p>
             <WarningBadge warning={t.warning} />
           </div>
-          <p className="text-xs text-gray-400 truncate">{t.name}</p>
+          <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{t.name}</p>
         </div>
         {/* Portfolio % bar — desktop xl only */}
         {!isFlagged && (
@@ -149,12 +150,12 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
       </div>
 
       {/* Balance — desktop only */}
-      <p className={`hidden md:block text-sm text-right font-medium ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
+      <p className="hidden md:block text-sm text-right font-medium" style={{ color: isFlagged ? 'var(--text-muted)' : 'var(--text-secondary)' }}>
         {formatBalance(t.balance)}
       </p>
 
       {/* Price — desktop only */}
-      <p className={`hidden md:block text-sm text-right ${isFlagged ? "text-gray-400" : "text-gray-700"}`}>
+      <p className="hidden md:block text-sm text-right" style={{ color: isFlagged ? 'var(--text-muted)' : 'var(--text-secondary)' }}>
         {formatPrice(t.priceUsd)}
       </p>
 
@@ -164,7 +165,7 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
       </div>
 
       {/* Value */}
-      <p className={`text-sm font-semibold text-right ${isFlagged ? "text-gray-400" : "text-gray-900"}`}>
+      <p className="text-sm font-semibold text-right" style={{ color: isFlagged ? 'var(--text-muted)' : 'var(--text-primary)' }}>
         {t.valueUsd > 0 ? formatUSD(t.valueUsd) : "—"}
       </p>
 

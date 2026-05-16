@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import { useWalletStore } from "@/store/walletStore";
-import { getTokensWithValues, TokenWithValue } from "@/lib/stacks";
+import { useTokensWithValues } from "@/hooks/useMarketData";
 import Topbar from "@/components/layout/Topbar";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import StaggerChildren from "@/components/motion/StaggerChildren";
@@ -17,46 +16,12 @@ import PnLTracker from "@/components/assets/PnLTracker";
 
 export default function AssetsPageContent() {
   const { stxAddress, isConnected } = useWalletStore();
-  const [stx, setStx] = useState<TokenWithValue | null>(null);
-  const [tokens, setTokens] = useState<TokenWithValue[]>([]);
-  const [totalUsd, setTotalUsd] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const prevAddress = useRef(stxAddress);
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data, isLoading: loading } = useTokensWithValues(addr);
 
-  const resetState = useCallback(() => {
-    setStx(null);
-    setTokens([]);
-    setTotalUsd(0);
-  }, []);
-
-  useEffect(() => {
-    if (!isConnected || !stxAddress) {
-      // Only reset if address actually changed to avoid cascading renders
-      if (prevAddress.current !== stxAddress) {
-        prevAddress.current = stxAddress;
-        queueMicrotask(resetState);
-      }
-      return;
-    }
-    prevAddress.current = stxAddress;
-    let cancelled = false;
-    Promise.resolve()
-      .then(() => {
-        if (!cancelled) setLoading(true);
-        return getTokensWithValues(stxAddress);
-      })
-      .then((data) => {
-        if (cancelled) return;
-        setStx(data.stx);
-        setTokens(data.tokens);
-        setTotalUsd(data.totalUsd);
-      })
-      .catch(console.error)
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [stxAddress, isConnected, resetState]);
+  const stx = data?.stx ?? null;
+  const tokens = data?.tokens ?? [];
+  const totalUsd = data?.totalUsd ?? 0;
 
   return (
     <div className="flex flex-col min-h-screen">

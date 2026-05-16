@@ -13,6 +13,17 @@ import MultisendModal from "@/components/wallet/MultisendModal";
 const STX_IMAGE =
   "https://assets.coingecko.com/coins/images/2069/small/Stacks_logo_full.png";
 
+const BTN = "flex items-center gap-2 glass-card shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium transition-all";
+
+function useHover() {
+  return {
+    onMouseEnter: (e: React.MouseEvent<HTMLElement>) =>
+      ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)"),
+    onMouseLeave: (e: React.MouseEvent<HTMLElement>) =>
+      ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-card)"),
+  };
+}
+
 export default function QuickActions() {
   const { stxAddress, isConnected } = useWalletStore();
   const { data: balanceData } = useFungibleTokens(
@@ -21,6 +32,7 @@ export default function QuickActions() {
   const [sendOpen, setSendOpen] = useState(false);
   const [receiveOpen, setReceiveOpen] = useState(false);
   const [multisendOpen, setMultisendOpen] = useState(false);
+  const hover = useHover();
 
   if (!isConnected) return null;
 
@@ -39,63 +51,55 @@ export default function QuickActions() {
     <>
       <div className="flex flex-wrap gap-3">
         <Link href="/trade">
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all cursor-pointer"
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className={`${BTN} cursor-pointer`}
+            style={{ color: "var(--text-primary)" }} {...hover}
           >
             <ArrowLeftRight size={16} className="text-blue-500" />
             Swap
           </motion.div>
         </Link>
+
         <Link href="/dca">
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all cursor-pointer"
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className={`${BTN} cursor-pointer`}
+            style={{ color: "var(--text-primary)" }} {...hover}
           >
             <Repeat2 size={16} className="text-purple-500" />
             DCA
           </motion.div>
         </Link>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+
+        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           onClick={() => setSendOpen(true)}
-          className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all"
+          className={BTN}
+          style={{ color: "var(--text-primary)" }} {...hover}
         >
           <ArrowUpRight size={16} className="text-red-500" />
           Send
         </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+
+        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           onClick={() => setMultisendOpen(true)}
-          className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all"
+          className={BTN}
+          style={{ color: "var(--text-primary)" }} {...hover}
         >
           <Users size={16} className="text-orange-500" />
           Multi-Send
         </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+
+        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           onClick={() => setReceiveOpen(true)}
-          className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md transition-all"
+          className={BTN}
+          style={{ color: "var(--text-primary)" }} {...hover}
         >
           <ArrowDownLeft size={16} className="text-green-500" />
           Receive
         </motion.button>
       </div>
 
-      {sendOpen && (
-        <SendModal token={sendToken} onClose={() => setSendOpen(false)} />
-      )}
-      {multisendOpen && (
-        <MultisendModal
-          rawStxBalance={stxBalance}
-          onClose={() => setMultisendOpen(false)}
-        />
-      )}
+      {sendOpen && <SendModal token={sendToken} onClose={() => setSendOpen(false)} />}
+      {multisendOpen && <MultisendModal rawStxBalance={stxBalance} onClose={() => setMultisendOpen(false)} />}
       {receiveOpen && <ReceiveModal onClose={() => setReceiveOpen(false)} />}
     </>
   );

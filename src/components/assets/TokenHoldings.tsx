@@ -245,10 +245,10 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="glass-card rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
-          <h2 className="font-semibold text-gray-700">Token Holdings</h2>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Token Holdings</h2>
           {!loading && (
             <div className="flex items-center gap-2">
               {flaggedTokens.length > 0 && (

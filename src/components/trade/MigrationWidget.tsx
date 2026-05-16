@@ -58,7 +58,7 @@ function TokenBadge({ symbol, img }: { symbol: string; img: string }) {
     <span className="inline-flex items-center gap-1.5">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={img} alt={symbol} className="w-5 h-5 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-      <span className="font-semibold text-gray-900 dark:text-gray-100">{symbol}</span>
+      <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{symbol}</span>
     </span>
   );
 }
@@ -206,24 +206,28 @@ export default function MigrationWidget() {
   if (status === "success" && txId) {
     return (
       <div className="flex flex-col items-center py-8 gap-4 text-center">
-        <div className="w-14 h-14 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center">
           <CheckCircle2 size={30} className="text-green-500" />
         </div>
         <div>
-          <p className="font-semibold text-gray-900 dark:text-gray-100">Migration Submitted!</p>
-          <p className="text-sm text-gray-400 mt-1">{fromSymbol} → {toSymbol}</p>
+          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Migration Submitted!</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{fromSymbol} → {toSymbol}</p>
         </div>
         <a
           href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-[#408A71] hover:text-[#285A48] underline"
+          className="flex items-center gap-1.5 text-sm underline"
+          style={{ color: 'var(--accent)' }}
         >
           View on Explorer <ExternalLink size={12} />
         </a>
         <button
           onClick={() => { setStatus("idle"); setTxId(null); setAmount(""); setOutput(null); }}
-          className="px-6 py-2.5 rounded-xl bg-gray-900 dark:bg-gray-600 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-500 transition-colors"
+          className="px-6 py-2.5 rounded-xl text-white text-sm font-medium transition-colors"
+          style={{ backgroundColor: 'var(--accent)' }}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent-dim)')}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent)')}
         >
           New Migration
         </button>
@@ -236,49 +240,50 @@ export default function MigrationWidget() {
   return (
     <div className="space-y-4">
       {/* Info banner */}
-      <div className="flex items-start gap-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl px-4 py-3">
+      <div className="flex items-start gap-2.5 rounded-xl px-4 py-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
         <Info size={13} className="text-blue-400 mt-0.5 shrink-0" />
-        <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
           Migrate between <strong>aeUSDC</strong> (Allbridge) and <strong>USDCx</strong> (Circle xReserve) at near 1:1 via the Bitflow stableswap pool.
         </p>
       </div>
 
       {/* Direction toggle */}
-      <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 rounded-xl p-1">
+      <div className="flex items-center gap-2 rounded-xl p-1" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         {(["x-to-y", "y-to-x"] as Direction[]).map((d) => (
           <button
             key={d}
             onClick={() => { setDirection(d); setAmount(""); setOutput(null); setStatus("idle"); setErrorMsg(null); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${
-              direction === d
-                ? "bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-gray-100"
-                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
+            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all"
+            style={direction === d
+              ? { backgroundColor: 'var(--bg-card)', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', color: 'var(--text-primary)' }
+              : { color: 'var(--text-muted)' }
+            }
           >
             <TokenBadge symbol={d === "x-to-y" ? "aeUSDC" : "USDCx"} img={d === "x-to-y" ? AEUSDC_IMG : USDCX_IMG} />
-            <span className="text-gray-300 dark:text-gray-500">→</span>
+            <span style={{ color: 'var(--border-default)' }}>→</span>
             <TokenBadge symbol={d === "x-to-y" ? "USDCx" : "aeUSDC"} img={d === "x-to-y" ? USDCX_IMG : AEUSDC_IMG} />
           </button>
         ))}
       </div>
 
       {/* From section */}
-      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
+      <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={fromImg} alt={fromSymbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{fromSymbol}</span>
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{fromSymbol}</span>
           </div>
           {isConnected && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Balance:{" "}
               {balanceLoading ? (
-                <span className="inline-block w-10 h-2.5 bg-gray-200 dark:bg-gray-600 rounded animate-pulse align-middle" />
+                <span className="inline-block w-10 h-2.5 rounded animate-pulse align-middle" style={{ backgroundColor: 'var(--border-subtle)' }} />
               ) : fromBalance !== null ? (
                 <button
                   onClick={() => setPercent(1)}
-                  className="font-medium text-[#285A48] dark:text-[#B0E4CC] hover:text-[#285A48] dark:hover:text-[#B0E4CC] transition-colors"
+                  className="font-medium transition-colors"
+                  style={{ color: 'var(--accent)' }}
                 >
                   {formatAmount(fromBalance)} {fromSymbol}
                 </button>
@@ -295,13 +300,16 @@ export default function MigrationWidget() {
             step="any"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 placeholder:text-gray-300 dark:placeholder:text-gray-500 transition-colors ${
-              overBalance
-                ? "border-red-300 focus:ring-red-300 text-red-600"
-                : "border-gray-200 dark:border-gray-600 focus:ring-[#B0E4CC] text-gray-900 dark:text-gray-100"
+            className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 transition-colors ${
+              overBalance ? "border-red-300 focus:ring-red-300 text-red-600" : "focus:ring-[#B0E4CC]"
             }`}
+            style={overBalance ? {} : {
+              backgroundColor: 'var(--bg-card)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-primary)',
+            }}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs" style={{ color: 'var(--text-muted)' }}>
             ≈ ${amountNum > 0 ? amountNum.toFixed(2) : "0.00"}
           </span>
         </div>
@@ -319,7 +327,10 @@ export default function MigrationWidget() {
               <button
                 key={pct}
                 onClick={() => setPercent(pct)}
-                className="px-2 py-0.5 text-[11px] font-semibold rounded-lg bg-[#B0E4CC]/20 dark:bg-[#285A48]/30 text-[#285A48] dark:text-[#B0E4CC] hover:bg-[#B0E4CC]/30 dark:hover:bg-[#285A48]/50 transition-colors"
+                className="px-2 py-0.5 text-[11px] font-semibold rounded-lg transition-colors"
+                style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = '0.75')}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = '1')}
               >
                 {pct === 1 ? "MAX" : `${pct * 100}%`}
               </button>
@@ -332,28 +343,37 @@ export default function MigrationWidget() {
       <div className="flex justify-center">
         <button
           onClick={flipDirection}
-          className="w-9 h-9 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-[#B0E4CC] transition-colors shadow-sm"
+          className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors shadow-sm"
+          style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-card)' }}
           title="Flip direction"
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent-dim)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-card)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
+          }}
         >
-          <ArrowUpDown size={14} className="text-gray-500 dark:text-gray-400" />
+          <ArrowUpDown size={14} style={{ color: 'var(--text-muted)' }} />
         </button>
       </div>
 
       {/* To section */}
-      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3">
+      <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={toImg} alt={toSymbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-            <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{toSymbol}</span>
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{toSymbol}</span>
           </div>
           {isConnected && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Balance:{" "}
               {balanceLoading ? (
-                <span className="inline-block w-10 h-2.5 bg-gray-200 dark:bg-gray-600 rounded animate-pulse align-middle" />
+                <span className="inline-block w-10 h-2.5 rounded animate-pulse align-middle" style={{ backgroundColor: 'var(--border-subtle)' }} />
               ) : (direction === "x-to-y" ? usdcxBalance : aeBalance) !== null ? (
-                <span className="font-medium text-gray-600 dark:text-gray-300">
+                <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>
                   {formatAmount(direction === "x-to-y" ? usdcxBalance! : aeBalance!)} {toSymbol}
                 </span>
               ) : "—"}
@@ -361,55 +381,59 @@ export default function MigrationWidget() {
           )}
         </div>
 
-        <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 min-h-10.5 flex items-center">
+        <div
+          className="px-3.5 py-2.5 rounded-xl border min-h-10.5 flex items-center"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+        >
           {status === "quoting" ? (
-            <span className="flex items-center gap-2 text-sm text-gray-400">
+            <span className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
               <Loader2 size={13} className="animate-spin" /> Getting quote...
             </span>
           ) : output !== null ? (
-            <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{formatAmount(output)}</span>
-              <span className="text-xs text-gray-400">{toSymbol}</span>
-              <span className="text-xs text-gray-400 ml-auto">≈ ${output.toFixed(2)}</span>
+            <div className="flex items-baseline gap-2 w-full">
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{formatAmount(output)}</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{toSymbol}</span>
+              <span className="text-xs ml-auto" style={{ color: 'var(--text-muted)' }}>≈ ${output.toFixed(2)}</span>
             </div>
           ) : (
-            <span className="text-sm text-gray-300 dark:text-gray-500">—</span>
+            <span className="text-sm" style={{ color: 'var(--border-default)' }}>—</span>
           )}
         </div>
       </div>
 
       {/* Details panel */}
       {output !== null && status !== "quoting" && (
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3 space-y-2.5">
+        <div className="rounded-xl px-4 py-3 space-y-2.5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-400">Rate</span>
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
+            <span style={{ color: 'var(--text-muted)' }}>Rate</span>
+            <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>
               1 {fromSymbol} ≈ {amountNum > 0 ? formatAmount(output / amountNum) : "—"} {toSymbol}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-400">Pool</span>
+            <span style={{ color: 'var(--text-muted)' }}>Pool</span>
             <a
               href={`https://explorer.hiro.so/txid/${POOL_ADDRESS}.${POOL_NAME}?chain=${network}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#408A71] hover:text-[#285A48] flex items-center gap-1"
+              className="flex items-center gap-1 transition-colors"
+              style={{ color: 'var(--accent)' }}
             >
               aeUSDC-USDCx-LP <ExternalLink size={10} />
             </a>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-400">Slippage</span>
+            <span style={{ color: 'var(--text-muted)' }}>Slippage</span>
             <div className="flex gap-1">
               {[0.1, 0.5, 1].map((s) => (
                 <button
                   key={s}
                   onClick={() => setSlippage(s)}
-                  className={`px-2 py-0.5 rounded-lg font-medium transition-colors ${
-                    slippage === s
-                      ? "bg-gray-900 dark:bg-gray-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500"
-                  }`}
+                  className="px-2 py-0.5 rounded-lg font-medium transition-colors text-xs"
+                  style={slippage === s
+                    ? { backgroundColor: 'var(--accent)', color: '#fff' }
+                    : { backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }
+                  }
                 >
                   {s}%
                 </button>
@@ -417,8 +441,8 @@ export default function MigrationWidget() {
             </div>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-400">Min received</span>
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
+            <span style={{ color: 'var(--text-muted)' }}>Min received</span>
+            <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>
               {formatAmount(output * (1 - slippage / 100))} {toSymbol}
             </span>
           </div>
@@ -427,7 +451,7 @@ export default function MigrationWidget() {
 
       {/* Error */}
       {status === "error" && errorMsg && (
-        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs text-red-500 bg-red-50/80 rounded-xl px-3 py-2.5">
           <AlertCircle size={13} />
           {errorMsg}
         </div>
@@ -435,7 +459,7 @@ export default function MigrationWidget() {
 
       {/* Wallet not connected */}
       {!isConnected && (
-        <div className="flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 text-xs rounded-xl px-3 py-2.5" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}>
           <Info size={13} />
           Connect your wallet to migrate
         </div>
@@ -445,7 +469,10 @@ export default function MigrationWidget() {
       <button
         onClick={handleSwap}
         disabled={!isConnected || status !== "ready" || overBalance || amountNum <= 0}
-        className="w-full py-3.5 rounded-xl bg-[#408A71] text-white text-sm font-semibold hover:bg-[#285A48] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-3.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        style={{ backgroundColor: 'var(--accent)' }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent-dim)'; }}
+        onMouseLeave={(e) => { if (!e.currentTarget.disabled) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent)'; }}
       >
         {status === "swapping" ? (
           <><Loader2 size={15} className="animate-spin" /> Waiting for wallet...</>
@@ -459,9 +486,9 @@ export default function MigrationWidget() {
         )}
       </button>
 
-      <p className="text-center text-[11px] text-gray-300 dark:text-gray-500">
+      <p className="text-center text-[11px]" style={{ color: 'var(--text-muted)' }}>
         Powered by{" "}
-        <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" className="text-[#B0E4CC] hover:text-[#408A71]">
+        <a href="https://bitflow.finance" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-dim)' }}>
           Bitflow
         </a>
         {" "}stableswap pool

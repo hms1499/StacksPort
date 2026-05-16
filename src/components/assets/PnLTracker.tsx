@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { TrendingUp, TrendingDown, BarChart3, Info, Download } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
-import { getPnLData, PnLData, PnLEntry } from "@/lib/stacks";
+import { usePnLData } from "@/hooks/useMarketData";
+import { type PnLData, type PnLEntry } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 import { downloadCSV, csvDate } from "@/lib/export";
 
@@ -170,9 +171,9 @@ function PnLRow({ entry }: { entry: PnLEntry }) {
 
 export default function PnLTracker() {
   const { stxAddress, isConnected } = useWalletStore();
-  const [data, setData] = useState<PnLData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data, isLoading: loading, error: swrError } = usePnLData(addr);
+  const error = swrError ? "Failed to load PnL data." : null;
 
   const handleExport = useCallback(() => {
     if (!data) return;
@@ -189,36 +190,6 @@ export default function PnLTracker() {
     ]);
     downloadCSV(`pnl-report-${csvDate()}.csv`, [headers, ...rows]);
   }, [data]);
-
-  useEffect(() => {
-    if (!isConnected || !stxAddress) {
-      queueMicrotask(() => {
-        setData(null);
-        setError(null);
-      });
-      return;
-    }
-    let cancelled = false;
-    Promise.resolve()
-      .then(() => {
-        if (!cancelled) {
-          setLoading(true);
-          setError(null);
-        }
-        return getPnLData(stxAddress);
-      })
-      .then((result) => {
-        if (!cancelled) setData(result);
-      })
-      .catch((e) => {
-        console.error(e);
-        if (!cancelled) setError("Failed to load PnL data.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [stxAddress, isConnected]);
 
   return (
     <div className="glass-card rounded-2xl p-6 shadow-sm">

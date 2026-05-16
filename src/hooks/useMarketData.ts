@@ -12,11 +12,15 @@ import {
   getFungibleTokens,
   getTokenMetadata,
   getConnectedApps,
+  getTokensWithValues,
+  getPnLData,
   type PortfolioValue,
   type TrendingToken,
   type STXMarketStats,
   type STXMarketHistory,
   type ConnectedAppsResult,
+  type PnLData,
+  type TokenWithValue,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
 
@@ -151,6 +155,22 @@ export function useConnectedApps(address: string | undefined) {
   return useSWR<ConnectedAppsResult>(
     address ? ["connected-apps", address] : null,
     () => getConnectedApps(address!),
+    { refreshInterval: 300_000, dedupingInterval: 60_000 }
+  );
+}
+
+export function useTokensWithValues(address: string | undefined) {
+  return useSWR<{ stx: TokenWithValue; tokens: TokenWithValue[]; totalUsd: number }>(
+    address ? ["tokens-with-values", address] : null,
+    () => getTokensWithValues(address!),
+    { refreshInterval: 60_000, dedupingInterval: 30_000 }
+  );
+}
+
+export function usePnLData(address: string | undefined) {
+  return useSWR<PnLData>(
+    address ? ["pnl-data", address] : null,
+    () => getPnLData(address!),
     { refreshInterval: 300_000, dedupingInterval: 60_000 }
   );
 }

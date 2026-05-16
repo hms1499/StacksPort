@@ -209,15 +209,18 @@ function calcHealth(
 
 // ─── UI components ────────────────────────────────────────────────────────────
 
-function ScoreRing({ score, color, label }: { score: number; color: string; label: string }) {
+function ScoreRing({ score, color, label, isDark }: { score: number; color: string; label: string; isDark: boolean }) {
   const r = 46;
   const circ = 2 * Math.PI * r;
   const offset = circ - (score / 100) * circ;
+  const trackColor = isDark ? "#1e3a52" : "#f3f4f6";
+  const textPrimary = isDark ? "#f3f4f6" : "#111827";
+  const textMuted = isDark ? "#6b7280" : "#9ca3af";
 
   return (
     <div className="flex flex-col items-center gap-1">
       <svg width="124" height="124" viewBox="0 0 124 124">
-        <circle cx="62" cy="62" r={r} fill="none" stroke="#f3f4f6" strokeWidth="10" />
+        <circle cx="62" cy="62" r={r} fill="none" stroke={trackColor} strokeWidth="10" />
         <circle
           cx="62" cy="62" r={r}
           fill="none"
@@ -229,9 +232,9 @@ function ScoreRing({ score, color, label }: { score: number; color: string; labe
           transform="rotate(-90 62 62)"
         />
         <text x="62" y="56" textAnchor="middle" fontSize="30" fontWeight="bold"
-          fill="#111827" fontFamily="system-ui, sans-serif">{score}</text>
+          fill={textPrimary} fontFamily="system-ui, sans-serif">{score}</text>
         <text x="62" y="73" textAnchor="middle" fontSize="11"
-          fill="#9ca3af" fontFamily="system-ui, sans-serif">/ 100</text>
+          fill={textMuted} fontFamily="system-ui, sans-serif">/ 100</text>
       </svg>
       <span className="text-sm font-semibold" style={{ color }}>{label}</span>
     </div>

@@ -7,6 +7,7 @@ interface AnimatedCounterProps {
   duration?: number;
   formatFn?: (value: number) => string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export default function AnimatedCounter({
@@ -14,6 +15,7 @@ export default function AnimatedCounter({
   duration = 800,
   formatFn = (v) => v.toFixed(2),
   className,
+  style,
 }: AnimatedCounterProps) {
   const [display, setDisplay] = useState(value);
   const prevValue = useRef(value);
@@ -44,5 +46,5 @@ export default function AnimatedCounter({
     return () => cancelAnimationFrame(rafRef.current);
   }, [value, duration]);
 
-  return <span className={className}>{formatFn(display)}</span>;
+  return <span className={className} style={style}>{formatFn(display)}</span>;
 }

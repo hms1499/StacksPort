@@ -280,7 +280,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         )}
 
         {/* Table header */}
-        <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-2.5 bg-gray-50 text-xs font-medium text-gray-400 uppercase tracking-wide">
+        <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-2.5 text-xs font-medium uppercase tracking-wide" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
           <span>Token</span>
           <span className="hidden md:block text-right">Balance</span>
           <span className="hidden md:block text-right">Price</span>
@@ -290,7 +290,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
           {loading ? (
             [...Array(5)].map((_, i) => (
               <div key={i} className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 animate-pulse">

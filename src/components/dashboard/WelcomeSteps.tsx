@@ -4,6 +4,8 @@ import { useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useWalletStore } from "@/store/walletStore";
+import { usePriceAlertStore } from "@/store/priceAlertStore";
+import { useTransactions, useUserDCAPlans } from "@/hooks/useMarketData";
 import { Wallet, ArrowLeftRight, Repeat2, Bell, CheckCircle2, X, Sparkles } from "lucide-react";
 
 interface Step {
@@ -12,13 +14,19 @@ interface Step {
   description: string;
   icon: React.ReactNode;
   href: string;
-  check: () => boolean;
+  done: boolean;
 }
 
 const STORAGE_KEY = "stacksport_welcome_dismissed";
 
 export default function WelcomeSteps() {
-  const { isConnected } = useWalletStore();
+  const { isConnected, stxAddress } = useWalletStore();
+  const alerts = usePriceAlertStore((s) => s.alerts);
+
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data: txData } = useTransactions(addr, 20);
+  const { data: dcaPlans } = useUserDCAPlans(addr);
+
   const isDismissedFromStorage = useSyncExternalStore(
     (cb) => {
       window.addEventListener("storage", cb);
@@ -31,6 +39,13 @@ export default function WelcomeSteps() {
 
   if (dismissed || !isConnected) return null;
 
+  const hasSwapped = (txData?.results ?? []).some(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (r: any) => (r.tx ?? r).tx_type === "contract_call"
+  );
+  const hasDCAPlans = (dcaPlans?.length ?? 0) > 0;
+  const hasAlerts = alerts.length > 0;
+
   const steps: Step[] = [
     {
       id: "wallet",
@@ -38,7 +53,7 @@ export default function WelcomeSteps() {
       description: "Link your Stacks wallet",
       icon: <Wallet size={16} />,
       href: "/dashboard",
-      check: () => isConnected,
+      done: isConnected,
     },
     {
       id: "swap",
@@ -46,7 +61,7 @@ export default function WelcomeSteps() {
       description: "Trade tokens on Bitflow DEX",
       icon: <ArrowLeftRight size={16} />,
       href: "/trade",
-      check: () => false,
+      done: hasSwapped,
     },
     {
       id: "dca",
@@ -54,7 +69,7 @@ export default function WelcomeSteps() {
       description: "Set up automated investing",
       icon: <Repeat2 size={16} />,
       href: "/dca",
-      check: () => false,
+      done: hasDCAPlans,
     },
     {
       id: "alerts",
@@ -62,11 +77,11 @@ export default function WelcomeSteps() {
       description: "Get notified on targets",
       icon: <Bell size={16} />,
       href: "/notifications",
-      check: () => false,
+      done: hasAlerts,
     },
   ];
 
-  const completedCount = steps.filter((s) => s.check()).length;
+  const completedCount = steps.filter((s) => s.done).length;
   const progress = (completedCount / steps.length) * 100;
 
   function handleDismiss() {
@@ -119,42 +134,39 @@ export default function WelcomeSteps() {
 
             {/* Steps */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-              {steps.map((step) => {
-                const done = step.check();
-                return (
-                  <Link
-                    key={step.id}
-                    href={step.href}
-                    className={`flex items-start gap-2.5 p-3 rounded-xl transition-all ${
-                      done
-                        ? "bg-[#408A71]/10 dark:bg-[#285A48]/30"
-                        : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+              {steps.map((step) => (
+                <Link
+                  key={step.id}
+                  href={step.href}
+                  className={`flex items-start gap-2.5 p-3 rounded-xl transition-all ${
+                    step.done
+                      ? "bg-[#408A71]/10 dark:bg-[#285A48]/30"
+                      : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                  }`}
+                >
+                  <div
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      step.done
+                        ? "bg-[#408A71] text-white"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                     }`}
                   >
-                    <div
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        done
-                          ? "bg-[#408A71] text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                    {step.done ? <CheckCircle2 size={14} /> : step.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <p
+                      className={`text-xs font-semibold ${
+                        step.done ? "text-[#408A71] dark:text-[#B0E4CC]" : "text-gray-700 dark:text-gray-200"
                       }`}
                     >
-                      {done ? <CheckCircle2 size={14} /> : step.icon}
-                    </div>
-                    <div className="min-w-0">
-                      <p
-                        className={`text-xs font-semibold ${
-                          done ? "text-[#408A71] dark:text-[#B0E4CC]" : "text-gray-700 dark:text-gray-200"
-                        }`}
-                      >
-                        {step.label}
-                      </p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-                        {step.description}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
+                      {step.label}
+                    </p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                      {step.description}
+                    </p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </motion.div>

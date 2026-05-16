@@ -7,10 +7,10 @@ import type { SentimentData } from "@/lib/ai";
 function ScoreBadge({ score }: { score: number }) {
   const color =
     score >= 30
-      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+      ? "bg-green-100 text-green-700"
       : score <= -30
-        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+        ? "bg-red-100 text-red-700"
+        : "bg-yellow-100 text-yellow-700";
 
   const label = score >= 30 ? "Bullish" : score <= -30 ? "Bearish" : "Neutral";
 
@@ -65,9 +65,9 @@ export default function SentimentCard({ data }: { data: SentimentData }) {
             className={cn(
               "px-2.5 py-1 rounded-lg text-xs font-medium",
               signal.type === "bullish"
-                ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                ? "bg-green-50 text-green-700"
                 : signal.type === "bearish"
-                  ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                  ? "bg-red-50 text-red-700"
                   : "text-[color:var(--text-muted)] bg-[var(--bg-elevated)]"
             )}
           >

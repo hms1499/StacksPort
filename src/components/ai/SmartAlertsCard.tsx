@@ -17,19 +17,19 @@ const typeConfig = {
     icon: AlertTriangle,
     border: "border-l-amber-500",
     iconColor: "text-amber-500",
-    bg: "bg-amber-50 dark:bg-amber-900/10",
+    bg: "bg-amber-50",
   },
   info: {
     icon: Info,
     border: "border-l-blue-500",
     iconColor: "text-blue-500",
-    bg: "bg-blue-50 dark:bg-blue-900/10",
+    bg: "bg-blue-50",
   },
 };
 
 const priorityBadge = {
-  high: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  high:   "bg-red-100 text-red-700",
+  medium: "bg-yellow-100 text-yellow-700",
   low: "text-[color:var(--text-muted)] bg-[var(--bg-elevated)]",
 };
 

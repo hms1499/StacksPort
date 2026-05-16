@@ -146,16 +146,17 @@ const TxRow = React.memo(function TxRow({ tx }: { tx: TxItem }) {
 });
 
 function SkeletonRow() {
+  const s = { backgroundColor: 'var(--border-subtle)' } as const;
   return (
     <div className="flex items-center gap-3 py-2.5 px-2 animate-pulse">
-      <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
+      <div className="w-9 h-9 rounded-full shrink-0" style={s} />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-24" />
-        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-32" />
+        <div className="h-3 rounded w-24" style={s} />
+        <div className="h-3 rounded w-32" style={s} />
       </div>
       <div className="space-y-1.5 text-right">
-        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-16 ml-auto" />
-        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-10 ml-auto" />
+        <div className="h-3 rounded w-16 ml-auto" style={s} />
+        <div className="h-3 rounded w-10 ml-auto" style={s} />
       </div>
     </div>
   );

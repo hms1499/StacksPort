@@ -75,15 +75,16 @@ function NewsRow({ item }: { item: NewsItem }) {
 }
 
 function SkeletonRow() {
+  const s = { backgroundColor: 'var(--border-subtle)' } as const;
   return (
     <div className="flex items-start gap-3 py-3 px-2 animate-pulse">
-      <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex-shrink-0" />
+      <div className="w-12 h-12 rounded-xl shrink-0" style={s} />
       <div className="flex-1 space-y-2 pt-1">
-        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-full" />
-        <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-3/4" />
+        <div className="h-3 rounded w-full" style={s} />
+        <div className="h-3 rounded w-3/4" style={s} />
         <div className="flex gap-2 mt-1">
-          <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-16" />
-          <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-10" />
+          <div className="h-3 rounded w-16" style={s} />
+          <div className="h-3 rounded w-10" style={s} />
         </div>
       </div>
     </div>

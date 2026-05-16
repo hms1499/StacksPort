@@ -19,13 +19,13 @@ export default function Skeleton({
   return (
     <div
       className={cn(
-        "bg-gray-100 dark:bg-gray-700 animate-pulse",
+        "animate-pulse",
         variant === "circle" && "rounded-full",
         variant === "text" && "rounded h-3",
         variant === "rect" && "rounded-xl",
         className
       )}
-      style={{ width, height }}
+      style={{ width, height, backgroundColor: 'var(--border-subtle)' }}
       {...props}
     />
   );

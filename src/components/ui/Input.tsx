@@ -8,19 +8,19 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, className, id, ...props }, ref) => {
+  ({ label, error, icon, className, id, style, ...props }, ref) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label htmlFor={inputId} className="text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label htmlFor={inputId} className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
             {label}
           </label>
         )}
         <div className="relative">
           {icon && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-muted)' }}>
               {icon}
             </span>
           )}
@@ -28,12 +28,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 transition-colors",
+              "w-full rounded-xl border text-sm transition-colors",
               "focus:outline-none focus:ring-2 focus:ring-[#408A71] focus:border-transparent",
               icon ? "pl-9 pr-4 py-2.5" : "px-4 py-2.5",
               error && "border-red-300 focus:ring-red-500",
               className
             )}
+            style={{
+              borderColor: error ? undefined : 'var(--border-subtle)',
+              backgroundColor: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              ...style,
+            }}
             {...props}
           />
         </div>

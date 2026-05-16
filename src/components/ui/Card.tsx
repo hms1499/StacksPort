@@ -8,7 +8,7 @@ export default function Card({ hover = false, className, children, ...props }: C
   return (
     <div
       className={cn(
-        "bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm",
+        "glass-card rounded-2xl shadow-sm",
         hover && "hover:shadow-md transition-shadow",
         className
       )}
@@ -21,7 +21,11 @@ export default function Card({ hover = false, className, children, ...props }: C
 
 export function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("px-5 py-4 border-b border-gray-50 dark:border-gray-700", className)} {...props}>
+    <div
+      className={cn("px-5 py-4", className)}
+      style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      {...props}
+    >
       {children}
     </div>
   );

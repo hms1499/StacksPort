@@ -129,19 +129,21 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
     );
   }
 
+  const sk = { backgroundColor: 'var(--border-subtle)' } as const;
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <p className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide">Net Worth</p>
+    <div className="glass-card rounded-2xl p-6 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Net Worth</p>
 
       {loading ? (
-        <div className="space-y-3 mt-2">
-          <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse w-48" />
-          <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-32" />
+        <div className="space-y-3 mt-2 animate-pulse">
+          <div className="h-10 rounded-lg w-48" style={sk} />
+          <div className="h-3 rounded w-32" style={sk} />
           <div className="flex items-center gap-4 mt-5">
-            <div className="w-35 h-35 rounded-full bg-gray-100 dark:bg-gray-700 animate-pulse" />
+            <div className="w-35 h-35 rounded-full" style={sk} />
             <div className="flex-1 space-y-3">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-32" />
+                <div key={i} className="h-3 rounded w-32" style={sk} />
               ))}
             </div>
           </div>
@@ -152,7 +154,8 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
             <AnimatedCounter
               value={totalUsd}
               formatFn={formatUSD}
-              className="text-4xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-4xl font-bold"
+              style={{ color: 'var(--text-primary)' }}
             />
             <span
               className={`flex items-center gap-1 text-sm font-medium ${
@@ -161,11 +164,11 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
             >
               {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
               {formatPercent(change24h)}
-              <span className="text-gray-400 font-normal text-xs ml-0.5">24h</span>
+              <span className="font-normal text-xs ml-0.5" style={{ color: 'var(--text-muted)' }}>24h</span>
             </span>
           </div>
 
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
             {stx?.balance.toLocaleString("en-US", { maximumFractionDigits: 2 })} STX ·{" "}
             {[stx!, ...tokens].length} assets
           </p>

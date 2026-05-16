@@ -16,7 +16,6 @@ import {
   Sun,
   Command,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useThemeStore } from "@/store/themeStore";
 
 interface CommandItem {
@@ -45,71 +44,19 @@ export default function CommandPalette() {
   );
 
   const commands: CommandItem[] = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      description: "Portfolio overview",
-      icon: <Home size={18} />,
-      action: () => navigate("/dashboard"),
-      keywords: ["home", "portfolio", "overview", "dashboard"],
-    },
-    {
-      id: "assets",
-      label: "My Assets",
-      description: "Holdings & P&L tracker",
-      icon: <Wallet size={18} />,
-      action: () => navigate("/assets"),
-      keywords: ["assets", "holdings", "balance", "tokens", "pnl"],
-    },
-    {
-      id: "swap",
-      label: "Swap Tokens",
-      description: "Trade on Bitflow DEX",
-      icon: <ArrowLeftRight size={18} />,
-      action: () => navigate("/trade"),
-      keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"],
-    },
-    {
-      id: "dca",
-      label: "DCA Vault",
-      description: "Automated investing plans",
-      icon: <Repeat2 size={18} />,
-      action: () => navigate("/dca"),
-      keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"],
-    },
-    {
-      id: "notifications",
-      label: "Notifications",
-      description: "Alerts & price targets",
-      icon: <Bell size={18} />,
-      action: () => navigate("/notifications"),
-      keywords: ["notifications", "alerts", "price", "targets"],
-    },
-    {
-      id: "ai",
-      label: "Stacks AI",
-      description: "AI-powered insights",
-      icon: <Sparkles size={18} />,
-      action: () => navigate("/ai"),
-      keywords: ["ai", "insights", "analysis", "intelligence"],
-    },
-    {
-      id: "premium",
-      label: "Premium",
-      description: "Coming soon",
-      icon: <Crown size={18} />,
-      action: () => navigate("/premium"),
-      keywords: ["premium", "pro", "upgrade"],
-    },
+    { id: "dashboard",     label: "Dashboard",      description: "Portfolio overview",        icon: <Home size={18} />,         action: () => navigate("/dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
+    { id: "assets",        label: "My Assets",      description: "Holdings & P&L tracker",    icon: <Wallet size={18} />,       action: () => navigate("/assets"),         keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
+    { id: "swap",          label: "Swap Tokens",    description: "Trade on Bitflow DEX",      icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade"),         keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
+    { id: "dca",           label: "DCA Vault",      description: "Automated investing plans", icon: <Repeat2 size={18} />,      action: () => navigate("/dca"),            keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
+    { id: "notifications", label: "Notifications",  description: "Alerts & price targets",    icon: <Bell size={18} />,         action: () => navigate("/notifications"),  keywords: ["notifications", "alerts", "price", "targets"] },
+    { id: "ai",            label: "Stacks AI",      description: "AI-powered insights",       icon: <Sparkles size={18} />,     action: () => navigate("/ai"),             keywords: ["ai", "insights", "analysis", "intelligence"] },
+    { id: "premium",       label: "Premium",        description: "Coming soon",               icon: <Crown size={18} />,        action: () => navigate("/premium"),        keywords: ["premium", "pro", "upgrade"] },
     {
       id: "theme",
       label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`,
       description: "Toggle theme",
       icon: theme === "dark" ? <Sun size={18} /> : <Moon size={18} />,
-      action: () => {
-        toggleTheme();
-        setOpen(false);
-      },
+      action: () => { toggleTheme(); setOpen(false); },
       keywords: ["theme", "dark", "light", "mode", "toggle"],
     },
   ];
@@ -140,9 +87,7 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -160,19 +105,25 @@ export default function CommandPalette() {
     }
   };
 
+  const kbdStyle: React.CSSProperties = {
+    backgroundColor: 'var(--bg-elevated)',
+    color: 'var(--text-muted)',
+    border: '1px solid var(--border-subtle)',
+  };
+
   return (
     <>
-      {/* Trigger button in topbar */}
+      {/* Trigger button */}
       <button
-        onClick={() => {
-          setOpen(true);
-          setQuery("");
-        }}
-        className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm"
+        onClick={() => { setOpen(true); setQuery(""); }}
+        className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm transition-colors"
+        style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
       >
         <Search size={14} />
         <span>Search...</span>
-        <kbd className="ml-2 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-medium text-gray-400 border border-gray-200 dark:border-gray-600 flex items-center gap-0.5">
+        <kbd className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-0.5" style={kbdStyle}>
           <Command size={10} />K
         </kbd>
       </button>
@@ -196,19 +147,20 @@ export default function CommandPalette() {
               transition={{ type: "spring", stiffness: 500, damping: 35 }}
               className="fixed left-1/2 top-[20%] -translate-x-1/2 z-50 w-full max-w-lg"
             >
-              <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="glass-card rounded-2xl shadow-2xl overflow-hidden">
                 {/* Search input */}
-                <div className="flex items-center gap-3 px-4 border-b border-gray-100 dark:border-gray-800">
-                  <Search size={18} className="text-gray-400 shrink-0" />
+                <div className="flex items-center gap-3 px-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                  <Search size={18} className="shrink-0" style={{ color: 'var(--text-muted)' }} />
                   <input
                     ref={inputRef}
                     value={query}
                     onChange={(e) => handleQueryChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Type a command or search..."
-                    className="flex-1 py-4 bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 outline-none"
+                    className="flex-1 py-4 bg-transparent text-sm outline-none placeholder:text-gray-400"
+                    style={{ color: 'var(--text-primary)' }}
                   />
-                  <kbd className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-medium text-gray-400 border border-gray-200 dark:border-gray-600">
+                  <kbd className="px-1.5 py-0.5 rounded text-[10px] font-medium" style={kbdStyle}>
                     ESC
                   </kbd>
                 </div>
@@ -216,47 +168,42 @@ export default function CommandPalette() {
                 {/* Results */}
                 <div className="max-h-[320px] overflow-y-auto py-2">
                   {filtered.length === 0 ? (
-                    <div className="px-4 py-8 text-center text-sm text-gray-400">
+                    <div className="px-4 py-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
                       No results found.
                     </div>
                   ) : (
-                    filtered.map((cmd, i) => (
-                      <button
-                        key={cmd.id}
-                        onClick={cmd.action}
-                        onMouseEnter={() => setSelectedIndex(i)}
-                        className={cn(
-                          "w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors",
-                          i === selectedIndex
-                            ? "bg-[#408A71]/10 text-[#408A71] dark:bg-[#285A48]/30 dark:text-[#B0E4CC]"
-                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "shrink-0",
-                            i === selectedIndex
-                              ? "text-[#408A71] dark:text-[#B0E4CC]"
-                              : "text-gray-400"
-                          )}
+                    filtered.map((cmd, i) => {
+                      const isSelected = i === selectedIndex;
+                      return (
+                        <button
+                          key={cmd.id}
+                          onClick={cmd.action}
+                          onMouseEnter={() => setSelectedIndex(i)}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
+                          style={isSelected
+                            ? { backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }
+                            : { color: 'var(--text-secondary)' }
+                          }
                         >
-                          {cmd.icon}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{cmd.label}</p>
-                          {cmd.description && (
-                            <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
-                              {cmd.description}
-                            </p>
+                          <span className="shrink-0" style={{ color: isSelected ? 'var(--accent)' : 'var(--text-muted)' }}>
+                            {cmd.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{cmd.label}</p>
+                            {cmd.description && (
+                              <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                                {cmd.description}
+                              </p>
+                            )}
+                          </div>
+                          {isSelected && (
+                            <kbd className="px-1.5 py-0.5 rounded text-[10px] font-medium" style={kbdStyle}>
+                              Enter
+                            </kbd>
                           )}
-                        </div>
-                        {i === selectedIndex && (
-                          <kbd className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-medium text-gray-400 border border-gray-200 dark:border-gray-600">
-                            Enter
-                          </kbd>
-                        )}
-                      </button>
-                    ))
+                        </button>
+                      );
+                    })
                   )}
                 </div>
               </div>

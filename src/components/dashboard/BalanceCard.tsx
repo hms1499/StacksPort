@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap } from "lucide-react";
 import { connect as stacksConnect } from "@stacks/connect";
 import {
@@ -167,7 +168,9 @@ function BalanceCard() {
               {portfolio.otherUSD > 0 && (
                 <>
                   <span style={{ color: 'var(--border-default)' }}>·</span>
-                  <span>+{formatUSD(portfolio.otherUSD)} other</span>
+                  <Link href="/assets" className="transition-colors hover:underline" style={{ color: 'var(--accent)' }}>
+                    +{formatUSD(portfolio.otherUSD)} other
+                  </Link>
                 </>
               )}
             </div>

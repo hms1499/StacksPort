@@ -75,6 +75,16 @@ export default function STXMarketStatsCard() {
   const volIsPositive = useMemo(() => volumes.length >= 2 ? volumes[volumes.length - 1] >= volumes[0] : true, [volumes]);
   const mcapIsPositive = useMemo(() => marketCaps.length >= 2 ? marketCaps[marketCaps.length - 1] >= marketCaps[0] : true, [marketCaps]);
 
+  const mcapPct = useMemo(() => {
+    if (marketCaps.length < 2 || marketCaps[0] === 0) return null;
+    return ((marketCaps[marketCaps.length - 1] - marketCaps[0]) / marketCaps[0]) * 100;
+  }, [marketCaps]);
+
+  const volPct = useMemo(() => {
+    if (volumes.length < 2 || volumes[0] === 0) return null;
+    return ((volumes[volumes.length - 1] - volumes[0]) / volumes[0]) * 100;
+  }, [volumes]);
+
   if (loading && !stats) {
     return (
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
@@ -117,13 +127,14 @@ export default function STXMarketStatsCard() {
           <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
           </p>
-          {marketCaps.length >= 2 && (
+          {mcapPct !== null && (
             <span
               className={`flex items-center gap-0.5 text-xs font-medium ${
                 mcapIsPositive ? "text-green-500" : "text-red-500"
               }`}
             >
               {mcapIsPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              {Math.abs(mcapPct).toFixed(2)}%
             </span>
           )}
         </div>
@@ -139,13 +150,14 @@ export default function STXMarketStatsCard() {
           <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.volume24h) : "—"}
           </p>
-          {volumes.length >= 2 && (
+          {volPct !== null && (
             <span
               className={`flex items-center gap-0.5 text-xs font-medium ${
                 volIsPositive ? "text-green-500" : "text-red-500"
               }`}
             >
               {volIsPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              {Math.abs(volPct).toFixed(2)}%
             </span>
           )}
         </div>

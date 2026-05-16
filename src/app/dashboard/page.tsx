@@ -8,6 +8,18 @@ import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 
 const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
+const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"), {
+  loading: () => (
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-24 mb-4" />
+      <div className="space-y-2">
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="h-10 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </div>
+  ),
+});
 
 // Below-the-fold components — lazy loaded to reduce initial bundle
 const STXMarketStatsCard = dynamic(() => import("@/components/dashboard/STXMarketStats"), {
@@ -122,9 +134,10 @@ export default function DashboardPage() {
             <STXMarketStatsCard />
           </MotionCard>
 
-          {/* Greed Index + Trending side by side */}
-          <MotionCard >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+          {/* DCA Summary + Greed Index + Trending */}
+          <MotionCard>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
+              <DCASummaryCard />
               <GreedIndexCard />
               <TrendingTokens />
             </div>

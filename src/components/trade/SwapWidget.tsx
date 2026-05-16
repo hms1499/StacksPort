@@ -583,7 +583,7 @@ export default function SwapWidget() {
 
       {/* Wallet not connected */}
       {!isConnected && (
-        <div className="flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-400 rounded-xl px-3 py-2.5" style={{ backgroundColor: 'rgba(234,179,8,0.08)' }}>
+        <div className="flex items-center gap-2 text-xs rounded-xl px-3 py-2.5" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}>
           <Info size={13} />
           Connect your wallet to swap
         </div>

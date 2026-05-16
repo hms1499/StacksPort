@@ -37,7 +37,7 @@ export default function WalletBanner() {
         </div>
         <div>
           <p className="text-white font-semibold">Connect your wallet</p>
-          <p className="text-[#B0E4CC]/30 text-sm mt-0.5">
+          <p className="text-white/70 text-sm mt-0.5">
             View your Stacks portfolio in real-time
           </p>
         </div>

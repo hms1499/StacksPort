@@ -214,13 +214,13 @@ export default function PnLTracker() {
   }, [stxAddress, isConnected]);
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="glass-card rounded-2xl p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <h2 className="font-semibold text-gray-700">PnL Tracker</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>PnL Tracker</h2>
           {!loading && data && (
-            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg font-medium">
+            <span className="text-xs px-2 py-1 rounded-lg font-medium" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-elevated)' }}>
               {data.entries.length} assets
             </span>
           )}

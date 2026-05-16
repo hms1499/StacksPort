@@ -254,19 +254,19 @@ function MetricRow({ metric }: { metric: Metric }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <p className="text-xs font-medium text-gray-600">{metric.label}</p>
+        <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{metric.label}</p>
         <p className={`text-xs font-bold tabular-nums ${text}`}>
           {metric.score}
-          <span className="text-gray-300 font-normal">/{metric.maxScore}</span>
+          <span className="font-normal" style={{ color: 'var(--border-default)' }}>/{metric.maxScore}</span>
         </p>
       </div>
-      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
         <div
           className={`h-full rounded-full transition-all duration-700 ${bar}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="text-[11px] text-gray-400 mt-0.5">{metric.description}</p>
+      <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{metric.description}</p>
     </div>
   );
 }

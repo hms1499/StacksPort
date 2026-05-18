@@ -24,6 +24,8 @@ import {
   buildSwapParams,
   applySlippageFloor,
   amountForPercent,
+  isQuoteStale,
+  QUOTE_TTL_MS,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -232,6 +234,9 @@ export default function SwapWidget() {
   const [txId, setTxId] = useState<string | null>(null);
 
   const quoteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Monotonic id: only the newest in-flight quote may write state, so a slow
+  // earlier request can never clobber a fresher one (out-of-order resolve).
+  const quoteReqId = useRef(0);
 
   // Valid destinations based on fromToken
   const toTokens = getValidDestinations(fromToken.id);
@@ -267,6 +272,7 @@ export default function SwapWidget() {
   // Debounced quote fetch
   const fetchQuote = useCallback(
     async (from: SwapToken, to: SwapToken, amt: number) => {
+      const reqId = ++quoteReqId.current;
       if (!from || !to || !amt || amt <= 0) {
         setQuote(null);
         setStatus("idle");
@@ -275,9 +281,11 @@ export default function SwapWidget() {
       setStatus("quoting");
       try {
         const result = await getQuote(from.id, to.id, amt);
+        if (reqId !== quoteReqId.current) return; // a newer request superseded us
         setQuote(result);
         setStatus("ready");
       } catch (e) {
+        if (reqId !== quoteReqId.current) return;
         setQuote(null);
         setStatus("error");
         setErrorMsg(e instanceof Error ? e.message : "Failed to get quote");
@@ -300,6 +308,17 @@ export default function SwapWidget() {
       if (quoteTimer.current) clearTimeout(quoteTimer.current);
     };
   }, [fromToken, toToken, amountIn, fetchQuote]);
+
+  // Auto-refresh a ready quote just before it goes stale, so the user never
+  // signs a price that has drifted past the slippage tolerance.
+  useEffect(() => {
+    if (status !== "ready" || !quote || !toToken) return;
+    const amt = parseFloat(amountIn);
+    if (isNaN(amt)) return;
+    const delay = Math.max(QUOTE_TTL_MS - (Date.now() - quote.quotedAt), 0);
+    const t = setTimeout(() => fetchQuote(fromToken, toToken, amt), delay);
+    return () => clearTimeout(t);
+  }, [status, quote, fromToken, toToken, amountIn, fetchQuote]);
 
   // Swap from↔to — only if reverse route exists
   function flipTokens() {
@@ -332,6 +351,16 @@ export default function SwapWidget() {
   // Execute swap
   async function handleSwap() {
     if (!quote || !stxAddress || !toToken) return;
+
+    // Defensive: never sign a stale price. Re-quote instead of submitting.
+    if (isQuoteStale(quote.quotedAt)) {
+      const amt = parseFloat(amountIn);
+      setErrorMsg("Quote expired — refreshing price, please try again.");
+      setStatus("error");
+      if (!isNaN(amt)) fetchQuote(fromToken, toToken, amt);
+      return;
+    }
+
     setStatus("swapping");
     setErrorMsg(null);
 

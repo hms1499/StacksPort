@@ -124,6 +124,14 @@ export function applySlippageFloor(
  */
 export const STX_GAS_RESERVE = 0.1;
 
+/** A quote older than this is considered stale and must be refreshed. */
+export const QUOTE_TTL_MS = 30_000;
+
+/** True once a quote taken at `quotedAt` has aged past {@link QUOTE_TTL_MS}. */
+export function isQuoteStale(quotedAt: number, now: number = Date.now()): boolean {
+  return now - quotedAt > QUOTE_TTL_MS;
+}
+
 /**
  * Amount (human string) to put in the input when a balance-percent shortcut
  * is tapped. For a native-STX MAX it subtracts the gas reserve; everything
@@ -237,6 +245,7 @@ export interface QuoteResult {
   amountOut: number;       // raw units (micro/sats)
   amountOutHuman: number;  // human-readable
   route: SwapRoute;
+  quotedAt: number;        // Date.now() when fetched — see isQuoteStale
 }
 
 export async function getQuote(
@@ -249,7 +258,7 @@ export async function getQuote(
 
   const fromToken = SWAP_TOKENS.find((t) => t.id === fromId)!;
   const toToken = SWAP_TOKENS.find((t) => t.id === toId)!;
-  const amountInRaw = Math.floor(amountInHuman * Math.pow(10, fromToken.decimals));
+  const amountInRaw = Number(toRawAmount(amountInHuman, fromToken.decimals));
 
   let amountOutRaw: number;
 
@@ -272,6 +281,7 @@ export async function getQuote(
     amountOut: amountOutRaw,
     amountOutHuman: amountOutRaw / Math.pow(10, toToken.decimals),
     route,
+    quotedAt: Date.now(),
   };
 }
 

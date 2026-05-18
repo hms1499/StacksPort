@@ -5,7 +5,23 @@ import {
   toRawAmount,
   applySlippageFloor,
   amountForPercent,
+  isQuoteStale,
+  QUOTE_TTL_MS,
 } from "./direct-swap";
+
+describe("isQuoteStale", () => {
+  it("is fresh within the TTL", () => {
+    expect(isQuoteStale(1000, 1000 + 10_000)).toBe(false);
+  });
+
+  it("is stale past the TTL", () => {
+    expect(isQuoteStale(1000, 1000 + QUOTE_TTL_MS + 1)).toBe(true);
+  });
+
+  it("treats exactly TTL old as not yet stale", () => {
+    expect(isQuoteStale(1000, 1000 + QUOTE_TTL_MS)).toBe(false);
+  });
+});
 
 describe("amountForPercent", () => {
   it("returns the plain percentage when token is not native STX", () => {

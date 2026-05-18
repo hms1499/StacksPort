@@ -16,6 +16,7 @@ import { openContractCall } from "@stacks/connect";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { formatAmount } from "@/lib/utils";
+import { getSTXBalance, getFungibleTokens } from "@/lib/stacks";
 import {
   getSwappableFromTokens,
   getValidDestinations,
@@ -152,26 +153,25 @@ function RoutePath({ hops }: { hops: string[] }) {
 
 // ─── Balance helpers ───────────────────────────────────────────────────────────
 
-const HIRO_API = "https://api.hiro.so";
-
+// Reuses the shared Hiro helpers (timeout + 30s revalidate) instead of a
+// second, less robust fetch path. Errors fall back to 0 (handled by caller).
 async function fetchTokenBalance(address: string, token: SwapToken): Promise<number> {
-  if (!token.contract) {
-    // Native STX
-    const res = await fetch(`${HIRO_API}/v2/accounts/${address}?proof=0`);
-    if (!res.ok) return 0;
-    const data = await res.json();
-    return Number(data.balance ?? 0) / Math.pow(10, token.decimals);
+  try {
+    if (!token.contract) {
+      const data = await getSTXBalance(address);
+      return Number(data.balance ?? 0) / Math.pow(10, token.decimals);
+    }
+    const data = await getFungibleTokens(address);
+    const fts = (data.fungible_tokens ?? {}) as Record<string, { balance: string }>;
+    const contractId = token.contract.toLowerCase();
+    const match = Object.entries(fts).find(([key]) =>
+      key.toLowerCase().startsWith(contractId)
+    );
+    if (!match) return 0;
+    return Number(match[1].balance) / Math.pow(10, token.decimals);
+  } catch {
+    return 0;
   }
-  const res = await fetch(`${HIRO_API}/extended/v1/address/${address}/balances`);
-  if (!res.ok) return 0;
-  const data = await res.json();
-  const fts = (data.fungible_tokens ?? {}) as Record<string, { balance: string }>;
-  const contractId = token.contract.toLowerCase();
-  const match = Object.entries(fts).find(([key]) =>
-    key.toLowerCase().startsWith(contractId)
-  );
-  if (!match) return 0;
-  return Number(match[1].balance) / Math.pow(10, token.decimals);
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────

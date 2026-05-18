@@ -66,11 +66,7 @@ export type SwapRoute = {
   hops: string[];
 };
 
-const ROUTES: SwapRoute[] = [
-  { from: "stx", to: "sbtc", method: "router", hops: ["STX", "sBTC"] },
-  { from: "sbtc", to: "stx", method: "direct", hops: ["sBTC", "STX"] },
-  { from: "sbtc", to: "usdcx", method: "router", hops: ["sBTC", "STX", "aeUSDC", "USDCx"] },
-];
+// ROUTES is derived from ROUTE_TABLE below — single source of truth.
 
 // ─── Data-driven route table (single source of truth) ─────────────────────────
 // Every fact about a route lives in one entry: display, quote hops, and the
@@ -192,6 +188,14 @@ const ROUTE_TABLE: RouteSpec[] = [
     },
   },
 ];
+
+/** Display/resolver view of the table — the only place routes are listed. */
+const ROUTES: SwapRoute[] = ROUTE_TABLE.map(({ from, to, method, hops }) => ({
+  from,
+  to,
+  method,
+  hops,
+}));
 
 export function getRoute(fromId: string, toId: string): SwapRoute | null {
   return ROUTES.find((r) => r.from === fromId && r.to === toId) ?? null;

@@ -7,7 +7,33 @@ import {
   amountForPercent,
   isQuoteStale,
   QUOTE_TTL_MS,
+  minSwapHuman,
+  isBelowMinSwap,
 } from "./direct-swap";
+
+describe("min-swap constraints", () => {
+  it("exposes the contract minimums per source token", () => {
+    expect(minSwapHuman("stx")).toBe(1); // 1 STX
+    expect(minSwapHuman("sbtc")).toBe(0.00000334); // 334 sats
+  });
+
+  it("flags STX amounts below 1 STX", () => {
+    expect(isBelowMinSwap("stx", "0.5")).toBe(true);
+    expect(isBelowMinSwap("stx", "1")).toBe(false);
+    expect(isBelowMinSwap("stx", "2.5")).toBe(false);
+  });
+
+  it("flags sBTC amounts below 334 sats", () => {
+    expect(isBelowMinSwap("sbtc", "0.000001")).toBe(true); // 100 sats
+    expect(isBelowMinSwap("sbtc", "0.00000334")).toBe(false); // exactly 334 sats
+    expect(isBelowMinSwap("sbtc", "0.001")).toBe(false);
+  });
+
+  it("treats empty / zero input as below minimum", () => {
+    expect(isBelowMinSwap("stx", "")).toBe(true);
+    expect(isBelowMinSwap("sbtc", "0")).toBe(true);
+  });
+});
 
 describe("isQuoteStale", () => {
   it("is fresh within the TTL", () => {

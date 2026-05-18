@@ -26,6 +26,8 @@ import {
   amountForPercent,
   isQuoteStale,
   QUOTE_TTL_MS,
+  isBelowMinSwap,
+  minSwapHuman,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -352,6 +354,14 @@ export default function SwapWidget() {
   async function handleSwap() {
     if (!quote || !stxAddress || !toToken) return;
 
+    if (isBelowMinSwap(fromToken.id, amountIn)) {
+      setErrorMsg(
+        `Minimum swap is ${minSwapHuman(fromToken.id)} ${fromToken.symbol}`
+      );
+      setStatus("error");
+      return;
+    }
+
     // Defensive: never sign a stale price. Re-quote instead of submitting.
     if (isQuoteStale(quote.quotedAt)) {
       const amt = parseFloat(amountIn);
@@ -412,6 +422,9 @@ export default function SwapWidget() {
     quote && toToken
       ? (quote.amountOut * (1 - slippage / 100)) / Math.pow(10, toToken.decimals)
       : null;
+
+  // Contract rejects sub-minimum swaps on-chain — block before signing.
+  const belowMin = !!amountIn && isBelowMinSwap(fromToken.id, amountIn);
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -524,6 +537,12 @@ export default function SwapWidget() {
                 {formatAmount(fromBalance, fromToken.decimals)} {fromToken.symbol}
               </p>
             )}
+          {belowMin && (
+            <p className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5">
+              <AlertCircle size={12} />
+              Minimum swap is {minSwapHuman(fromToken.id)} {fromToken.symbol}
+            </p>
+          )}
         </div>
       </div>
 
@@ -634,6 +653,7 @@ export default function SwapWidget() {
           status !== "ready" ||
           !quote ||
           !toToken ||
+          belowMin ||
           (fromBalance !== null && parseFloat(amountIn) > fromBalance)
         }
         className="w-full py-3.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"

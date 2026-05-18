@@ -124,6 +124,36 @@ export function applySlippageFloor(
  */
 export const STX_GAS_RESERVE = 0.1;
 
+/**
+ * Smart-contract minimum swap size, in raw units, keyed by source token.
+ * Submitting below this reverts on-chain and wastes the user's tx fee, so
+ * the UI must block it first. (1 STX / 334 sats sBTC.)
+ */
+const MIN_SWAP_RAW: Record<string, bigint> = {
+  stx: 1_000_000n, // 1 STX
+  sbtc: 334n, // 334 sats
+};
+
+/** Human-readable minimum swap amount for a source token (0 if unconstrained). */
+export function minSwapHuman(fromId: string): number {
+  const raw = MIN_SWAP_RAW[fromId];
+  if (raw === undefined) return 0;
+  const token = SWAP_TOKENS.find((t) => t.id === fromId);
+  return Number(raw) / Math.pow(10, token?.decimals ?? 0);
+}
+
+/** True when `amountInHuman` is below the contract minimum for `fromId`. */
+export function isBelowMinSwap(
+  fromId: string,
+  amountInHuman: string | number
+): boolean {
+  const min = MIN_SWAP_RAW[fromId];
+  if (min === undefined) return false;
+  const token = SWAP_TOKENS.find((t) => t.id === fromId);
+  const raw = toRawAmount(amountInHuman, token?.decimals ?? 0);
+  return raw < min;
+}
+
 /** A quote older than this is considered stale and must be refreshed. */
 export const QUOTE_TTL_MS = 30_000;
 

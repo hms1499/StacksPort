@@ -120,6 +120,18 @@ export function slippageWarning(pct: number): "high" | "low" | null {
   return null;
 }
 
+/**
+ * Effective exchange rate from a quote: how much output 1 unit of input
+ * buys. Display-only (a ratio is fine as a float). 0 if not computable.
+ */
+export function quoteRate(
+  amountInHuman: number,
+  amountOutHuman: number
+): number {
+  if (!(amountInHuman > 0) || !(amountOutHuman > 0)) return 0;
+  return amountOutHuman / amountInHuman;
+}
+
 // ─── Money Math (BigInt — never float) ───────────────────────────────────────
 
 /**

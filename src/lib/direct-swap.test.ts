@@ -12,7 +12,21 @@ import {
   computePriceImpact,
   sanitizeAmountInput,
   slippageWarning,
+  quoteRate,
 } from "./direct-swap";
+
+describe("quoteRate", () => {
+  it("returns output per 1 unit of input", () => {
+    expect(quoteRate(2, 1)).toBe(0.5);
+    expect(quoteRate(1, 0.00000234)).toBe(0.00000234);
+  });
+
+  it("returns 0 for non-positive or invalid inputs", () => {
+    expect(quoteRate(0, 5)).toBe(0);
+    expect(quoteRate(5, 0)).toBe(0);
+    expect(quoteRate(NaN, 5)).toBe(0);
+  });
+});
 
 describe("slippageWarning", () => {
   it("returns null for sensible slippage", () => {

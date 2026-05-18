@@ -346,7 +346,7 @@ export default function SwapWidget() {
         functionName: params.functionName,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         functionArgs: params.functionArgs as any[],
-        postConditions: [],
+        postConditions: params.postConditions,
         postConditionMode: params.postConditionMode,
         network,
         onFinish: ({ txId: id }) => {

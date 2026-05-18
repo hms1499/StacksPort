@@ -6,6 +6,9 @@ import {
   serializeCV,
   hexToCV,
   ClarityType,
+  Pc,
+  PostConditionMode,
+  type PostCondition,
   type ClarityValue,
 } from "@stacks/transactions";
 
@@ -222,7 +225,33 @@ export interface SwapParams {
   contractName: string;
   functionName: string;
   functionArgs: ClarityValue[];
-  postConditionMode: number; // 1 = Allow
+  postConditions: PostCondition[];
+  postConditionMode: PostConditionMode;
+}
+
+const SBTC_ASSET = `${SBTC.address}.${SBTC.name}` as const;
+
+/**
+ * Post-condition guaranteeing the sender parts with EXACTLY `amountInRaw` of
+ * the input token and nothing else of theirs leaves the wallet. Combined with
+ * Deny mode this closes the catastrophic "contract drains more than expected"
+ * vector. The minimum received amount is enforced on-chain by the swap's
+ * `min-amount-out` argument, which reverts the tx if the output is too low.
+ */
+function senderSpendPostCondition(
+  fromId: string,
+  amountInRaw: number,
+  senderAddress: string
+): PostCondition {
+  if (fromId === "stx") {
+    return Pc.principal(senderAddress).willSendEq(amountInRaw).ustx();
+  }
+  if (fromId === "sbtc") {
+    return Pc.principal(senderAddress)
+      .willSendEq(amountInRaw)
+      .ft(SBTC_ASSET, SBTC.name);
+  }
+  throw new Error(`No post-condition rule for input token ${fromId}`);
 }
 
 export function buildSwapParams(
@@ -234,6 +263,9 @@ export function buildSwapParams(
 ): SwapParams {
   const fromToken = SWAP_TOKENS.find((t) => t.id === fromId)!;
   const amountInRaw = Math.floor(amountInHuman * Math.pow(10, fromToken.decimals));
+  const postConditions = [
+    senderSpendPostCondition(fromId, amountInRaw, senderAddress),
+  ];
 
   if (fromId === "stx" && toId === "sbtc") {
     // STX → sBTC via router
@@ -246,7 +278,8 @@ export function buildSwapParams(
         uintCV(minAmountOutRaw),
         standardPrincipalCV(senderAddress),
       ],
-      postConditionMode: 1,
+      postConditions,
+      postConditionMode: PostConditionMode.Deny,
     };
   }
 
@@ -263,7 +296,8 @@ export function buildSwapParams(
         uintCV(amountInRaw),
         uintCV(minAmountOutRaw),
       ],
-      postConditionMode: 1,
+      postConditions,
+      postConditionMode: PostConditionMode.Deny,
     };
   }
 
@@ -278,7 +312,8 @@ export function buildSwapParams(
         uintCV(minAmountOutRaw),
         standardPrincipalCV(senderAddress),
       ],
-      postConditionMode: 1,
+      postConditions,
+      postConditionMode: PostConditionMode.Deny,
     };
   }
 

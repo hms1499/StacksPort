@@ -22,6 +22,7 @@ import {
   getRoute,
   getQuote,
   buildSwapParams,
+  applySlippageFloor,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -329,13 +330,14 @@ export default function SwapWidget() {
     setErrorMsg(null);
 
     try {
-      const minAmountOutRaw = Math.floor(
-        quote.amountOut * (1 - slippage / 100)
+      const minAmountOutRaw = applySlippageFloor(
+        BigInt(Math.floor(quote.amountOut)),
+        slippage
       );
       const params = buildSwapParams(
         fromToken.id,
         toToken.id,
-        parseFloat(amountIn),
+        amountIn,
         minAmountOutRaw,
         stxAddress
       );

@@ -86,6 +86,37 @@ export function getSwappableFromTokens(): SwapToken[] {
   return SWAP_TOKENS.filter((t) => fromIds.includes(t.id));
 }
 
+// ─── Money Math (BigInt — never float) ───────────────────────────────────────
+
+/**
+ * Convert a human-readable amount to raw integer units without float math.
+ * `1.5` STX → `1500000n`. Fraction beyond `decimals` is truncated (floor),
+ * matching on-chain behaviour. Float `human * 10**decimals` loses precision
+ * for 8-decimal tokens with large integer parts — this does not.
+ */
+export function toRawAmount(human: string | number, decimals: number): bigint {
+  const str = typeof human === "number" ? human.toFixed(decimals) : human.trim();
+  if (!str || isNaN(Number(str))) return 0n;
+  const neg = str.startsWith("-");
+  const [intPart, fracPart = ""] = str.replace(/^[+-]/, "").split(".");
+  const frac = fracPart.slice(0, decimals).padEnd(decimals, "0");
+  const raw = BigInt((intPart || "0") + frac);
+  return neg ? -raw : raw;
+}
+
+/**
+ * Apply a slippage tolerance (percent) to a raw output amount, flooring.
+ * `applySlippageFloor(1000000n, 0.5)` → `995000n`. Uses basis points so
+ * fractional percents stay exact.
+ */
+export function applySlippageFloor(
+  amountOutRaw: bigint,
+  slippagePercent: number
+): bigint {
+  const bps = BigInt(Math.round(slippagePercent * 100));
+  return (amountOutRaw * (10000n - bps)) / 10000n;
+}
+
 // ─── Clarity Helpers ─────────────────────────────────────────────────────────
 
 function cvToHex(cv: ClarityValue): string {
@@ -240,7 +271,7 @@ const SBTC_ASSET = `${SBTC.address}.${SBTC.name}` as const;
  */
 function senderSpendPostCondition(
   fromId: string,
-  amountInRaw: number,
+  amountInRaw: bigint,
   senderAddress: string
 ): PostCondition {
   if (fromId === "stx") {
@@ -257,12 +288,12 @@ function senderSpendPostCondition(
 export function buildSwapParams(
   fromId: string,
   toId: string,
-  amountInHuman: number,
-  minAmountOutRaw: number,
+  amountInHuman: string | number,
+  minAmountOutRaw: bigint | number,
   senderAddress: string
 ): SwapParams {
   const fromToken = SWAP_TOKENS.find((t) => t.id === fromId)!;
-  const amountInRaw = Math.floor(amountInHuman * Math.pow(10, fromToken.decimals));
+  const amountInRaw = toRawAmount(amountInHuman, fromToken.decimals);
   const postConditions = [
     senderSpendPostCondition(fromId, amountInRaw, senderAddress),
   ];

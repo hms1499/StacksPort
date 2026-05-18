@@ -69,6 +69,23 @@ All global state lives in Zustand stores — no Redux, no React Context. Each st
 - Max plans per user: 10
 - Min initial deposit: 2 STX / 668 sats
 
+### Adding a Swap Pair (ROUTE_TABLE)
+
+All swap routing lives in **one** place: `ROUTE_TABLE` in [src/lib/direct-swap.ts](src/lib/direct-swap.ts). `getQuote`, `buildSwapParams`, `getRoute`, `getValidDestinations`, and `getSwappableFromTokens` all interpret it — adding a pair is a data edit, not a logic change.
+
+To add a route, append one `RouteSpec` object:
+- `from` / `to` — token ids (must exist in `SWAP_TOKENS`)
+- `method` — `"router"` (aggregator entrypoint) or `"direct"` (raw xyk-core)
+- `hops` — display labels for the route path UI
+- `quote` — ordered `QuoteHop[]`; each is a real on-chain read (`get-dx`/`get-dy` on a pool via a core contract). Output of hop N feeds hop N+1.
+- `exec` — the on-chain call: `{ kind: "router", contract, fn }` or `{ kind: "direct", contract, fn, pool, xToken, yToken }`
+
+TypeScript flags any missing field at compile time, so a half-wired route can't reach sign time. Rules:
+1. **Every new pool/router/token contract must actually exist on-chain.** Verify the contract id + SIP-010 asset name against the Hiro API — never guess them.
+2. If the route introduces a **new source token** (a new `from`), add a branch to `senderSpendPostCondition` (it maps input token → STX `ustx` vs FT post-condition). This is intentionally not in the table.
+3. The characterization tests in `src/lib/direct-swap.test.ts` must stay green — they prove existing routes are byte-identical. Add new characterization cases for the new route.
+4. Run `npm test` (unit) and `npm run build` before committing.
+
 ### API Routes (Next.js)
 
 API routes in `src/app/api/` act as server-side proxies to avoid CORS and hide API keys. Direct blockchain calls happen client-side via Stacks SDK.

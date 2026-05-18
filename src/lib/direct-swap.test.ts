@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { PostConditionMode } from "@stacks/transactions";
+import {
+  PostConditionMode,
+  serializeCV,
+  uintCV,
+  standardPrincipalCV,
+  contractPrincipalCV,
+  type ClarityValue,
+} from "@stacks/transactions";
 import {
   buildSwapParams,
   toRawAmount,
@@ -14,6 +21,68 @@ import {
   slippageWarning,
   quoteRate,
 } from "./direct-swap";
+
+// ─── Characterization: lock down buildSwapParams wiring before refactor ───────
+// These assert the EXACT on-chain call for each route so a later data-driven
+// rewrite is provably behaviour-preserving. Do not "update" them to match new
+// code — if they change, the swap a user signs changed.
+
+const ser = (args: ClarityValue[]) => args.map((a) => serializeCV(a));
+
+// Production constants (the spec of what each route must call)
+const ROUTER = "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
+const XYK_CORE_ADDR = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
+const XYK_CORE = "xyk-core-v-1-2";
+const POOL_SBTC_STX_ADDR = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
+const POOL_SBTC_STX_NAME = "xyk-pool-sbtc-stx-v-1-1";
+const SBTC_ADDR = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4";
+const WSTX_ADDR = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
+const MIN_OUT = 5_000_000n;
+
+describe("buildSwapParams characterization (current wiring)", () => {
+  it("STX → sBTC: bitflow-sbtc-swap-router.swap-stx-for-token", () => {
+    const p = buildSwapParams("stx", "sbtc", 1, MIN_OUT, SENDER);
+    expect(p.contractAddress).toBe(ROUTER);
+    expect(p.contractName).toBe("bitflow-sbtc-swap-router");
+    expect(p.functionName).toBe("swap-stx-for-token");
+    expect(ser(p.functionArgs)).toEqual(
+      ser([uintCV(1_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
+    );
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
+  });
+
+  it("sBTC → STX: xyk-core.swap-x-for-y (direct, pool+token args)", () => {
+    const p = buildSwapParams("sbtc", "stx", 0.001, MIN_OUT, SENDER);
+    expect(p.contractAddress).toBe(XYK_CORE_ADDR);
+    expect(p.contractName).toBe(XYK_CORE);
+    expect(p.functionName).toBe("swap-x-for-y");
+    expect(ser(p.functionArgs)).toEqual(
+      ser([
+        contractPrincipalCV(POOL_SBTC_STX_ADDR, POOL_SBTC_STX_NAME),
+        contractPrincipalCV(SBTC_ADDR, "sbtc-token"),
+        contractPrincipalCV(WSTX_ADDR, "token-stx-v-1-2"),
+        uintCV(100_000n),
+        uintCV(MIN_OUT),
+      ])
+    );
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
+  });
+
+  it("sBTC → USDCx: bitflow-usdcx-swap-router.swap-sbtc-for-token", () => {
+    const p = buildSwapParams("sbtc", "usdcx", 0.01, MIN_OUT, SENDER);
+    expect(p.contractAddress).toBe(ROUTER);
+    expect(p.contractName).toBe("bitflow-usdcx-swap-router");
+    expect(p.functionName).toBe("swap-sbtc-for-token");
+    expect(ser(p.functionArgs)).toEqual(
+      ser([uintCV(1_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
+    );
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
+  });
+
+  it("throws for an unsupported pair", () => {
+    expect(() => buildSwapParams("usdcx", "stx", 1, MIN_OUT, SENDER)).toThrow();
+  });
+});
 
 describe("quoteRate", () => {
   it("returns output per 1 unit of input", () => {

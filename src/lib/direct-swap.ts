@@ -154,6 +154,31 @@ export function isBelowMinSwap(
   return raw < min;
 }
 
+/**
+ * Price impact as a fraction (0.05 = 5%): how much worse the user's effective
+ * rate is than the near-spot rate from a tiny reference trade. Larger trades
+ * move the pool more, so this grows with size. Returns 0 if it can't be
+ * computed or if the effective rate is somehow better than spot.
+ */
+export function computePriceImpact(
+  refAmountInRaw: number,
+  refAmountOutRaw: number,
+  amountInRaw: number,
+  amountOutRaw: number
+): number {
+  if (
+    refAmountInRaw <= 0 ||
+    refAmountOutRaw <= 0 ||
+    amountInRaw <= 0 ||
+    amountOutRaw <= 0
+  ) {
+    return 0;
+  }
+  const spotRate = refAmountOutRaw / refAmountInRaw;
+  const effectiveRate = amountOutRaw / amountInRaw;
+  return Math.max(0, 1 - effectiveRate / spotRate);
+}
+
 /** A quote older than this is considered stale and must be refreshed. */
 export const QUOTE_TTL_MS = 30_000;
 
@@ -276,6 +301,30 @@ export interface QuoteResult {
   amountOutHuman: number;  // human-readable
   route: SwapRoute;
   quotedAt: number;        // Date.now() when fetched — see isQuoteStale
+  priceImpact: number;     // fraction (0.05 = 5%); 0 if not computable
+}
+
+/** Raw output for a raw input on a given route (the per-route hop logic). */
+async function quoteRawOut(
+  fromId: string,
+  toId: string,
+  amountInRaw: number
+): Promise<number> {
+  if (fromId === "stx" && toId === "sbtc") {
+    // STX → sBTC: get-dx on sbtc-stx pool (y=STX input → x=sBTC output)
+    return xykGetDx(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
+  }
+  if (fromId === "sbtc" && toId === "stx") {
+    // sBTC → STX: get-dy on sbtc-stx pool (x=sBTC input → y=STX output)
+    return xykGetDy(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
+  }
+  if (fromId === "sbtc" && toId === "usdcx") {
+    // sBTC → USDCx: 3 hops
+    const stxOut = await xykGetDy(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
+    const aeUsdcOut = await xykGetDy(POOL_STX_AEUSDC, WSTX, AEUSDC, stxOut);
+    return ssGetDy(POOL_AEUSDC_USDCX, AEUSDC, USDCX, aeUsdcOut);
+  }
+  throw new Error(`No quote logic for ${fromId} → ${toId}`);
 }
 
 export async function getQuote(
@@ -290,28 +339,28 @@ export async function getQuote(
   const toToken = SWAP_TOKENS.find((t) => t.id === toId)!;
   const amountInRaw = Number(toRawAmount(amountInHuman, fromToken.decimals));
 
-  let amountOutRaw: number;
-
-  if (fromId === "stx" && toId === "sbtc") {
-    // STX → sBTC: get-dx on sbtc-stx pool (y=STX input → x=sBTC output)
-    amountOutRaw = await xykGetDx(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
-  } else if (fromId === "sbtc" && toId === "stx") {
-    // sBTC → STX: get-dy on sbtc-stx pool (x=sBTC input → y=STX output)
-    amountOutRaw = await xykGetDy(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
-  } else if (fromId === "sbtc" && toId === "usdcx") {
-    // sBTC → USDCx: 3 hops
-    const stxOut = await xykGetDy(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
-    const aeUsdcOut = await xykGetDy(POOL_STX_AEUSDC, WSTX, AEUSDC, stxOut);
-    amountOutRaw = await ssGetDy(POOL_AEUSDC_USDCX, AEUSDC, USDCX, aeUsdcOut);
-  } else {
-    throw new Error(`No quote logic for ${fromId} → ${toId}`);
-  }
+  // A tiny reference trade (the contract minimum) approximates the spot rate,
+  // so we can show how much the user's size moves the price. Fetched in
+  // parallel with the real quote.
+  const refInRaw = Number(MIN_SWAP_RAW[fromId] ?? 0n);
+  const [amountOutRaw, refOutRaw] = await Promise.all([
+    quoteRawOut(fromId, toId, amountInRaw),
+    refInRaw > 0 && refInRaw < amountInRaw
+      ? quoteRawOut(fromId, toId, refInRaw).catch(() => 0)
+      : Promise.resolve(0),
+  ]);
 
   return {
     amountOut: amountOutRaw,
     amountOutHuman: amountOutRaw / Math.pow(10, toToken.decimals),
     route,
     quotedAt: Date.now(),
+    priceImpact: computePriceImpact(
+      refInRaw,
+      refOutRaw,
+      amountInRaw,
+      amountOutRaw
+    ),
   };
 }
 

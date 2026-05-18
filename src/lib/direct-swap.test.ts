@@ -9,7 +9,30 @@ import {
   QUOTE_TTL_MS,
   minSwapHuman,
   isBelowMinSwap,
+  computePriceImpact,
 } from "./direct-swap";
+
+describe("computePriceImpact", () => {
+  it("is ~0 when the effective rate matches the reference (spot) rate", () => {
+    // ref 1 → 10 (spot rate 10), actual 100 → 1000 (eff rate 10)
+    expect(computePriceImpact(1, 10, 100, 1000)).toBeCloseTo(0, 10);
+  });
+
+  it("reports the fractional drop vs the spot rate", () => {
+    // spot 10, actual 100 → 950 → eff 9.5 → impact 5%
+    expect(computePriceImpact(1, 10, 100, 950)).toBeCloseTo(0.05, 10);
+  });
+
+  it("clamps to 0 when the effective rate is better than spot", () => {
+    expect(computePriceImpact(1, 10, 100, 1100)).toBe(0);
+  });
+
+  it("returns 0 when the reference quote is unusable", () => {
+    expect(computePriceImpact(0, 10, 100, 950)).toBe(0);
+    expect(computePriceImpact(1, 0, 100, 950)).toBe(0);
+    expect(computePriceImpact(1, 10, 0, 950)).toBe(0);
+  });
+});
 
 describe("min-swap constraints", () => {
   it("exposes the contract minimums per source token", () => {

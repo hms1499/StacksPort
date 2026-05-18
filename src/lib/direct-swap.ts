@@ -415,51 +415,24 @@ async function callReadOnly(
 
 // ─── Quote Fetcher ───────────────────────────────────────────────────────────
 
-async function xykGetDy(
-  pool: { address: string; name: string },
-  xToken: { address: string; name: string },
-  yToken: { address: string; name: string },
-  xAmount: number
-): Promise<number> {
+/**
+ * One read-only quote hop. All cores (xyk/stableswap) expose the same
+ * shape: `(get-dx|get-dy) pool xToken yToken uint` returning `(ok uint)`.
+ * Replaces the former xykGetDy/xykGetDx/ssGetDy trio (identical bodies).
+ */
+async function quoteHop(hop: QuoteHop, amountInRaw: number): Promise<number> {
   const args = [
-    cvToHex(contractPrincipalCV(pool.address, pool.name)),
-    cvToHex(contractPrincipalCV(xToken.address, xToken.name)),
-    cvToHex(contractPrincipalCV(yToken.address, yToken.name)),
-    cvToHex(uintCV(xAmount)),
+    cvToHex(contractPrincipalCV(hop.pool.address, hop.pool.name)),
+    cvToHex(contractPrincipalCV(hop.xToken.address, hop.xToken.name)),
+    cvToHex(contractPrincipalCV(hop.yToken.address, hop.yToken.name)),
+    cvToHex(uintCV(amountInRaw)),
   ];
-  const cv = await callReadOnly(XYK_CORE_ADDRESS, XYK_CORE_NAME, "get-dy", args);
-  return unwrapOkUint(cv);
-}
-
-async function xykGetDx(
-  pool: { address: string; name: string },
-  xToken: { address: string; name: string },
-  yToken: { address: string; name: string },
-  yAmount: number
-): Promise<number> {
-  const args = [
-    cvToHex(contractPrincipalCV(pool.address, pool.name)),
-    cvToHex(contractPrincipalCV(xToken.address, xToken.name)),
-    cvToHex(contractPrincipalCV(yToken.address, yToken.name)),
-    cvToHex(uintCV(yAmount)),
-  ];
-  const cv = await callReadOnly(XYK_CORE_ADDRESS, XYK_CORE_NAME, "get-dx", args);
-  return unwrapOkUint(cv);
-}
-
-async function ssGetDy(
-  pool: { address: string; name: string },
-  xToken: { address: string; name: string },
-  yToken: { address: string; name: string },
-  xAmount: number
-): Promise<number> {
-  const args = [
-    cvToHex(contractPrincipalCV(pool.address, pool.name)),
-    cvToHex(contractPrincipalCV(xToken.address, xToken.name)),
-    cvToHex(contractPrincipalCV(yToken.address, yToken.name)),
-    cvToHex(uintCV(xAmount)),
-  ];
-  const cv = await callReadOnly(SS_CORE_ADDRESS, SS_CORE_NAME, "get-dy", args);
+  const cv = await callReadOnly(
+    hop.coreAddress,
+    hop.coreName,
+    hop.fn,
+    args
+  );
   return unwrapOkUint(cv);
 }
 
@@ -471,27 +444,20 @@ export interface QuoteResult {
   priceImpact: number;     // fraction (0.05 = 5%); 0 if not computable
 }
 
-/** Raw output for a raw input on a given route (the per-route hop logic). */
+/** Raw output for a raw input: chains the route's quote hops, feeding each
+ *  hop's output into the next. Reads the same ROUTE_TABLE as buildSwapParams. */
 async function quoteRawOut(
   fromId: string,
   toId: string,
   amountInRaw: number
 ): Promise<number> {
-  if (fromId === "stx" && toId === "sbtc") {
-    // STX → sBTC: get-dx on sbtc-stx pool (y=STX input → x=sBTC output)
-    return xykGetDx(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
+  const spec = ROUTE_TABLE.find((r) => r.from === fromId && r.to === toId);
+  if (!spec) throw new Error(`No quote logic for ${fromId} → ${toId}`);
+  let amt = amountInRaw;
+  for (const hop of spec.quote) {
+    amt = await quoteHop(hop, amt);
   }
-  if (fromId === "sbtc" && toId === "stx") {
-    // sBTC → STX: get-dy on sbtc-stx pool (x=sBTC input → y=STX output)
-    return xykGetDy(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
-  }
-  if (fromId === "sbtc" && toId === "usdcx") {
-    // sBTC → USDCx: 3 hops
-    const stxOut = await xykGetDy(POOL_SBTC_STX, SBTC, WSTX, amountInRaw);
-    const aeUsdcOut = await xykGetDy(POOL_STX_AEUSDC, WSTX, AEUSDC, stxOut);
-    return ssGetDy(POOL_AEUSDC_USDCX, AEUSDC, USDCX, aeUsdcOut);
-  }
-  throw new Error(`No quote logic for ${fromId} → ${toId}`);
+  return amt;
 }
 
 export async function getQuote(

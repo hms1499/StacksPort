@@ -29,6 +29,7 @@ import {
   QUOTE_TTL_MS,
   isBelowMinSwap,
   minSwapHuman,
+  sanitizeAmountInput,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -513,12 +514,15 @@ export default function SwapWidget() {
           </label>
           <div className="relative">
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               placeholder="0.00"
-              min="0"
-              step="any"
               value={amountIn}
-              onChange={(e) => setAmountIn(e.target.value)}
+              onChange={(e) =>
+                setAmountIn(
+                  sanitizeAmountInput(e.target.value, fromToken.decimals)
+                )
+              }
               className="w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 transition-colors"
               style={
                 isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance

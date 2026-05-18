@@ -30,6 +30,7 @@ import {
   isBelowMinSwap,
   minSwapHuman,
   sanitizeAmountInput,
+  slippageWarning,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -630,7 +631,7 @@ export default function SwapWidget() {
           )}
           <div className="flex items-center justify-between text-xs">
             <span style={{ color: 'var(--text-muted)' }}>Slippage</span>
-            <div className="flex gap-1">
+            <div className="flex gap-1 items-center">
               {[0.1, 0.5, 1].map((s) => (
                 <button
                   key={s}
@@ -645,8 +646,49 @@ export default function SwapWidget() {
                   {s}%
                 </button>
               ))}
+              <span
+                className="flex items-center rounded-lg overflow-hidden"
+                style={{
+                  border: `1px solid ${
+                    ![0.1, 0.5, 1].includes(slippage)
+                      ? 'var(--text-primary)'
+                      : 'var(--border-default)'
+                  }`,
+                }}
+              >
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  aria-label="Custom slippage percent"
+                  value={slippage}
+                  onChange={(e) => {
+                    const v = parseFloat(
+                      sanitizeAmountInput(e.target.value, 2)
+                    );
+                    setSlippage(isNaN(v) ? 0 : Math.min(v, 50));
+                  }}
+                  className="w-10 px-1.5 py-0.5 text-right bg-transparent focus:outline-none"
+                  style={{ color: 'var(--text-secondary)' }}
+                />
+                <span className="pr-1.5" style={{ color: 'var(--text-muted)' }}>%</span>
+              </span>
             </div>
           </div>
+          {slippageWarning(slippage) && (
+            <p
+              className="text-xs"
+              style={{
+                color:
+                  slippageWarning(slippage) === 'high'
+                    ? 'rgb(239,68,68)'
+                    : 'rgb(234,179,8)',
+              }}
+            >
+              {slippageWarning(slippage) === 'high'
+                ? 'High slippage — you may get a poor price or be front-run.'
+                : 'Very low slippage — the swap will likely fail on any price move.'}
+            </p>
+          )}
         </div>
       )}
 

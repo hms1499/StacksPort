@@ -31,6 +31,7 @@ import {
   minSwapHuman,
   sanitizeAmountInput,
   slippageWarning,
+  quoteRate,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -604,6 +605,18 @@ export default function SwapWidget() {
               <RoutePath hops={quote.route.hops} />
             </div>
           )}
+          {toToken && (() => {
+            const rate = quoteRate(parseFloat(amountIn), quote.amountOutHuman);
+            return rate > 0 ? (
+              <div className="flex items-center justify-between text-xs">
+                <span style={{ color: 'var(--text-muted)' }}>Rate</span>
+                <span style={{ color: 'var(--text-secondary)' }}>
+                  1 {fromToken.symbol} ≈ {formatAmount(rate, toToken.decimals)}{" "}
+                  {toToken.symbol}
+                </span>
+              </div>
+            ) : null;
+          })()}
           {minReceived !== null && (
             <div className="flex items-center justify-between text-xs">
               <span style={{ color: 'var(--text-muted)' }}>Min received</span>

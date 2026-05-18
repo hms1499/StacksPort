@@ -302,6 +302,8 @@ export default function SwapWidget() {
 
   const [fromBalance, setFromBalance] = useState<number | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  // Bumped after a successful swap to force a balance re-fetch.
+  const [balanceNonce, setBalanceNonce] = useState(0);
 
   const [quote, setQuote] = useState<QuoteResult | null>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -330,7 +332,7 @@ export default function SwapWidget() {
       .catch(() => { if (!cancelled) setFromBalance(null); })
       .finally(() => { if (!cancelled) setBalanceLoading(false); });
     return () => { cancelled = true; };
-  }, [fromToken, stxAddress]);
+  }, [fromToken, stxAddress, balanceNonce]);
 
   function setPercent(pct: number) {
     if (fromBalance === null || fromBalance <= 0) return;
@@ -472,6 +474,7 @@ export default function SwapWidget() {
         onFinish: ({ txId: id }) => {
           setTxId(id);
           setStatus("success");
+          setBalanceNonce((n) => n + 1); // refetch balance post-swap
           addNotification(
             `Swap executed: ${fromToken.symbol} → ${toToken.symbol}`,
             "success",

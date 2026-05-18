@@ -72,6 +72,127 @@ const ROUTES: SwapRoute[] = [
   { from: "sbtc", to: "usdcx", method: "router", hops: ["sBTC", "STX", "aeUSDC", "USDCx"] },
 ];
 
+// ─── Data-driven route table (single source of truth) ─────────────────────────
+// Every fact about a route lives in one entry: display, quote hops, and the
+// on-chain call. quote()/buildSwapParams() interpret this — adding a pair is a
+// data change, and a missing field is a compile error (not a runtime crash at
+// sign time). Not yet wired; see follow-up commits.
+
+type TokenRef = { address: string; name: string };
+
+/** One read-only hop. Read args are always [pool, xToken, yToken, uint(amt)];
+ *  the output feeds the next hop's amount. */
+interface QuoteHop {
+  coreAddress: string;
+  coreName: string;
+  fn: "get-dx" | "get-dy";
+  pool: TokenRef;
+  xToken: TokenRef;
+  yToken: TokenRef;
+}
+
+/** How the swap is executed on-chain. `router` = aggregator entrypoint
+ *  (amount, minOut, sender); `direct` = raw xyk-core (pool+tokens, amount,
+ *  minOut). */
+type ExecSpec =
+  | { kind: "router"; contract: TokenRef; fn: string }
+  | {
+      kind: "direct";
+      contract: TokenRef;
+      fn: string;
+      pool: TokenRef;
+      xToken: TokenRef;
+      yToken: TokenRef;
+    };
+
+interface RouteSpec extends SwapRoute {
+  quote: QuoteHop[];
+  exec: ExecSpec;
+}
+
+const XYK_CORE: TokenRef = { address: XYK_CORE_ADDRESS, name: XYK_CORE_NAME };
+
+const ROUTE_TABLE: RouteSpec[] = [
+  {
+    from: "stx",
+    to: "sbtc",
+    method: "router",
+    hops: ["STX", "sBTC"],
+    quote: [
+      {
+        coreAddress: XYK_CORE_ADDRESS,
+        coreName: XYK_CORE_NAME,
+        fn: "get-dx",
+        pool: POOL_SBTC_STX,
+        xToken: SBTC,
+        yToken: WSTX,
+      },
+    ],
+    exec: { kind: "router", contract: ROUTER_STX_SBTC, fn: "swap-stx-for-token" },
+  },
+  {
+    from: "sbtc",
+    to: "stx",
+    method: "direct",
+    hops: ["sBTC", "STX"],
+    quote: [
+      {
+        coreAddress: XYK_CORE_ADDRESS,
+        coreName: XYK_CORE_NAME,
+        fn: "get-dy",
+        pool: POOL_SBTC_STX,
+        xToken: SBTC,
+        yToken: WSTX,
+      },
+    ],
+    exec: {
+      kind: "direct",
+      contract: XYK_CORE,
+      fn: "swap-x-for-y",
+      pool: POOL_SBTC_STX,
+      xToken: SBTC,
+      yToken: WSTX,
+    },
+  },
+  {
+    from: "sbtc",
+    to: "usdcx",
+    method: "router",
+    hops: ["sBTC", "STX", "aeUSDC", "USDCx"],
+    quote: [
+      {
+        coreAddress: XYK_CORE_ADDRESS,
+        coreName: XYK_CORE_NAME,
+        fn: "get-dy",
+        pool: POOL_SBTC_STX,
+        xToken: SBTC,
+        yToken: WSTX,
+      },
+      {
+        coreAddress: XYK_CORE_ADDRESS,
+        coreName: XYK_CORE_NAME,
+        fn: "get-dy",
+        pool: POOL_STX_AEUSDC,
+        xToken: WSTX,
+        yToken: AEUSDC,
+      },
+      {
+        coreAddress: SS_CORE_ADDRESS,
+        coreName: SS_CORE_NAME,
+        fn: "get-dy",
+        pool: POOL_AEUSDC_USDCX,
+        xToken: AEUSDC,
+        yToken: USDCX,
+      },
+    ],
+    exec: {
+      kind: "router",
+      contract: ROUTER_SBTC_USDCX,
+      fn: "swap-sbtc-for-token",
+    },
+  },
+];
+
 export function getRoute(fromId: string, toId: string): SwapRoute | null {
   return ROUTES.find((r) => r.from === fromId && r.to === toId) ?? null;
 }
@@ -453,61 +574,37 @@ export function buildSwapParams(
   minAmountOutRaw: bigint | number,
   senderAddress: string
 ): SwapParams {
+  const spec = ROUTE_TABLE.find((r) => r.from === fromId && r.to === toId);
+  if (!spec) throw new Error(`No swap builder for ${fromId} → ${toId}`);
+
   const fromToken = SWAP_TOKENS.find((t) => t.id === fromId)!;
   const amountInRaw = toRawAmount(amountInHuman, fromToken.decimals);
   const postConditions = [
     senderSpendPostCondition(fromId, amountInRaw, senderAddress),
   ];
 
-  if (fromId === "stx" && toId === "sbtc") {
-    // STX → sBTC via router
-    return {
-      contractAddress: ROUTER_STX_SBTC.address,
-      contractName: ROUTER_STX_SBTC.name,
-      functionName: "swap-stx-for-token",
-      functionArgs: [
-        uintCV(amountInRaw),
-        uintCV(minAmountOutRaw),
-        standardPrincipalCV(senderAddress),
-      ],
-      postConditions,
-      postConditionMode: PostConditionMode.Deny,
-    };
-  }
+  const e = spec.exec;
+  const functionArgs: ClarityValue[] =
+    e.kind === "router"
+      ? [
+          uintCV(amountInRaw),
+          uintCV(minAmountOutRaw),
+          standardPrincipalCV(senderAddress),
+        ]
+      : [
+          contractPrincipalCV(e.pool.address, e.pool.name),
+          contractPrincipalCV(e.xToken.address, e.xToken.name),
+          contractPrincipalCV(e.yToken.address, e.yToken.name),
+          uintCV(amountInRaw),
+          uintCV(minAmountOutRaw),
+        ];
 
-  if (fromId === "sbtc" && toId === "stx") {
-    // sBTC → STX via direct xyk-core swap-x-for-y
-    return {
-      contractAddress: XYK_CORE_ADDRESS,
-      contractName: XYK_CORE_NAME,
-      functionName: "swap-x-for-y",
-      functionArgs: [
-        contractPrincipalCV(POOL_SBTC_STX.address, POOL_SBTC_STX.name),
-        contractPrincipalCV(SBTC.address, SBTC.name),
-        contractPrincipalCV(WSTX.address, WSTX.name),
-        uintCV(amountInRaw),
-        uintCV(minAmountOutRaw),
-      ],
-      postConditions,
-      postConditionMode: PostConditionMode.Deny,
-    };
-  }
-
-  if (fromId === "sbtc" && toId === "usdcx") {
-    // sBTC → USDCx via router (3-hop)
-    return {
-      contractAddress: ROUTER_SBTC_USDCX.address,
-      contractName: ROUTER_SBTC_USDCX.name,
-      functionName: "swap-sbtc-for-token",
-      functionArgs: [
-        uintCV(amountInRaw),
-        uintCV(minAmountOutRaw),
-        standardPrincipalCV(senderAddress),
-      ],
-      postConditions,
-      postConditionMode: PostConditionMode.Deny,
-    };
-  }
-
-  throw new Error(`No swap builder for ${fromId} → ${toId}`);
+  return {
+    contractAddress: e.contract.address,
+    contractName: e.contract.name,
+    functionName: e.fn,
+    functionArgs,
+    postConditions,
+    postConditionMode: PostConditionMode.Deny,
+  };
 }

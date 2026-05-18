@@ -109,6 +109,17 @@ export function sanitizeAmountInput(raw: string, decimals: number): string {
   return s;
 }
 
+/**
+ * Classify a slippage tolerance (percent). Above 5% the user risks a bad
+ * fill / MEV; below 0.05% the swap will likely revert on any price move.
+ * `null` means the value is in the sensible range.
+ */
+export function slippageWarning(pct: number): "high" | "low" | null {
+  if (pct > 5) return "high";
+  if (pct < 0.05) return "low";
+  return null;
+}
+
 // ─── Money Math (BigInt — never float) ───────────────────────────────────────
 
 /**

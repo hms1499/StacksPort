@@ -11,7 +11,28 @@ import {
   isBelowMinSwap,
   computePriceImpact,
   sanitizeAmountInput,
+  slippageWarning,
 } from "./direct-swap";
+
+describe("slippageWarning", () => {
+  it("returns null for sensible slippage", () => {
+    expect(slippageWarning(0.1)).toBeNull();
+    expect(slippageWarning(0.5)).toBeNull();
+    expect(slippageWarning(1)).toBeNull();
+    expect(slippageWarning(5)).toBeNull(); // upper boundary still ok
+    expect(slippageWarning(0.05)).toBeNull(); // lower boundary still ok
+  });
+
+  it("flags high slippage above 5%", () => {
+    expect(slippageWarning(5.1)).toBe("high");
+    expect(slippageWarning(20)).toBe("high");
+  });
+
+  it("flags too-low slippage below 0.05% (likely to fail)", () => {
+    expect(slippageWarning(0.01)).toBe("low");
+    expect(slippageWarning(0)).toBe("low");
+  });
+});
 
 describe("sanitizeAmountInput", () => {
   it("keeps a plain decimal unchanged", () => {

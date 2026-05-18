@@ -23,6 +23,7 @@ import {
   getQuote,
   buildSwapParams,
   applySlippageFloor,
+  amountForPercent,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -253,9 +254,14 @@ export default function SwapWidget() {
 
   function setPercent(pct: number) {
     if (fromBalance === null || fromBalance <= 0) return;
-    const val = fromBalance * pct;
-    const decimals = Math.min(fromToken.decimals, 6);
-    setAmountIn(parseFloat(val.toFixed(decimals)).toString());
+    setAmountIn(
+      amountForPercent(
+        fromBalance,
+        pct,
+        fromToken.contract === null, // native STX
+        fromToken.decimals
+      )
+    );
   }
 
   // Debounced quote fetch

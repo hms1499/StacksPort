@@ -1,6 +1,35 @@
 import { describe, it, expect } from "vitest";
 import { PostConditionMode } from "@stacks/transactions";
-import { buildSwapParams, toRawAmount, applySlippageFloor } from "./direct-swap";
+import {
+  buildSwapParams,
+  toRawAmount,
+  applySlippageFloor,
+  amountForPercent,
+} from "./direct-swap";
+
+describe("amountForPercent", () => {
+  it("returns the plain percentage when token is not native STX", () => {
+    expect(amountForPercent(100, 0.5, false, 8)).toBe("50");
+    expect(amountForPercent(100, 1, false, 8)).toBe("100"); // sBTC MAX, no reserve
+  });
+
+  it("returns the plain percentage for partial STX selections", () => {
+    expect(amountForPercent(100, 0.5, true, 6)).toBe("50");
+    expect(amountForPercent(100, 0.25, true, 6)).toBe("25");
+  });
+
+  it("reserves a gas buffer for STX MAX so the swap can pay fees", () => {
+    expect(amountForPercent(100, 1, true, 6)).toBe("99.9"); // 100 - 0.1 reserve
+  });
+
+  it("returns 0 when STX balance is below the gas reserve", () => {
+    expect(amountForPercent(0.05, 1, true, 6)).toBe("0");
+  });
+
+  it("rounds to at most 6 decimals", () => {
+    expect(amountForPercent(10.123456, 0.25, false, 8)).toBe("2.530864");
+  });
+});
 
 describe("toRawAmount", () => {
   it("converts whole and fractional human amounts to raw integer units", () => {

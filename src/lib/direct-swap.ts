@@ -117,6 +117,32 @@ export function applySlippageFloor(
   return (amountOutRaw * (10000n - bps)) / 10000n;
 }
 
+/**
+ * STX kept back when the user taps MAX, so the swap transaction can still
+ * pay its contract-call fee. Native STX is both the asset being spent and
+ * the fee currency — without this buffer a 100% STX swap always reverts.
+ */
+export const STX_GAS_RESERVE = 0.1;
+
+/**
+ * Amount (human string) to put in the input when a balance-percent shortcut
+ * is tapped. For a native-STX MAX it subtracts the gas reserve; everything
+ * else is a straight `balance * pct`. Result is capped at 6 decimals.
+ */
+export function amountForPercent(
+  balance: number,
+  pct: number,
+  isNativeStx: boolean,
+  decimals: number
+): string {
+  let val = balance * pct;
+  if (isNativeStx && pct >= 1) {
+    val = Math.max(balance - STX_GAS_RESERVE, 0);
+  }
+  const places = Math.min(decimals, 6);
+  return parseFloat(val.toFixed(places)).toString();
+}
+
 // ─── Clarity Helpers ─────────────────────────────────────────────────────────
 
 function cvToHex(cv: ClarityValue): string {

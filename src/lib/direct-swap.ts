@@ -86,6 +86,29 @@ export function getSwappableFromTokens(): SwapToken[] {
   return SWAP_TOKENS.filter((t) => fromIds.includes(t.id));
 }
 
+/**
+ * Sanitize a raw `<input>` value into a safe decimal string: digits and a
+ * single dot only (no `e`/`+`/`-`/exponent/locale separators), fraction
+ * truncated to the token's decimals. Keeps the amount field from ever
+ * holding a value the contract math can't represent.
+ */
+export function sanitizeAmountInput(raw: string, decimals: number): string {
+  if (!raw) return "";
+  let s = raw.replace(/[^0-9.]/g, "");
+  const firstDot = s.indexOf(".");
+  if (firstDot !== -1) {
+    s =
+      s.slice(0, firstDot + 1) +
+      s.slice(firstDot + 1).replace(/\./g, "");
+  }
+  if (s.startsWith(".")) s = "0" + s;
+  const dot = s.indexOf(".");
+  if (dot !== -1 && decimals >= 0) {
+    s = s.slice(0, dot + 1 + decimals);
+  }
+  return s;
+}
+
 // ─── Money Math (BigInt — never float) ───────────────────────────────────────
 
 /**

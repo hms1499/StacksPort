@@ -10,7 +10,40 @@ import {
   minSwapHuman,
   isBelowMinSwap,
   computePriceImpact,
+  sanitizeAmountInput,
 } from "./direct-swap";
+
+describe("sanitizeAmountInput", () => {
+  it("keeps a plain decimal unchanged", () => {
+    expect(sanitizeAmountInput("12.34", 6)).toBe("12.34");
+    expect(sanitizeAmountInput("100", 6)).toBe("100");
+  });
+
+  it("strips letters, sign and exponent characters", () => {
+    expect(sanitizeAmountInput("1e5", 6)).toBe("15");
+    expect(sanitizeAmountInput("-1.5", 6)).toBe("1.5");
+    expect(sanitizeAmountInput("12abc3", 6)).toBe("123");
+    expect(sanitizeAmountInput("1,234.5", 6)).toBe("1234.5");
+  });
+
+  it("collapses multiple decimal points to the first one", () => {
+    expect(sanitizeAmountInput("1.2.3", 6)).toBe("1.23");
+  });
+
+  it("truncates the fraction to the token decimals", () => {
+    expect(sanitizeAmountInput("1.1234567", 6)).toBe("1.123456");
+    expect(sanitizeAmountInput("0.123456789", 8)).toBe("0.12345678");
+  });
+
+  it("normalizes a leading dot", () => {
+    expect(sanitizeAmountInput(".5", 6)).toBe("0.5");
+    expect(sanitizeAmountInput(".", 6)).toBe("0.");
+  });
+
+  it("returns empty string for empty input", () => {
+    expect(sanitizeAmountInput("", 6)).toBe("");
+  });
+});
 
 describe("computePriceImpact", () => {
   it("is ~0 when the effective rate matches the reference (spot) rate", () => {

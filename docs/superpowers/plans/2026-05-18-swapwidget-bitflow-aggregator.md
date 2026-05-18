@@ -1,3 +1,14 @@
+> # ⛔ ABANDONED 2026-05-18 — DO NOT EXECUTE
+> Option 1 was shelved by owner decision. The only Bitflow API the project has
+> (staging test gateway) returns HTTP 404 (`/getAllTokensAndPools` down), and
+> there is no production host — so the aggregator path is unexecutable, not just
+> unsafe for prod. Execution halted at Task 2 (token-id discovery).
+> **Final state for the mini project:** the data-driven `ROUTE_TABLE` engine
+> (3 routes: STX↔sBTC, sBTC→USDCx) is the shipped & only swap engine. The 3
+> missing USDCx/STX pairs are intentionally not delivered. The discovery probe
+> (`scripts/bitflow-probe.mjs`, commit fb6ad48) is kept so this can be revived
+> if/when a working Bitflow host exists — resume from Task 2.
+
 # SwapWidget → Bitflow Aggregator Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

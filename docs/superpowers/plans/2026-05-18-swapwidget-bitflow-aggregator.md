@@ -10,6 +10,17 @@
 
 ---
 
+## Execution decision (2026-05-18) — TEST-GATEWAY, DEV-ONLY
+
+The project has **no Bitflow production host** — only the `…-test-…` staging gateway already defaulted in `bitflow-server.ts`. Path A chosen:
+
+- Build & verify the full integration against the test gateway.
+- **Task 8's "flip default" is REMOVED.** Production stays on `routetable` (the safe 3-route engine). `NEXT_PUBLIC_SWAP_ENGINE=bitflow` is dev/preview only.
+- No production credentials required from the user. Task 1 is reduced to "confirm test gateway reachable + make the probe fall back to the same defaults as `bitflow-server.ts`".
+- When a production Bitflow host exists later, going live is a one-line env change (`NEXT_PUBLIC_SWAP_ENGINE=bitflow` + prod `BITFLOW_API_HOST`), plus re-running the Task 5 parity gate against prod.
+
+---
+
 ## Pre-flight facts (verified 2026-05-18, do not re-derive)
 
 - `bitflow-sbtc-swap-router` exposes only `swap-stx-for-token`; `bitflow-usdcx-swap-router` only `swap-sbtc-for-token`. Hardcoded routers are single-direction → the 3 missing routes are unreachable via `ROUTE_TABLE`. This is why we move to the aggregator.
@@ -43,39 +54,27 @@ Each task below is independently committable and leaves the app green (flag defa
 
 ---
 
-## Task 1: Confirm Bitflow production environment
+## Task 1: Confirm test gateway reachable (dev-only, no prod creds)
 
 **Files:**
-- Modify: `.env.local` (local), Vercel project env (out-of-repo)
 - Reference: `src/lib/bitflow-server.ts:5-20`
+
+Per the Execution decision: no production env. Confirm the staging defaults are present and that the probe will reuse them.
 
 - [ ] **Step 1: Read current host defaults**
 
 Run: `grep -nE "API_HOST|API_KEY|gateway" src/lib/bitflow-server.ts`
-Expected: defaults contain `…-test-…` gateway URLs.
+Expected: defaults contain `…-test-…` gateway URLs (`BITFLOW_API_HOST` default `https://bitflowsdk-api-test-7owjsmt8.uk.gateway.dev`, `READONLY_CALL_API_HOST` default `https://node.bitflowapis.finance`).
 
-- [ ] **Step 2: Obtain production values**
+- [ ] **Step 2: Record defaults for the probe**
 
-Ask the user / Bitflow for the production `BITFLOW_API_HOST`, `BITFLOW_API_KEY`, `READONLY_CALL_API_HOST`, `BITFLOW_PROVIDER_ADDRESS`. Do not guess URLs. If production host is unknown, STOP and escalate — shipping against the test gateway is a release blocker.
+The probe script (Task 2) must fall back to these exact defaults when env vars are unset, so it works with zero credentials. No `.env.local` changes and no secrets are required for dev-only execution.
 
-- [ ] **Step 3: Set env (local)**
-
-Add to `.env.local`:
-```
-BITFLOW_API_HOST=<prod value from step 2>
-BITFLOW_API_KEY=<prod value>
-READONLY_CALL_API_HOST=<prod value>
-BITFLOW_PROVIDER_ADDRESS=<prod value>
-NEXT_PUBLIC_SWAP_ENGINE=routetable
-```
-
-- [ ] **Step 4: Commit (env example only — never commit secrets)**
+- [ ] **Step 3: Commit (no-op marker so the task is tracked)**
 
 ```bash
-git add .env.example 2>/dev/null || true
-git commit -m "chore(trade): document Bitflow prod env vars for aggregator" --allow-empty
+git commit -m "chore(trade): Task1 — dev-only against Bitflow test gateway (no prod env)" --allow-empty
 ```
-(If the repo has `.env.example`, add the new keys there with empty values; never commit `.env.local`.)
 
 ---
 
@@ -568,22 +567,25 @@ git commit -m "feat(trade): execute swaps via Bitflow prepareSwap behind engine 
 
 ---
 
-## Task 8: Validation pass + flip default to aggregator
+## Task 8: Validation pass (dev-only — default stays routetable)
 
 **Files:**
-- Modify: `.env.local` / Vercel env, `src/components/trade/SwapWidget.tsx` (default const)
+- Reference: `src/components/trade/SwapWidget.tsx`
 
-- [ ] **Step 1: Verify all 6 directions**
+Per the Execution decision, the production default is **not** flipped. This task only validates the aggregator works behind the flag in dev.
 
-With `NEXT_PUBLIC_SWAP_ENGINE=bitflow`, manually quote (and where safe, execute a minimum) each: STX→sBTC, sBTC→STX, sBTC→USDCx (parity vs old), and the 3 new: USDCx→sBTC, STX→USDCx, USDCx→STX. Record pass/fail in the parity doc.
+- [ ] **Step 1: Verify all 6 directions in dev**
+
+`NEXT_PUBLIC_SWAP_ENGINE=bitflow npm run dev`. Manually quote each: STX→sBTC, sBTC→STX, sBTC→USDCx (parity vs old), and the 3 new: USDCx→sBTC, STX→USDCx, USDCx→STX. Record pass/fail in the parity doc. Kill port 3000 after.
 
 - [ ] **Step 2: Confirm helpers still apply**
 
-Check in the UI: min-swap block, slippage warning, sanitized input, stale-quote refetch, request-id race guard all still behave (they wrap the engine, not replaced). Note `priceImpact` shows 0 on the bitflow engine (documented limitation) — confirm the row hides cleanly when 0 (it already does: `quote.priceImpact > 0`).
+In the UI: min-swap block, slippage warning, sanitized input, stale-quote refetch, request-id race guard all still behave (they wrap the engine, not replaced). `priceImpact` shows 0 on the bitflow engine (documented limitation) — confirm the row hides cleanly when 0 (`quote.priceImpact > 0` already guards it).
 
-- [ ] **Step 3: Flip the default**
+- [ ] **Step 3: Confirm default is unchanged**
 
-Change the default in `SwapWidget.tsx` (both call sites) from `"routetable"` to `"bitflow"`, and set `NEXT_PUBLIC_SWAP_ENGINE=bitflow` in Vercel env. Keep `routetable` reachable via the flag for rollback.
+Run: `grep -n 'NEXT_PUBLIC_SWAP_ENGINE ?? "routetable"' src/components/trade/SwapWidget.tsx`
+Expected: every call site still defaults to `"routetable"`. Production behaviour is unchanged. Do NOT change Vercel env.
 
 - [ ] **Step 4: Full build + suite**
 
@@ -593,8 +595,7 @@ Expected: `✓ Compiled successfully`; all unit tests pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/components/trade/SwapWidget.tsx
-git commit -m "feat(trade): make Bitflow aggregator the default swap engine"
+git commit -m "test(trade): validate Bitflow engine behind flag (default stays routetable)" --allow-empty
 ```
 
 ---
@@ -606,7 +607,7 @@ git commit -m "feat(trade): make Bitflow aggregator the default swap engine"
 
 - [ ] **Step 1: Update CLAUDE.md**
 
-Replace the "Adding a Swap Pair (ROUTE_TABLE)" section's intro with: the aggregator is now the primary engine; pairs come from Bitflow automatically; `ROUTE_TABLE` is the fallback engine selectable via `NEXT_PUBLIC_SWAP_ENGINE=routetable`; new pairs need no code if Bitflow lists them, but new **source tokens** still need a `senderSpendPostCondition` branch (when not trusting SDK PCs). Document the `NEXT_PUBLIC_SWAP_ENGINE` values.
+Add to the "Adding a Swap Pair (ROUTE_TABLE)" section: there is a second, opt-in engine — the Bitflow aggregator — selectable via `NEXT_PUBLIC_SWAP_ENGINE=bitflow` (dev/preview only; **production stays `routetable`** until a Bitflow production host exists). Document both `NEXT_PUBLIC_SWAP_ENGINE` values, that the test gateway is staging-only, and that flipping prod requires a prod host + re-running the Task 5 parity gate.
 
 - [ ] **Step 2: Commit**
 

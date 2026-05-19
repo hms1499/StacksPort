@@ -338,9 +338,13 @@ export default function SwapWidget() {
     return () => { cancelled = true; };
   }, [fromToken, stxAddress, balanceNonce]);
 
-  // STX balance for the fee-coverage warning. When the source IS STX we reuse
-  // the already-fetched fromBalance instead of a second Hiro call.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // STX balance for the fee-coverage warning. Only fetched for a non-STX
+  // source (the warning never shows when source IS STX — lacksStxForFee
+  // short-circuits). In the STX branch we mirror fromBalance just to keep the
+  // value sane; it is intentionally NOT in the deps (fromBalance read there is
+  // best-effort and irrelevant to the banner), which avoids a doubled STX
+  // fetch every time the non-STX balance resolves.
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => {
     if (!stxAddress) {
       setStxBalance(null);
@@ -355,7 +359,7 @@ export default function SwapWidget() {
       .then((b) => { if (!cancelled) setStxBalance(b); })
       .catch(() => { if (!cancelled) setStxBalance(null); });
     return () => { cancelled = true; };
-  }, [fromToken.id, stxAddress, fromBalance, balanceNonce]);
+  }, [fromToken.id, stxAddress, balanceNonce]);
 
   function setPercent(pct: number) {
     if (fromBalance === null || fromBalance <= 0) return;
@@ -820,7 +824,7 @@ export default function SwapWidget() {
         </div>
       )}
 
-      {/* Low STX for fee — non-STX source only; warn, do not block */}
+      {/* Low STX for fee — non-STX source only; only after an amount is typed; warn, do not block */}
       {isConnected &&
         stxBalance !== null &&
         !!amountIn &&

@@ -23,6 +23,7 @@ import {
   type TokenWithValue,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
+import { SWAP_PRICE_GECKO_IDS } from "@/lib/direct-swap";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
 const SLOW_REFRESH = 120_000; // 2 min — market data
@@ -54,6 +55,19 @@ interface NewsItem {
 
 async function fetchNews(): Promise<NewsItem[]> {
   const res = await fetch("/api/news");
+  return res.json();
+}
+
+// ─── Swap token USD prices ────────────────────────────────────────────────────
+// CoinGecko simple/price shape: { [geckoId]: { usd: number } }. Only the gecko
+// ids the swap tokens need (see SWAP_PRICE_GECKO_IDS) are requested.
+async function fetchSwapPrices(): Promise<Record<string, { usd: number }>> {
+  const ids = SWAP_PRICE_GECKO_IDS.join(",");
+  const res = await fetch(
+    `/api/coingecko/simple/price?ids=${ids}&vs_currencies=usd`,
+    { signal: AbortSignal.timeout(10_000) }
+  );
+  if (!res.ok) throw new Error("Swap price fetch failed");
   return res.json();
 }
 
@@ -131,6 +145,14 @@ export function useTransactions(address: string | undefined, limit = 8) {
   return useSWR(
     address ? ["transactions", address, limit] : null,
     () => getTransactions(address!, limit),
+    { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
+  );
+}
+
+export function useSwapPrices() {
+  return useSWR<Record<string, { usd: number }>>(
+    "swap-prices",
+    fetchSwapPrices,
     { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
   );
 }

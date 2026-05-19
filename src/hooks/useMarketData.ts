@@ -23,7 +23,7 @@ import {
   type TokenWithValue,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
-import { SWAP_PRICE_GECKO_IDS } from "@/lib/direct-swap";
+import { SWAP_PRICE_GECKO_IDS, SWAP_TOKEN_USD } from "@/lib/direct-swap";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
 const SLOW_REFRESH = 120_000; // 2 min — market data
@@ -202,6 +202,52 @@ export function useUserDCAPlans(address: string | undefined) {
     address ? ["dca-plans", address] : null,
     () => getUserPlans(address!),
     { refreshInterval: 120_000, dedupingInterval: 60_000 }
+  );
+}
+
+// ─── Swap pair price history (for sparkline chart) ───────────────────────────
+// Fetches 7-day daily USD price arrays for two tokens via the CoinGecko proxy.
+// Stablecoins (geckoId = null) get a synthetic flat series so pairRateSeries
+// doesn't need special-casing.
+
+async function fetchGeckoPrices(geckoId: string): Promise<number[]> {
+  const res = await fetch(
+    `/api/coingecko/coins/${geckoId}/market_chart?vs_currency=usd&days=7&interval=daily`,
+    { signal: AbortSignal.timeout(10_000) }
+  );
+  if (!res.ok) throw new Error(`CoinGecko fetch failed for ${geckoId}`);
+  const json: { prices: [number, number][] } = await res.json();
+  return json.prices.map(([, price]) => price);
+}
+
+async function fetchPairUsdSeries(
+  fromId: string,
+  toId: string
+): Promise<[number[], number[]]> {
+  const fromSrc = SWAP_TOKEN_USD[fromId];
+  const toSrc = SWAP_TOKEN_USD[toId];
+  if (!fromSrc || !toSrc) return [[], []];
+
+  const [fromArr, toArr] = await Promise.all([
+    fromSrc.geckoId ? fetchGeckoPrices(fromSrc.geckoId) : Promise.resolve(null),
+    toSrc.geckoId ? fetchGeckoPrices(toSrc.geckoId) : Promise.resolve(null),
+  ]);
+
+  // Build flat stablecoin series aligned to the real fetch length (or 8 points)
+  const refLen = (fromArr ?? toArr)?.length ?? 8;
+  const fromUsd = fromArr ?? Array(refLen).fill(fromSrc.fixedUsd ?? 1);
+  const toUsd = toArr ?? Array(refLen).fill(toSrc.fixedUsd ?? 1);
+  return [fromUsd, toUsd];
+}
+
+export function usePairPriceHistory(
+  fromId: string | null,
+  toId: string | null
+) {
+  return useSWR<[number[], number[]]>(
+    fromId && toId ? ["pair-price-history", fromId, toId] : null,
+    () => fetchPairUsdSeries(fromId!, toId!),
+    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
   );
 }
 

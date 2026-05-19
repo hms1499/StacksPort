@@ -42,6 +42,7 @@ import {
   type QuoteResult,
 } from "@/lib/direct-swap";
 import { useSwapPrices } from "@/hooks/useMarketData";
+import SwapPairChart from "./SwapPairChart";
 
 // ─── Simple Token Selector ────────────────────────────────────────────────────
 
@@ -744,6 +745,13 @@ export default function SwapWidget() {
           )}
         </div>
       </div>
+
+      {/* Pair sparkline — only when a destination is selected */}
+      {toToken && (
+        <div className="rounded-xl px-4 py-2" style={{ backgroundColor: "var(--bg-elevated)" }}>
+          <SwapPairChart fromToken={fromToken} toToken={toToken} />
+        </div>
+      )}
 
       {/* Route & details */}
       {quote && (

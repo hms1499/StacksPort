@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Info,
   ArrowRight,
+  RefreshCw,
 } from "lucide-react";
 import { openContractCall } from "@stacks/connect";
 import { useWalletStore } from "@/store/walletStore";
@@ -36,6 +37,7 @@ import {
   lacksStxForFee,
   resolveUnitUsd,
   formatUsd,
+  quoteSecondsLeft,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -317,6 +319,8 @@ export default function SwapWidget() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [txId, setTxId] = useState<string | null>(null);
+  // Ticks every second while a quote is live, to drive the refresh countdown.
+  const [nowTick, setNowTick] = useState(() => Date.now());
 
   const quoteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Monotonic id: only the newest in-flight quote may write state, so a slow
@@ -427,6 +431,23 @@ export default function SwapWidget() {
     const t = setTimeout(() => fetchQuote(fromToken, toToken, amt), delay);
     return () => clearTimeout(t);
   }, [status, quote, fromToken, toToken, amountIn, fetchQuote]);
+
+  // 1s tick for the countdown — only while a quote is actually live.
+  useEffect(() => {
+    if (status !== "ready" || !quote) return;
+    const id = setInterval(() => setNowTick(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [status, quote]);
+
+  const secondsLeft = quote ? quoteSecondsLeft(quote.quotedAt, nowTick) : 0;
+
+  // Manual "refresh price now" — re-quotes immediately with the current amount.
+  function refreshQuote() {
+    if (!toToken) return;
+    const amt = parseFloat(amountIn);
+    if (isNaN(amt) || amt <= 0) return;
+    fetchQuote(fromToken, toToken, amt);
+  }
 
   // Swap from↔to — only if reverse route exists
   function flipTokens() {
@@ -727,6 +748,27 @@ export default function SwapWidget() {
       {/* Route & details */}
       {quote && (
         <div className="rounded-xl px-4 py-3 space-y-2.5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+          <div className="flex items-center justify-between text-xs">
+            <span style={{ color: 'var(--text-muted)' }}>Quote</span>
+            <button
+              type="button"
+              onClick={refreshQuote}
+              disabled={status === "quoting"}
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)' }}
+              aria-label="Refresh price now"
+            >
+              <RefreshCw
+                size={11}
+                className={status === "quoting" ? "animate-spin" : ""}
+              />
+              {status === "quoting"
+                ? "Refreshing…"
+                : secondsLeft > 0
+                ? `Refresh · ${secondsLeft}s`
+                : "Refresh"}
+            </button>
+          </div>
           {quote.route.hops.length > 0 && (
             <div className="flex items-start gap-2">
               <span className="text-xs mt-0.5 shrink-0" style={{ color: 'var(--text-muted)' }}>Route</span>

@@ -23,6 +23,9 @@ import {
   exceedsBalance,
   lacksStxForFee,
   MIN_STX_FOR_FEE,
+  resolveUnitUsd,
+  formatUsd,
+  SWAP_PRICE_GECKO_IDS,
 } from "./direct-swap";
 
 // ─── Characterization: lock down buildSwapParams wiring before refactor ───────
@@ -349,5 +352,53 @@ describe("lacksStxForFee", () => {
 
   it("non-STX source, STX just below threshold → true", () => {
     expect(lacksStxForFee("sbtc", MIN_STX_FOR_FEE - 0.001)).toBe(true);
+  });
+});
+
+describe("resolveUnitUsd", () => {
+  const prices = { blockstack: { usd: 2.5 }, bitcoin: { usd: 60000 } };
+
+  it("gecko-priced token returns the live usd price", () => {
+    expect(resolveUnitUsd("stx", prices)).toBe(2.5);
+    expect(resolveUnitUsd("sbtc", prices)).toBe(60000);
+  });
+
+  it("fixed stablecoin returns its peg without any prices", () => {
+    expect(resolveUnitUsd("usdcx", undefined)).toBe(1);
+  });
+
+  it("unmapped token → null", () => {
+    expect(resolveUnitUsd("doge", prices)).toBeNull();
+  });
+
+  it("missing or non-positive price → null (UI hides rather than $0)", () => {
+    expect(resolveUnitUsd("stx", {})).toBeNull();
+    expect(resolveUnitUsd("sbtc", { bitcoin: { usd: 0 } })).toBeNull();
+  });
+});
+
+describe("formatUsd", () => {
+  it("null / non-finite → null", () => {
+    expect(formatUsd(null)).toBeNull();
+    expect(formatUsd(NaN)).toBeNull();
+    expect(formatUsd(Infinity)).toBeNull();
+  });
+
+  it("zero → $0.00", () => {
+    expect(formatUsd(0)).toBe("$0.00");
+  });
+
+  it("non-zero under a cent clamps to < $0.01", () => {
+    expect(formatUsd(0.0001)).toBe("< $0.01");
+  });
+
+  it("normal value with thousands separator and 2dp", () => {
+    expect(formatUsd(1234.5)).toBe("$1,234.50");
+  });
+});
+
+describe("SWAP_PRICE_GECKO_IDS", () => {
+  it("is the deduped non-null gecko id set for swap tokens", () => {
+    expect(SWAP_PRICE_GECKO_IDS).toEqual(["blockstack", "bitcoin"]);
   });
 });

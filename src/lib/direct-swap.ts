@@ -411,6 +411,64 @@ export function lacksStxForFee(
   return stxBalanceHuman < MIN_STX_FOR_FEE;
 }
 
+// ─── USD valuation ───────────────────────────────────────────────────────────
+// Maps each swap token to its USD price source. geckoId = CoinGecko id used by
+// the existing /api/coingecko proxy; fixedUsd = stablecoin pegged to $1 (no
+// fetch). IDs reuse the verified mapping already in lib/stacks.ts — not guessed.
+
+export const SWAP_TOKEN_USD: Record<
+  string,
+  { geckoId: string | null; fixedUsd?: number }
+> = {
+  stx: { geckoId: "blockstack" },
+  sbtc: { geckoId: "bitcoin" },
+  usdcx: { geckoId: null, fixedUsd: 1 },
+};
+
+/** Deduped, non-null CoinGecko ids that must be fetched to price swap tokens. */
+export const SWAP_PRICE_GECKO_IDS: string[] = [
+  ...new Set(
+    Object.values(SWAP_TOKEN_USD)
+      .map((s) => s.geckoId)
+      .filter((id): id is string => id !== null)
+  ),
+];
+
+/**
+ * USD price of ONE unit of a swap token. `prices` is the CoinGecko
+ * simple/price shape (`{ [geckoId]: { usd: number } }`). Returns `null` when
+ * the price is unknown (token unmapped, id absent, not yet loaded, or ≤ 0) so
+ * the UI can hide the figure instead of showing a misleading $0.
+ */
+export function resolveUnitUsd(
+  tokenId: string,
+  prices: Record<string, { usd: number }> | undefined
+): number | null {
+  const src = SWAP_TOKEN_USD[tokenId];
+  if (!src) return null;
+  if (src.geckoId === null) return src.fixedUsd ?? null;
+  const usd = prices?.[src.geckoId]?.usd;
+  return typeof usd === "number" && usd > 0 ? usd : null;
+}
+
+/**
+ * Format a USD figure for display beside a swap amount. `null`/non-finite →
+ * `null` (caller hides the line). A non-zero amount under a cent clamps to
+ * "< $0.01" so it never renders as "$0.00".
+ */
+export function formatUsd(value: number | null): string | null {
+  if (value === null || !isFinite(value)) return null;
+  if (value === 0) return "$0.00";
+  if (value > 0 && value < 0.01) return "< $0.01";
+  return (
+    "$" +
+    value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
+}
+
 // ─── Clarity Helpers ─────────────────────────────────────────────────────────
 
 function cvToHex(cv: ClarityValue): string {

@@ -377,6 +377,40 @@ export function amountForPercent(
   return parseFloat(val.toFixed(places)).toString();
 }
 
+/**
+ * True when `amountIn` (a human decimal string) strictly exceeds
+ * `balanceHuman`, compared in raw integer units — consistent with how every
+ * other money comparison in this module works (via {@link toRawAmount}) and
+ * immune to any decimal-precision edge. Caller must only pass a known balance.
+ */
+export function exceedsBalance(
+  amountIn: string,
+  balanceHuman: number,
+  decimals: number
+): boolean {
+  return toRawAmount(amountIn, decimals) > toRawAmount(balanceHuman, decimals);
+}
+
+/**
+ * Approximate STX kept free to pay a single swap contract-call fee. Below
+ * this, a non-STX swap will likely revert for lack of fee. Heuristic, not a
+ * fee estimate — intentionally avoids an extra RPC.
+ */
+export const MIN_STX_FOR_FEE = 0.05;
+
+/**
+ * True when the user spends a non-STX token and their STX balance is too low
+ * to likely cover the transaction fee. Always false when the source IS STX —
+ * the MAX gas-reserve logic (see {@link STX_GAS_RESERVE}) handles that path.
+ */
+export function lacksStxForFee(
+  fromId: string,
+  stxBalanceHuman: number
+): boolean {
+  if (fromId === "stx") return false;
+  return stxBalanceHuman < MIN_STX_FOR_FEE;
+}
+
 // ─── Clarity Helpers ─────────────────────────────────────────────────────────
 
 function cvToHex(cv: ClarityValue): string {

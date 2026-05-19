@@ -20,6 +20,9 @@ import {
   sanitizeAmountInput,
   slippageWarning,
   quoteRate,
+  exceedsBalance,
+  lacksStxForFee,
+  MIN_STX_FOR_FEE,
 } from "./direct-swap";
 
 // ─── Characterization: lock down buildSwapParams wiring before refactor ───────
@@ -305,5 +308,46 @@ describe("buildSwapParams post-conditions", () => {
       amount: "1000000", // 0.01 sBTC, 8 decimals
       asset: SBTC_ASSET,
     });
+  });
+});
+
+describe("exceedsBalance", () => {
+  it("equal to balance (8-dec sBTC edge) → false", () => {
+    expect(exceedsBalance("0.00000334", 0.00000334, 8)).toBe(false);
+  });
+
+  it("one sat over balance → true", () => {
+    expect(exceedsBalance("0.00000335", 0.00000334, 8)).toBe(true);
+  });
+
+  it("empty amount → false", () => {
+    expect(exceedsBalance("", 5, 6)).toBe(false);
+  });
+
+  it("NaN amount → false", () => {
+    expect(exceedsBalance("abc", 5, 6)).toBe(false);
+  });
+
+  it("sub-microunit difference at large balance is detected", () => {
+    expect(exceedsBalance("90071992.547410", 90071992.547409, 6)).toBe(true);
+    expect(exceedsBalance("90071992.547409", 90071992.547409, 6)).toBe(false);
+  });
+});
+
+describe("lacksStxForFee", () => {
+  it("source token is STX → always false", () => {
+    expect(lacksStxForFee("stx", 0)).toBe(false);
+  });
+
+  it("non-STX source, zero STX → true", () => {
+    expect(lacksStxForFee("sbtc", 0)).toBe(true);
+  });
+
+  it("non-STX source, STX at threshold → false", () => {
+    expect(lacksStxForFee("sbtc", MIN_STX_FOR_FEE)).toBe(false);
+  });
+
+  it("non-STX source, STX just below threshold → true", () => {
+    expect(lacksStxForFee("sbtc", MIN_STX_FOR_FEE - 0.001)).toBe(true);
   });
 });

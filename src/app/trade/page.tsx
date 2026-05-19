@@ -53,10 +53,10 @@ export default function TradePage() {
               <div className="glass-card rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Zap size={15} style={{ color: 'var(--accent)' }} />
-                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Best Routes</h3>
+                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>On-chain Routing</h3>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  Aggregates multiple DEX pools to find the optimal swap path with lowest slippage.
+                  Routes swaps through Bitflow Pools using live on-chain quotes, with slippage protection enforced by the contract.
                 </p>
               </div>
               <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -77,7 +77,7 @@ export default function TradePage() {
             <ul className="space-y-2.5">
               {[
                 "Set slippage to 0.5% for most swaps. Increase to 1% for low-liquidity tokens.",
-                "Multi-hop routes (e.g. STX → USDA → ALEX) often give better rates than direct pairs.",
+                "sBTC → USDCx routes automatically multi-hop through STX and aeUSDC — the path is fixed, you don't pick it.",
                 "Check your HealthScore on the Assets tab to see which tokens to rebalance.",
                 "Large trades may have higher price impact — consider splitting into smaller swaps.",
               ].map((tip, i) => (

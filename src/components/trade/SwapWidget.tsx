@@ -32,6 +32,7 @@ import {
   sanitizeAmountInput,
   slippageWarning,
   quoteRate,
+  exceedsBalance,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -600,7 +601,7 @@ export default function SwapWidget() {
               }
               className="w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 transition-colors"
               style={
-                isConnected && fromBalance !== null && parseFloat(amountIn) > fromBalance
+                isConnected && fromBalance !== null && exceedsBalance(amountIn, fromBalance, fromToken.decimals)
                   ? { borderColor: 'rgb(252,165,165)', backgroundColor: 'var(--bg-card)', color: 'rgb(239,68,68)' }
                   : { borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }
               }
@@ -609,7 +610,7 @@ export default function SwapWidget() {
           {isConnected &&
             fromBalance !== null &&
             amountIn &&
-            parseFloat(amountIn) > fromBalance && (
+            exceedsBalance(amountIn, fromBalance, fromToken.decimals) && (
               <p className="flex items-center gap-1.5 text-xs text-red-500 mt-1.5">
                 <AlertCircle size={12} />
                 Insufficient balance. Max:{" "}
@@ -814,7 +815,7 @@ export default function SwapWidget() {
           !quote ||
           !toToken ||
           belowMin ||
-          (fromBalance !== null && parseFloat(amountIn) > fromBalance)
+          (fromBalance !== null && exceedsBalance(amountIn, fromBalance, fromToken.decimals))
         }
         className="w-full py-3.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 12px var(--accent-glow)' }}

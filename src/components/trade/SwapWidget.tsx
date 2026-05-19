@@ -33,6 +33,7 @@ import {
   slippageWarning,
   quoteRate,
   exceedsBalance,
+  lacksStxForFee,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
@@ -253,6 +254,7 @@ async function fetchTokenBalance(address: string, token: SwapToken): Promise<num
 type Status = "idle" | "quoting" | "ready" | "swapping" | "success" | "error";
 
 const fromTokens = getSwappableFromTokens();
+const STX_TOKEN = fromTokens.find((t) => t.id === "stx")!;
 
 function resolveInitialPair(
   fromParam: string | null,
@@ -303,6 +305,7 @@ export default function SwapWidget() {
 
   const [fromBalance, setFromBalance] = useState<number | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const [stxBalance, setStxBalance] = useState<number | null>(null);
   // Bumped after a successful swap to force a balance re-fetch.
   const [balanceNonce, setBalanceNonce] = useState(0);
 
@@ -334,6 +337,25 @@ export default function SwapWidget() {
       .finally(() => { if (!cancelled) setBalanceLoading(false); });
     return () => { cancelled = true; };
   }, [fromToken, stxAddress, balanceNonce]);
+
+  // STX balance for the fee-coverage warning. When the source IS STX we reuse
+  // the already-fetched fromBalance instead of a second Hiro call.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (!stxAddress) {
+      setStxBalance(null);
+      return;
+    }
+    if (fromToken.id === "stx") {
+      setStxBalance(fromBalance);
+      return;
+    }
+    let cancelled = false;
+    fetchTokenBalance(stxAddress, STX_TOKEN)
+      .then((b) => { if (!cancelled) setStxBalance(b); })
+      .catch(() => { if (!cancelled) setStxBalance(null); });
+    return () => { cancelled = true; };
+  }, [fromToken.id, stxAddress, fromBalance, balanceNonce]);
 
   function setPercent(pct: number) {
     if (fromBalance === null || fromBalance <= 0) return;
@@ -797,6 +819,23 @@ export default function SwapWidget() {
           </span>
         </div>
       )}
+
+      {/* Low STX for fee — non-STX source only; warn, do not block */}
+      {isConnected &&
+        stxBalance !== null &&
+        !!amountIn &&
+        lacksStxForFee(fromToken.id, stxBalance) && (
+          <div
+            className="flex items-start gap-2 text-xs rounded-xl px-3 py-2.5"
+            style={{ backgroundColor: "rgba(234,179,8,0.10)", color: "rgb(234,179,8)" }}
+          >
+            <AlertCircle size={13} className="mt-0.5 shrink-0" />
+            <span>
+              Low STX balance — you may not have enough STX to cover the
+              transaction fee.
+            </span>
+          </div>
+        )}
 
       {/* Wallet not connected */}
       {!isConnected && (

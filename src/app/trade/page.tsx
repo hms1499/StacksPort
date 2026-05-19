@@ -5,7 +5,8 @@ import MigrationWidget from "@/components/trade/MigrationWidget";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
-import { ArrowLeftRight, Zap, Shield, RefreshCw } from "lucide-react";
+import RecentSwaps from "@/components/trade/RecentSwaps";
+import { ArrowLeftRight, Zap, Shield, RefreshCw, History } from "lucide-react";
 
 export default function TradePage() {
   return (
@@ -28,6 +29,15 @@ export default function TradePage() {
             <Suspense fallback={null}>
               <SwapWidget />
             </Suspense>
+          </MotionCard>
+
+          {/* Recent Swaps */}
+          <MotionCard className="glass-card rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <History size={15} style={{ color: 'var(--accent)' }} />
+              <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Recent Swaps</h3>
+            </div>
+            <RecentSwaps />
           </MotionCard>
 
           {/* aeUSDC ↔ USDCx Migration Widget */}

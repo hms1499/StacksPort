@@ -34,9 +34,12 @@ import {
   quoteRate,
   exceedsBalance,
   lacksStxForFee,
+  resolveUnitUsd,
+  formatUsd,
   type SwapToken,
   type QuoteResult,
 } from "@/lib/direct-swap";
+import { useSwapPrices } from "@/hooks/useMarketData";
 
 // ─── Simple Token Selector ────────────────────────────────────────────────────
 
@@ -290,6 +293,7 @@ export default function SwapWidget() {
   const searchParams = useSearchParams();
   const { stxAddress, isConnected, network } = useWalletStore();
   const { addNotification } = useNotificationStore();
+  const { data: swapPrices } = useSwapPrices();
 
   const initialPair = (() => {
     return resolveInitialPair(
@@ -529,6 +533,20 @@ export default function SwapWidget() {
   // Contract rejects sub-minimum swaps on-chain — block before signing.
   const belowMin = !!amountIn && isBelowMinSwap(fromToken.id, amountIn);
 
+  // ≈ USD value of the input / output. null when the price is unknown or the
+  // amount isn't a positive number, so the line is hidden rather than "$0.00".
+  const amountInNum = parseFloat(amountIn);
+  const fromUnitUsd = resolveUnitUsd(fromToken.id, swapPrices);
+  const fromUsd =
+    fromUnitUsd !== null && amountInNum > 0
+      ? formatUsd(amountInNum * fromUnitUsd)
+      : null;
+  const toUnitUsd = toToken ? resolveUnitUsd(toToken.id, swapPrices) : null;
+  const toUsd =
+    quote && toUnitUsd !== null
+      ? formatUsd(quote.amountOutHuman * toUnitUsd)
+      : null;
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   if (status === "success" && txId) {
@@ -633,6 +651,11 @@ export default function SwapWidget() {
               }
             />
           </div>
+          {fromUsd && (
+            <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
+              ≈ {fromUsd}
+            </p>
+          )}
           {isConnected &&
             fromBalance !== null &&
             amountIn &&
@@ -693,6 +716,11 @@ export default function SwapWidget() {
               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>—</span>
             )}
           </div>
+          {toUsd && (
+            <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
+              ≈ {toUsd}
+            </p>
+          )}
         </div>
       </div>
 

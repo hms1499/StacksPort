@@ -359,6 +359,20 @@ export function isQuoteStale(quotedAt: number, now: number = Date.now()): boolea
 }
 
 /**
+ * Whole seconds remaining before a quote taken at `quotedAt` auto-refreshes,
+ * for the countdown UI. Clamped to `[0, QUOTE_TTL_MS/1000]` so clock skew
+ * (now < quotedAt) can't show more than the full window, and an expired quote
+ * reads 0 rather than negative.
+ */
+export function quoteSecondsLeft(
+  quotedAt: number,
+  now: number = Date.now()
+): number {
+  const secs = Math.ceil((QUOTE_TTL_MS - (now - quotedAt)) / 1000);
+  return Math.min(QUOTE_TTL_MS / 1000, Math.max(0, secs));
+}
+
+/**
  * Amount (human string) to put in the input when a balance-percent shortcut
  * is tapped. For a native-STX MAX it subtracts the gas reserve; everything
  * else is a straight `balance * pct`. Result is capped at 6 decimals.

@@ -26,6 +26,7 @@ import {
   resolveUnitUsd,
   formatUsd,
   SWAP_PRICE_GECKO_IDS,
+  quoteSecondsLeft,
 } from "./direct-swap";
 
 // ─── Characterization: lock down buildSwapParams wiring before refactor ───────
@@ -400,5 +401,27 @@ describe("formatUsd", () => {
 describe("SWAP_PRICE_GECKO_IDS", () => {
   it("is the deduped non-null gecko id set for swap tokens", () => {
     expect(SWAP_PRICE_GECKO_IDS).toEqual(["blockstack", "bitcoin"]);
+  });
+});
+
+describe("quoteSecondsLeft", () => {
+  const t0 = 1_000_000;
+
+  it("a fresh quote shows the full window", () => {
+    expect(quoteSecondsLeft(t0, t0)).toBe(30);
+  });
+
+  it("counts down by whole seconds", () => {
+    expect(quoteSecondsLeft(t0, t0 + 1000)).toBe(29);
+    expect(quoteSecondsLeft(t0, t0 + 29_500)).toBe(1);
+  });
+
+  it("reads 0 exactly at and past the TTL (never negative)", () => {
+    expect(quoteSecondsLeft(t0, t0 + 30_000)).toBe(0);
+    expect(quoteSecondsLeft(t0, t0 + 45_000)).toBe(0);
+  });
+
+  it("clock skew (now < quotedAt) clamps to the full window", () => {
+    expect(quoteSecondsLeft(t0, t0 - 5000)).toBe(30);
   });
 });

@@ -7,6 +7,7 @@ import { openSTXTransfer, openContractCall } from "@stacks/connect";
 import { uintCV, standardPrincipalCV, noneCV, PostConditionMode } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import { trackTx } from "@/lib/tx-tracker";
 
 export interface SendTokenInfo {
   symbol: string;
@@ -74,7 +75,8 @@ export default function SendModal({ token, onClose }: Props) {
           recipient, amount: rawAmount, memo: "", network,
           onFinish: ({ txId: id }) => {
             setTxId(id); setStatus("success");
-            addNotification(`Transfer sent: ${amount} ${token.symbol}`, 'success', 'send', 5000, { amount, tokenSymbol: token.symbol });
+            addNotification(`Transfer submitted: ${amount} ${token.symbol}`, 'info', 'send', 5000, { txId: id, amount, tokenSymbol: token.symbol });
+            trackTx({ txId: id, label: `Transfer ${amount} ${token.symbol}`, category: 'send', context: { txId: id, amount, tokenSymbol: token.symbol }, addNotification });
           },
           onCancel: () => setStatus("idle"),
         });
@@ -88,7 +90,8 @@ export default function SendModal({ token, onClose }: Props) {
           postConditionMode: PostConditionMode.Allow, network,
           onFinish: ({ txId: id }) => {
             setTxId(id); setStatus("success");
-            addNotification(`Transfer sent: ${amount} ${token.symbol}`, 'success', 'send', 5000, { amount, tokenSymbol: token.symbol });
+            addNotification(`Transfer submitted: ${amount} ${token.symbol}`, 'info', 'send', 5000, { txId: id, amount, tokenSymbol: token.symbol });
+            trackTx({ txId: id, label: `Transfer ${amount} ${token.symbol}`, category: 'send', context: { txId: id, amount, tokenSymbol: token.symbol }, addNotification });
           },
           onCancel: () => setStatus("idle"),
         });

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { type DCAPlan, microToSTX, cancelPlan } from "@/lib/dca";
 import { useNotificationStore } from "@/store/notificationStore";
+import { trackTx } from "@/lib/tx-tracker";
 import PlanCardRow from "./PlanCardRow";
 import PlanCardExpanded from "./PlanCardExpanded";
 
@@ -34,8 +35,15 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
     cancelPlan(plan.id,
       ({ txId }) => {
         setCancelLoading(false);
-        addNotification("Plan cancelled & refunded", "success", "dca", 5000,
+        addNotification("Cancel submitted — refund pending confirmation", "info", "dca", 5000,
           { planId: String(plan.id), action: "cancelled", amount: balSTX.toFixed(2), txId });
+        trackTx({
+          txId,
+          label: `Plan #${plan.id} cancel & refund`,
+          category: "dca",
+          context: { planId: String(plan.id), txId, amount: balSTX.toFixed(2) },
+          addNotification,
+        });
         onRefresh();
       },
       () => {

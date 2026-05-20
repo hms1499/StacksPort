@@ -43,6 +43,7 @@ import {
 } from "@/lib/direct-swap";
 import { useSwapPrices } from "@/hooks/useMarketData";
 import SwapPairChart from "./SwapPairChart";
+import { trackTx } from "@/lib/tx-tracker";
 
 // ─── Simple Token Selector ────────────────────────────────────────────────────
 
@@ -529,12 +530,20 @@ export default function SwapWidget() {
           setStatus("success");
           setBalanceNonce((n) => n + 1); // refetch balance post-swap
           addNotification(
-            `Swap executed: ${fromToken.symbol} → ${toToken.symbol}`,
-            "success",
+            `Swap submitted: ${fromToken.symbol} → ${toToken.symbol}`,
+            "info",
             "swap",
             5000,
             { txId: id, amount: amountIn, tokenSymbol: toToken.symbol }
           );
+          // Poll cho đến khi tx confirm/fail trên chain
+          trackTx({
+            txId: id,
+            label: `Swap ${fromToken.symbol} → ${toToken.symbol}`,
+            category: "swap",
+            context: { txId: id, amount: amountIn, tokenSymbol: toToken.symbol },
+            addNotification,
+          });
         },
         onCancel: () => setStatus("ready"),
       });

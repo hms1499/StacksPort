@@ -6,6 +6,7 @@ import { createPlan, INTERVALS, stxToMicro, microToSTX, TARGET_TOKENS, getSTXBal
 import { quoteSbtcForUstx, netUstxAfterFee } from "@/lib/dca-quote";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import { trackTx } from "@/lib/tx-tracker";
 import LivePreviewCard from "./LivePreviewCard";
 
 const SBTC = TARGET_TOKENS[0].value;
@@ -84,10 +85,17 @@ export default function CreatePlanForm({ onCreated }: Props) {
         setTxId(txId);
         setLoading(false);
         addNotification(
-          `Plan created! Tx: ${txId.slice(0, 10)}...`,
-          "success", "dca", 5000,
+          `DCA plan submitted — waiting for confirmation`,
+          "info", "dca", 5000,
           { txId, action: "created", amount: String(amt), tokenSymbol: "sBTC" },
         );
+        trackTx({
+          txId,
+          label: "DCA plan created",
+          category: "dca",
+          context: { txId, action: "created", amount: String(amt), tokenSymbol: "sBTC" },
+          addNotification,
+        });
         onCreated();
       },
       () => {

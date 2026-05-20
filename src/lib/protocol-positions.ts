@@ -149,5 +149,3 @@ async function fetchLisaPosition(
   };
 }
 
-// Re-export for consumers that wire protocol dispatch
-export { fetchLisaPosition };

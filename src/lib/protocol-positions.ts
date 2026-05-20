@@ -149,3 +149,54 @@ async function fetchLisaPosition(
   };
 }
 
+// ─── Arkadiko ─────────────────────────────────────────────────────────────────
+// get-vault-entries(user)  → { ids: uint128[] }  (zeros = empty slots)
+// get-vault-by-id(id)      → { collateral, debt, "is-liquidated", ... }
+// collateral: micro-STX   debt: micro-USDA (pegged $1)
+
+const ARKADIKO_ADDR = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
+const ARKADIKO_NAME = "arkadiko-freddie-v1-1";
+
+async function fetchArkadikoPosition(
+  address: string,
+  stxPrice: number
+): Promise<ProtocolPosition | null> {
+  const entriesCv = await callReadOnly(ARKADIKO_ADDR, ARKADIKO_NAME, "get-vault-entries", [
+    cvHex(standardPrincipalCV(address)),
+  ]);
+  const { ids } = parseCV(entriesCv) as { ids: number[] };
+  const vaultIds = ids.filter((id) => id > 0);
+  if (vaultIds.length === 0) return null;
+
+  let totalCollateralStx = 0;
+  let totalDebtUsda = 0;
+
+  await Promise.all(
+    vaultIds.map(async (id) => {
+      const vaultCv = await callReadOnly(ARKADIKO_ADDR, ARKADIKO_NAME, "get-vault-by-id", [
+        cvHex(uintCV(id)),
+      ]);
+      const vault = parseCV(vaultCv) as {
+        collateral: number;
+        debt: number;
+        "is-liquidated": boolean;
+      };
+      if (vault["is-liquidated"]) return;
+      totalCollateralStx += vault.collateral / 1_000_000;
+      totalDebtUsda += vault.debt / 1_000_000;
+    })
+  );
+
+  if (totalCollateralStx === 0) return null;
+
+  const collateralUsd = totalCollateralStx * stxPrice;
+  const debtUsd = totalDebtUsda; // USDA is pegged $1
+  return {
+    lines: [
+      { label: "Collateral", tokenAmount: `${totalCollateralStx.toFixed(2)} STX`, usdValue: collateralUsd },
+      { label: "Debt", tokenAmount: `${totalDebtUsda.toFixed(2)} USDA`, usdValue: debtUsd },
+    ],
+    totalUsd: collateralUsd - debtUsd,
+  };
+}
+

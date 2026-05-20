@@ -9,6 +9,7 @@ import type {
   NotificationCategory,
   NotificationContext,
 } from '@/types/notifications';
+import { DEFAULT_PREFERENCES } from '@/types/notifications';
 
 // Helper to generate unique IDs
 const generateId = () => `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -39,6 +40,7 @@ export const useNotificationStore = create<NotificationStoreState>()(
   persist(
     (set, get) => ({
       notifications: [],
+      preferences: DEFAULT_PREFERENCES,
       filters: {
         types: [],
         categories: [],
@@ -54,6 +56,10 @@ export const useNotificationStore = create<NotificationStoreState>()(
         duration?: number,
         context?: NotificationContext
       ): string => {
+        // Error luôn hiện — user cần biết khi có lỗi bất kể preferences.
+        // Các type khác bị chặn nếu user tắt category đó trong preferences.
+        if (type !== 'error' && !get().preferences[category]) return '';
+
         const id = generateId();
         const timestamp = Date.now();
 
@@ -142,6 +148,16 @@ export const useNotificationStore = create<NotificationStoreState>()(
         }));
       },
 
+      setPreference: (category: NotificationCategory, enabled: boolean): void => {
+        set((state) => ({
+          preferences: { ...state.preferences, [category]: enabled },
+        }));
+      },
+
+      resetPreferences: (): void => {
+        set({ preferences: DEFAULT_PREFERENCES });
+      },
+
       clearFilters: (): void => {
         set((state) => ({
           filters: {
@@ -163,8 +179,11 @@ export const useNotificationStore = create<NotificationStoreState>()(
     }),
     {
       name: 'notifications-storage',
-      // Chỉ persist notifications, không persist filters (ephemeral UI state)
-      partialize: (state) => ({ notifications: state.notifications }),
+      // Persist notifications + preferences. Filters là ephemeral UI state — không persist.
+      partialize: (state) => ({
+        notifications: state.notifications,
+        preferences: state.preferences,
+      }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 

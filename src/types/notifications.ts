@@ -21,6 +21,19 @@ export interface Notification {
   isRead?: boolean; // false/undefined = unread (counts toward badge)
 }
 
+// Preferences: user chọn category nào sẽ trigger Toast + badge.
+// Error luôn được hiện bất kể settings — user cần biết khi có lỗi.
+export type NotificationPreferences = Record<NotificationCategory, boolean>;
+
+export const DEFAULT_PREFERENCES: NotificationPreferences = {
+  dca:      true,
+  'dca-out': true,
+  wallet:   true,
+  swap:     true,
+  send:     true,
+  price:    true,
+};
+
 export interface FilterState {
   types: NotificationType[];
   categories: NotificationCategory[];
@@ -32,6 +45,7 @@ export interface FilterState {
 export interface NotificationStoreState {
   notifications: Notification[];
   filters: FilterState;
+  preferences: NotificationPreferences;
 
   // Actions
   addNotification: (
@@ -55,6 +69,9 @@ export interface NotificationStoreState {
   setSearchQuery: (query: string) => void;
   setSortBy: (sort: 'newest' | 'oldest') => void;
   clearFilters: () => void;
+
+  setPreference: (category: NotificationCategory, enabled: boolean) => void;
+  resetPreferences: () => void;
 
   // Computed getters đã được chuyển thành Zustand selectors ở component level.
   // Xem notificationStore.ts để biết lý do.

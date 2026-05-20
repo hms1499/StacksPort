@@ -14,6 +14,7 @@ import {
   getConnectedApps,
   getTokensWithValues,
   getPnLData,
+  fetchContractInfo,
   type PortfolioValue,
   type TrendingToken,
   type STXMarketStats,
@@ -268,5 +269,15 @@ export function useProtocolPositions(
     address && protocols.length > 0 ? ["protocol-positions", address] : null,
     () => fetchAllPositions(address!, protocols),
     { refreshInterval: 120_000, dedupingInterval: 60_000 }
+  );
+}
+
+// ─── Contract info (source code verification status) ─────────────────────────
+
+export function useContractInfo(contractId: string | undefined) {
+  return useSWR<{ sourceVerified: boolean }>(
+    contractId ? ["contract-info", contractId] : null,
+    () => fetchContractInfo(contractId!),
+    { dedupingInterval: 300_000 }
   );
 }

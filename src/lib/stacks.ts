@@ -488,6 +488,20 @@ export async function getConnectedApps(address: string): Promise<ConnectedAppsRe
   return { knownProtocols, unknownContracts };
 }
 
+// ─── Contract info ────────────────────────────────────────────────────────────
+
+export async function fetchContractInfo(
+  contractId: string
+): Promise<{ sourceVerified: boolean }> {
+  const res = await fetch(
+    `${HIRO_API_BASE}/extended/v1/contract/${contractId}`,
+    { signal: AbortSignal.timeout(8_000) }
+  );
+  if (!res.ok) throw new Error("Failed to fetch contract info");
+  const json = await res.json();
+  return { sourceVerified: json.source_code != null };
+}
+
 // ─── sBTC ─────────────────────────────────────────────────────────────────────
 
 const SBTC_CONTRACT_NAME = "sbtc-token";

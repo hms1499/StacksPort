@@ -139,7 +139,7 @@ export default function AppsPageContent() {
                   className="text-sm font-semibold mb-3"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Unknown Contracts
+                  Unverified Contracts
                 </h2>
                 <div className="space-y-2">
                   {(showAllContracts

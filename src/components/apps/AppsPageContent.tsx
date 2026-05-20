@@ -2,7 +2,8 @@
 
 import { Globe } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
-import { useConnectedApps } from "@/hooks/useMarketData";
+import { useConnectedApps, useProtocolPositions } from "@/hooks/useMarketData";
+import { SUPPORTED_PROTOCOLS } from "@/lib/protocol-positions";
 import Topbar from "@/components/layout/Topbar";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import ProtocolCard from "@/components/apps/ProtocolCard";
@@ -24,6 +25,10 @@ export default function AppsPageContent() {
   const { stxAddress, isConnected } = useWalletStore();
   const { data, isLoading, error, mutate } = useConnectedApps(
     stxAddress ?? undefined
+  );
+  const { data: positionsMap, isLoading: positionsLoading } = useProtocolPositions(
+    stxAddress ?? undefined,
+    data?.knownProtocols ?? []
   );
 
   const isEmpty =
@@ -87,7 +92,17 @@ export default function AppsPageContent() {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {data.knownProtocols.map((p) => (
-                    <ProtocolCard key={p.contractId} {...p} />
+                    <ProtocolCard
+                      key={p.contractId}
+                      {...p}
+                      position={
+                        SUPPORTED_PROTOCOLS.has(p.name)
+                          ? positionsLoading
+                            ? "loading"
+                            : (positionsMap?.get(p.name) ?? null)
+                          : undefined
+                      }
+                    />
                   ))}
                 </div>
               </section>

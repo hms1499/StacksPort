@@ -1,12 +1,9 @@
 import {
-  standardPrincipalCV,
-  uintCV,
   serializeCV,
   hexToCV,
   ClarityType,
   type ClarityValue,
 } from "@stacks/transactions";
-import { getSTXPrice, getFungibleTokens, type KnownProtocol } from "@/lib/stacks";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,6 +29,7 @@ export const SUPPORTED_PROTOCOLS = new Set([
 // ─── Clarity helpers ──────────────────────────────────────────────────────────
 
 const HIRO_API = "https://api.hiro.so";
+// Stacks genesis/burn address — valid on mainnet, accepted by Hiro for read-only calls
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78";
 
 function cvHex(cv: ClarityValue): string {
@@ -44,39 +42,24 @@ function cvHex(cv: ClarityValue): string {
 function parseCV(cv: ClarityValue): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = cv as unknown as any;
-  const t = raw.type;
-  if (t === "uint" || t === "int") return Number(raw.value);
-  if (t === "true") return true;
-  if (t === "false") return false;
-  if (t === "none") return null;
-  if (t === "some") return parseCV(raw.value);
-  if (t === "ok") return parseCV(raw.value);
-  if (t === "err") throw new Error("Contract returned error");
-  if (t === "tuple") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result: Record<string, any> = {};
-    for (const [k, v] of Object.entries(raw.value ?? {})) result[k] = parseCV(v as ClarityValue);
-    return result;
-  }
-  if (t === "list") return (raw.value as ClarityValue[] ?? []).map(parseCV);
   switch (cv.type) {
     case ClarityType.UInt:
     case ClarityType.Int:
       return Number(raw.value);
     case ClarityType.BoolTrue: return true;
     case ClarityType.BoolFalse: return false;
-    case ClarityType.ResponseOk: return parseCV(raw.value);
-    case ClarityType.ResponseErr: throw new Error("Contract returned error");
     case ClarityType.OptionalNone: return null;
     case ClarityType.OptionalSome: return parseCV(raw.value);
+    case ClarityType.ResponseOk: return parseCV(raw.value);
+    case ClarityType.ResponseErr: throw new Error(`Contract error: ${JSON.stringify(raw.value)}`);
     case ClarityType.Tuple: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result: Record<string, any> = {};
-      for (const [k, v] of Object.entries(raw.data ?? raw.value ?? {})) result[k] = parseCV(v as ClarityValue);
+      for (const [k, v] of Object.entries(raw.value ?? {})) result[k] = parseCV(v as ClarityValue);
       return result;
     }
     case ClarityType.List:
-      return (raw.list ?? raw.value ?? [] as ClarityValue[]).map(parseCV);
+      return (raw.value ?? [] as ClarityValue[]).map((item: ClarityValue) => parseCV(item));
     default: return null;
   }
 }

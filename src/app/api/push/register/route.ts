@@ -8,11 +8,13 @@ interface RegisterBody {
     keys: { auth: string; p256dh: string };
   };
   alerts: PushAlertEntry[];
+  // DCA plan IDs của user — dùng bởi keeper bot để reverse-lookup và gửi push khi execute
+  planIds?: number[];
 }
 
 export async function POST(request: Request) {
   const body = await request.json() as RegisterBody;
-  const { walletAddress, subscription, alerts } = body;
+  const { walletAddress, subscription, alerts, planIds } = body;
 
   if (!walletAddress || !subscription?.endpoint) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -33,6 +35,8 @@ export async function POST(request: Request) {
   const entry: SubEntry = {
     subscription,
     alerts: mergedAlerts,
+    // Preserve existing planIds nếu request không gửi lên (price alert sync không có planIds)
+    planIds: planIds ?? existing?.planIds,
     updatedAt: Date.now(),
   };
   await putSub(walletAddress, entry);

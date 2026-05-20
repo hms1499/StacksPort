@@ -21,6 +21,9 @@ export interface SubEntry {
     keys: { auth: string; p256dh: string };
   };
   alerts: PushAlertEntry[];
+  // DCA plan IDs thuộc về wallet này — dùng để keeper bot reverse-lookup
+  // và gửi Web Push khi plans được execute.
+  planIds?: number[];
   updatedAt: number;
 }
 

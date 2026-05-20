@@ -3,6 +3,7 @@ import { StacksClient } from "./stacks-client.js";
 import { BatchExecutor, chunkArray } from "./batch-executor.js";
 import { readAllSubs } from "./redis-store.js";
 import { sendDcaExecutionNotifications } from "./dca-push.js";
+import { notifyBatchExecuted } from "./telegram-notify.js";
 import { log } from "./logger.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
@@ -75,6 +76,11 @@ async function main(): Promise<void> {
       // Gửi Web Push đến wallet owners của các plans vừa được execute
       sendDcaExecutionNotifications(chunk, result.txid, allSubs).catch((err) => {
         log.warn("dca-push failed (non-fatal)", { err: String(err) });
+      });
+
+      // Gửi Telegram alert đến operator (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID phải set trong .env)
+      notifyBatchExecuted(chunk, result.txid).catch((err) => {
+        log.warn("telegram notify failed (non-fatal)", { err: String(err) });
       });
     } else {
       log.error(`Batch ${i + 1} failed after all retries`, {

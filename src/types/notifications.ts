@@ -56,7 +56,6 @@ export interface NotificationStoreState {
   setSortBy: (sort: 'newest' | 'oldest') => void;
   clearFilters: () => void;
 
-  // Computed
-  getFilteredNotifications: () => Notification[];
-  getUnreadCount: () => number;
+  // Computed getters đã được chuyển thành Zustand selectors ở component level.
+  // Xem notificationStore.ts để biết lý do.
 }

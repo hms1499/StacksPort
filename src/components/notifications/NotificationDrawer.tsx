@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Bell, ArrowRight, Trash2 } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -26,7 +26,13 @@ const TYPE_ICONS: Record<string, string> = {
 };
 
 export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps) {
-  const { notifications, dismissNotification, clearAll } = useNotificationStore();
+  const { notifications, dismissNotification, clearAll, markAllAsRead } = useNotificationStore();
+
+  useEffect(() => {
+    if (isOpen && notifications.some((n) => !n.isRead)) {
+      markAllAsRead();
+    }
+  }, [isOpen, notifications, markAllAsRead]);
 
   const displayNotifications = notifications.slice(0, 20);
 

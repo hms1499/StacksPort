@@ -7,36 +7,48 @@ import type { PushAlertEntry } from '@/lib/push-redis';
 
 const generateId = () => `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+// Debounce timer cho syncAlerts — tránh gửi nhiều request liên tiếp khi user
+// toggle/add/remove nhiều alert nhanh (ví dụ: batch edit). Gộp thành 1 request duy nhất.
+let syncTimer: ReturnType<typeof setTimeout> | null = null;
+const SYNC_DEBOUNCE_MS = 500;
+
 async function syncAlerts(walletAddress: string, alerts: PriceAlert[]) {
   if (!walletAddress || Notification.permission !== 'granted') return;
 
-  let sub: PushSubscription | null = null;
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    sub = await reg.pushManager.getSubscription();
-  } catch {
-    return;
-  }
-  if (!sub) return;
+  // Huỷ request cũ chưa kịp gửi, lên lịch lại từ đầu
+  if (syncTimer) clearTimeout(syncTimer);
 
-  const subJson = sub.toJSON() as { endpoint: string; keys: { auth: string; p256dh: string } };
-  const pushAlerts: PushAlertEntry[] = alerts
-    .filter((a) => a.isActive)
-    .map((a) => ({
-      id: a.id,
-      tokenSymbol: a.tokenSymbol,
-      geckoId: a.geckoId,
-      condition: a.condition,
-      targetPrice: a.targetPrice,
-      isActive: a.isActive,
-      lastPushedAt: null,
-    }));
+  syncTimer = setTimeout(async () => {
+    syncTimer = null;
 
-  await fetch('/api/push/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ walletAddress, subscription: subJson, alerts: pushAlerts }),
-  }).catch(() => {});
+    let sub: PushSubscription | null = null;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      sub = await reg.pushManager.getSubscription();
+    } catch {
+      return;
+    }
+    if (!sub) return;
+
+    const subJson = sub.toJSON() as { endpoint: string; keys: { auth: string; p256dh: string } };
+    const pushAlerts: PushAlertEntry[] = alerts
+      .filter((a) => a.isActive)
+      .map((a) => ({
+        id: a.id,
+        tokenSymbol: a.tokenSymbol,
+        geckoId: a.geckoId,
+        condition: a.condition,
+        targetPrice: a.targetPrice,
+        isActive: a.isActive,
+        lastPushedAt: null,
+      }));
+
+    await fetch('/api/push/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ walletAddress, subscription: subJson, alerts: pushAlerts }),
+    }).catch(() => {});
+  }, SYNC_DEBOUNCE_MS);
 }
 
 export const usePriceAlertStore = create<PriceAlertStoreState>()(

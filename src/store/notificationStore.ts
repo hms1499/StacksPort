@@ -66,18 +66,15 @@ export const useNotificationStore = create<NotificationStoreState>()(
           context,
           duration,
           isRead: false,
+          isShown: duration ? true : false,
         };
 
         set((state) => ({
           notifications: [notification, ...state.notifications].slice(0, 50), // max 50
         }));
 
-        // Hide Toast (auto-dismiss) if duration specified, but keep in store
-        if (duration && duration > 0) {
-          setTimeout(() => {
-            get().hideNotification(id);
-          }, duration);
-        }
+        // Auto-dismiss được xử lý bởi CSS animation onAnimationEnd trong Toast component.
+        // Store không cần setTimeout nữa — tránh race condition giữa timer và user dismiss.
 
         return id;
       },
@@ -158,49 +155,28 @@ export const useNotificationStore = create<NotificationStoreState>()(
         }));
       },
 
-      getFilteredNotifications: (): Notification[] => {
-        const state = get();
-        let filtered = [...state.notifications];
-
-        if (state.filters.types.length > 0) {
-          filtered = filtered.filter((n) => state.filters.types.includes(n.type));
-        }
-
-        if (state.filters.categories.length > 0) {
-          filtered = filtered.filter((n) => state.filters.categories.includes(n.category));
-        }
-
-        filtered = filtered.filter((n) => isWithinDateRange(n.timestamp, state.filters.dateRange));
-
-        if (state.filters.searchQuery) {
-          filtered = filtered.filter((n) =>
-            n.message.toLowerCase().includes(state.filters.searchQuery)
-          );
-        }
-
-        if (state.filters.sortBy === 'oldest') {
-          filtered = filtered.reverse();
-        }
-
-        return filtered;
-      },
-
-      getUnreadCount: (): number => {
-        return get().notifications.filter((n) => !n.isRead).length;
-      },
+      // getFilteredNotifications đã bị xóa — NotificationsContent dùng useMemo riêng
+      // để tránh tạo array mới mỗi lần store update.
+      // getUnreadCount đã bị xóa — dùng Zustand selector trực tiếp ở component:
+      //   useNotificationStore((s) => s.notifications.filter((n) => !n.isRead).length)
+      // Zustand so sánh primitive (number) → chỉ re-render khi count thực sự thay đổi.
     }),
     {
       name: 'notifications-storage',
-      // Chỉ persist notifications, không persist filters (ephemeral)
+      // Chỉ persist notifications, không persist filters (ephemeral UI state)
       partialize: (state) => ({ notifications: state.notifications }),
-      // Khi hydrate, reset isShown để toast không hiện lại sau reload
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          state.notifications = state.notifications.map((n) => ({
-            ...n,
-            isShown: false,
-          }));
-        }
+        if (!state) return;
+
+        // TTL: xóa notification cũ hơn 7 ngày để tránh localStorage phình to.
+        // Người dùng không cần lịch sử quá 1 tuần cho DCA/swap events.
+        const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+        const cutoff = Date.now() - ONE_WEEK_MS;
+
+        state.notifications = state.notifications
+          .filter((n) => n.timestamp > cutoff)
+          // Reset isShown sau reload: toast đã hiện rồi, không hiện lại
+          .map((n) => ({ ...n, isShown: false }));
       },
     }
   )

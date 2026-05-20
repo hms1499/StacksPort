@@ -1,6 +1,8 @@
 import { loadConfig } from "./config.js";
 import { StacksClient } from "./stacks-client.js";
 import { BatchExecutor, chunkArray } from "./batch-executor.js";
+import { readAllSubs } from "./redis-store.js";
+import { sendDcaExecutionNotifications } from "./dca-push.js";
 import { log } from "./logger.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
@@ -43,6 +45,17 @@ async function main(): Promise<void> {
   const chunks = chunkArray(plans, MAX_BATCH_SIZE);
   log.info("Executing batches", { totalPlans: plans.length, chunks: chunks.length });
 
+  // Đọc push subscriptions một lần trước khi execute để tránh gọi Redis nhiều lần.
+  // Nếu Redis không available thì push notification sẽ bị skip nhưng execution vẫn tiếp tục.
+  let allSubs: Awaited<ReturnType<typeof readAllSubs>> = {};
+  try {
+    allSubs = await readAllSubs();
+  } catch (err) {
+    log.warn("Could not read push subscriptions — execution notifications will be skipped", {
+      err: String(err),
+    });
+  }
+
   let anyFailed = false;
   // Nonce management only needed when >50 plans (multiple chunks)
   let nonce: number | undefined = chunks.length > 1
@@ -58,6 +71,11 @@ async function main(): Promise<void> {
     if (result) {
       log.info(`Batch ${i + 1} broadcast`, { txid: result.txid, planCount: chunk.length });
       if (nonce !== undefined) nonce++;
+
+      // Gửi Web Push đến wallet owners của các plans vừa được execute
+      sendDcaExecutionNotifications(chunk, result.txid, allSubs).catch((err) => {
+        log.warn("dca-push failed (non-fatal)", { err: String(err) });
+      });
     } else {
       log.error(`Batch ${i + 1} failed after all retries`, {
         planIds: chunk.map((p) => p.planId),

@@ -21,6 +21,9 @@ export interface SubEntry {
     keys: { auth: string; p256dh: string };
   };
   alerts: PushAlertEntry[];
+  // DCA plan IDs của wallet — được sync từ frontend mỗi 60s.
+  // Bot dùng để reverse-lookup: planId → wallet → subscription.
+  planIds?: number[];
   updatedAt: number;
 }
 

@@ -22,6 +22,31 @@ const POLL_INTERVAL_MS = 60_000;
 
 type AddNotificationFn = ReturnType<typeof useNotificationStore.getState>['addNotification'];
 
+// Sync plan IDs lên Redis sau khi fetch — keeper bot dùng để reverse-lookup owner
+// khi gửi Web Push execution notification. Chỉ chạy khi có push subscription.
+async function syncPlanIdsToRedis(walletAddress: string, planIds: number[]): Promise<void> {
+  if (typeof window === 'undefined') return;
+  if (Notification.permission !== 'granted') return;
+
+  let sub: PushSubscription | null = null;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    sub = await reg.pushManager.getSubscription();
+  } catch {
+    return;
+  }
+  if (!sub) return;
+
+  const subJson = sub.toJSON() as { endpoint: string; keys: { auth: string; p256dh: string } };
+
+  // Gọi register endpoint với alerts rỗng — server sẽ preserve alerts hiện có
+  await fetch('/api/push/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ walletAddress, subscription: subJson, alerts: [], planIds }),
+  }).catch(() => {});
+}
+
 export function useDcaExecutionWatcher(): void {
   const stxAddress = useWalletStore((s) => s.stxAddress);
   const addNotification = useNotificationStore((s) => s.addNotification);
@@ -109,6 +134,10 @@ async function runTick(address: string, addNotification: AddNotificationFn): Pro
     return;
   }
   if (plans.length === 0) return;
+
+  // Cập nhật plan IDs trong Redis để keeper bot có thể gửi push khi execute.
+  // Fire-and-forget: lỗi ở đây không nên block watcher chính.
+  void syncPlanIdsToRedis(address, plans.map((p) => p.id));
 
   let store = loadSeen(address);
   const newTxids: string[] = [];

@@ -8,6 +8,7 @@ import Topbar from "@/components/layout/Topbar";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import ProtocolCard from "@/components/apps/ProtocolCard";
 import UnknownContractRow from "@/components/apps/UnknownContractRow";
+import ExploreProtocolCard, { EXPLORE_PROTOCOLS } from "@/components/apps/ExploreProtocolCard";
 
 function SkeletonCard() {
   return (
@@ -74,12 +75,19 @@ export default function AppsPageContent() {
             </button>
           </div>
         ) : isEmpty ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Globe size={40} style={{ color: "var(--text-muted)" }} />
-            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-              No protocol interactions found in your recent transactions
-            </p>
-          </div>
+          <section>
+            <h2
+              className="text-sm font-semibold mb-3"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Explore DeFi on Stacks
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {EXPLORE_PROTOCOLS.map((p) => (
+                <ExploreProtocolCard key={p.name} {...p} />
+              ))}
+            </div>
+          </section>
         ) : (
           <div className="space-y-8">
             {data.knownProtocols.length > 0 && (

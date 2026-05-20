@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Info,
   X,
+  ExternalLink,
 } from 'lucide-react';
 import type { Notification } from '@/types/notifications';
 
@@ -143,8 +144,19 @@ export default function NotificationCard({
                 </p>
               )}
               {notification.context.txId && (
-                <p>
-                  <span className="font-medium">Tx ID:</span> {notification.context.txId}
+                <p className="flex items-center gap-1">
+                  <span className="font-medium">Tx:</span>
+                  {/* Truncate txId cho dễ đọc, link ra Hiro Explorer để user verify on-chain */}
+                  <a
+                    href={`https://explorer.hiro.so/txid/${notification.context.txId}?chain=mainnet`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-0.5 hover:underline"
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    {notification.context.txId.slice(0, 8)}…{notification.context.txId.slice(-6)}
+                    <ExternalLink size={11} />
+                  </a>
                 </p>
               )}
               {notification.context.amount && (

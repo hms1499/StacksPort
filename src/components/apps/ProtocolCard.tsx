@@ -22,11 +22,11 @@ function PositionRow({ position }: { position: ProtocolPosition | null | "loadin
       >
         <div
           className="h-2.5 rounded animate-pulse"
-          style={{ backgroundColor: "var(--bg-muted)", width: "55%" }}
+          style={{ backgroundColor: "var(--border-subtle)", width: "55%" }}
         />
         <div
           className="h-2.5 rounded animate-pulse"
-          style={{ backgroundColor: "var(--bg-muted)", width: "40%" }}
+          style={{ backgroundColor: "var(--border-subtle)", width: "40%" }}
         />
       </div>
     );

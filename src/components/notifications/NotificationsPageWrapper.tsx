@@ -2,18 +2,20 @@
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Bell, BellRing } from 'lucide-react';
+import { Bell, BellRing, Settings } from 'lucide-react';
 import Topbar from '@/components/layout/Topbar';
 import NotificationsContent from './NotificationsContent';
 import PriceAlertForm from '@/components/price-alerts/PriceAlertForm';
 import PriceAlertsList from '@/components/price-alerts/PriceAlertsList';
+import NotificationPreferences from './NotificationPreferences';
 import { cn } from '@/lib/utils';
 
-type Tab = 'activity' | 'price-alerts';
+type Tab = 'activity' | 'price-alerts' | 'preferences';
 
 const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: 'activity',     label: 'Activity',      icon: Bell },
   { id: 'price-alerts', label: 'Price Alerts',  icon: BellRing },
+  { id: 'preferences',  label: 'Preferences',   icon: Settings },
 ];
 
 export default function NotificationsPageWrapper() {
@@ -59,10 +61,14 @@ export default function NotificationsPageWrapper() {
       <div className="flex-1 flex overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         {activeTab === 'activity' ? (
           <NotificationsContent />
-        ) : (
+        ) : activeTab === 'price-alerts' ? (
           <div className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full space-y-6">
             <PriceAlertForm />
             <PriceAlertsList />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto p-4 md:p-6">
+            <NotificationPreferences />
           </div>
         )}
       </div>

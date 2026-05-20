@@ -1,15 +1,9 @@
 'use client';
 
 import React from 'react';
-import {
-  CheckCircle2,
-  AlertCircle,
-  AlertTriangle,
-  Info,
-  X,
-  ExternalLink,
-} from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
 import type { Notification } from '@/types/notifications';
+import NotificationIcon from './NotificationIcon';
 
 interface NotificationCardProps {
   notification: Notification;
@@ -18,20 +12,6 @@ interface NotificationCardProps {
   onSelect?: (id: string) => void;
 }
 
-const getIcon = (type: string) => {
-  switch (type) {
-    case 'success':
-      return <CheckCircle2 size={24} className="flex-shrink-0" style={{ color: 'var(--positive)' }} />;
-    case 'error':
-      return <AlertCircle size={24} className="flex-shrink-0" style={{ color: 'var(--negative)' }} />;
-    case 'warning':
-      return <AlertTriangle size={24} className="flex-shrink-0" style={{ color: '#f59e0b' }} />;
-    case 'info':
-      return <Info size={24} className="flex-shrink-0" style={{ color: 'var(--accent)' }} />;
-    default:
-      return <Info size={24} className="flex-shrink-0" style={{ color: 'var(--text-muted)' }} />;
-  }
-};
 
 // Trả về border-left color theo type để nhận diện nhanh mà không dùng background màu cứng.
 // Dùng inline style thay Tailwind class để CSS variables của theme hoạt động đúng ở dark mode.
@@ -95,7 +75,9 @@ export default function NotificationCard({
         )}
 
         {/* Icon */}
-        <div className="mt-0.5">{getIcon(notification.type)}</div>
+        <div className="mt-0.5">
+          <NotificationIcon type={notification.type} size={24} />
+        </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">

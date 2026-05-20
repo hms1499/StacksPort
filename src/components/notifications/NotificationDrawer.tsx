@@ -4,26 +4,13 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Bell, ArrowRight, Trash2 } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
+import NotificationIcon from './NotificationIcon';
 import { cn } from '@/lib/utils';
 
 interface NotificationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const TYPE_COLORS: Record<string, string> = {
-  success: 'var(--positive)',
-  error: 'var(--negative)',
-  warning: '#f59e0b',
-  info: 'var(--accent)',
-};
-
-const TYPE_ICONS: Record<string, string> = {
-  success: '✓',
-  error: '!',
-  warning: '⚠',
-  info: 'ℹ',
-};
 
 export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps) {
   const { notifications, dismissNotification, clearAll, markAllAsRead } = useNotificationStore();
@@ -133,15 +120,10 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
                   }
                 >
                   <div className="flex items-start gap-3 px-4 py-3">
-                    <span
-                      className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5"
-                      style={{
-                        color: iconColor(notification.type),
-                        backgroundColor: `color-mix(in srgb, ${iconColor(notification.type)} 15%, transparent)`,
-                      }}
-                    >
-                      {icon(notification.type)}
-                    </span>
+                    {/* Dùng NotificationIcon thay emoji text để đồng nhất với Toast và Card */}
+                    <div className="mt-0.5 flex-shrink-0">
+                      <NotificationIcon type={notification.type} size={16} />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         {/* Unread dot — visible trước khi drawer auto-markAllAsRead chạy */}

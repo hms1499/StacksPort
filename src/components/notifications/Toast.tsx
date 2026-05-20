@@ -2,53 +2,28 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X, CheckCircle2, AlertCircle, AlertTriangle, Info } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { Notification } from '@/types/notifications';
+import NotificationIcon from './NotificationIcon';
 
 interface ToastProps {
   notification: Notification;
   onDismiss: (id: string) => void;
 }
 
-const getIcon = (type: string) => {
-  switch (type) {
-    case 'success':
-      return <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" />;
-    case 'error':
-      return <AlertCircle size={20} className="text-red-500 flex-shrink-0" />;
-    case 'warning':
-      return <AlertTriangle size={20} className="text-yellow-500 flex-shrink-0" />;
-    case 'info':
-      return <Info size={20} className="text-blue-500 flex-shrink-0" />;
-    default:
-      return <Info size={20} className="text-gray-500 flex-shrink-0" />;
-  }
+// Map type → CSS variable để đồng nhất với NotificationIcon và NotificationCard
+const ACCENT_COLORS: Record<string, string> = {
+  success: 'var(--positive)',
+  error:   'var(--negative)',
+  warning: '#f59e0b',
+  info:    'var(--accent)',
 };
 
-const getProgressColor = (type: string) => {
-  switch (type) {
-    case 'success':
-      return 'bg-green-500';
-    case 'error':
-      return 'bg-red-500';
-    case 'warning':
-      return 'bg-yellow-500';
-    case 'info':
-      return 'bg-blue-500';
-    default:
-      return 'bg-gray-500';
-  }
-};
-
-const getBorderLeftColor = (type: string) => {
-  switch (type) {
-    case 'success': return '#22c55e';
-    case 'error':   return '#ef4444';
-    case 'warning': return '#eab308';
-    case 'info':    return '#3b82f6';
-    default:        return '#6b7280';
-  }
-};
+// Progress bar dùng inline background-color thay Tailwind class hardcode
+// để đồng nhất với hệ thống CSS variables của app
+const getProgressStyle = (type: string): React.CSSProperties => ({
+  backgroundColor: ACCENT_COLORS[type] ?? 'var(--text-muted)',
+});
 
 export default function Toast({ notification, onDismiss }: ToastProps) {
   const duration = notification.duration || 4000;
@@ -65,7 +40,7 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
         backgroundColor: 'var(--bg-card)',
         border: '1px solid var(--border-subtle)',
         borderLeftWidth: '4px',
-        borderLeftColor: getBorderLeftColor(notification.type),
+        borderLeftColor: ACCENT_COLORS[notification.type] ?? 'var(--text-muted)',
       }}
     >
       <motion.div
@@ -73,7 +48,7 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 500, damping: 25, delay: 0.1 }}
       >
-        {getIcon(notification.type)}
+        <NotificationIcon type={notification.type} size={20} />
       </motion.div>
 
       <div className="flex-1 min-w-0">
@@ -102,8 +77,8 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
         // onAnimationEnd dismiss toast khi animation kết thúc thay vì dùng setTimeout ở store.
         <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
           <div
-            className={`h-full ${getProgressColor(notification.type)}`}
             style={{
+              ...getProgressStyle(notification.type),
               animation: `toast-progress ${duration}ms linear forwards`,
             }}
             onAnimationEnd={() => onDismiss(notification.id)}

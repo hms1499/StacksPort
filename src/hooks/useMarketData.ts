@@ -21,9 +21,14 @@ import {
   type ConnectedAppsResult,
   type PnLData,
   type TokenWithValue,
+  type KnownProtocol,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
 import { SWAP_PRICE_GECKO_IDS, SWAP_TOKEN_USD } from "@/lib/direct-swap";
+import {
+  fetchAllPositions,
+  type ProtocolPosition,
+} from "@/lib/protocol-positions";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
 const SLOW_REFRESH = 120_000; // 2 min — market data
@@ -252,3 +257,16 @@ export function usePairPriceHistory(
 }
 
 export type { FearGreedData, NewsItem };
+
+// ─── Protocol positions (value at stake per DeFi protocol) ───────────────────
+
+export function useProtocolPositions(
+  address: string | undefined,
+  protocols: KnownProtocol[]
+) {
+  return useSWR<Map<string, ProtocolPosition | null>>(
+    address && protocols.length > 0 ? ["protocol-positions", address] : null,
+    () => fetchAllPositions(address!, protocols),
+    { refreshInterval: 120_000, dedupingInterval: 60_000 }
+  );
+}

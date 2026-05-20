@@ -23,9 +23,6 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
 
   const displayNotifications = notifications.slice(0, 20);
 
-  const iconColor = (type: string) => TYPE_COLORS[type] ?? 'var(--text-muted)';
-  const icon = (type: string) => TYPE_ICONS[type] ?? '•';
-
   return (
     <>
       {/* Mobile overlay */}

@@ -1,9 +1,14 @@
 const KEY_PREFIX = 'dca-watcher-seen:';
 const MAX_TXIDS = 500;
 
+// Low-balance warning được throttle 24h per plan để tránh spam mỗi 60s tick.
+const LOW_BALANCE_WARN_TTL_MS = 24 * 60 * 60 * 1000;
+
 export interface SeenStore {
   txids: string[];
   baselineDoneAt: number; // 0 = chưa baseline; ms timestamp khi xong
+  // planId → timestamp khi warning lần cuối được gửi
+  lowBalanceWarnedAt?: Record<number, number>;
 }
 
 function emptyStore(): SeenStore {
@@ -62,4 +67,18 @@ export function markSeen(store: SeenStore, txids: string[]): SeenStore {
 
 export function hasSeen(store: SeenStore, txid: string): boolean {
   return store.txids.includes(txid);
+}
+
+// Kiểm tra xem plan này đã được warn trong 24h gần nhất chưa
+export function hasWarnedLowBalance(store: SeenStore, planId: number): boolean {
+  const warnedAt = store.lowBalanceWarnedAt?.[planId];
+  if (!warnedAt) return false;
+  return Date.now() - warnedAt < LOW_BALANCE_WARN_TTL_MS;
+}
+
+export function markLowBalanceWarned(store: SeenStore, planId: number): SeenStore {
+  return {
+    ...store,
+    lowBalanceWarnedAt: { ...(store.lowBalanceWarnedAt ?? {}), [planId]: Date.now() },
+  };
 }

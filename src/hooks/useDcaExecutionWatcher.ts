@@ -16,6 +16,8 @@ import {
   isBaselined,
   markBaselined,
   markSeen,
+  hasWarnedLowBalance,
+  markLowBalanceWarned,
 } from '@/lib/dca-watcher-storage';
 
 const POLL_INTERVAL_MS = 60_000;
@@ -139,7 +141,31 @@ async function runTick(address: string, addNotification: AddNotificationFn): Pro
   // Fire-and-forget: lỗi ở đây không nên block watcher chính.
   void syncPlanIdsToRedis(address, plans.map((p) => p.id));
 
+  // Load seen store một lần — dùng cho cả low-balance check lẫn execution dedup
   let store = loadSeen(address);
+  let storeModified = false;
+
+  // Kiểm tra low balance cho các active plans — warn nếu còn < 2 lần execute.
+  // Throttle 24h/plan để tránh spam mỗi tick.
+  for (const plan of plans) {
+    if (!plan.active) continue;
+    // bal < amt * 2 nghĩa là vault chỉ còn đủ tiền cho < 2 lần swap nữa
+    if (plan.bal >= plan.amt * 2) continue;
+    if (hasWarnedLowBalance(store, plan.id)) continue;
+
+    const swapsLeft = plan.amt > 0 ? Math.floor(plan.bal / plan.amt) : 0;
+    const swapLabel = swapsLeft === 1 ? '1 execution' : `${swapsLeft} executions`;
+    addNotification(
+      `Plan #${plan.id} is running low — only ~${swapLabel} remaining. Top up to keep DCA running.`,
+      'warning',
+      'dca',
+      undefined, // keep in store, không auto-dismiss
+      { planId: String(plan.id), action: 'low-balance' },
+    );
+    store = markLowBalanceWarned(store, plan.id);
+    storeModified = true;
+  }
+
   const newTxids: string[] = [];
   const seenSet = new Set(store.txids);
 
@@ -164,8 +190,9 @@ async function runTick(address: string, addNotification: AddNotificationFn): Pro
 
   if (newTxids.length > 0) {
     store = markSeen(store, newTxids);
-    saveSeen(address, store);
+    storeModified = true;
   }
+  if (storeModified) saveSeen(address, store);
 }
 
 function notifyEvent(

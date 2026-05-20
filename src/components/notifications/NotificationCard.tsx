@@ -126,40 +126,57 @@ export default function NotificationCard({
             </button>
           </div>
 
-          {/* Context metadata */}
+          {/* Context metadata — chip row thay vì key-value list dọc.
+              Action field bị bỏ: nội dung đã có trong message, hiện lại là thừa. */}
           {notification.context && (
-            <div className="mt-3 text-xs space-y-1" style={{ color: 'var(--text-secondary)' }}>
-              {notification.context.action && (
-                <p>
-                  <span className="font-medium">Action:</span> {notification.context.action}
-                </p>
-              )}
-              {notification.context.planId && (
-                <p>
-                  <span className="font-medium">Plan ID:</span> {notification.context.planId}
-                </p>
-              )}
-              {notification.context.txId && (
-                <p className="flex items-center gap-1">
-                  <span className="font-medium">Tx:</span>
-                  {/* Truncate txId cho dễ đọc, link ra Hiro Explorer để user verify on-chain */}
-                  <a
-                    href={`https://explorer.hiro.so/txid/${notification.context.txId}?chain=mainnet`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-0.5 hover:underline"
-                    style={{ color: 'var(--accent)' }}
-                  >
-                    {notification.context.txId.slice(0, 8)}…{notification.context.txId.slice(-6)}
-                    <ExternalLink size={11} />
-                  </a>
-                </p>
-              )}
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+              {/* Amount chip */}
               {notification.context.amount && (
-                <p>
-                  <span className="font-medium">Amount:</span> {notification.context.amount}{' '}
-                  {notification.context.tokenSymbol || ''}
-                </p>
+                <span
+                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  {notification.context.amount}
+                  {notification.context.tokenSymbol ? ` ${notification.context.tokenSymbol}` : ''}
+                </span>
+              )}
+
+              {/* Plan ID chip — truncated để không chiếm nhiều space */}
+              {notification.context.planId && (
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full font-mono"
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    color: 'var(--text-muted)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                  title={notification.context.planId}
+                >
+                  Plan #{notification.context.planId.slice(-6)}
+                </span>
+              )}
+
+              {/* Tx ID — link chip ra Hiro Explorer để user verify on-chain */}
+              {notification.context.txId && (
+                <a
+                  href={`https://explorer.hiro.so/txid/${notification.context.txId}?chain=mainnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-mono transition-opacity hover:opacity-75"
+                  style={{
+                    backgroundColor: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                    color: 'var(--accent)',
+                    border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
+                  }}
+                  title={notification.context.txId}
+                >
+                  {notification.context.txId.slice(0, 6)}…{notification.context.txId.slice(-4)}
+                  <ExternalLink size={10} />
+                </a>
               )}
             </div>
           )}

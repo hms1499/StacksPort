@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Globe } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useConnectedApps, useProtocolPositions } from "@/hooks/useMarketData";
@@ -31,6 +32,8 @@ export default function AppsPageContent() {
     stxAddress ?? undefined,
     data?.knownProtocols ?? []
   );
+
+  const [showAllContracts, setShowAllContracts] = useState(false);
 
   const isEmpty =
     !data ||
@@ -139,10 +142,24 @@ export default function AppsPageContent() {
                   Unknown Contracts
                 </h2>
                 <div className="space-y-2">
-                  {data.unknownContracts.map((c) => (
+                  {(showAllContracts
+                    ? data.unknownContracts
+                    : data.unknownContracts.slice(0, 3)
+                  ).map((c) => (
                     <UnknownContractRow key={c.contractId} {...c} />
                   ))}
                 </div>
+                {data.unknownContracts.length > 3 && (
+                  <button
+                    onClick={() => setShowAllContracts((v) => !v)}
+                    className="mt-2 text-xs font-medium transition-opacity hover:opacity-80"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    {showAllContracts
+                      ? "Show less"
+                      : `Show ${data.unknownContracts.length - 3} more`}
+                  </button>
+                )}
               </section>
             )}
           </div>

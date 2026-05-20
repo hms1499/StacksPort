@@ -200,3 +200,52 @@ async function fetchArkadikoPosition(
   };
 }
 
+// ─── Zest Protocol ────────────────────────────────────────────────────────────
+// Receipt tokens ("zae*") live at deployer SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.
+// get-principal-balance(address) → (ok uint)  micro-USDC (6 decimals)
+// All current Zest pools are stablecoin-denominated → USD value = balance / 1e6.
+
+const ZEST_RECEIPT_DEPLOYER = "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N";
+
+async function fetchZestPosition(
+  address: string,
+  fungibleTokens: Record<string, { balance: string }>
+): Promise<ProtocolPosition | null> {
+  const zestAssets = Object.entries(fungibleTokens).filter(([id]) =>
+    id.startsWith(ZEST_RECEIPT_DEPLOYER)
+  );
+  if (zestAssets.length === 0) return null;
+
+  const lines: PositionLine[] = [];
+
+  await Promise.allSettled(
+    zestAssets.map(async ([assetId]) => {
+      const contractId = assetId.split("::")[0];
+      const dotIndex = contractId.lastIndexOf(".");
+      const contractAddr = contractId.slice(0, dotIndex);
+      const contractName = contractId.slice(dotIndex + 1);
+      // Human-readable token label: "zaeusdc" → "USDC"
+      const tokenLabel = assetId.split("::")[1]?.replace(/^zae/, "").toUpperCase() ?? "USD";
+
+      const cv = await callReadOnly(contractAddr, contractName, "get-principal-balance", [
+        cvHex(standardPrincipalCV(address)),
+      ]);
+      const microAmount = parseCV(cv) as number;
+      if (microAmount === 0) return;
+
+      const humanAmount = microAmount / 1_000_000;
+      lines.push({
+        label: "Supplied",
+        tokenAmount: `${humanAmount.toFixed(2)} ${tokenLabel}`,
+        usdValue: humanAmount,
+      });
+    })
+  );
+
+  if (lines.length === 0) return null;
+  return {
+    lines,
+    totalUsd: lines.reduce((sum, l) => sum + l.usdValue, 0),
+  };
+}
+

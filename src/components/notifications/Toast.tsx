@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import type { Notification } from '@/types/notifications';
@@ -51,28 +51,7 @@ const getBorderLeftColor = (type: string) => {
 };
 
 export default function Toast({ notification, onDismiss }: ToastProps) {
-  const [progress, setProgress] = useState(100);
-
   const duration = notification.duration || 4000;
-
-  useEffect(() => {
-    if (!notification.duration) return;
-
-    const startTime = Date.now();
-
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
-      setProgress(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        onDismiss(notification.id);
-      }
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [notification.id, notification.duration, duration, onDismiss]);
 
   return (
     <motion.div
@@ -119,12 +98,15 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
       </button>
 
       {notification.duration && (
+        // CSS animation chạy hoàn toàn trên compositor thread — không cần JS timer hay state.
+        // onAnimationEnd dismiss toast khi animation kết thúc thay vì dùng setTimeout ở store.
         <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
-          <motion.div
+          <div
             className={`h-full ${getProgressColor(notification.type)}`}
-            initial={{ width: "100%" }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.05, ease: "linear" }}
+            style={{
+              animation: `toast-progress ${duration}ms linear forwards`,
+            }}
+            onAnimationEnd={() => onDismiss(notification.id)}
           />
         </div>
       )}

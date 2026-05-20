@@ -61,15 +61,17 @@ export default function NotificationsContent() {
     dismissNotification,
     setSearchQuery,
     setSortBy,
-    getUnreadCount,
   } = useNotificationStore();
+
+  // Selector primitive → chỉ re-render khi unreadCount thực sự đổi
+  const unreadCount = useNotificationStore(
+    (s) => s.notifications.filter((n) => !n.isRead).length
+  );
 
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-
-  const unreadCount = getUnreadCount();
 
   const filteredNotifications = useMemo(() => {
     let filtered = [...notifications];

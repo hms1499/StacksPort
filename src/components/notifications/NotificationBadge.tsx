@@ -6,15 +6,17 @@ import { useNotificationStore } from '@/store/notificationStore';
 import { NotificationDrawer } from './NotificationDrawer';
 
 export default function NotificationBadge() {
-  const { getUnreadCount, markAllAsRead } = useNotificationStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  const unreadCount = getUnreadCount();
+  // Selector trả về primitive (number) → Zustand chỉ re-render khi count thực sự thay đổi,
+  // không phải mỗi khi bất kỳ notification nào update.
+  const unreadCount = useNotificationStore(
+    (s) => s.notifications.filter((n) => !n.isRead).length
+  );
 
-  const handleOpen = () => {
-    setIsOpen(true);
-    markAllAsRead();
-  };
+  // markAllAsRead được xử lý bởi NotificationDrawer (useEffect khi isOpen = true)
+  // để giữ responsibility trong một nơi duy nhất.
+  const handleOpen = () => setIsOpen(true);
 
   return (
     <div className="relative">

@@ -296,6 +296,13 @@ body {
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* Toast progress bar: shrink từ 100% → 0% trong duration ms.
+   Dùng CSS animation thay setInterval để tránh JS timer overhead. */
+@keyframes toast-progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
 /* ══════════════════════════════════════════════════════
    MOBILE SAFE AREA
 ══════════════════════════════════════════════════════ */

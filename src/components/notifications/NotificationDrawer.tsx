@@ -143,12 +143,21 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
                       {icon(notification.type)}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p
-                        className="text-sm font-medium line-clamp-2"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        {notification.message}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        {/* Unread dot — visible trước khi drawer auto-markAllAsRead chạy */}
+                        {!notification.isRead && (
+                          <span
+                            className="flex-shrink-0 w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: 'var(--accent)' }}
+                          />
+                        )}
+                        <p
+                          className={`text-sm line-clamp-2 ${notification.isRead ? 'font-normal' : 'font-semibold'}`}
+                          style={{ color: 'var(--text-primary)' }}
+                        >
+                          {notification.message}
+                        </p>
+                      </div>
                       <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                         {new Date(notification.timestamp).toLocaleTimeString('vi-VN', {
                           hour: '2-digit',

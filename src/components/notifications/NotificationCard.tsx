@@ -74,7 +74,8 @@ export default function NotificationCard({
     <div
       className="rounded-lg p-4 transition-shadow hover:shadow-sm"
       style={{
-        backgroundColor: 'var(--bg-card)',
+        // Unread: nền hơi sáng hơn một chút để phân biệt với đã đọc
+        backgroundColor: notification.isRead ? 'var(--bg-card)' : 'var(--bg-elevated)',
         border: '1px solid var(--border-subtle)',
         // Border-left màu theo type — nhận diện nhanh mà không cần background tô màu
         borderLeftWidth: '3px',
@@ -100,9 +101,22 @@ export default function NotificationCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {notification.message}
-              </p>
+              <div className="flex items-center gap-2">
+                {/* Unread dot — ẩn khi đã đọc */}
+                {!notification.isRead && (
+                  <span
+                    className="flex-shrink-0 w-2 h-2 rounded-full"
+                    style={{ backgroundColor: 'var(--accent)' }}
+                    aria-label="Unread"
+                  />
+                )}
+                <p
+                  className={notification.isRead ? 'font-medium' : 'font-semibold'}
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  {notification.message}
+                </p>
+              </div>
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <span
                   className="text-xs font-medium px-2 py-0.5 rounded"

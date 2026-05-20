@@ -6,6 +6,7 @@ import {
   uintCV,
   type ClarityValue,
 } from "@stacks/transactions";
+import { getSTXPrice, getFungibleTokens, type KnownProtocol } from "@/lib/stacks";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -249,3 +250,59 @@ async function fetchZestPosition(
   };
 }
 
+// ─── Orchestrator ─────────────────────────────────────────────────────────────
+
+export async function fetchAllPositions(
+  address: string,
+  protocols: KnownProtocol[]
+): Promise<Map<string, ProtocolPosition | null>> {
+  const result = new Map<string, ProtocolPosition | null>();
+  const supported = protocols.filter((p) => SUPPORTED_PROTOCOLS.has(p.name));
+  if (supported.length === 0) return result;
+
+  // Fetch STX price + token balances once, share across all fetchers
+  const [stxPriceData, fungibleTokensData] = await Promise.all([
+    getSTXPrice(),
+    getFungibleTokens(address),
+  ]);
+  const stxPrice = stxPriceData.usd;
+  const fungibleTokens = (fungibleTokensData.fungible_tokens ?? {}) as Record<
+    string,
+    { balance: string }
+  >;
+
+  const settled = await Promise.allSettled(
+    supported.map(async (protocol) => {
+      let position: ProtocolPosition | null = null;
+      switch (protocol.name) {
+        case "StackingDAO":
+          position = await fetchStackingDaoPosition(address, stxPrice);
+          break;
+        case "Lisa":
+          position = await fetchLisaPosition(address, stxPrice, fungibleTokens);
+          break;
+        case "Arkadiko":
+          position = await fetchArkadikoPosition(address, stxPrice);
+          break;
+        case "Zest Protocol":
+          position = await fetchZestPosition(address, fungibleTokens);
+          break;
+      }
+      return { name: protocol.name, position };
+    })
+  );
+
+  for (const outcome of settled) {
+    if (outcome.status === "fulfilled") {
+      result.set(outcome.value.name, outcome.value.position);
+    }
+    // rejected outcomes leave the protocol missing from map — handled below
+  }
+
+  // Ensure every supported protocol has an entry (null = failed fetch)
+  for (const p of supported) {
+    if (!result.has(p.name)) result.set(p.name, null);
+  }
+
+  return result;
+}

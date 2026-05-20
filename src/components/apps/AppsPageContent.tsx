@@ -90,6 +90,21 @@ export default function AppsPageContent() {
           </section>
         ) : (
           <div className="space-y-8">
+            {data.knownProtocols.length === 0 && (
+              <section>
+                <h2
+                  className="text-sm font-semibold mb-3"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Explore DeFi on Stacks
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {EXPLORE_PROTOCOLS.map((p) => (
+                    <ExploreProtocolCard key={p.name} {...p} />
+                  ))}
+                </div>
+              </section>
+            )}
             {data.knownProtocols.length > 0 && (
               <section>
                 <h2

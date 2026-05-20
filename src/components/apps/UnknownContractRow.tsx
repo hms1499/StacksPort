@@ -16,7 +16,10 @@ export default function UnknownContractRow({
   const explorerUrl = `https://explorer.hiro.so/address/${contractId}?chain=mainnet`;
   const contractName = contractId.split(".")[1] ?? contractId;
   const deployer = contractId.split(".")[0];
-  const truncatedDeployer = `${deployer.slice(0, 6)}...${deployer.slice(-4)}`;
+  const truncatedDeployer =
+    deployer.length > 10
+      ? `${deployer.slice(0, 6)}...${deployer.slice(-4)}`
+      : deployer;
 
   const { data: contractInfo, isLoading } = useContractInfo(contractId);
 
@@ -84,6 +87,7 @@ export default function UnknownContractRow({
         className="shrink-0 transition-opacity hover:opacity-70"
         style={{ color: "var(--text-muted)" }}
         title="View on Stacks Explorer"
+        aria-label={`Open ${contractName} on Stacks Explorer`}
       >
         <ExternalLink size={15} />
       </a>

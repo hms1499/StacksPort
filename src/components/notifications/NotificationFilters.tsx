@@ -82,7 +82,7 @@ export default function NotificationFilters({
                 type="checkbox"
                 checked={filters.types.includes(type)}
                 onChange={() => handleTypeToggle(type)}
-                className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
+                className="w-4 h-4 rounded cursor-pointer" style={{ accentColor: 'var(--accent)' }}
               />
               <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{getTypeLabel(type)}</span>
             </label>
@@ -100,7 +100,7 @@ export default function NotificationFilters({
                 type="checkbox"
                 checked={filters.categories.includes(category)}
                 onChange={() => handleCategoryToggle(category)}
-                className="w-4 h-4 rounded border-gray-300 text-[#285A48] focus:ring-[#408A71]"
+                className="w-4 h-4 rounded cursor-pointer" style={{ accentColor: 'var(--accent)' }}
               />
               <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{getCategoryLabel(category)}</span>
             </label>
@@ -120,7 +120,7 @@ export default function NotificationFilters({
                 value={range}
                 checked={filters.dateRange === range}
                 onChange={() => setDateRangeFilter(range)}
-                className="w-4 h-4 border-gray-300 text-[#285A48] focus:ring-[#408A71]"
+                className="w-4 h-4 cursor-pointer" style={{ accentColor: 'var(--accent)' }}
               />
               <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 {range === 'hour' ? 'Last hour' : range === 'day' ? 'Last day' : range === 'week' ? 'Last week' : 'All time'}

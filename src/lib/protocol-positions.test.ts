@@ -4,6 +4,7 @@ import {
   standardPrincipalCV,
   serializeCV,
 } from "@stacks/transactions";
+import { SUPPORTED_PROTOCOLS } from "@/lib/protocol-positions";
 
 describe("cvHex", () => {
   it("serializes uintCV to hex string", () => {
@@ -27,5 +28,20 @@ describe("formatTokenAmount", () => {
 
   it("formats micro-USDC to human USDC with 2 decimals", () => {
     expect((2_500_000 / 1_000_000).toFixed(2)).toBe("2.50");
+  });
+});
+
+describe("SUPPORTED_PROTOCOLS", () => {
+  it("contains exactly the 4 supported protocol names", () => {
+    expect(SUPPORTED_PROTOCOLS.has("StackingDAO")).toBe(true);
+    expect(SUPPORTED_PROTOCOLS.has("Lisa")).toBe(true);
+    expect(SUPPORTED_PROTOCOLS.has("Arkadiko")).toBe(true);
+    expect(SUPPORTED_PROTOCOLS.has("Zest Protocol")).toBe(true);
+  });
+
+  it("does not include DEX protocols", () => {
+    expect(SUPPORTED_PROTOCOLS.has("Bitflow")).toBe(false);
+    expect(SUPPORTED_PROTOCOLS.has("ALEX")).toBe(false);
+    expect(SUPPORTED_PROTOCOLS.has("Velar")).toBe(false);
   });
 });

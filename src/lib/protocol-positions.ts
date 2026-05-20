@@ -3,6 +3,7 @@ import {
   hexToCV,
   ClarityType,
   standardPrincipalCV,
+  uintCV,
   type ClarityValue,
 } from "@stacks/transactions";
 
@@ -108,3 +109,45 @@ async function fetchStackingDaoPosition(
     totalUsd: usdValue,
   };
 }
+
+// ─── Lisa ─────────────────────────────────────────────────────────────────────
+// User holds lqstx shares in wallet. Asset id: "<contract>::lqstx"
+// get-shares-to-tokens(shares) → uint128 micro-STX equivalent
+
+async function fetchLisaPosition(
+  address: string,
+  stxPrice: number,
+  fungibleTokens: Record<string, { balance: string }>
+): Promise<ProtocolPosition | null> {
+  // Find any lqstx asset regardless of exact deployer (handles protocol upgrades)
+  const entry = Object.entries(fungibleTokens).find(([id]) =>
+    id.endsWith("::lqstx")
+  );
+  if (!entry) return null;
+
+  const [assetId, { balance }] = entry;
+  const shares = Number(balance);
+  if (shares === 0) return null;
+
+  // Extract contract address and name from "SP...contract-name::lqstx"
+  const contractId = assetId.split("::")[0];
+  const dotIndex = contractId.lastIndexOf(".");
+  const contractAddr = contractId.slice(0, dotIndex);
+  const contractName = contractId.slice(dotIndex + 1);
+
+  const cv = await callReadOnly(contractAddr, contractName, "get-shares-to-tokens", [
+    cvHex(uintCV(shares)),
+  ]);
+  const microStx = parseCV(cv) as number;
+  if (microStx === 0) return null;
+
+  const stxAmount = microStx / 1_000_000;
+  const usdValue = stxAmount * stxPrice;
+  return {
+    lines: [{ label: "Staked", tokenAmount: `${stxAmount.toFixed(2)} STX`, usdValue }],
+    totalUsd: usdValue,
+  };
+}
+
+// Re-export for consumers that wire protocol dispatch
+export { fetchLisaPosition };

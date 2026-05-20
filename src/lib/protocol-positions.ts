@@ -2,6 +2,7 @@ import {
   serializeCV,
   hexToCV,
   ClarityType,
+  standardPrincipalCV,
   type ClarityValue,
 } from "@stacks/transactions";
 
@@ -82,4 +83,28 @@ async function callReadOnly(
   const json = await res.json();
   if (!json.okay) throw new Error(json.cause ?? "read-only call failed");
   return hexToCV(json.result);
+}
+
+// ─── StackingDAO ─────────────────────────────────────────────────────────────
+// get-stx-balance(address) → uint128 micro-STX currently staked by this user
+
+const STACKING_DAO_ADDR = "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG";
+const STACKING_DAO_NAME = "stacking-dao-core-v1";
+
+async function fetchStackingDaoPosition(
+  address: string,
+  stxPrice: number
+): Promise<ProtocolPosition | null> {
+  const cv = await callReadOnly(STACKING_DAO_ADDR, STACKING_DAO_NAME, "get-stx-balance", [
+    cvHex(standardPrincipalCV(address)),
+  ]);
+  const microStx = parseCV(cv) as number;
+  if (microStx === 0) return null;
+
+  const stxAmount = microStx / 1_000_000;
+  const usdValue = stxAmount * stxPrice;
+  return {
+    lines: [{ label: "Staked", tokenAmount: `${stxAmount.toFixed(2)} STX`, usdValue }],
+    totalUsd: usdValue,
+  };
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { Code2, ExternalLink } from "lucide-react";
-import { timeAgo, truncateContractId } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
+import { useContractInfo } from "@/hooks/useMarketData";
 
 interface UnknownContractRowProps {
   contractId: string;
@@ -13,6 +14,11 @@ export default function UnknownContractRow({
   lastInteractedAt,
 }: UnknownContractRowProps) {
   const explorerUrl = `https://explorer.hiro.so/address/${contractId}?chain=mainnet`;
+  const contractName = contractId.split(".")[1] ?? contractId;
+  const deployer = contractId.split(".")[0];
+  const truncatedDeployer = `${deployer.slice(0, 6)}...${deployer.slice(-4)}`;
+
+  const { data: contractInfo, isLoading } = useContractInfo(contractId);
 
   return (
     <div
@@ -28,17 +34,49 @@ export default function UnknownContractRow({
       >
         <Code2 size={15} style={{ color: "var(--text-muted)" }} />
       </div>
+
       <div className="flex-1 min-w-0">
-        <p
-          className="text-sm font-mono truncate"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          {truncateContractId(contractId)}
-        </p>
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {lastInteractedAt > 0 ? timeAgo(lastInteractedAt) : "—"}
-        </p>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="text-sm font-medium truncate" style={{ color: "var(--text-secondary)" }}>
+            {contractName}
+          </p>
+          <span
+            className="inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0"
+            style={{
+              backgroundColor: "rgba(245,158,11,0.15)",
+              color: "#d97706",
+            }}
+            title="Contract not recognized as a known DeFi protocol"
+          >
+            Unverified
+          </span>
+        </div>
+
+        {isLoading ? (
+          <div
+            className="mt-1 h-3 w-40 rounded animate-pulse"
+            style={{ backgroundColor: "var(--border-subtle)" }}
+          />
+        ) : (
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {truncatedDeployer} · {lastInteractedAt > 0 ? timeAgo(lastInteractedAt) : "—"}
+            </p>
+            {contractInfo?.sourceVerified && (
+              <span
+                className="inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0"
+                style={{
+                  backgroundColor: "var(--accent-dim)",
+                  color: "var(--accent)",
+                }}
+              >
+                Open Source
+              </span>
+            )}
+          </div>
+        )}
       </div>
+
       <a
         href={explorerUrl}
         target="_blank"

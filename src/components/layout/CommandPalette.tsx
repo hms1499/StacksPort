@@ -147,7 +147,7 @@ export default function CommandPalette() {
               transition={{ type: "spring", stiffness: 500, damping: 35 }}
               className="fixed left-1/2 top-[20%] -translate-x-1/2 z-50 w-full max-w-lg"
             >
-              <div className="glass-card rounded-2xl shadow-2xl overflow-hidden">
+              <div className="glass-card no-hover-lift rounded-2xl shadow-2xl overflow-hidden">
                 {/* Search input */}
                 <div className="flex items-center gap-3 px-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                   <Search size={18} className="shrink-0" style={{ color: 'var(--text-muted)' }} />

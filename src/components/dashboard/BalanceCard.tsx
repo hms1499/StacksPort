@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap, ChevronDown } from "lucide-react";
@@ -16,7 +16,7 @@ import {
 } from "recharts";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
-import { usePortfolio, usePortfolioHistory, useSTXPriceHistory } from "@/hooks/useMarketData";
+import { usePortfolio, usePortfolioHistory, useSTXPriceHistory, useUserDCAPlans } from "@/hooks/useMarketData";
 import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
@@ -30,6 +30,26 @@ function BalanceCard() {
   const [period, setPeriod] = useState<Period>("1W");
   const [connecting, setConnecting] = useState(false);
   const [breakdownOpen, setBreakdownOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Dismiss breakdown on Escape or click outside the card
+  useEffect(() => {
+    if (!breakdownOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setBreakdownOpen(false);
+    }
+    function onPointer(e: MouseEvent) {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        setBreakdownOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+    };
+  }, [breakdownOpen]);
 
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: portfolio, isLoading: portfolioLoading } = usePortfolio(addr);
@@ -42,6 +62,13 @@ function BalanceCard() {
     periodDays[period],
     !isConnected
   );
+  const { data: dcaPlans } = useUserDCAPlans(addr);
+
+  const dcaUsdLocked = useMemo(() => {
+    if (!portfolio || !dcaPlans?.length) return 0;
+    const totalStx = dcaPlans.reduce((sum, p) => sum + p.bal / 1_000_000, 0);
+    return totalStx * portfolio.stxPrice;
+  }, [dcaPlans, portfolio]);
 
   const chartData = isConnected ? portfolioHistory ?? [] : priceHistory ?? [];
   const loading = portfolioLoading && !portfolio;
@@ -97,6 +124,7 @@ function BalanceCard() {
 
   return (
     <div
+      ref={cardRef}
       className="rounded-2xl p-5 overflow-hidden"
       style={{
         backgroundColor: 'var(--bg-card)',
@@ -221,6 +249,7 @@ function BalanceCard() {
                 <PortfolioBreakdown
                   stxUsd={portfolio.stxUSD}
                   otherUsd={portfolio.otherUSD}
+                  dcaUsd={dcaUsdLocked}
                   totalUsd={portfolio.totalUSD}
                   onDismiss={() => setBreakdownOpen(false)}
                 />

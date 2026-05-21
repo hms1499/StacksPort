@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activity, Wallet } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Sparkles, Wallet } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useTransactions } from "@/hooks/useMarketData";
 import EmptyState from "@/components/motion/EmptyState";
@@ -245,8 +246,8 @@ function RecentActivity() {
       {!isConnected ? (
         <EmptyState
           icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
-          title="No wallet connected"
-          description="Connect your wallet to view recent transactions."
+          title="Connect to see your history"
+          description="Your swaps, transfers, and DCA executions will show up here in real time."
           action={<ConnectWalletCTA />}
         />
       ) : isLoading ? (
@@ -255,9 +256,24 @@ function RecentActivity() {
         </div>
       ) : txs.length === 0 ? (
         <EmptyState
-          icon={<Activity size={28} style={{ color: 'var(--accent)' }} />}
-          title="No transactions yet"
-          description="Your transaction history will appear here once you make your first swap or transfer."
+          accentColor="#F7931A"
+          icon={<Sparkles size={28} style={{ color: '#F7931A' }} />}
+          title="A clean slate"
+          description="Your first swap, transfer, or DCA execution will appear here."
+          action={
+            <Link
+              href="/trade"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+              style={{
+                backgroundColor: '#F7931A',
+                color: '#1a0f00',
+                boxShadow: '0 0 14px rgba(247, 147, 26, 0.35)',
+              }}
+            >
+              Make your first swap
+              <ArrowUpRight size={14} />
+            </Link>
+          }
         />
       ) : (
         <div className="space-y-3">

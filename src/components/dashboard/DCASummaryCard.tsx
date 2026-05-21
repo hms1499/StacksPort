@@ -54,18 +54,39 @@ export default function DCASummaryCard() {
           ))}
         </div>
       ) : (plans ?? []).length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-4 text-center">
-          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            No DCA plans yet
+        <div className="flex flex-col items-center gap-2 py-5 text-center">
+          <div className="relative mb-1">
+            <span
+              aria-hidden
+              className="absolute inset-0 rounded-xl animate-pulse"
+              style={{ backgroundColor: "var(--accent)", opacity: 0.18 }}
+            />
+            <div
+              className="relative w-11 h-11 rounded-xl flex items-center justify-center"
+              style={{
+                backgroundColor: "color-mix(in srgb, var(--accent) 18%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--accent) 28%, transparent)",
+              }}
+            >
+              <Repeat2 size={20} style={{ color: "var(--accent)" }} />
+            </div>
+          </div>
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+            Stack sats on autopilot
+          </p>
+          <p className="text-xs max-w-55" style={{ color: "var(--text-muted)" }}>
+            Set a recurring buy and let the keeper bot do the rest — no babysitting required.
           </p>
           <Link
             href="/dca"
-            className="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
+            className="mt-2 inline-flex items-center gap-1 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
             style={{
               backgroundColor: "var(--accent)",
               color: "#060C18",
+              boxShadow: "0 0 12px var(--accent-glow)",
             }}
           >
+            <Zap size={12} fill="currentColor" />
             Create your first plan
           </Link>
         </div>

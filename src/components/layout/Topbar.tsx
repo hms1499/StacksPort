@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut, Compass } from "lucide-react";
+import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut, Compass, TrendingUp, TrendingDown } from "lucide-react";
 import Link from "next/link";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
+import { useSTXMarketStats } from "@/hooks/useMarketData";
+import { useFlashOnChange } from "@/hooks/useFlashOnChange";
 import { shortenAddress, cn } from "@/lib/utils";
 import { connectWallet } from "@/lib/wallet";
 import NotificationBadge from "@/components/notifications/NotificationBadge";
@@ -19,6 +21,8 @@ interface TopbarProps {
 export default function Topbar({ title = "Dashboard" }: TopbarProps) {
   const { isConnected, stxAddress, connect, disconnect } = useWalletStore();
   const { theme, toggleTheme } = useThemeStore();
+  const { data: stxStats } = useSTXMarketStats();
+  const priceFlash = useFlashOnChange(stxStats?.price);
   const [connecting, setConnecting] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -57,13 +61,39 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
       }}
     >
       {/* ── Title ── */}
-      <div className="flex-1">
+      <div className="flex-1 flex items-center gap-3">
         <h1
           className="font-bold text-base tracking-tight"
           style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
         >
           {title}
         </h1>
+
+        {/* Live STX price chip */}
+        {stxStats && (
+          <div
+            className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-data"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+            }}
+            title="Live STX price · 24h change"
+          >
+            <span className="font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+              STX
+            </span>
+            <span className={`font-semibold ${priceFlash}`} style={{ color: 'var(--text-primary)' }}>
+              ${stxStats.price.toFixed(4)}
+            </span>
+            <span
+              className="flex items-center gap-0.5 font-semibold"
+              style={{ color: stxStats.change24h >= 0 ? 'var(--positive)' : 'var(--negative)' }}
+            >
+              {stxStats.change24h >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+              {Math.abs(stxStats.change24h).toFixed(1)}%
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ── Right actions ── */}

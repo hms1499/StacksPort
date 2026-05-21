@@ -17,6 +17,7 @@ import {
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { usePortfolio, usePortfolioHistory, useSTXPriceHistory, useUserDCAPlans } from "@/hooks/useMarketData";
+import { useFlashOnChange } from "@/hooks/useFlashOnChange";
 import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
@@ -107,6 +108,7 @@ function BalanceCard() {
   }
 
   const isPositive = (periodChange ?? portfolio?.stxChange24h ?? 0) >= 0;
+  const totalFlash = useFlashOnChange(portfolio?.totalUSD);
 
   // Demo portfolio that ticks subtly when wallet is disconnected — first-impression hook
   const [demoValue, setDemoValue] = useState(24521.83);
@@ -196,7 +198,7 @@ function BalanceCard() {
                 <AnimatedCounter
                   value={portfolio.totalUSD}
                   formatFn={formatUSD}
-                  className="text-4xl font-bold font-data group-hover:opacity-90 transition-opacity"
+                  className={`text-4xl font-bold font-data group-hover:opacity-90 transition-opacity ${totalFlash}`}
                 />
                 <ChevronDown
                   size={18}

@@ -104,7 +104,10 @@ export default function GreedIndexCard() {
   const { data, isLoading } = useFearGreed();
 
   return (
-    <div className="glass-card rounded-2xl p-5 shadow-sm">
+    <div
+      className="glass-card rounded-2xl p-5 shadow-sm"
+      style={{ ['--card-accent' as string]: '#A78BFA' }}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
           <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Greed Index</h2>

@@ -19,7 +19,10 @@ export default function DCASummaryCard() {
   const totalSwapsDone = (plans ?? []).reduce((sum, p) => sum + p.tsd, 0);
 
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div
+      className="glass-card rounded-2xl p-5"
+      style={{ ['--card-accent' as string]: '#FFB547' }}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div

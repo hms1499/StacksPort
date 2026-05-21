@@ -18,9 +18,9 @@ import { usePortfolio, usePortfolioHistory, useSTXPriceHistory } from "@/hooks/u
 import { formatUSD, formatSTX, formatPercent } from "@/lib/utils";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
-type Period = "1D" | "1W" | "1M";
+type Period = "1D" | "1W" | "1M" | "1Y";
 
-const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30 };
+const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30, "1Y": 365 };
 
 function BalanceCard() {
   const { stxAddress, isConnected, connect } = useWalletStore();
@@ -50,6 +50,13 @@ function BalanceCard() {
     if (first === 0) return null;
     return ((last - first) / first) * 100;
   }, [chartData]);
+
+  const periodChangeUSD = useMemo(() => {
+    if (!isConnected || chartData.length < 2) return null;
+    const first = chartData[0].value;
+    const last = chartData[chartData.length - 1].value;
+    return last - first;
+  }, [chartData, isConnected]);
 
   async function handleConnect() {
     setConnecting(true);
@@ -108,7 +115,7 @@ function BalanceCard() {
           className="flex gap-0.5 p-0.5 rounded-lg"
           style={{ backgroundColor: 'var(--border-subtle)' }}
         >
-          {(["1D", "1W", "1M"] as Period[]).map((p) => (
+          {(["1D", "1W", "1M", "1Y"] as Period[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
@@ -155,7 +162,15 @@ function BalanceCard() {
                 }
               >
                 {isPositive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
-                {formatPercent(periodChange ?? portfolio.stxChange24h)}
+                {periodChangeUSD !== null && (
+                  <span>
+                    {isPositive ? "+" : "−"}
+                    {formatUSD(Math.abs(periodChangeUSD))}
+                  </span>
+                )}
+                <span style={{ opacity: 0.85 }}>
+                  ({formatPercent(periodChange ?? portfolio.stxChange24h)})
+                </span>
               </span>
             </div>
             <div

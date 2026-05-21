@@ -112,18 +112,17 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
 });
 
 function SkeletonRow() {
-  const s = { backgroundColor: 'var(--border-subtle)' } as const;
   return (
-    <div className="flex items-center gap-3 py-3 px-2 animate-pulse">
-      <div className="w-11 h-11 rounded-full shrink-0" style={s} />
+    <div className="flex items-center gap-3 py-3 px-2">
+      <div className="w-11 h-11 rounded-full shrink-0 skeleton" />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3 rounded w-24" style={s} />
-        <div className="h-3 rounded w-12" style={s} />
+        <div className="h-3 rounded w-24 skeleton" />
+        <div className="h-3 rounded w-12 skeleton" />
       </div>
-      <div className="w-20 h-10 rounded shrink-0" style={s} />
+      <div className="w-20 h-10 rounded shrink-0 skeleton" />
       <div className="w-24 space-y-1.5 text-right">
-        <div className="h-3 rounded w-16 ml-auto" style={s} />
-        <div className="h-3 rounded w-12 ml-auto" style={s} />
+        <div className="h-3 rounded w-16 ml-auto skeleton" />
+        <div className="h-3 rounded w-12 ml-auto skeleton" />
       </div>
     </div>
   );

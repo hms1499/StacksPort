@@ -50,11 +50,7 @@ export default function DCASummaryCard() {
       {isLoading ? (
         <div className="space-y-2">
           {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className="h-10 rounded-xl animate-pulse"
-              style={{ backgroundColor: "var(--border-subtle)" }}
-            />
+            <div key={i} className="h-10 rounded-xl skeleton" />
           ))}
         </div>
       ) : (plans ?? []).length === 0 ? (

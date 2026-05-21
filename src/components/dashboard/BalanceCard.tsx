@@ -150,14 +150,8 @@ function BalanceCard() {
       <div className="mb-5">
         {loading ? (
           <div className="space-y-2">
-            <div
-              className="h-11 rounded-lg animate-pulse w-52"
-              style={{ backgroundColor: 'var(--border-subtle)' }}
-            />
-            <div
-              className="h-4 rounded-lg animate-pulse w-64"
-              style={{ backgroundColor: 'var(--border-subtle)' }}
-            />
+            <div className="h-11 w-52 rounded-lg skeleton" />
+            <div className="h-4 w-64 rounded-lg skeleton" />
           </div>
         ) : isConnected && portfolio ? (
           <>

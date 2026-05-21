@@ -239,6 +239,37 @@ body {
   animation: shimmer 1.8s ease-in-out infinite;
 }
 
+/* ── Skeleton: base color + shimmer sweep overlay ────────────────────────
+   Drop-in replacement for `animate-pulse` blocks. Apply to a sized element
+   (e.g. `<div className="h-3 w-20 rounded skeleton" />`); no inline bg
+   color needed — the base + sweep are themed via CSS variables. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--border-subtle);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.045) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.dark .skeleton::after {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+}
+
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
   50%       { box-shadow: 0 0 20px var(--accent-glow); }

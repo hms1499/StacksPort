@@ -10,11 +10,11 @@ import MotionCard from "@/components/motion/MotionCard";
 const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
 const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"), {
   loading: () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-24 mb-4" />
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
+      <div className="h-4 w-24 rounded skeleton mb-4" />
       <div className="space-y-2">
         {[...Array(2)].map((_, i) => (
-          <div key={i} className="h-10 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse" />
+          <div key={i} className="h-10 rounded-xl skeleton" />
         ))}
       </div>
     </div>
@@ -26,10 +26,10 @@ const STXMarketStatsCard = dynamic(() => import("@/components/dashboard/STXMarke
   loading: () => (
     <div className="grid grid-cols-3 gap-2 sm:gap-4">
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
-          <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-16" />
-          <div className="h-6 bg-gray-100 dark:bg-gray-700 rounded animate-pulse mt-2 w-24" />
-          <div className="h-12 bg-gray-50 dark:bg-gray-700/50 rounded-lg animate-pulse mt-3" />
+        <div key={i} className="glass-card rounded-2xl p-4 shadow-sm">
+          <div className="h-3 w-16 rounded skeleton" />
+          <div className="h-6 w-24 rounded skeleton mt-2" />
+          <div className="h-12 rounded-lg skeleton mt-3" />
         </div>
       ))}
     </div>
@@ -38,10 +38,10 @@ const STXMarketStatsCard = dynamic(() => import("@/components/dashboard/STXMarke
 
 const GreedIndexCard = dynamic(() => import("@/components/dashboard/GreedIndexCard"), {
   loading: () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-24 mb-4" />
-      <div className="flex flex-col items-center gap-3 py-6 animate-pulse">
-        <div className="w-52 h-28 bg-gray-100 dark:bg-gray-700 rounded-xl" />
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
+      <div className="h-4 w-24 rounded skeleton mb-4" />
+      <div className="flex flex-col items-center gap-3 py-6">
+        <div className="w-52 h-28 rounded-xl skeleton" />
       </div>
     </div>
   ),
@@ -49,15 +49,15 @@ const GreedIndexCard = dynamic(() => import("@/components/dashboard/GreedIndexCa
 
 const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingTokens"), {
   loading: () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-20 mb-4" />
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
+      <div className="h-4 w-20 rounded skeleton mb-4" />
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center gap-3 animate-pulse">
-            <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700" />
+          <div key={i} className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full skeleton" />
             <div className="flex-1 space-y-1.5">
-              <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-24" />
-              <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-12" />
+              <div className="h-3 w-24 rounded skeleton" />
+              <div className="h-3 w-12 rounded skeleton" />
             </div>
           </div>
         ))}
@@ -68,15 +68,15 @@ const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingToke
 
 const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"), {
   loading: () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-24 mb-4" />
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
+      <div className="h-4 w-24 rounded skeleton mb-4" />
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-start gap-3 animate-pulse">
-            <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700" />
+          <div key={i} className="flex items-start gap-3">
+            <div className="w-12 h-12 rounded-xl skeleton" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-full" />
-              <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-3/4" />
+              <div className="h-3 w-full rounded skeleton" />
+              <div className="h-3 w-3/4 rounded skeleton" />
             </div>
           </div>
         ))}
@@ -87,15 +87,15 @@ const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"), {
 
 const RecentActivity = dynamic(() => import("@/components/dashboard/RecentActivity"), {
   loading: () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-28 mb-4" />
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
+      <div className="h-4 w-28 rounded skeleton mb-4" />
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center gap-3 animate-pulse">
-            <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700" />
+          <div key={i} className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full skeleton" />
             <div className="flex-1 space-y-1.5">
-              <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-24" />
-              <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-32" />
+              <div className="h-3 w-24 rounded skeleton" />
+              <div className="h-3 w-32 rounded skeleton" />
             </div>
           </div>
         ))}

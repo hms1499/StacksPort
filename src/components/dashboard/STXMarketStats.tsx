@@ -55,9 +55,9 @@ const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: numb
 function SkeletonCard() {
   return (
     <div className="glass-card rounded-2xl p-4 shadow-sm">
-      <div className="h-3 rounded animate-pulse w-16" style={{ backgroundColor: 'var(--border-subtle)' }} />
-      <div className="h-6 rounded animate-pulse mt-2 w-24" style={{ backgroundColor: 'var(--border-subtle)' }} />
-      <div className="h-12 rounded-lg animate-pulse mt-3" style={{ backgroundColor: 'var(--bg-elevated)' }} />
+      <div className="h-3 w-16 rounded skeleton" />
+      <div className="h-6 w-24 rounded mt-2 skeleton" />
+      <div className="h-12 rounded-lg mt-3 skeleton" />
     </div>
   );
 }

@@ -122,9 +122,9 @@ export default function GreedIndexCard() {
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col items-center gap-3 py-6 animate-pulse">
-          <div className="w-52 h-28 rounded-xl" style={{ backgroundColor: 'var(--border-subtle)' }} />
-          <div className="h-4 w-20 rounded" style={{ backgroundColor: 'var(--border-subtle)' }} />
+        <div className="flex flex-col items-center gap-3 py-6">
+          <div className="w-52 h-28 rounded-xl skeleton" />
+          <div className="h-4 w-20 rounded skeleton" />
         </div>
       ) : data ? (
         <div className="flex flex-col items-center">

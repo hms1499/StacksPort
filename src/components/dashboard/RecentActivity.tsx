@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Activity, Wallet } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useTransactions } from "@/hooks/useMarketData";
@@ -15,6 +15,36 @@ interface TxItem {
   sublabel: string;
   amount: string | null;
   timestamp: number;
+  protocol?: { name: string; color: string };
+}
+
+const DCA_VAULT = "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
+
+function detectProtocol(contractId: string): TxItem["protocol"] {
+  if (!contractId) return undefined;
+  const id = contractId.toLowerCase();
+  const name = id.split(".")[1] ?? "";
+  if (contractId.startsWith(DCA_VAULT)) return { name: "DCA Vault", color: "#FFB547" };
+  if (name.includes("xyk") || name.includes("bitflow") || name.includes("aggregator") || name.includes("multihop"))
+    return { name: "Bitflow", color: "#6366F1" };
+  if (name.includes("alex") || name.includes("amm-pool")) return { name: "ALEX", color: "#22D3EE" };
+  if (name.includes("pox") || name.includes("stack")) return { name: "Stacking", color: "#F472B6" };
+  if (name.includes("sbtc")) return { name: "sBTC", color: "#F7931A" };
+  return undefined;
+}
+
+function groupBucket(ts: number): "Today" | "Yesterday" | "This Week" | "Earlier" {
+  if (!ts) return "Earlier";
+  const now = new Date();
+  const txDate = new Date(ts * 1000);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const startOfYesterday = startOfToday - 86400 * 1000;
+  const startOfWeek = startOfToday - 7 * 86400 * 1000;
+  const t = txDate.getTime();
+  if (t >= startOfToday) return "Today";
+  if (t >= startOfYesterday) return "Yesterday";
+  if (t >= startOfWeek) return "This Week";
+  return "Earlier";
 }
 
 function timeAgo(ts: number): string {
@@ -56,7 +86,8 @@ function parseTx(raw: any, myAddress: string): TxItem {
 
   if (type === "contract_call") {
     const fn = tx.contract_call?.function_name ?? "call";
-    const contract = tx.contract_call?.contract_id?.split(".")[1] ?? tx.contract_call?.contract_id ?? "";
+    const fullId = tx.contract_call?.contract_id ?? "";
+    const contract = fullId.split(".")[1] ?? fullId;
     return {
       txId: tx.tx_id,
       type: "contract_call",
@@ -65,6 +96,7 @@ function parseTx(raw: any, myAddress: string): TxItem {
       sublabel: contract,
       amount: null,
       timestamp,
+      protocol: detectProtocol(fullId),
     };
   }
 
@@ -126,7 +158,15 @@ const TxRow = React.memo(function TxRow({ tx }: { tx: TxItem }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{tx.label}</p>
-          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STATUS_DOT[tx.status]}`} />
+          {tx.protocol && (
+            <span
+              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0"
+              style={{ color: tx.protocol.color, backgroundColor: `${tx.protocol.color}1A` }}
+            >
+              {tx.protocol.name}
+            </span>
+          )}
+          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STATUS_DOT[tx.status]} ${tx.status === "pending" ? "animate-pulse" : ""}`} />
         </div>
         <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>{tx.sublabel}</p>
       </div>
@@ -174,6 +214,18 @@ function RecentActivity() {
     parseTx(r, stxAddress ?? "")
   );
 
+  const grouped = useMemo(() => {
+    const order: Array<"Today" | "Yesterday" | "This Week" | "Earlier"> = [
+      "Today", "Yesterday", "This Week", "Earlier",
+    ];
+    const buckets: Record<string, TxItem[]> = {};
+    for (const tx of txs) {
+      const k = groupBucket(tx.timestamp);
+      (buckets[k] ??= []).push(tx);
+    }
+    return order.filter((k) => buckets[k]?.length).map((k) => ({ label: k, items: buckets[k] }));
+  }, [txs]);
+
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm flex flex-col">
       <div className="flex items-center justify-between mb-4">
@@ -209,8 +261,20 @@ function RecentActivity() {
           description="Your transaction history will appear here once you make your first swap or transfer."
         />
       ) : (
-        <div className="space-y-0.5">
-          {txs.map((tx) => <TxRow key={tx.txId} tx={tx} />)}
+        <div className="space-y-3">
+          {grouped.map((group) => (
+            <div key={group.label}>
+              <div
+                className="text-[10px] font-bold tracking-widest uppercase mb-1 px-2"
+                style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+              >
+                {group.label}
+              </div>
+              <div className="space-y-0.5">
+                {group.items.map((tx) => <TxRow key={tx.txId} tx={tx} />)}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

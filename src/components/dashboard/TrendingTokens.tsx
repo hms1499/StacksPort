@@ -3,6 +3,7 @@
 import { memo } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import { useTrendingTokens } from "@/hooks/useMarketData";
+import { useFlashOnChange } from "@/hooks/useFlashOnChange";
 import type { TrendingToken } from "@/lib/stacks";
 
 const COINGECKO_STACKS_URL = "https://www.coingecko.com/en/categories/stacks-ecosystem";
@@ -50,6 +51,7 @@ function formatPrice(price: number): string {
 
 const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
   const isPositive = token.change24h >= 0;
+  const priceFlash = useFlashOnChange(token.priceUsd);
 
   return (
     <a
@@ -86,7 +88,7 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
 
       {/* Price + change */}
       <div className="text-right flex-shrink-0 w-24">
-        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{formatPrice(token.priceUsd)}</p>
+        <p className={`text-sm font-semibold ${priceFlash}`} style={{ color: 'var(--text-primary)' }}>{formatPrice(token.priceUsd)}</p>
         <div
           className={`flex items-center justify-end gap-0.5 mt-0.5 text-xs font-medium ${
             isPositive ? "text-green-500" : "text-red-500"

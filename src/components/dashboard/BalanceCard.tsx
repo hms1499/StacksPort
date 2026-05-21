@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap } from "lucide-react";
 import { connect as stacksConnect } from "@stacks/connect";
@@ -77,6 +77,20 @@ function BalanceCard() {
   }
 
   const isPositive = (periodChange ?? portfolio?.stxChange24h ?? 0) >= 0;
+
+  // Demo portfolio that ticks subtly when wallet is disconnected — first-impression hook
+  const [demoValue, setDemoValue] = useState(24521.83);
+  useEffect(() => {
+    if (isConnected) return;
+    const id = setInterval(() => {
+      setDemoValue((v) => {
+        const drift = (Math.random() - 0.45) * 18;
+        const next = v + drift;
+        return Math.max(24200, Math.min(24900, next));
+      });
+    }, 2400);
+    return () => clearInterval(id);
+  }, [isConnected]);
 
   return (
     <div
@@ -192,11 +206,41 @@ function BalanceCard() {
           </>
         ) : (
           <div className="flex flex-col gap-3">
-            <p
-              className="text-3xl font-bold font-data"
-              style={{ color: 'var(--border-default)', letterSpacing: '-0.04em' }}
-            >
-              ——.——
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <AnimatedCounter
+                value={demoValue}
+                formatFn={formatUSD}
+                duration={1200}
+                className="text-4xl font-bold font-data"
+                style={{ color: 'var(--text-primary)', opacity: 0.55 }}
+              />
+              <span
+                className="flex items-center gap-1 text-xs font-bold tracking-wider uppercase px-2 py-0.5 rounded-md"
+                style={{
+                  color: 'var(--accent)',
+                  backgroundColor: isDark ? 'rgba(0, 229, 160, 0.12)' : 'rgba(0, 194, 122, 0.12)',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                <span className="relative flex w-1.5 h-1.5">
+                  <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping" style={{ backgroundColor: 'var(--accent)' }} />
+                  <span className="relative inline-flex w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
+                </span>
+                Demo
+              </span>
+              <span
+                className="text-sm font-semibold font-data px-2 py-0.5 rounded-lg"
+                style={{
+                  color: 'var(--positive)',
+                  backgroundColor: isDark ? 'rgba(0, 229, 160, 0.1)' : 'rgba(0, 194, 122, 0.1)',
+                  opacity: 0.7,
+                }}
+              >
+                +$234 (+1.9%)
+              </span>
+            </div>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Sample portfolio · Connect to see your real holdings
             </p>
             <button
               onClick={handleConnect}

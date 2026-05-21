@@ -146,18 +146,34 @@ export default function WelcomeSteps() {
                   }
                 >
                   <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden"
                     style={step.done
                       ? { backgroundColor: '#408A71', color: '#fff' }
                       : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }
                     }
                   >
-                    {step.done ? <CheckCircle2 size={14} /> : step.icon}
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={step.done ? "done" : "todo"}
+                        initial={{ scale: 0, rotate: -45, opacity: 0 }}
+                        animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                        className="flex"
+                      >
+                        {step.done ? <CheckCircle2 size={14} /> : step.icon}
+                      </motion.span>
+                    </AnimatePresence>
                   </div>
                   <div className="min-w-0">
                     <p
-                      className="text-xs font-semibold"
-                      style={{ color: step.done ? 'var(--accent)' : 'var(--text-primary)' }}
+                      className="text-xs font-semibold transition-all"
+                      style={{
+                        color: step.done ? 'var(--accent)' : 'var(--text-primary)',
+                        textDecoration: step.done ? 'line-through' : 'none',
+                        textDecorationColor: 'color-mix(in srgb, var(--accent) 50%, transparent)',
+                        opacity: step.done ? 0.85 : 1,
+                      }}
                     >
                       {step.label}
                     </p>

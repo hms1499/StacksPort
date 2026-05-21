@@ -127,11 +127,7 @@ function BalanceCard() {
   return (
     <div
       ref={cardRef}
-      className="rounded-2xl p-5 overflow-hidden"
-      style={{
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border-subtle)',
-      }}
+      className="glass-card rounded-2xl p-5 overflow-hidden"
     >
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">

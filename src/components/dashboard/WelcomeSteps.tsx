@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useWalletStore } from "@/store/walletStore";
@@ -83,6 +83,19 @@ export default function WelcomeSteps() {
 
   const completedCount = steps.filter((s) => s.done).length;
   const progress = (completedCount / steps.length) * 100;
+  const allDone = completedCount === steps.length;
+
+  // Fire a one-shot celebration the first time the user reaches 4/4
+  const [celebrating, setCelebrating] = useState(false);
+  const celebratedRef = useRef(false);
+  useEffect(() => {
+    if (allDone && !celebratedRef.current) {
+      celebratedRef.current = true;
+      setCelebrating(true);
+      const id = setTimeout(() => setCelebrating(false), 2400);
+      return () => clearTimeout(id);
+    }
+  }, [allDone]);
 
   function handleDismiss() {
     setDismissed(true);
@@ -99,18 +112,50 @@ export default function WelcomeSteps() {
           transition={{ duration: 0.3 }}
           className="overflow-hidden"
         >
-          <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(to right, var(--accent-glow), color-mix(in srgb, var(--accent-dim) 5%, transparent))', border: '1px solid var(--accent-glow)' }}>
+          <div className="relative rounded-2xl p-5 overflow-hidden" style={{ background: 'linear-gradient(to right, var(--accent-glow), color-mix(in srgb, var(--accent-dim) 5%, transparent))', border: '1px solid var(--accent-glow)' }}>
+            {/* Celebration sparkles — emit from the icon area when 4/4 reached */}
+            <AnimatePresence>
+              {celebrating && (
+                <div className="pointer-events-none absolute top-3 left-3 w-12 h-12 z-10">
+                  {Array.from({ length: 14 }).map((_, i) => {
+                    const angle = (i / 14) * Math.PI * 2;
+                    const dist = 40 + Math.random() * 30;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist;
+                    const color = i % 3 === 0 ? '#FFB547' : i % 3 === 1 ? 'var(--accent)' : '#F7931A';
+                    return (
+                      <motion.span
+                        key={i}
+                        initial={{ x: 16, y: 16, scale: 0, opacity: 1 }}
+                        animate={{ x: 16 + dx, y: 16 + dy, scale: [0, 1, 0.6], opacity: [1, 1, 0] }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.6 + Math.random() * 0.6, ease: 'easeOut', delay: Math.random() * 0.25 }}
+                        className="absolute w-1.5 h-1.5 rounded-full"
+                        style={{ backgroundColor: color, boxShadow: `0 0 6px ${color}` }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </AnimatePresence>
+
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#408A71] flex items-center justify-center">
+                <motion.div
+                  className="w-8 h-8 rounded-lg bg-[#408A71] flex items-center justify-center relative"
+                  animate={celebrating ? { scale: [1, 1.18, 1], rotate: [0, 8, -8, 0] } : { scale: 1, rotate: 0 }}
+                  transition={celebrating ? { duration: 0.6, repeat: 2 } : { duration: 0.2 }}
+                >
                   <Sparkles size={16} className="text-white" />
-                </div>
+                </motion.div>
                 <div>
                   <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    Getting Started
+                    {allDone ? "You're all set!" : "Getting Started"}
                   </h3>
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {completedCount}/{steps.length} completed
+                  <p className="text-xs" style={{ color: allDone ? 'var(--accent)' : 'var(--text-muted)' }}>
+                    {allDone
+                      ? "Every step done — happy stacking."
+                      : `${completedCount}/${steps.length} completed`}
                   </p>
                 </div>
               </div>

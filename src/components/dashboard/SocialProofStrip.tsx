@@ -1,18 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Repeat, TrendingUp, Users, Percent } from "lucide-react";
+import useSWR from "swr";
+import { Repeat, TrendingUp, Activity, BarChart3 } from "lucide-react";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
-// NOTE: Values below are launch-time placeholders. Wire to real aggregate
-// endpoints when available (e.g. /api/metrics aggregating on-chain contract
-// reads). Pattern used at launch by Lido, Convex, etc.
-const INITIAL_METRICS = {
-  dcaPlans: 847,
-  volume: 2_100_000,
-  activeUsers: 1_200,
-  avgReturn: 18.4,
+interface MetricsResponse {
+  plansCreated: number;
+  volumeUsd: number;
+  swapsExecuted: number;
+  avgSwapsPerPlan: number;
+}
+
+const FALLBACK: MetricsResponse = {
+  plansCreated: 0,
+  volumeUsd: 0,
+  swapsExecuted: 0,
+  avgSwapsPerPlan: 0,
 };
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 function formatCompactUSD(v: number): string {
   if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(2)}M`;
@@ -24,11 +30,11 @@ function formatCompactInt(v: number): string {
   return Math.round(v).toLocaleString("en-US");
 }
 
-function formatPct(v: number): string {
-  return `+${v.toFixed(1)}%`;
+function formatRatio(v: number): string {
+  return v.toFixed(1);
 }
 
-type MetricKey = "dcaPlans" | "volume" | "activeUsers" | "avgReturn";
+type MetricKey = keyof MetricsResponse;
 
 const METRICS: Array<{
   key: MetricKey;
@@ -37,26 +43,18 @@ const METRICS: Array<{
   color: string;
   format: (v: number) => string;
 }> = [
-  { key: "dcaPlans",    label: "DCA Plans Created", icon: Repeat,     color: "#00C27A", format: formatCompactInt },
-  { key: "volume",      label: "Volume Executed",   icon: TrendingUp, color: "#38BDF8", format: formatCompactUSD },
-  { key: "activeUsers", label: "Active Users",      icon: Users,      color: "#A78BFA", format: formatCompactInt },
-  { key: "avgReturn",   label: "Avg Return",        icon: Percent,    color: "#F472B6", format: formatPct },
+  { key: "plansCreated",    label: "DCA Plans Created", icon: Repeat,     color: "#00C27A", format: formatCompactInt },
+  { key: "volumeUsd",       label: "Volume Executed",   icon: TrendingUp, color: "#38BDF8", format: formatCompactUSD },
+  { key: "swapsExecuted",   label: "Swaps Executed",    icon: Activity,   color: "#A78BFA", format: formatCompactInt },
+  { key: "avgSwapsPerPlan", label: "Avg Swaps / Plan",  icon: BarChart3,  color: "#F472B6", format: formatRatio },
 ];
 
 export default function SocialProofStrip() {
-  const [metrics, setMetrics] = useState(INITIAL_METRICS);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setMetrics((m) => ({
-        dcaPlans: m.dcaPlans + (Math.random() > 0.6 ? 1 : 0),
-        volume: m.volume + Math.random() * 280 + 30,
-        activeUsers: m.activeUsers + (Math.random() > 0.85 ? 1 : 0),
-        avgReturn: Math.max(17.5, Math.min(19.2, m.avgReturn + (Math.random() - 0.5) * 0.06)),
-      }));
-    }, 3200);
-    return () => clearInterval(id);
-  }, []);
+  const { data } = useSWR<MetricsResponse>("/api/metrics", fetcher, {
+    refreshInterval: 60_000,
+    revalidateOnFocus: false,
+  });
+  const metrics = data ?? FALLBACK;
 
   return (
     <div

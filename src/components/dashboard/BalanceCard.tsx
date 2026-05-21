@@ -2,7 +2,9 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap, ChevronDown } from "lucide-react";
+import PortfolioBreakdown from "@/components/dashboard/PortfolioBreakdown";
 import { connect as stacksConnect } from "@stacks/connect";
 import {
   ResponsiveContainer,
@@ -27,6 +29,7 @@ function BalanceCard() {
   const isDark = useThemeStore((s) => s.theme === "dark");
   const [period, setPeriod] = useState<Period>("1W");
   const [connecting, setConnecting] = useState(false);
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
 
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: portfolio, isLoading: portfolioLoading } = usePortfolio(addr);
@@ -156,11 +159,26 @@ function BalanceCard() {
         ) : isConnected && portfolio ? (
           <>
             <div className="flex items-baseline gap-3">
-              <AnimatedCounter
-                value={portfolio.totalUSD}
-                formatFn={formatUSD}
-                className="text-4xl font-bold font-data"
-              />
+              <button
+                type="button"
+                onClick={() => setBreakdownOpen((v) => !v)}
+                className="flex items-baseline gap-1.5 group rounded-lg -ml-1 px-1 transition-colors"
+                title={breakdownOpen ? "Hide breakdown" : "Show portfolio breakdown"}
+              >
+                <AnimatedCounter
+                  value={portfolio.totalUSD}
+                  formatFn={formatUSD}
+                  className="text-4xl font-bold font-data group-hover:opacity-90 transition-opacity"
+                />
+                <ChevronDown
+                  size={18}
+                  className="self-center transition-transform duration-200"
+                  style={{
+                    color: 'var(--text-muted)',
+                    transform: breakdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                />
+              </button>
               <span
                 className="flex items-center gap-1 text-sm font-semibold font-data px-2 py-0.5 rounded-lg"
                 style={
@@ -197,6 +215,17 @@ function BalanceCard() {
                 </>
               )}
             </div>
+
+            <AnimatePresence initial={false}>
+              {breakdownOpen && (
+                <PortfolioBreakdown
+                  stxUsd={portfolio.stxUSD}
+                  otherUsd={portfolio.otherUSD}
+                  totalUsd={portfolio.totalUSD}
+                  onDismiss={() => setBreakdownOpen(false)}
+                />
+              )}
+            </AnimatePresence>
           </>
         ) : (
           <div className="flex flex-col gap-3">

@@ -4,6 +4,7 @@ import { RefreshCw, Sparkles, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAIInsights } from "@/hooks/useAIInsights";
 import Topbar from "@/components/layout/Topbar";
+import AnimatedPage from "@/components/motion/AnimatedPage";
 import SentimentCard from "./SentimentCard";
 import KOLSignalsCard from "./KOLSignalsCard";
 import SmartAlertsCard from "./SmartAlertsCard";
@@ -37,7 +38,7 @@ export default function AIPageContent() {
     <div className="flex flex-col min-h-screen">
       <Topbar title="Stacks AI" />
 
-      <div className="flex-1 p-4 md:p-6 pb-24 md:pb-6">
+      <AnimatedPage className="flex-1 p-4 md:p-6 pb-24 md:pb-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
@@ -105,7 +106,7 @@ export default function AIPageContent() {
             </div>
           </div>
         )}
-      </div>
+      </AnimatedPage>
     </div>
   );
 }

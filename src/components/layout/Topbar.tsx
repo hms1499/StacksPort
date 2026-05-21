@@ -74,16 +74,25 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           className={cn(
-            "p-2 rounded-xl hidden md:flex",
+            "p-2 rounded-xl hidden md:flex relative overflow-hidden",
             "transition-[background-color,color] duration-200",
             "text-[var(--text-muted)] hover:bg-[var(--border-subtle)] hover:text-[var(--text-secondary)]",
           )}
         >
-          {theme === "dark"
-            ? <Sun size={16} />
-            : <Moon size={16} />
-          }
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={theme}
+              initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
+              animate={{ rotate: 0, opacity: 1, scale: 1 }}
+              exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="flex"
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </motion.span>
+          </AnimatePresence>
         </button>
 
         {/* Wallet */}

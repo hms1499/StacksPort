@@ -3,6 +3,7 @@
 import { memo, useMemo } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useSTXMarketStats, useSTXMarketHistory } from "@/hooks/useMarketData";
+import { useFlashOnChange } from "@/hooks/useFlashOnChange";
 
 function formatLargeNumber(value: number): string {
   if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
@@ -72,6 +73,9 @@ export default function STXMarketStatsCard() {
   const volumes = useMemo(() => history?.volumes ?? [], [history]);
 
   const isPositive = (stats?.change24h ?? 0) >= 0;
+  const priceFlash = useFlashOnChange(stats?.price);
+  const mcapFlash  = useFlashOnChange(stats?.marketCap);
+  const volFlash   = useFlashOnChange(stats?.volume24h);
   const volIsPositive = useMemo(() => volumes.length >= 2 ? volumes[volumes.length - 1] >= volumes[0] : true, [volumes]);
   const mcapIsPositive = useMemo(() => marketCaps.length >= 2 ? marketCaps[marketCaps.length - 1] >= marketCaps[0] : true, [marketCaps]);
 
@@ -101,7 +105,7 @@ export default function STXMarketStatsCard() {
       <div className="glass-card rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>STX Price</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+          <p className={`text-lg font-bold ${priceFlash}`} style={{ color: 'var(--text-primary)' }}>
             {stats ? `$${stats.price.toFixed(4)}` : "—"}
           </p>
           {stats && (
@@ -124,7 +128,7 @@ export default function STXMarketStatsCard() {
       <div className="glass-card rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Market Cap</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+          <p className={`text-lg font-bold ${mcapFlash}`} style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
           </p>
           {mcapPct !== null && (
@@ -148,7 +152,7 @@ export default function STXMarketStatsCard() {
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Volume 24h</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
           <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-            {stats ? formatLargeNumber(stats.volume24h) : "—"}
+            <span className={volFlash}>{stats ? formatLargeNumber(stats.volume24h) : "—"}</span>
           </p>
           {volPct !== null && (
             <span

@@ -37,8 +37,6 @@ export default function WelcomeSteps() {
   );
   const [dismissed, setDismissed] = useState(isDismissedFromStorage);
 
-  if (dismissed || !isConnected) return null;
-
   const hasSwapped = (txData?.results ?? []).some(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (r: any) => (r.tx ?? r).tx_type === "contract_call"
@@ -85,7 +83,8 @@ export default function WelcomeSteps() {
   const progress = (completedCount / steps.length) * 100;
   const allDone = completedCount === steps.length;
 
-  // Fire a one-shot celebration the first time the user reaches 4/4
+  // Fire a one-shot celebration the first time the user reaches 4/4.
+  // NOTE: must be declared BEFORE any early return — hooks rules.
   const [celebrating, setCelebrating] = useState(false);
   const celebratedRef = useRef(false);
   useEffect(() => {
@@ -96,6 +95,8 @@ export default function WelcomeSteps() {
       return () => clearTimeout(id);
     }
   }, [allDone]);
+
+  if (dismissed || !isConnected) return null;
 
   function handleDismiss() {
     setDismissed(true);

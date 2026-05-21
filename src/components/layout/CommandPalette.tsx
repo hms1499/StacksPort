@@ -15,6 +15,10 @@ import {
   Moon,
   Sun,
   Command,
+  Clock,
+  CornerDownLeft,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
 
@@ -27,16 +31,39 @@ interface CommandItem {
   keywords: string[];
 }
 
+const RECENTS_KEY = "stacksport_cmdk_recents";
+const RECENTS_MAX = 3;
+
+function readRecents(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(RECENTS_KEY);
+    return raw ? (JSON.parse(raw) as string[]).slice(0, RECENTS_MAX) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [recents, setRecents] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { theme, toggleTheme } = useThemeStore();
 
+  function pushRecent(id: string) {
+    setRecents((prev) => {
+      const next = [id, ...prev.filter((x) => x !== id)].slice(0, RECENTS_MAX);
+      try { localStorage.setItem(RECENTS_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+
   const navigate = useCallback(
-    (path: string) => {
+    (path: string, id: string) => {
+      pushRecent(id);
       router.push(path);
       setOpen(false);
     },
@@ -44,22 +71,30 @@ export default function CommandPalette() {
   );
 
   const commands: CommandItem[] = [
-    { id: "dashboard",     label: "Dashboard",      description: "Portfolio overview",        icon: <Home size={18} />,         action: () => navigate("/dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
-    { id: "assets",        label: "My Assets",      description: "Holdings & P&L tracker",    icon: <Wallet size={18} />,       action: () => navigate("/assets"),         keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
-    { id: "swap",          label: "Swap Tokens",    description: "Trade on Bitflow DEX",      icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade"),         keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
-    { id: "dca",           label: "DCA Vault",      description: "Automated investing plans", icon: <Repeat2 size={18} />,      action: () => navigate("/dca"),            keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
-    { id: "notifications", label: "Notifications",  description: "Alerts & price targets",    icon: <Bell size={18} />,         action: () => navigate("/notifications"),  keywords: ["notifications", "alerts", "price", "targets"] },
-    { id: "ai",            label: "Stacks AI",      description: "AI-powered insights",       icon: <Sparkles size={18} />,     action: () => navigate("/ai"),             keywords: ["ai", "insights", "analysis", "intelligence"] },
-    { id: "premium",       label: "Premium",        description: "Coming soon",               icon: <Crown size={18} />,        action: () => navigate("/premium"),        keywords: ["premium", "pro", "upgrade"] },
+    { id: "dashboard",     label: "Dashboard",      description: "Portfolio overview",        icon: <Home size={18} />,         action: () => navigate("/dashboard", "dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
+    { id: "assets",        label: "My Assets",      description: "Holdings & P&L tracker",    icon: <Wallet size={18} />,       action: () => navigate("/assets", "assets"),            keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
+    { id: "swap",          label: "Swap Tokens",    description: "Trade on Bitflow DEX",      icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade", "swap"),             keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
+    { id: "dca",           label: "DCA Vault",      description: "Automated investing plans", icon: <Repeat2 size={18} />,      action: () => navigate("/dca", "dca"),                  keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
+    { id: "notifications", label: "Notifications",  description: "Alerts & price targets",    icon: <Bell size={18} />,         action: () => navigate("/notifications", "notifications"), keywords: ["notifications", "alerts", "price", "targets"] },
+    { id: "ai",            label: "Stacks AI",      description: "AI-powered insights",       icon: <Sparkles size={18} />,     action: () => navigate("/ai", "ai"),                    keywords: ["ai", "insights", "analysis", "intelligence"] },
+    { id: "premium",       label: "Premium",        description: "Coming soon",               icon: <Crown size={18} />,        action: () => navigate("/premium", "premium"),          keywords: ["premium", "pro", "upgrade"] },
     {
       id: "theme",
       label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`,
       description: "Toggle theme",
       icon: theme === "dark" ? <Sun size={18} /> : <Moon size={18} />,
-      action: () => { toggleTheme(); setOpen(false); },
+      action: () => { pushRecent("theme"); toggleTheme(); setOpen(false); },
       keywords: ["theme", "dark", "light", "mode", "toggle"],
     },
   ];
+
+  // When no query, surface recent commands at the top followed by the rest.
+  // When typing, plain filter so search matches feel deterministic.
+  const recentCmds = recents
+    .map((id) => commands.find((c) => c.id === id))
+    .filter((c): c is CommandItem => Boolean(c));
+  const recentIds = new Set(recentCmds.map((c) => c.id));
+  const restCmds = commands.filter((c) => !recentIds.has(c.id));
 
   const filtered = query
     ? commands.filter(
@@ -67,7 +102,8 @@ export default function CommandPalette() {
           cmd.label.toLowerCase().includes(query.toLowerCase()) ||
           cmd.keywords.some((k) => k.includes(query.toLowerCase()))
       )
-    : commands;
+    : [...recentCmds, ...restCmds];
+  const recentDivider = !query && recentCmds.length > 0 ? recentCmds.length : 0;
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
@@ -87,7 +123,10 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 50);
+    if (open) {
+      setRecents(readRecents());
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   }, [open]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -172,39 +211,85 @@ export default function CommandPalette() {
                       No results found.
                     </div>
                   ) : (
-                    filtered.map((cmd, i) => {
-                      const isSelected = i === selectedIndex;
-                      return (
-                        <button
-                          key={cmd.id}
-                          onClick={cmd.action}
-                          onMouseEnter={() => setSelectedIndex(i)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
-                          style={isSelected
-                            ? { backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }
-                            : { color: 'var(--text-secondary)' }
-                          }
+                    <>
+                      {recentDivider > 0 && (
+                        <div
+                          className="px-4 pt-1 pb-1.5 text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5"
+                          style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
                         >
-                          <span className="shrink-0" style={{ color: isSelected ? 'var(--accent)' : 'var(--text-muted)' }}>
-                            {cmd.icon}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{cmd.label}</p>
-                            {cmd.description && (
-                              <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
-                                {cmd.description}
-                              </p>
+                          <Clock size={10} /> Recent
+                        </div>
+                      )}
+                      {filtered.map((cmd, i) => {
+                        const isSelected = i === selectedIndex;
+                        const showAllHeader = recentDivider > 0 && i === recentDivider;
+                        return (
+                          <div key={cmd.id}>
+                            {showAllHeader && (
+                              <div
+                                className="px-4 pt-2 pb-1.5 text-[10px] font-bold tracking-widest uppercase"
+                                style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+                              >
+                                All commands
+                              </div>
                             )}
+                            <button
+                              onClick={cmd.action}
+                              onMouseEnter={() => setSelectedIndex(i)}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
+                              style={isSelected
+                                ? { backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }
+                                : { color: 'var(--text-secondary)' }
+                              }
+                            >
+                              <span className="shrink-0" style={{ color: isSelected ? 'var(--accent)' : 'var(--text-muted)' }}>
+                                {cmd.icon}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{cmd.label}</p>
+                                {cmd.description && (
+                                  <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                                    {cmd.description}
+                                  </p>
+                                )}
+                              </div>
+                              {isSelected && (
+                                <kbd className="px-1.5 py-0.5 rounded text-[10px] font-medium" style={kbdStyle}>
+                                  Enter
+                                </kbd>
+                              )}
+                            </button>
                           </div>
-                          {isSelected && (
-                            <kbd className="px-1.5 py-0.5 rounded text-[10px] font-medium" style={kbdStyle}>
-                              Enter
-                            </kbd>
-                          )}
-                        </button>
-                      );
-                    })
+                        );
+                      })}
+                    </>
                   )}
+                </div>
+
+                {/* Keyboard hints footer */}
+                <div
+                  className="flex items-center justify-between px-4 py-2 text-[10px]"
+                  style={{
+                    borderTop: '1px solid var(--border-subtle)',
+                    backgroundColor: 'var(--bg-elevated)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1">
+                      <kbd className="px-1 py-0.5 rounded" style={kbdStyle}><ArrowUp size={9} /></kbd>
+                      <kbd className="px-1 py-0.5 rounded" style={kbdStyle}><ArrowDown size={9} /></kbd>
+                      Navigate
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <kbd className="px-1 py-0.5 rounded" style={kbdStyle}><CornerDownLeft size={9} /></kbd>
+                      Select
+                    </span>
+                  </div>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1 py-0.5 rounded" style={kbdStyle}>esc</kbd>
+                    Close
+                  </span>
                 </div>
               </div>
             </motion.div>

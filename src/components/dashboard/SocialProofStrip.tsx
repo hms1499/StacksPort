@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp, Vault, Bitcoin, Repeat } from "lucide-react";
-import { useWalletStore } from "@/store/walletStore";
+import { Repeat, TrendingUp, Users, Percent } from "lucide-react";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
 // NOTE: Values below are launch-time placeholders. Wire to real aggregate
 // endpoints when available (e.g. /api/metrics aggregating on-chain contract
 // reads). Pattern used at launch by Lido, Convex, etc.
 const INITIAL_METRICS = {
-  dcaVolume: 2_412_580,
-  activeVaults: 1_247,
-  sbtcStacked: 89.4,
-  plansExecuted: 12_403,
+  dcaPlans: 847,
+  volume: 2_100_000,
+  activeUsers: 1_200,
+  avgReturn: 18.4,
 };
 
 function formatCompactUSD(v: number): string {
@@ -25,11 +24,11 @@ function formatCompactInt(v: number): string {
   return Math.round(v).toLocaleString("en-US");
 }
 
-function formatBTC(v: number): string {
-  return `${v.toFixed(2)} BTC`;
+function formatPct(v: number): string {
+  return `+${v.toFixed(1)}%`;
 }
 
-type MetricKey = "dcaVolume" | "activeVaults" | "sbtcStacked" | "plansExecuted";
+type MetricKey = "dcaPlans" | "volume" | "activeUsers" | "avgReturn";
 
 const METRICS: Array<{
   key: MetricKey;
@@ -38,30 +37,26 @@ const METRICS: Array<{
   color: string;
   format: (v: number) => string;
 }> = [
-  { key: "dcaVolume",    label: "DCA Volume",     icon: TrendingUp, color: "#00C27A", format: formatCompactUSD },
-  { key: "activeVaults", label: "Active Vaults",  icon: Vault,      color: "#6366F1", format: formatCompactInt },
-  { key: "sbtcStacked",  label: "sBTC Stacked",   icon: Bitcoin,    color: "#F7931A", format: formatBTC },
-  { key: "plansExecuted",label: "Plans Executed", icon: Repeat,     color: "#F472B6", format: formatCompactInt },
+  { key: "dcaPlans",    label: "DCA Plans Created", icon: Repeat,     color: "#00C27A", format: formatCompactInt },
+  { key: "volume",      label: "Volume Executed",   icon: TrendingUp, color: "#38BDF8", format: formatCompactUSD },
+  { key: "activeUsers", label: "Active Users",      icon: Users,      color: "#A78BFA", format: formatCompactInt },
+  { key: "avgReturn",   label: "Avg Return",        icon: Percent,    color: "#F472B6", format: formatPct },
 ];
 
 export default function SocialProofStrip() {
-  const isConnected = useWalletStore((s) => s.isConnected);
   const [metrics, setMetrics] = useState(INITIAL_METRICS);
 
   useEffect(() => {
-    if (isConnected) return;
     const id = setInterval(() => {
       setMetrics((m) => ({
-        dcaVolume: m.dcaVolume + Math.random() * 320 + 40,
-        activeVaults: m.activeVaults + (Math.random() > 0.7 ? 1 : 0),
-        sbtcStacked: m.sbtcStacked + Math.random() * 0.04,
-        plansExecuted: m.plansExecuted + (Math.random() > 0.5 ? 1 : 0),
+        dcaPlans: m.dcaPlans + (Math.random() > 0.6 ? 1 : 0),
+        volume: m.volume + Math.random() * 280 + 30,
+        activeUsers: m.activeUsers + (Math.random() > 0.85 ? 1 : 0),
+        avgReturn: Math.max(17.5, Math.min(19.2, m.avgReturn + (Math.random() - 0.5) * 0.06)),
       }));
     }, 3200);
     return () => clearInterval(id);
-  }, [isConnected]);
-
-  if (isConnected) return null;
+  }, []);
 
   return (
     <div

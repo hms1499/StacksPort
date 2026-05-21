@@ -8,7 +8,6 @@ import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 
 const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
-const SocialProofStrip = dynamic(() => import("@/components/dashboard/SocialProofStrip"));
 const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"), {
   loading: () => (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
@@ -113,11 +112,6 @@ export default function DashboardPage() {
         <StaggerChildren className="space-y-4 md:space-y-5">
           <MotionCard>
             <WalletBanner />
-          </MotionCard>
-
-          {/* Live platform metrics — shown only when disconnected, for social proof */}
-          <MotionCard>
-            <SocialProofStrip />
           </MotionCard>
 
           {/* Welcome steps for new users */}

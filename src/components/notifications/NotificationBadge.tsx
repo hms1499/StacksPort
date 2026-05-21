@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Bell } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
 import { NotificationDrawer } from './NotificationDrawer';
@@ -13,6 +14,14 @@ export default function NotificationBadge() {
   const unreadCount = useNotificationStore(
     (s) => s.notifications.filter((n) => !n.isRead).length
   );
+
+  // Trigger a one-shot bell shake when the unread count increases.
+  const prevCount = useRef(unreadCount);
+  const [shake, setShake] = useState(0);
+  useEffect(() => {
+    if (unreadCount > prevCount.current) setShake((n) => n + 1);
+    prevCount.current = unreadCount;
+  }, [unreadCount]);
 
   // markAllAsRead được xử lý bởi NotificationDrawer (useEffect khi isOpen = true)
   // để giữ responsibility trong một nơi duy nhất.
@@ -28,12 +37,25 @@ export default function NotificationBadge() {
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
         aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ''}`}
       >
-        <Bell size={18} />
+        <motion.span
+          key={shake}
+          animate={shake > 0 ? { rotate: [0, -14, 12, -8, 6, 0] } : { rotate: 0 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          className="inline-flex"
+        >
+          <Bell size={18} />
+        </motion.span>
         {unreadCount > 0 && (
-          <span
-            className="absolute top-1 right-1 w-2 h-2 rounded-full"
-            style={{ backgroundColor: 'var(--negative)' }}
-          />
+          <span className="absolute top-1 right-1 flex">
+            <span
+              className="absolute inline-flex w-2 h-2 rounded-full opacity-75 animate-ping"
+              style={{ backgroundColor: 'var(--negative)' }}
+            />
+            <span
+              className="relative inline-flex w-2 h-2 rounded-full"
+              style={{ backgroundColor: 'var(--negative)' }}
+            />
+          </span>
         )}
       </button>
 

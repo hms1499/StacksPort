@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { Repeat, TrendingUp, Activity, BarChart3 } from "lucide-react";
+import { Repeat, TrendingUp, Activity, BarChart3, Info } from "lucide-react";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 
 interface MetricsResponse {
@@ -9,6 +10,7 @@ interface MetricsResponse {
   volumeUsd: number;
   swapsExecuted: number;
   avgSwapsPerPlan: number;
+  updatedAt?: number;
 }
 
 const FALLBACK: MetricsResponse = {
@@ -17,6 +19,16 @@ const FALLBACK: MetricsResponse = {
   swapsExecuted: 0,
   avgSwapsPerPlan: 0,
 };
+
+function formatRelativeTime(ts: number, now: number): string {
+  const seconds = Math.max(0, Math.round((now - ts) / 1000));
+  if (seconds < 10) return "just now";
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.round(minutes / 60);
+  return `${hours}h ago`;
+}
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -34,7 +46,7 @@ function formatRatio(v: number): string {
   return v.toFixed(1);
 }
 
-type MetricKey = keyof MetricsResponse;
+type MetricKey = "plansCreated" | "volumeUsd" | "swapsExecuted" | "avgSwapsPerPlan";
 
 const METRICS: Array<{
   key: MetricKey;
@@ -56,6 +68,14 @@ export default function SocialProofStrip() {
   });
   const metrics = data ?? FALLBACK;
 
+  // Re-render every 30s so the relative timestamp stays fresh.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const updatedLabel = metrics.updatedAt ? formatRelativeTime(metrics.updatedAt, now) : null;
+
   return (
     <div
       className="rounded-2xl px-4 py-3 overflow-hidden relative"
@@ -70,11 +90,27 @@ export default function SocialProofStrip() {
             <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping" style={{ backgroundColor: 'var(--accent)' }} />
             <span className="relative inline-flex w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
           </span>
+          <div className="flex flex-col">
+            <span
+              className="text-[10px] font-bold tracking-widest uppercase"
+              style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+            >
+              Live on Stacks
+            </span>
+            {updatedLabel && (
+              <span
+                className="text-[9px] font-data"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                updated {updatedLabel}
+              </span>
+            )}
+          </div>
           <span
-            className="text-[10px] font-bold tracking-widest uppercase"
-            style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+            className="ml-1"
+            title="Sums on-chain stats from both DCA vaults (STX→sBTC and sBTC→USDCx) via get-stats. Volume is converted to USD at current CoinGecko prices. Refreshes every 60s."
           >
-            Live on Stacks
+            <Info size={11} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
           </span>
         </div>
 

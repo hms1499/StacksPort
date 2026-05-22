@@ -64,13 +64,22 @@ export default function DCAPerformanceCard() {
             </p>
           </div>
         </div>
-        <Link
-          href="/dca"
-          className="text-xs font-medium hidden sm:flex items-center gap-1"
-          style={{ color: 'var(--accent)' }}
-        >
-          Manage plans <ArrowUpRight size={12} />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dca/performance"
+            className="text-xs font-semibold flex items-center gap-1 transition-colors"
+            style={{ color: '#FFB547' }}
+          >
+            See full PnL <ArrowUpRight size={12} />
+          </Link>
+          <Link
+            href="/dca"
+            className="text-xs font-medium hidden sm:flex items-center gap-1"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Manage
+          </Link>
+        </div>
       </div>
 
       {/* Stats row */}

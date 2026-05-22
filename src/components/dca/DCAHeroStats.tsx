@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { BarChart3, ArrowUpRight } from "lucide-react";
 import { getDCAStats, microToSTX, type DCAStats } from "@/lib/dca";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
@@ -65,26 +67,39 @@ export default function DCAHeroStats({
       {/* User row */}
       <div className="border-t pt-4" style={{ borderColor: "var(--border-subtle)" }}>
         {isConnected ? (
-          <div className="grid grid-cols-2 gap-4">
-            <StatBlock
-              label="Your Active Plans"
-              value={
-                <AnimatedCounter
-                  value={userActivePlans}
-                  formatFn={(v) => Math.round(v).toString()}
-                  className={`text-xl sm:text-2xl font-bold font-data ${gradClass}`}
-                />
-              }
-            />
-            <StatBlock
-              label="Next Swap"
-              value={
-                <span className={`text-xl sm:text-2xl font-bold font-data ${gradClass}`}>
-                  {userNextSwapLabel ?? "—"}
-                </span>
-              }
-            />
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <StatBlock
+                label="Your Active Plans"
+                value={
+                  <AnimatedCounter
+                    value={userActivePlans}
+                    formatFn={(v) => Math.round(v).toString()}
+                    className={`text-xl sm:text-2xl font-bold font-data ${gradClass}`}
+                  />
+                }
+              />
+              <StatBlock
+                label="Next Swap"
+                value={
+                  <span className={`text-xl sm:text-2xl font-bold font-data ${gradClass}`}>
+                    {userNextSwapLabel ?? "—"}
+                  </span>
+                }
+              />
+            </div>
+            {userActivePlans > 0 && (
+              <Link
+                href="/dca/performance"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors group"
+                style={{ color: 'var(--accent)' }}
+              >
+                <BarChart3 size={12} />
+                View performance &amp; cost basis
+                <ArrowUpRight size={11} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            )}
+          </>
         ) : (
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
             <p className="text-sm" style={{ color: "var(--text-secondary)" }}>

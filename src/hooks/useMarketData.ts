@@ -5,79 +5,45 @@ import {
   getPortfolioValue,
   getPortfolioHistory,
   getSTXPriceHistory,
-  getTrendingTokens,
-  getSTXMarketStats,
-  getSTXMarketHistory,
   getTransactions,
   getFungibleTokens,
   getTokenMetadata,
   getConnectedApps,
   getTokensWithValues,
   getPnLData,
-  getPoxCycleInfo,
   fetchContractInfo,
   type PortfolioValue,
-  type PoxCycleInfo,
-  type TrendingToken,
-  type STXMarketStats,
-  type STXMarketHistory,
   type ConnectedAppsResult,
   type PnLData,
   type TokenWithValue,
   type KnownProtocol,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
-import { SWAP_PRICE_GECKO_IDS, SWAP_TOKEN_USD } from "@/lib/direct-swap";
+import { SWAP_TOKEN_USD } from "@/lib/direct-swap";
 import {
   fetchAllPositions,
   type ProtocolPosition,
 } from "@/lib/protocol-positions";
+import {
+  useTrendingTokensSnap,
+  useSTXMarketStatsSnap,
+  useSTXMarketHistorySnap,
+  usePoxCycleSnap,
+  useFearGreedSnap,
+  useNewsSnap,
+  useSwapPricesSnap,
+  type FearGreed,
+} from "@/hooks/useMarketSnapshot";
+import type { NewsItem } from "@/lib/server/news";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
 const SLOW_REFRESH = 120_000; // 2 min — market data
 const FAST_REFRESH = 60_000;  // 1 min — portfolio/balance
 
-// ─── Fear & Greed Index ───────────────────────────────────────────────────────
-interface FearGreedData {
-  value: number;
-  classification: string;
-}
-
-async function fetchFearGreed(): Promise<FearGreedData | null> {
-  const res = await fetch("https://api.alternative.me/fng/?limit=1", {
-    signal: AbortSignal.timeout(10_000),
-  });
-  const json = await res.json();
-  const d = json.data?.[0];
-  return d ? { value: Number(d.value), classification: d.value_classification } : null;
-}
-
-// ─── News ─────────────────────────────────────────────────────────────────────
-interface NewsItem {
-  title: string;
-  url: string;
-  source: string;
-  publishedAt: string;
-  imageUrl?: string;
-}
-
-async function fetchNews(): Promise<NewsItem[]> {
-  const res = await fetch("/api/news");
-  return res.json();
-}
-
-// ─── Swap token USD prices ────────────────────────────────────────────────────
-// CoinGecko simple/price shape: { [geckoId]: { usd: number } }. Only the gecko
-// ids the swap tokens need (see SWAP_PRICE_GECKO_IDS) are requested.
-async function fetchSwapPrices(): Promise<Record<string, { usd: number }>> {
-  const ids = SWAP_PRICE_GECKO_IDS.join(",");
-  const res = await fetch(
-    `/api/coingecko/simple/price?ids=${ids}&vs_currencies=usd`,
-    { signal: AbortSignal.timeout(10_000) }
-  );
-  if (!res.ok) throw new Error("Swap price fetch failed");
-  return res.json();
-}
+// Fear & Greed / News / Swap prices are now sourced from the market snapshot
+// endpoint via useMarketSnapshot selectors (see below). Type aliases kept for
+// backwards-compatible re-export at the bottom of this file.
+type FearGreedData = FearGreed;
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
@@ -109,53 +75,20 @@ export function useSTXPriceHistory(days: number, enabled = true) {
   );
 }
 
-export function useTrendingTokens() {
-  return useSWR<TrendingToken[]>(
-    "trending-tokens",
-    getTrendingTokens,
-    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
-  );
+// These hooks now share a single backing fetch via the market snapshot.
+// Components keep the original API: `{ data, isLoading, error }`.
+export const useTrendingTokens = useTrendingTokensSnap;
+export const useSTXMarketStats = useSTXMarketStatsSnap;
+
+// Snapshot fixes the window at 7d. Callers today all pass 7; the parameter is
+// kept for signature compat and is ignored.
+export function useSTXMarketHistory(_days = 7) {
+  return useSTXMarketHistorySnap();
 }
 
-export function useSTXMarketStats() {
-  return useSWR<STXMarketStats>(
-    "stx-market-stats",
-    getSTXMarketStats,
-    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
-  );
-}
-
-export function useSTXMarketHistory(days = 7) {
-  return useSWR<STXMarketHistory>(
-    ["stx-market-history", days],
-    () => getSTXMarketHistory(days),
-    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
-  );
-}
-
-export function usePoxCycle() {
-  return useSWR<PoxCycleInfo>(
-    "pox-cycle",
-    getPoxCycleInfo,
-    { refreshInterval: 5 * 60_000, dedupingInterval: 5 * 60_000 }
-  );
-}
-
-export function useFearGreed() {
-  return useSWR<FearGreedData | null>(
-    "fear-greed",
-    fetchFearGreed,
-    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
-  );
-}
-
-export function useNews() {
-  return useSWR<NewsItem[]>(
-    "news",
-    fetchNews,
-    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
-  );
-}
+export const usePoxCycle = usePoxCycleSnap;
+export const useFearGreed = useFearGreedSnap;
+export const useNews = useNewsSnap;
 
 export function useTransactions(address: string | undefined, limit = 8) {
   return useSWR(
@@ -165,13 +98,7 @@ export function useTransactions(address: string | undefined, limit = 8) {
   );
 }
 
-export function useSwapPrices() {
-  return useSWR<Record<string, { usd: number }>>(
-    "swap-prices",
-    fetchSwapPrices,
-    { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
-  );
-}
+export const useSwapPrices = useSwapPricesSnap;
 
 export function useFungibleTokens(address: string | undefined) {
   return useSWR(

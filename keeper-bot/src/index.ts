@@ -5,7 +5,7 @@ import { readAllSubs } from "./redis-store.js";
 import { sendDcaExecutionNotifications } from "./dca-push.js";
 import { notifyBatchExecuted } from "./telegram-notify.js";
 import { acquireLock, releaseLock } from "./lock.js";
-import { recordBroadcast } from "./failure-tracker.js";
+import { recordBroadcast, markRun } from "./failure-tracker.js";
 import { reconcileRecentBatches } from "./reconcile.js";
 import { log } from "./logger.js";
 
@@ -73,6 +73,7 @@ async function runOnce(): Promise<number> {
 
   if (plans.length === 0) {
     log.info("Nothing to execute, exiting");
+    await markRun({ finishedAt: Date.now(), planCount: 0, chunkCount: 0, exitCode: 0 }).catch(() => {});
     return 0;
   }
 
@@ -131,7 +132,14 @@ async function runOnce(): Promise<number> {
   }
 
   log.info("Run complete", { totalPlans: plans.length, chunks: chunks.length });
-  return anyFailed ? 1 : 0;
+  const exitCode = anyFailed ? 1 : 0;
+  await markRun({
+    finishedAt: Date.now(),
+    planCount: plans.length,
+    chunkCount: chunks.length,
+    exitCode,
+  }).catch((err) => log.warn("markRun failed (non-fatal)", { err: String(err) }));
+  return exitCode;
 }
 
 main().catch((err: unknown) => {

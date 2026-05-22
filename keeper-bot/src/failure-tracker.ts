@@ -16,7 +16,15 @@
 import { Redis } from "@upstash/redis";
 
 const KEY = "keeper:recent-batches";
+const HEARTBEAT_KEY = "keeper:last-run";
 const MAX_ENTRIES = 20;
+
+export interface RunHeartbeat {
+  finishedAt: number;
+  planCount: number;
+  chunkCount: number;
+  exitCode: number;
+}
 
 export type BatchStatus = "pending" | "success" | "aborted";
 
@@ -72,6 +80,10 @@ export async function saveRecent(entries: BatchEntry[]): Promise<void> {
     pipe.rpush(KEY, JSON.stringify(e));
   }
   await pipe.exec();
+}
+
+export async function markRun(heartbeat: RunHeartbeat): Promise<void> {
+  await redis.set(HEARTBEAT_KEY, JSON.stringify(heartbeat));
 }
 
 export function consecutiveAbortedTail(entries: BatchEntry[]): number {

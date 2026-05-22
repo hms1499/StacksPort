@@ -413,6 +413,59 @@ export async function getPlanExecutionHistory(
   return events;
 }
 
+export interface LumpSumScenario {
+  /** ISO date (YYYY-MM-DD, UTC) used as the reference for the lump-sum buy. */
+  referenceDate: string;
+  /** STX-USD closing price on referenceDate. */
+  stxUsdAtRef: number;
+  /** BTC-USD closing price on referenceDate. */
+  btcUsdAtRef: number;
+  /** sBTC that the total STX-in would have bought if dumped on referenceDate. */
+  lumpSumSbtc: number;
+  /** actualSbtc - lumpSumSbtc (positive = DCA outperformed lump sum). */
+  deltaSbtc: number;
+  /** Percentage delta vs lump sum baseline. */
+  deltaPct: number;
+}
+
+export function utcIsoDateFromUnix(unixSeconds: number): string {
+  const d = new Date(unixSeconds * 1000);
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Compute the lump-sum counterfactual for a plan: had the user spent
+ * `perf.totalStxIn` STX on the day of their first execution (or any
+ * supplied reference date), how much sBTC would they have ended up with?
+ *
+ * `stxUsdAtRef` / `btcUsdAtRef` are USD spot prices on that day. The
+ * caller fetches them via `getHistoricalStxBtcPrices`.
+ */
+export function computeLumpSum(
+  perf: { totalStxIn: number; totalSbtcOut: number },
+  referenceDate: string,
+  stxUsdAtRef: number,
+  btcUsdAtRef: number
+): LumpSumScenario | null {
+  if (stxUsdAtRef <= 0 || btcUsdAtRef <= 0 || perf.totalStxIn <= 0) return null;
+  // STX → USD → BTC. sBTC pegs 1:1 with BTC; we use BTC USD as proxy.
+  const usdAvailable = perf.totalStxIn * stxUsdAtRef;
+  const lumpSumSbtc = usdAvailable / btcUsdAtRef;
+  const deltaSbtc = perf.totalSbtcOut - lumpSumSbtc;
+  const deltaPct = lumpSumSbtc > 0 ? (deltaSbtc / lumpSumSbtc) * 100 : 0;
+  return {
+    referenceDate,
+    stxUsdAtRef,
+    btcUsdAtRef,
+    lumpSumSbtc,
+    deltaSbtc,
+    deltaPct,
+  };
+}
+
 export interface PlanPerformance {
   planId: number;
   executionCount: number;     // success only

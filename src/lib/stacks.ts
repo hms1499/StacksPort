@@ -665,6 +665,43 @@ export interface PoxCycleInfo {
   daysUntilNextCycle: number;
 }
 
+/**
+ * Fetch the closing USD prices of STX and BTC for a given UTC date.
+ * Uses CoinGecko's /coins/{id}/history endpoint (free tier). Past dates
+ * are immutable, so we let the proxy / Next cache hold them long-term.
+ *
+ * Date is keyed yyyy-mm-dd internally; CoinGecko requires DD-MM-YYYY.
+ */
+export async function getHistoricalStxBtcPrices(
+  isoDate: string // YYYY-MM-DD
+): Promise<{ stxUsd: number; btcUsd: number } | null> {
+  // YYYY-MM-DD → DD-MM-YYYY for CoinGecko
+  const [y, m, d] = isoDate.split("-");
+  if (!y || !m || !d) return null;
+  const cgDate = `${d}-${m}-${y}`;
+
+  try {
+    const [stxRes, btcRes] = await Promise.all([
+      fetch(
+        `${COINGECKO_API}/coins/blockstack/history?date=${cgDate}&localization=false`,
+        { next: { revalidate: 86_400 }, signal: AbortSignal.timeout(10_000) }
+      ),
+      fetch(
+        `${COINGECKO_API}/coins/bitcoin/history?date=${cgDate}&localization=false`,
+        { next: { revalidate: 86_400 }, signal: AbortSignal.timeout(10_000) }
+      ),
+    ]);
+    if (!stxRes.ok || !btcRes.ok) return null;
+    const [stxJson, btcJson] = await Promise.all([stxRes.json(), btcRes.json()]);
+    const stxUsd = Number(stxJson?.market_data?.current_price?.usd ?? 0);
+    const btcUsd = Number(btcJson?.market_data?.current_price?.usd ?? 0);
+    if (stxUsd <= 0 || btcUsd <= 0) return null;
+    return { stxUsd, btcUsd };
+  } catch {
+    return null;
+  }
+}
+
 export async function getBtcUsdPrice(): Promise<number> {
   try {
     const r = await fetch(

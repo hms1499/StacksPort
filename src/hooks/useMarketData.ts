@@ -2,23 +2,15 @@
 
 import useSWR from "swr";
 import {
-  getPortfolioValue,
   getPortfolioHistory,
   getSTXPriceHistory,
-  getTransactions,
-  getFungibleTokens,
   getTokenMetadata,
   getConnectedApps,
-  getTokensWithValues,
-  getPnLData,
   fetchContractInfo,
   type PortfolioValue,
   type ConnectedAppsResult,
-  type PnLData,
-  type TokenWithValue,
   type KnownProtocol,
 } from "@/lib/stacks";
-import { getUserPlans, type DCAPlan } from "@/lib/dca";
 import { SWAP_TOKEN_USD } from "@/lib/direct-swap";
 import {
   fetchAllPositions,
@@ -34,6 +26,14 @@ import {
   useSwapPricesSnap,
   type FearGreed,
 } from "@/hooks/useMarketSnapshot";
+import {
+  usePortfolioSnap,
+  useFungibleTokensSnap,
+  useTokensWithValuesSnap,
+  useUserDCAPlansSnap,
+  usePnLDataSnap,
+  useTransactionsSnap,
+} from "@/hooks/usePortfolioSnapshot";
 import type { NewsItem } from "@/lib/server/news";
 
 // ─── SWR config defaults ──────────────────────────────────────────────────────
@@ -47,13 +47,7 @@ type FearGreedData = FearGreed;
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
-export function usePortfolio(address: string | undefined) {
-  return useSWR<PortfolioValue>(
-    address ? ["portfolio", address] : null,
-    () => getPortfolioValue(address!),
-    { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
-  );
-}
+export const usePortfolio = usePortfolioSnap;
 
 export function usePortfolioHistory(
   address: string | undefined,
@@ -90,23 +84,11 @@ export const usePoxCycle = usePoxCycleSnap;
 export const useFearGreed = useFearGreedSnap;
 export const useNews = useNewsSnap;
 
-export function useTransactions(address: string | undefined, limit = 8) {
-  return useSWR(
-    address ? ["transactions", address, limit] : null,
-    () => getTransactions(address!, limit),
-    { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
-  );
-}
+export const useTransactions = useTransactionsSnap;
 
 export const useSwapPrices = useSwapPricesSnap;
 
-export function useFungibleTokens(address: string | undefined) {
-  return useSWR(
-    address ? ["fungible-tokens", address] : null,
-    () => getFungibleTokens(address!),
-    { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
-  );
-}
+export const useFungibleTokens = useFungibleTokensSnap;
 
 export function useTokenMetadata(contractId: string | undefined) {
   return useSWR(
@@ -124,29 +106,9 @@ export function useConnectedApps(address: string | undefined) {
   );
 }
 
-export function useTokensWithValues(address: string | undefined) {
-  return useSWR<{ stx: TokenWithValue; tokens: TokenWithValue[]; totalUsd: number }>(
-    address ? ["tokens-with-values", address] : null,
-    () => getTokensWithValues(address!),
-    { refreshInterval: 60_000, dedupingInterval: 30_000 }
-  );
-}
-
-export function usePnLData(address: string | undefined) {
-  return useSWR<PnLData>(
-    address ? ["pnl-data", address] : null,
-    () => getPnLData(address!),
-    { refreshInterval: 300_000, dedupingInterval: 60_000 }
-  );
-}
-
-export function useUserDCAPlans(address: string | undefined) {
-  return useSWR<DCAPlan[]>(
-    address ? ["dca-plans", address] : null,
-    () => getUserPlans(address!),
-    { refreshInterval: 120_000, dedupingInterval: 60_000 }
-  );
-}
+export const useTokensWithValues = useTokensWithValuesSnap;
+export const usePnLData = usePnLDataSnap;
+export const useUserDCAPlans = useUserDCAPlansSnap;
 
 // ─── Swap pair price history (for sparkline chart) ───────────────────────────
 // Fetches 7-day daily USD price arrays for two tokens via the CoinGecko proxy.

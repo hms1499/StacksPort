@@ -331,7 +331,13 @@ export interface PlanExecutionEvent {
   status: "success" | "pending" | "failed";
   netSwapped?: number;   // micro-STX actually swapped (from tx_result)
   protocolFee?: number;  // micro-STX fee
+  /** sBTC (sats) credited to the plan owner in this same tx, extracted
+   *  from ft_transfers. undefined for non-success or when the asset
+   *  did not appear in the transfer list. */
+  sbtcReceived?: number;
 }
+
+const SBTC_ASSET_ID = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token";
 
 // tx_result.repr looks like:
 //   (ok (tuple (bal-remaining u...) (net-swapped u...) (protocol-fee u...) (swaps-done u...)))
@@ -380,6 +386,20 @@ export async function getPlanExecutionHistory(
       tx.tx_status === "pending" ? "pending" : "failed";
     const { netSwapped, protocolFee } = parseExecuteResult(tx.tx_result?.repr);
 
+    // Extract sBTC received from ft_transfers (only present for success txs).
+    let sbtcReceived: number | undefined;
+    if (status === "success") {
+      const transfers = (item.ft_transfers ?? []) as Array<{
+        asset_identifier?: string;
+        amount?: string;
+      }>;
+      for (const t of transfers) {
+        if (t.asset_identifier === SBTC_ASSET_ID && t.amount) {
+          sbtcReceived = (sbtcReceived ?? 0) + Number(t.amount);
+        }
+      }
+    }
+
     events.push({
       txId: tx.tx_id,
       blockHeight: Number(tx.block_height ?? 0),
@@ -387,6 +407,7 @@ export async function getPlanExecutionHistory(
       status,
       netSwapped,
       protocolFee,
+      sbtcReceived,
     });
   }
   return events;

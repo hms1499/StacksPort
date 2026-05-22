@@ -76,7 +76,7 @@ export default function SendModal({ token, onClose }: Props) {
           onFinish: ({ txId: id }) => {
             setTxId(id); setStatus("success");
             addNotification(`Transfer submitted: ${amount} ${token.symbol}`, 'info', 'send', 5000, { txId: id, amount, tokenSymbol: token.symbol });
-            trackTx({ txId: id, label: `Transfer ${amount} ${token.symbol}`, category: 'send', context: { txId: id, amount, tokenSymbol: token.symbol }, addNotification });
+            trackTx({ txId: id, label: `Transfer ${amount} ${token.symbol}`, category: 'send', context: { txId: id, amount, tokenSymbol: token.symbol }, addNotification, address: stxAddress });
           },
           onCancel: () => setStatus("idle"),
         });
@@ -91,7 +91,7 @@ export default function SendModal({ token, onClose }: Props) {
           onFinish: ({ txId: id }) => {
             setTxId(id); setStatus("success");
             addNotification(`Transfer submitted: ${amount} ${token.symbol}`, 'info', 'send', 5000, { txId: id, amount, tokenSymbol: token.symbol });
-            trackTx({ txId: id, label: `Transfer ${amount} ${token.symbol}`, category: 'send', context: { txId: id, amount, tokenSymbol: token.symbol }, addNotification });
+            trackTx({ txId: id, label: `Transfer ${amount} ${token.symbol}`, category: 'send', context: { txId: id, amount, tokenSymbol: token.symbol }, addNotification, address: stxAddress });
           },
           onCancel: () => setStatus("idle"),
         });

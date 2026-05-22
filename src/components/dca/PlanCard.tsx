@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { type DCAPlan, microToSTX, cancelPlan } from "@/lib/dca";
 import { useNotificationStore } from "@/store/notificationStore";
+import { useWalletStore } from "@/store/walletStore";
 import { trackTx } from "@/lib/tx-tracker";
 import PlanCardRow from "./PlanCardRow";
 import PlanCardExpanded from "./PlanCardExpanded";
@@ -19,6 +20,7 @@ interface Props {
 
 export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, onToggle }: Props) {
   const { addNotification } = useNotificationStore();
+  const { stxAddress } = useWalletStore();
   const [defaultTab, setDefaultTab] = useState<"overview" | "execute" | "history">("overview");
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -43,6 +45,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
           category: "dca",
           context: { planId: String(plan.id), txId, amount: balSTX.toFixed(2) },
           addNotification,
+          address: stxAddress,
         });
         onRefresh();
       },

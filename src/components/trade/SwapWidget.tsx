@@ -543,6 +543,7 @@ export default function SwapWidget() {
             category: "swap",
             context: { txId: id, amount: amountIn, tokenSymbol: toToken.symbol },
             addNotification,
+            address: stxAddress,
           });
         },
         onCancel: () => setStatus("ready"),

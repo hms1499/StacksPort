@@ -95,6 +95,7 @@ export default function CreatePlanForm({ onCreated }: Props) {
           category: "dca",
           context: { txId, action: "created", amount: String(amt), tokenSymbol: "sBTC" },
           addNotification,
+          address: stxAddress,
         });
         onCreated();
       },

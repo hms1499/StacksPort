@@ -67,6 +67,18 @@ const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingToke
   ),
 });
 
+const PoxCycleCard = dynamic(() => import("@/components/dashboard/PoxCycleCard"), {
+  loading: () => (
+    <div className="glass-card rounded-2xl p-5 shadow-sm">
+      <div className="h-4 w-32 rounded skeleton mb-4" />
+      <div className="grid grid-cols-3 gap-3">
+        {[...Array(3)].map((_, i) => <div key={i} className="h-16 rounded-xl skeleton" />)}
+      </div>
+      <div className="h-2 rounded-full skeleton mt-4" />
+    </div>
+  ),
+});
+
 const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"), {
   loading: () => (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -133,6 +145,11 @@ export default function DashboardPage() {
           {/* STX market stats row */}
           <MotionCard>
             <STXMarketStatsCard />
+          </MotionCard>
+
+          {/* PoX cycle countdown — Stacks-native featured card */}
+          <MotionCard>
+            <PoxCycleCard />
           </MotionCard>
 
           {/* DCA Summary + Greed Index + Trending — 3-column row to reduce scroll */}

@@ -648,6 +648,67 @@ export interface StackingStatus {
   lockTxId: string;
 }
 
+export interface PoxCycleInfo {
+  currentCycleId: number;
+  cycleLength: number;
+  rewardPhaseLength: number;
+  preparePhaseLength: number;
+  blocksUntilNextCycle: number;
+  blocksUntilCycleEnd: number;
+  cycleProgressPct: number;
+  totalStackedUstx: number;
+  totalStackedSTX: number;
+  totalStackedUsd: number;
+  minThresholdSTX: number;
+  currentBurnHeight: number;
+  /** Approx days until the next reward cycle, assuming ~10 min/burn block. */
+  daysUntilNextCycle: number;
+}
+
+export async function getPoxCycleInfo(): Promise<PoxCycleInfo> {
+  const [poxData, stxPrice] = await Promise.all([
+    fetch(`${HIRO_API_BASE}/v2/pox`, {
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(10_000),
+    }).then((r) => r.json()),
+    getSTXPrice(),
+  ]);
+
+  const currentBurnHeight: number = poxData.current_burnchain_block_height;
+  const rewardPhaseLength: number = poxData.reward_phase_block_length;
+  const preparePhaseLength: number = poxData.prepare_phase_block_length;
+  const cycleLength = rewardPhaseLength + preparePhaseLength;
+  const currentCycleId: number = poxData.current_cycle.id;
+  const totalStackedUstx: number = poxData.current_cycle.stacked_ustx ?? 0;
+  const blocksUntilCycleEnd: number = poxData.next_cycle.blocks_until_prepare_phase;
+  const blocksUntilNextCycle: number = poxData.next_cycle.blocks_until_reward_phase;
+  const minThresholdSTX = (poxData.current_cycle.min_threshold_ustx ?? 0) / 1_000_000;
+
+  const cycleProgressPct = Math.max(
+    0,
+    Math.min(100, ((rewardPhaseLength - blocksUntilCycleEnd) / rewardPhaseLength) * 100)
+  );
+  const totalStackedSTX = totalStackedUstx / 1_000_000;
+  const totalStackedUsd = totalStackedSTX * stxPrice.usd;
+  const daysUntilNextCycle = Math.max(0, Math.round((blocksUntilNextCycle * 10) / (60 * 24)));
+
+  return {
+    currentCycleId,
+    cycleLength,
+    rewardPhaseLength,
+    preparePhaseLength,
+    blocksUntilNextCycle,
+    blocksUntilCycleEnd,
+    cycleProgressPct,
+    totalStackedUstx,
+    totalStackedSTX,
+    totalStackedUsd,
+    minThresholdSTX,
+    currentBurnHeight,
+    daysUntilNextCycle,
+  };
+}
+
 export async function getStackingStatus(address: string): Promise<StackingStatus> {
   const [balanceData, poxData, stxPrice] = await Promise.all([
     getFungibleTokens(address),

@@ -14,8 +14,10 @@ import {
   getConnectedApps,
   getTokensWithValues,
   getPnLData,
+  getPoxCycleInfo,
   fetchContractInfo,
   type PortfolioValue,
+  type PoxCycleInfo,
   type TrendingToken,
   type STXMarketStats,
   type STXMarketHistory,
@@ -128,6 +130,14 @@ export function useSTXMarketHistory(days = 7) {
     ["stx-market-history", days],
     () => getSTXMarketHistory(days),
     { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
+  );
+}
+
+export function usePoxCycle() {
+  return useSWR<PoxCycleInfo>(
+    "pox-cycle",
+    getPoxCycleInfo,
+    { refreshInterval: 5 * 60_000, dedupingInterval: 5 * 60_000 }
   );
 }
 

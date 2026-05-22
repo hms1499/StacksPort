@@ -1,11 +1,15 @@
 import { DCAVault } from "@stacksport/dca-sdk";
 import type { BotConfig } from "./config.js";
 import type { BatchPlan } from "./batch-executor.js";
+import { CircuitBreaker, CircuitOpenError } from "./circuit-breaker.js";
 import { log } from "./logger.js";
+
+export { CircuitOpenError };
 
 export class StacksClient {
   private stxVault: DCAVault;
   private sbtcVault: DCAVault;
+  private hiroBreaker = new CircuitBreaker("hiro-rpc");
 
   constructor(private config: BotConfig) {
     this.stxVault = new DCAVault("stx-to-sbtc", {
@@ -16,54 +20,64 @@ export class StacksClient {
     });
   }
 
+  breakerSnapshot() {
+    return this.hiroBreaker.snapshot();
+  }
+
   private getVault(vaultContract: string): DCAVault {
     return vaultContract.includes("sbtc") ? this.sbtcVault : this.stxVault;
   }
 
   async getTotalPlans(vaultContract: string): Promise<number> {
     const vault = this.getVault(vaultContract);
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        const stats = await vault.getStats();
-        return stats.totalPlans;
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (attempt < 2 && (msg.includes("429") || msg.includes("RateLimit") || msg.includes("upstream"))) {
-          await sleep(3000 * (attempt + 1));
-          continue;
+    return this.hiroBreaker.exec(async () => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const stats = await vault.getStats();
+          return stats.totalPlans;
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : String(err);
+          if (attempt < 2 && (msg.includes("429") || msg.includes("RateLimit") || msg.includes("upstream"))) {
+            await sleep(3000 * (attempt + 1));
+            continue;
+          }
+          throw new Error(`getTotalPlans(${vaultContract}) failed: ${msg}`);
         }
-        throw new Error(`getTotalPlans(${vaultContract}) failed: ${msg}`);
       }
-    }
-    return 0;
+      return 0;
+    });
   }
 
   async canExecute(vaultContract: string, planId: number): Promise<boolean> {
     const vault = this.getVault(vaultContract);
-    return vault.canExecute(planId);
+    return this.hiroBreaker.exec(() => vault.canExecute(planId));
   }
 
   async getKeeperBalance(): Promise<number> {
-    const res = await fetch(
-      `${this.config.hiroApiUrl}/v2/accounts/${this.config.keeperAddress}?proof=0`
-    );
-    if (!res.ok) return 0;
-    const json = (await res.json()) as { balance: string };
-    return Number(json.balance ?? 0);
+    return this.hiroBreaker.exec(async () => {
+      const res = await fetch(
+        `${this.config.hiroApiUrl}/v2/accounts/${this.config.keeperAddress}?proof=0`
+      );
+      if (!res.ok) throw new Error(`getKeeperBalance failed: ${res.status}`);
+      const json = (await res.json()) as { balance: string };
+      return Number(json.balance ?? 0);
+    });
   }
 
   async getAccountNonce(address: string): Promise<number> {
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const res = await fetch(`${this.config.hiroApiUrl}/v2/accounts/${address}?proof=0`);
-      if (res.status === 429) {
-        await sleep(3000 * (attempt + 1));
-        continue;
+    return this.hiroBreaker.exec(async () => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const res = await fetch(`${this.config.hiroApiUrl}/v2/accounts/${address}?proof=0`);
+        if (res.status === 429) {
+          await sleep(3000 * (attempt + 1));
+          continue;
+        }
+        if (!res.ok) throw new Error(`Failed to fetch nonce for ${address}`);
+        const json = (await res.json()) as { nonce: number };
+        return json.nonce;
       }
-      if (!res.ok) throw new Error(`Failed to fetch nonce for ${address}`);
-      const json = (await res.json()) as { nonce: number };
-      return json.nonce;
-    }
-    throw new Error(`Failed to fetch nonce for ${address} after retries`);
+      throw new Error(`Failed to fetch nonce for ${address} after retries`);
+    });
   }
 
   async getExecutablePlanIds(
@@ -89,6 +103,10 @@ export class StacksClient {
         callsSincePause++;
         scanned++;
       } catch (err: unknown) {
+        if (err instanceof CircuitOpenError) {
+          log.warn("Hiro breaker open, aborting scan", { vaultContract, stoppedAtId: id });
+          break;
+        }
         const msg = err instanceof Error ? err.message : String(err);
         if (msg.includes("429") || msg.includes("RateLimit")) {
           rateLimitRetries++;

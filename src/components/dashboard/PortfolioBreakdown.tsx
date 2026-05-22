@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Wallet, Bitcoin, Coins, Repeat2, ArrowUpRight } from "lucide-react";
+import { Wallet, Bitcoin, Coins, Repeat2, Lock, ArrowUpRight } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 
 interface Chip {
@@ -17,19 +17,21 @@ interface Chip {
 interface Props {
   stxUsd: number;
   otherUsd: number;
+  stackingUsd?: number;
   dcaUsd?: number;
   totalUsd: number;
   /** Click to dismiss — typically toggles parent state. */
   onDismiss?: () => void;
 }
 
-export default function PortfolioBreakdown({ stxUsd, otherUsd, dcaUsd = 0, totalUsd, onDismiss }: Props) {
+export default function PortfolioBreakdown({ stxUsd, otherUsd, stackingUsd = 0, dcaUsd = 0, totalUsd, onDismiss }: Props) {
   // grandTotal includes DCA locked since it lives outside the wallet portfolio.
   const grandTotal = totalUsd + dcaUsd;
   const chips: Chip[] = [
-    { key: "stx",   label: "STX Wallet",     usd: stxUsd,   color: "#00C27A", icon: Wallet,  href: "/assets" },
-    { key: "sbtc",  label: "sBTC & Tokens",  usd: otherUsd, color: "#F7931A", icon: Bitcoin, href: "/assets" },
-    { key: "dca",   label: "DCA Locked",     usd: dcaUsd,   color: "#FFB547", icon: Repeat2, href: "/dca"    },
+    { key: "stx",       label: "STX Wallet",     usd: stxUsd,      color: "#00C27A", icon: Wallet,  href: "/assets" },
+    { key: "sbtc",      label: "sBTC & Tokens",  usd: otherUsd,    color: "#F7931A", icon: Bitcoin, href: "/assets" },
+    { key: "stacking",  label: "Stacking (stSTX)", usd: stackingUsd, color: "#A78BFA", icon: Lock,    href: "/assets" },
+    { key: "dca",       label: "DCA Locked",     usd: dcaUsd,      color: "#FFB547", icon: Repeat2, href: "/dca"    },
   ];
 
   // Add a placeholder "Stacking" / "DCA" chip if data is wired later.

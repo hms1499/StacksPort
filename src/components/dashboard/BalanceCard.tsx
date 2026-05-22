@@ -247,6 +247,7 @@ function BalanceCard() {
                 <PortfolioBreakdown
                   stxUsd={portfolio.stxUSD}
                   otherUsd={portfolio.otherUSD}
+                  stackingUsd={portfolio.stackingUSD}
                   dcaUsd={dcaUsdLocked}
                   totalUsd={portfolio.totalUSD}
                   onDismiss={() => setBreakdownOpen(false)}

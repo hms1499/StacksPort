@@ -28,6 +28,10 @@ export interface PortfolioValue {
   totalUSD: number;
   stxUSD: number;
   otherUSD: number;
+  /** USD value of stSTX (StackingDAO liquid-stacking receipt), bucketed
+   *  separately so the dashboard breakdown can show a "Stacking" chip
+   *  without double-counting against the sBTC/Tokens chip. */
+  stackingUSD: number;
   stxBalance: number;
   stxHumanBalance: number;
   stxPrice: number;
@@ -46,9 +50,10 @@ export async function getPortfolioValue(address: string): Promise<PortfolioValue
   const stxBalance = Number(balanceData.stx?.balance ?? 0);
   const stxUSD = (stxBalance / 1_000_000) * stxPriceData.usd;
 
-  const geckoTokens: { geckoId: string; humanBalance: number; decimals: number }[] = [];
+  const geckoTokens: { geckoId: string; humanBalance: number; decimals: number; isStacking?: boolean }[] = [];
   const fixedTokens: { contractName: string; humanBalance: number; fixedUsdPrice: number }[] = [];
   let otherUSD = 0;
+  let stackingUSD = 0;
   let fixedValueUSD = 0;
 
   if (balanceData.fungible_tokens) {
@@ -68,7 +73,12 @@ export async function getPortfolioValue(address: string): Promise<PortfolioValue
         fixedValueUSD += usd;
         fixedTokens.push({ contractName, humanBalance, fixedUsdPrice: known.fixedUsdPrice });
       } else if (known.geckoId) {
-        geckoTokens.push({ geckoId: known.geckoId, humanBalance, decimals: known.decimals });
+        geckoTokens.push({
+          geckoId: known.geckoId,
+          humanBalance,
+          decimals: known.decimals,
+          isStacking: contractName === "ststx-token",
+        });
       }
     }
   }
@@ -82,8 +92,13 @@ export async function getPortfolioValue(address: string): Promise<PortfolioValue
       );
       if (res.ok) {
         const prices = await res.json();
-        for (const { geckoId, humanBalance } of geckoTokens) {
-          otherUSD += humanBalance * (prices[geckoId]?.usd ?? 0);
+        for (const { geckoId, humanBalance, isStacking } of geckoTokens) {
+          const usd = humanBalance * (prices[geckoId]?.usd ?? 0);
+          if (isStacking) {
+            stackingUSD += usd;
+          } else {
+            otherUSD += usd;
+          }
         }
       }
     } catch (err) { console.error("[getPortfolioValue] CoinGecko price fetch failed:", err) }
@@ -92,9 +107,10 @@ export async function getPortfolioValue(address: string): Promise<PortfolioValue
   const stxHumanBalance = stxBalance / 1_000_000;
 
   return {
-    totalUSD: stxUSD + otherUSD,
+    totalUSD: stxUSD + otherUSD + stackingUSD,
     stxUSD,
     otherUSD,
+    stackingUSD,
     stxBalance,
     stxHumanBalance,
     stxPrice: stxPriceData.usd,

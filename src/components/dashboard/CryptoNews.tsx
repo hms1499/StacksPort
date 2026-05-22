@@ -93,7 +93,10 @@ export default function CryptoNews() {
   const { data: news, isLoading } = useNews();
 
   return (
-    <div className="glass-card rounded-2xl p-5 shadow-sm">
+    <div
+      className="glass-card rounded-2xl p-5 shadow-sm"
+      style={{ ['--card-accent' as string]: '#60A5FA' }}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
           <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Crypto News</h2>

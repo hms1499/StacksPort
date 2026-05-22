@@ -134,7 +134,10 @@ export default function TrendingTokens() {
   const { data: tokens, isLoading } = useTrendingTokens();
 
   return (
-    <div className="glass-card rounded-2xl p-5 shadow-sm">
+    <div
+      className="glass-card rounded-2xl p-5 shadow-sm"
+      style={{ ['--card-accent' as string]: '#FB7185' }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">

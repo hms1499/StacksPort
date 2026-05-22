@@ -227,7 +227,10 @@ function RecentActivity() {
   }, [txs]);
 
   return (
-    <div className="glass-card rounded-2xl p-5 shadow-sm flex flex-col">
+    <div
+      className="glass-card rounded-2xl p-5 shadow-sm flex flex-col"
+      style={{ ['--card-accent' as string]: '#FB923C' }}
+    >
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Activity</h2>
         {isConnected && stxAddress && (

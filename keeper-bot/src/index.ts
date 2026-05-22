@@ -5,6 +5,8 @@ import { readAllSubs } from "./redis-store.js";
 import { sendDcaExecutionNotifications } from "./dca-push.js";
 import { notifyBatchExecuted } from "./telegram-notify.js";
 import { acquireLock, releaseLock } from "./lock.js";
+import { recordBroadcast } from "./failure-tracker.js";
+import { reconcileRecentBatches } from "./reconcile.js";
 import { log } from "./logger.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
@@ -39,6 +41,15 @@ async function runOnce(): Promise<number> {
     batchExecutorContract: config.batchExecutorContract,
     keeperAddress:         config.keeperAddress,
   });
+
+  // Settle any broadcasts from previous runs before scanning new work. If
+  // chronic aborts are happening, the operator gets paged before we burn
+  // more fees on another doomed run.
+  try {
+    await reconcileRecentBatches(config.hiroApiUrl);
+  } catch (err) {
+    log.warn("reconcile failed (non-fatal)", { err: String(err) });
+  }
 
   const client   = new StacksClient(config);
   const executor = new BatchExecutor(config);
@@ -95,6 +106,12 @@ async function runOnce(): Promise<number> {
     if (result) {
       log.info(`Batch ${i + 1} broadcast`, { txid: result.txid, planCount: chunk.length });
       if (nonce !== undefined) nonce++;
+
+      // Record for the next run's reconcile pass. Fire-and-forget — a Redis
+      // hiccup here shouldn't fail the broadcast we just did.
+      recordBroadcast(result.txid, chunk.map((p) => p.planId)).catch((err) =>
+        log.warn("failure-tracker record failed (non-fatal)", { err: String(err) })
+      );
 
       // Gửi Web Push đến wallet owners của các plans vừa được execute
       sendDcaExecutionNotifications(chunk, result.txid, allSubs).catch((err) => {

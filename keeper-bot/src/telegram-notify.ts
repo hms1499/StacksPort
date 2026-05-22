@@ -5,6 +5,7 @@
 
 import { log } from './logger.js';
 import type { BatchPlan } from './batch-executor.js';
+import type { BatchEntry } from './failure-tracker.js';
 
 const TELEGRAM_API = 'https://api.telegram.org';
 const HIRO_EXPLORER = 'https://explorer.hiro.so';
@@ -53,4 +54,38 @@ export async function notifyBatchExecuted(
     // Non-fatal — execution đã xong, chỉ log warn
     log.warn('telegram: notification failed', { err: String(err) });
   }
+}
+
+export async function notifyBatchAborted(entry: BatchEntry): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const lines = [
+    '🚨 *DCA Batch Aborted On-Chain*',
+    '',
+    `Reason: \`${entry.abortReason ?? 'unknown'}\``,
+    `Plans affected: ${entry.planIds.length} — IDs: ${entry.planIds.map((id) => `#${id}`).join(', ')}`,
+    '',
+    `[View tx on Explorer](${HIRO_EXPLORER}/txid/${entry.txid}?chain=mainnet)`,
+  ];
+
+  await sendMessage(token, chatId, lines.join('\n'));
+}
+
+export async function notifyConsecutiveAborts(count: number): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const lines = [
+    '🔥 *Keeper bot needs attention*',
+    '',
+    `${count} consecutive batch broadcasts have aborted on-chain.`,
+    'Likely root causes: contract trap, post-condition mismatch, keeper balance too low for fees, or a misconfigured swap router.',
+    '',
+    'Action: inspect the latest aborted tx on Explorer and pause cron if needed.',
+  ];
+
+  await sendMessage(token, chatId, lines.join('\n'));
 }

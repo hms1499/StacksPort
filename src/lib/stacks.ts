@@ -1,5 +1,10 @@
 const HIRO_API_BASE = "https://api.hiro.so";
-const COINGECKO_API = "/api/coingecko";
+// Client uses the in-app proxy (avoids CORS + adds CDN cache); server hits CoinGecko
+// directly since relative URLs don't resolve outside the browser.
+const COINGECKO_API =
+  typeof window === "undefined"
+    ? "https://api.coingecko.com/api/v3"
+    : "/api/coingecko";
 
 export interface TrendingToken {
   id: string;

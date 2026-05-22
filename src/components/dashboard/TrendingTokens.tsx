@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useRef, useState } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import { useTrendingTokens } from "@/hooks/useMarketData";
 import { useFlashOnChange } from "@/hooks/useFlashOnChange";
@@ -9,6 +9,9 @@ import type { TrendingToken } from "@/lib/stacks";
 const COINGECKO_STACKS_URL = "https://www.coingecko.com/en/categories/stacks-ecosystem";
 
 const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boolean }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+
   if (prices.length < 2) {
     return <div className="w-20 h-10" />;
   }
@@ -19,25 +22,83 @@ const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: numb
   const max = Math.max(...prices);
   const range = max - min || 1;
 
-  const pts = prices.map((p, i) => {
-    const x = (i / (prices.length - 1)) * w;
-    const y = h - ((p - min) / range) * (h - 4) - 2;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
+  const coords = prices.map((p, i) => ({
+    x: (i / (prices.length - 1)) * w,
+    y: h - ((p - min) / range) * (h - 4) - 2,
+  }));
+  const pts = coords.map((c) => `${c.x.toFixed(1)},${c.y.toFixed(1)}`);
 
   const strokeColor = isPositive ? "#22c55e" : "#ef4444";
 
+  function handleMove(e: React.MouseEvent<SVGSVGElement>) {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const relX = ((e.clientX - rect.left) / rect.width) * w;
+    const idx = Math.round((relX / w) * (prices.length - 1));
+    const clamped = Math.max(0, Math.min(prices.length - 1, idx));
+    setHoverIdx(clamped);
+  }
+
+  const hover = hoverIdx !== null ? { ...coords[hoverIdx], price: prices[hoverIdx] } : null;
+
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-20 h-10" preserveAspectRatio="none">
-      <polyline
-        points={pts.join(" ")}
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    </svg>
+    <div className="relative w-20 h-10">
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${w} ${h}`}
+        className="w-20 h-10 cursor-crosshair"
+        preserveAspectRatio="none"
+        onMouseMove={handleMove}
+        onMouseLeave={() => setHoverIdx(null)}
+      >
+        <polyline
+          points={pts.join(" ")}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {hover && (
+          <>
+            <line
+              x1={hover.x}
+              y1={0}
+              x2={hover.x}
+              y2={h}
+              stroke={strokeColor}
+              strokeWidth="0.5"
+              strokeDasharray="2 2"
+              opacity={0.6}
+            />
+            <circle
+              cx={hover.x}
+              cy={hover.y}
+              r={2.2}
+              fill={strokeColor}
+              stroke="var(--bg-card)"
+              strokeWidth="0.8"
+              vectorEffect="non-scaling-stroke"
+            />
+          </>
+        )}
+      </svg>
+      {hover && (
+        <div
+          className="pointer-events-none absolute -top-7 text-[10px] font-data font-semibold px-1.5 py-0.5 rounded shadow-md whitespace-nowrap z-10"
+          style={{
+            left: `${(hover.x / w) * 100}%`,
+            transform: 'translateX(-50%)',
+            backgroundColor: 'var(--bg-elevated)',
+            border: '1px solid var(--border-subtle)',
+            color: 'var(--text-primary)',
+          }}
+        >
+          {formatPrice(hover.price)}
+        </div>
+      )}
+    </div>
   );
 });
 

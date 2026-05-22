@@ -19,6 +19,7 @@ import {
   hasWarnedLowBalance,
   markLowBalanceWarned,
 } from '@/lib/dca-watcher-storage';
+import { invalidatePortfolio } from '@/lib/invalidate';
 
 const POLL_INTERVAL_MS = 60_000;
 
@@ -191,6 +192,9 @@ async function runTick(address: string, addNotification: AddNotificationFn): Pro
   if (newTxids.length > 0) {
     store = markSeen(store, newTxids);
     storeModified = true;
+    // Keeper-driven execution moved on-chain state without going through any
+    // local trackTx flow, so bust the snapshot cache directly.
+    invalidatePortfolio(address);
   }
   if (storeModified) saveSeen(address, store);
 }

@@ -4,12 +4,35 @@ import { BatchExecutor, chunkArray } from "./batch-executor.js";
 import { readAllSubs } from "./redis-store.js";
 import { sendDcaExecutionNotifications } from "./dca-push.js";
 import { notifyBatchExecuted } from "./telegram-notify.js";
+import { acquireLock, releaseLock } from "./lock.js";
 import { log } from "./logger.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
 const MAX_BATCH_SIZE = 50;
 
+// Lock window covers: plan scan (~5s) + worst-case 3 retries × 10s backoff +
+// broadcast + notifications. 5 min is generous; if the run actually exceeds
+// it the next cron will take over (safer than holding forever).
+const LOCK_KEY = "keeper-bot:run-lock";
+const LOCK_TTL_SECONDS = 300;
+
 async function main(): Promise<void> {
+  const lock = await acquireLock(LOCK_KEY, LOCK_TTL_SECONDS);
+  if (!lock) {
+    log.info("Another keeper run is in progress — exiting cleanly");
+    process.exit(0);
+  }
+
+  let code = 0;
+  try {
+    code = await runOnce();
+  } finally {
+    await releaseLock(lock);
+  }
+  process.exit(code);
+}
+
+async function runOnce(): Promise<number> {
   const config = await loadConfig();
 
   log.info("Keeper bot starting", {
@@ -39,7 +62,7 @@ async function main(): Promise<void> {
 
   if (plans.length === 0) {
     log.info("Nothing to execute, exiting");
-    process.exit(0);
+    return 0;
   }
 
   // Chunk into batches of ≤50 (Clarity list limit)
@@ -91,7 +114,7 @@ async function main(): Promise<void> {
   }
 
   log.info("Run complete", { totalPlans: plans.length, chunks: chunks.length });
-  process.exit(anyFailed ? 1 : 0);
+  return anyFailed ? 1 : 0;
 }
 
 main().catch((err: unknown) => {

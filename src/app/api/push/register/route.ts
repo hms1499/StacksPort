@@ -20,17 +20,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  // Preserve worker-written lastPushedAt across syncs.
-  // Frontend always sends lastPushedAt: null; merge from existing entry by alert id.
+  // Preserve worker-written state across client syncs. The keeper-bot
+  // evaluator owns lastPushedAt + triggeredAt + the fire-once isActive=false
+  // transition. If a stale client tries to re-enable a fired alert, that has
+  // to go through the explicit reset endpoint, not a register sync.
   const existing = await getSub(walletAddress);
-  const existingByID = new Map<string, number | null>();
+  const existingById = new Map<string, PushAlertEntry>();
   if (existing) {
-    for (const a of existing.alerts) existingByID.set(a.id, a.lastPushedAt ?? null);
+    for (const a of existing.alerts) existingById.set(a.id, a);
   }
-  const mergedAlerts: PushAlertEntry[] = alerts.map((a) => ({
-    ...a,
-    lastPushedAt: existingByID.has(a.id) ? existingByID.get(a.id)! : (a.lastPushedAt ?? null),
-  }));
+  const mergedAlerts: PushAlertEntry[] = alerts.map((a) => {
+    const prev = existingById.get(a.id);
+    if (!prev) return a;
+    return {
+      ...a,
+      lastPushedAt: prev.lastPushedAt ?? a.lastPushedAt ?? null,
+      triggeredAt: prev.triggeredAt ?? a.triggeredAt,
+      // Once fired, only an explicit reset (not a register sync) can flip back to active.
+      isActive: prev.triggeredAt ? false : a.isActive,
+    };
+  });
 
   const entry: SubEntry = {
     subscription,

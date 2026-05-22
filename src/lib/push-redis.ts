@@ -13,6 +13,10 @@ export interface PushAlertEntry {
   targetPrice: number;
   isActive: boolean;
   lastPushedAt: number | null;
+  // Set by the server-side evaluator when the alert fires once. Used by the
+  // client UI to show "triggered at HH:MM" instead of leaving the alert in a
+  // confusing always-active state.
+  triggeredAt?: number;
 }
 
 export interface SubEntry {

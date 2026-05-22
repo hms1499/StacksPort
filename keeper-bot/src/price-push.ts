@@ -8,7 +8,6 @@ import {
 } from './redis-store.js';
 
 const COINGECKO_URL = 'https://api.coingecko.com/api/v3/simple/price';
-const PUSH_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour between same-alert pushes
 
 webpush.setVapidDetails(
   process.env.VAPID_SUBJECT!,
@@ -40,7 +39,6 @@ async function processSub(addr: string, entry: SubEntry, prices: Record<string, 
     if (!alert.isActive) continue;
     const currentPrice = prices[alert.geckoId];
     if (currentPrice == null) continue;
-    if (alert.lastPushedAt && Date.now() - alert.lastPushedAt < PUSH_COOLDOWN_MS) continue;
 
     const triggered =
       alert.condition === 'above'
@@ -58,7 +56,12 @@ async function processSub(addr: string, entry: SubEntry, prices: Record<string, 
 
     try {
       await webpush.sendNotification(entry.subscription, payload);
+      // Fire-once semantics: deactivate after the push so the same alert
+      // doesn't re-fire on every tick. User can manually reset from the UI
+      // if they want to be notified again.
       alert.lastPushedAt = Date.now();
+      alert.isActive = false;
+      alert.triggeredAt = Date.now();
       modified = true;
     } catch (err: unknown) {
       const statusCode = (err as { statusCode?: number }).statusCode;

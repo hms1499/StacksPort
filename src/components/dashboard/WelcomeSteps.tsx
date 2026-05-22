@@ -87,13 +87,53 @@ export default function WelcomeSteps() {
   // NOTE: must be declared BEFORE any early return — hooks rules.
   const [celebrating, setCelebrating] = useState(false);
   const celebratedRef = useRef(false);
+  const iconRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (allDone && !celebratedRef.current) {
-      celebratedRef.current = true;
-      setCelebrating(true);
-      const id = setTimeout(() => setCelebrating(false), 2400);
-      return () => clearTimeout(id);
+    if (!allDone || celebratedRef.current) return;
+    celebratedRef.current = true;
+    setCelebrating(true);
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    if (!prefersReducedMotion) {
+      void import("canvas-confetti").then(({ default: confetti }) => {
+        const rect = iconRef.current?.getBoundingClientRect();
+        const origin = rect
+          ? {
+              x: (rect.left + rect.width / 2) / window.innerWidth,
+              y: (rect.top + rect.height / 2) / window.innerHeight,
+            }
+          : { x: 0.3, y: 0.25 };
+        const colors = ["#408A71", "#FFB547", "#F7931A", "#A78BFA"];
+        confetti({
+          particleCount: 80,
+          spread: 75,
+          startVelocity: 38,
+          ticks: 180,
+          gravity: 0.9,
+          scalar: 0.85,
+          origin,
+          colors,
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 40,
+            spread: 110,
+            startVelocity: 28,
+            ticks: 160,
+            gravity: 0.9,
+            scalar: 0.7,
+            origin,
+            colors,
+          });
+        }, 220);
+      });
     }
+
+    const id = setTimeout(() => setCelebrating(false), 2400);
+    return () => clearTimeout(id);
   }, [allDone]);
 
   if (dismissed || !isConnected) return null;
@@ -114,35 +154,10 @@ export default function WelcomeSteps() {
           className="overflow-hidden"
         >
           <div className="relative rounded-2xl p-5 overflow-hidden" style={{ background: 'linear-gradient(to right, var(--accent-glow), color-mix(in srgb, var(--accent-dim) 5%, transparent))', border: '1px solid var(--accent-glow)' }}>
-            {/* Celebration sparkles — emit from the icon area when 4/4 reached */}
-            <AnimatePresence>
-              {celebrating && (
-                <div className="pointer-events-none absolute top-3 left-3 w-12 h-12 z-10">
-                  {Array.from({ length: 14 }).map((_, i) => {
-                    const angle = (i / 14) * Math.PI * 2;
-                    const dist = 40 + Math.random() * 30;
-                    const dx = Math.cos(angle) * dist;
-                    const dy = Math.sin(angle) * dist;
-                    const color = i % 3 === 0 ? '#FFB547' : i % 3 === 1 ? 'var(--accent)' : '#F7931A';
-                    return (
-                      <motion.span
-                        key={i}
-                        initial={{ x: 16, y: 16, scale: 0, opacity: 1 }}
-                        animate={{ x: 16 + dx, y: 16 + dy, scale: [0, 1, 0.6], opacity: [1, 1, 0] }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.6 + Math.random() * 0.6, ease: 'easeOut', delay: Math.random() * 0.25 }}
-                        className="absolute w-1.5 h-1.5 rounded-full"
-                        style={{ backgroundColor: color, boxShadow: `0 0 6px ${color}` }}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </AnimatePresence>
-
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <motion.div
+                  ref={iconRef}
                   className="w-8 h-8 rounded-lg bg-[#408A71] flex items-center justify-center relative"
                   animate={celebrating ? { scale: [1, 1.18, 1], rotate: [0, 8, -8, 0] } : { scale: 1, rotate: 0 }}
                   transition={celebrating ? { duration: 0.6, repeat: 2 } : { duration: 0.2 }}

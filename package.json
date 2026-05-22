@@ -20,6 +20,7 @@
     "@stacks/wallet-sdk": "^7.2.0",
     "@stacksport/dca-sdk": "^0.1.0",
     "@upstash/redis": "^1.37.0",
+    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "d3-force": "^3.0.0",
     "framer-motion": "^12.38.0",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/d3-force": "^3.0.10",
     "@types/node": "^20",
     "@types/react": "^19",

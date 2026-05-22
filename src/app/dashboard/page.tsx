@@ -6,6 +6,7 @@ import QuickActions from "@/components/dashboard/QuickActions";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
+import DashboardFooter from "@/components/dashboard/DashboardFooter";
 
 const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
 const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"), {
@@ -153,6 +154,7 @@ export default function DashboardPage() {
             </div>
           </MotionCard>
         </StaggerChildren>
+        <DashboardFooter />
       </AnimatedPage>
     </div>
   );

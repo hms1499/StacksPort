@@ -199,6 +199,16 @@ export default function DCAPerformanceContent() {
     return { sumActualSbtc, sumLumpSbtc, sumStxIn, deltaSbtc, deltaPct, skipped, count: eligible.length };
   }, [perPlan]);
 
+  // True only after enrichment has run AND every plan with executions ended
+  // up with lumpSum === null. Lets us show an explicit error state instead
+  // of silently hiding the entire lump-sum block.
+  const allLumpSumsFailed = !!(
+    perPlan &&
+    !lumpSumLoading &&
+    perPlan.some((p) => p.perf.executionCount > 0) &&
+    perPlan.every((p) => p.perf.executionCount === 0 || p.lumpSum === null)
+  );
+
   return (
     <div className="flex flex-col min-h-screen">
       <Topbar title="DCA Performance" />
@@ -418,6 +428,30 @@ export default function DCAPerformanceContent() {
                         <div className="h-3 w-64 rounded skeleton" />
                       </div>
                       <div className="h-8 w-20 rounded skeleton" />
+                    </div>
+                  </div>
+                </MotionCard>
+              ) : allLumpSumsFailed ? (
+                <MotionCard disableHover>
+                  <div
+                    className="glass-card rounded-2xl p-5"
+                    style={{ ['--card-accent' as string]: 'var(--text-muted)' }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: 'var(--bg-elevated)' }}
+                      >
+                        <BarChart3 size={16} style={{ color: 'var(--text-muted)' }} />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          Lump-sum comparison unavailable
+                        </h2>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                          Historical STX/BTC prices for your plan start dates couldn&apos;t be fetched from CoinGecko. The basis-vs-today&apos;s-spot strip above still works.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </MotionCard>

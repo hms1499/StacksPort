@@ -1,13 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Wallet, ArrowRight, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { connect as stacksConnect } from "@stacks/connect";
 import { useWalletStore } from "@/store/walletStore";
+
+const VALUE_PROPS = [
+  "View your Stacks portfolio in real-time",
+  "Automate STX → sBTC DCA — non-custodial",
+  "Track stacking rewards across PoX cycles",
+  "Swap via Bitflow with one click",
+  "Get alerts when prices move past your targets",
+];
 
 export default function WalletBanner() {
   const { isConnected, connect } = useWalletStore();
   const [connecting, setConnecting] = useState(false);
+  const [propIdx, setPropIdx] = useState(0);
+
+  useEffect(() => {
+    if (isConnected) return;
+    const id = setInterval(() => {
+      setPropIdx((i) => (i + 1) % VALUE_PROPS.length);
+    }, 3800);
+    return () => clearInterval(id);
+  }, [isConnected]);
 
   if (isConnected) return null;
 
@@ -35,11 +53,22 @@ export default function WalletBanner() {
         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
           <Wallet size={22} className="text-white" />
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-white font-semibold">Connect your wallet</p>
-          <p className="text-white/70 text-sm mt-0.5">
-            View your Stacks portfolio in real-time
-          </p>
+          <div className="relative h-5 mt-0.5 overflow-hidden">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.p
+                key={propIdx}
+                initial={{ y: 12, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -12, opacity: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="text-white/70 text-sm absolute inset-0 truncate"
+              >
+                {VALUE_PROPS[propIdx]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
       <button

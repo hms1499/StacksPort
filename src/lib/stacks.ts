@@ -665,6 +665,20 @@ export interface PoxCycleInfo {
   daysUntilNextCycle: number;
 }
 
+export async function getBtcUsdPrice(): Promise<number> {
+  try {
+    const r = await fetch(
+      `${COINGECKO_API}/simple/price?ids=bitcoin&vs_currencies=usd`,
+      { next: { revalidate: 60 }, signal: AbortSignal.timeout(10_000) }
+    );
+    if (!r.ok) return 0;
+    const j = await r.json();
+    return Number(j?.bitcoin?.usd ?? 0);
+  } catch {
+    return 0;
+  }
+}
+
 export async function getPoxCycleInfo(): Promise<PoxCycleInfo> {
   const [poxData, stxPrice] = await Promise.all([
     fetch(`${HIRO_API_BASE}/v2/pox`, {

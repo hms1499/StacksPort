@@ -413,6 +413,60 @@ export async function getPlanExecutionHistory(
   return events;
 }
 
+export interface PlanPerformance {
+  planId: number;
+  executionCount: number;     // success only
+  totalStxIn: number;         // STX (decimal)
+  totalSbtcOut: number;       // sBTC (decimal, 8dp)
+  /** STX per sBTC averaged across all successful executions (weighted
+   *  by STX in). Falls back to 0 when there is no executed volume. */
+  avgStxPerSbtc: number;
+  totalFeeStx: number;        // STX (decimal)
+  firstExecutionAt: number | null; // unix seconds
+  lastExecutionAt: number | null;  // unix seconds
+  successfulEvents: PlanExecutionEvent[]; // sorted ascending by blockTime
+}
+
+/**
+ * Aggregate execution events into a per-plan cost-basis summary. Pure
+ * function — caller is responsible for fetching the events first. Drops
+ * non-success events and events missing the sBTC transfer (those can't
+ * contribute to cost basis).
+ */
+export function aggregatePlanPerformance(
+  planId: number,
+  events: PlanExecutionEvent[]
+): PlanPerformance {
+  const successful = events
+    .filter((e) => e.status === "success" && (e.sbtcReceived ?? 0) > 0 && (e.netSwapped ?? 0) > 0)
+    .sort((a, b) => a.blockTime - b.blockTime);
+
+  let totalStxMicro = 0;
+  let totalSbtcSats = 0;
+  let totalFeeMicro = 0;
+  for (const e of successful) {
+    totalStxMicro += e.netSwapped ?? 0;
+    totalSbtcSats += e.sbtcReceived ?? 0;
+    totalFeeMicro += e.protocolFee ?? 0;
+  }
+
+  const totalStxIn = totalStxMicro / 1_000_000;
+  const totalSbtcOut = totalSbtcSats / 100_000_000;
+  const avgStxPerSbtc = totalSbtcOut > 0 ? totalStxIn / totalSbtcOut : 0;
+
+  return {
+    planId,
+    executionCount: successful.length,
+    totalStxIn,
+    totalSbtcOut,
+    avgStxPerSbtc,
+    totalFeeStx: totalFeeMicro / 1_000_000,
+    firstExecutionAt: successful[0]?.blockTime ?? null,
+    lastExecutionAt: successful[successful.length - 1]?.blockTime ?? null,
+    successfulEvents: successful,
+  };
+}
+
 // ─── Write functions ──────────────────────────────────────────────────────────
 
 export function createPlan(

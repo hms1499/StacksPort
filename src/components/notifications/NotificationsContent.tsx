@@ -7,6 +7,7 @@ import NotificationFilters from './NotificationFilters';
 import NotificationCard from './NotificationCard';
 import { cn } from '@/lib/utils';
 import EmptyState from '@/components/motion/EmptyState';
+import AnimatedPage from '@/components/motion/AnimatedPage';
 import { Bell } from 'lucide-react';
 import type { Notification, NotificationCategory } from '@/types/notifications';
 
@@ -148,7 +149,7 @@ export default function NotificationsContent() {
       />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <AnimatedPage className="flex-1 flex flex-col overflow-hidden">
 
         {/* Filter tabs + unread badge */}
         <div style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)' }}>
@@ -316,7 +317,7 @@ export default function NotificationsContent() {
             </div>
           )}
         </div>
-      </div>
+      </AnimatedPage>
     </div>
   );
 }

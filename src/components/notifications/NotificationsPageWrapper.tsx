@@ -8,6 +8,8 @@ import NotificationsContent from './NotificationsContent';
 import PriceAlertForm from '@/components/price-alerts/PriceAlertForm';
 import PriceAlertsList from '@/components/price-alerts/PriceAlertsList';
 import NotificationPreferences from './NotificationPreferences';
+import AnimatedPage from '@/components/motion/AnimatedPage';
+import { AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 type Tab = 'activity' | 'price-alerts' | 'preferences';
@@ -59,18 +61,23 @@ export default function NotificationsPageWrapper() {
 
       {/* Tab content */}
       <div className="flex-1 flex overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-        {activeTab === 'activity' ? (
-          <NotificationsContent />
-        ) : activeTab === 'price-alerts' ? (
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full space-y-6">
-            <PriceAlertForm />
-            <PriceAlertsList />
-          </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto p-4 md:p-6">
-            <NotificationPreferences />
-          </div>
-        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {activeTab === 'activity' ? (
+            <NotificationsContent key="activity" />
+          ) : activeTab === 'price-alerts' ? (
+            <AnimatedPage
+              key="price-alerts"
+              className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full space-y-6"
+            >
+              <PriceAlertForm />
+              <PriceAlertsList />
+            </AnimatedPage>
+          ) : (
+            <AnimatedPage key="preferences" className="flex-1 overflow-y-auto p-4 md:p-6">
+              <NotificationPreferences />
+            </AnimatedPage>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

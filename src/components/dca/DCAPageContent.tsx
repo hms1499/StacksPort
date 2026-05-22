@@ -16,6 +16,7 @@ import DCAHeroSection, { type DCATab } from "./DCAHeroSection";
 import CreatePlanForm from "./CreatePlanForm";
 import MyPlans from "./MyPlans";
 import InfoFooter from "./InfoFooter";
+import MobileCollapsibleForm from "./MobileCollapsibleForm";
 import CreateOutPlanForm from "@/components/dca-out/CreateOutPlanForm";
 import MyOutPlans from "@/components/dca-out/MyOutPlans";
 
@@ -74,19 +75,23 @@ export default function DCAPageContent() {
               </div>
             ) : tab === "in" ? (
               <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
-                <div className="lg:sticky lg:top-6">
-                  <CreatePlanForm onCreated={handleRefresh} />
+                <div className="order-2 lg:order-1 lg:sticky lg:top-6">
+                  <MobileCollapsibleForm title="Create DCA In plan" openOnEvent="dca:fill-form">
+                    <CreatePlanForm onCreated={handleRefresh} />
+                  </MobileCollapsibleForm>
                 </div>
-                <div>
+                <div className="order-1 lg:order-2">
                   <MyPlans key={`${debouncedAddress}-${refreshKey}`} address={debouncedAddress!} onPlansLoaded={handlePlansLoaded} />
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
-                <div className="lg:sticky lg:top-6">
-                  <CreateOutPlanForm onCreated={handleOutRefresh} />
+                <div className="order-2 lg:order-1 lg:sticky lg:top-6">
+                  <MobileCollapsibleForm title="Create DCA Out plan" openOnEvent="dca-out:fill-form">
+                    <CreateOutPlanForm onCreated={handleOutRefresh} />
+                  </MobileCollapsibleForm>
                 </div>
-                <div>
+                <div className="order-1 lg:order-2">
                   <MyOutPlans key={outRefreshKey} address={stxAddress!} />
                 </div>
               </div>

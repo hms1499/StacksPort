@@ -7,6 +7,7 @@ import Topbar from '@/components/layout/Topbar';
 import NotificationsContent from './NotificationsContent';
 import PriceAlertForm from '@/components/price-alerts/PriceAlertForm';
 import PriceAlertsList from '@/components/price-alerts/PriceAlertsList';
+import PushPermissionBanner from '@/components/price-alerts/PushPermissionBanner';
 import NotificationPreferences from './NotificationPreferences';
 import AnimatedPage from '@/components/motion/AnimatedPage';
 import { AnimatePresence } from 'framer-motion';
@@ -69,6 +70,7 @@ export default function NotificationsPageWrapper() {
               key="price-alerts"
               className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full space-y-6"
             >
+              <PushPermissionBanner />
               <PriceAlertForm />
               <PriceAlertsList />
             </AnimatedPage>

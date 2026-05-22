@@ -59,6 +59,8 @@ export const usePriceAlertStore = create<PriceAlertStoreState>()(
 
       setWalletAddress: (addr: string) => set({ walletAddress: addr }),
 
+      setAlerts: (alerts: PriceAlert[]) => set({ alerts }),
+
       addAlert: (
         tokenSymbol: string,
         geckoId: string,
@@ -107,7 +109,16 @@ export const usePriceAlertStore = create<PriceAlertStoreState>()(
             a.id === id ? { ...a, isActive: true, triggeredAt: undefined } : a
           ),
         }));
-        syncAlerts(get().walletAddress, get().alerts);
+        // Server preserves triggeredAt across register syncs to defend against
+        // stale clients, so resetting needs its own endpoint.
+        const addr = get().walletAddress;
+        if (addr) {
+          fetch('/api/price-alerts/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ walletAddress: addr, alertId: id }),
+          }).catch(() => {});
+        }
       },
     }),
     { name: 'price-alerts-storage' }

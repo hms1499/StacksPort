@@ -15,6 +15,9 @@ export interface PriceAlertStoreState {
   alerts: PriceAlert[];
   walletAddress: string;
   setWalletAddress: (addr: string) => void;
+  // Replace the entire alerts array — used by the server-hydration hook so
+  // the client mirrors authoritative state from Redis.
+  setAlerts: (alerts: PriceAlert[]) => void;
   addAlert: (
     tokenSymbol: string,
     geckoId: string,

@@ -6,15 +6,15 @@ import Sidebar from '@/components/layout/Sidebar';
 import BottomNav from '@/components/layout/BottomNav';
 import ToastContainer from '@/components/notifications/ToastContainer';
 import ThemeProvider from '@/components/ThemeProvider';
-import { usePriceAlertPolling } from '@/hooks/usePriceAlertPolling';
+import { useAlertsHydration } from '@/hooks/useAlertsHydration';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useDcaExecutionWatcher } from '@/hooks/useDcaExecutionWatcher';
 import { AnimatePresence } from 'framer-motion';
 import { useWalletStore } from '@/store/walletStore';
 import { usePriceAlertStore } from '@/store/priceAlertStore';
 
-function PriceAlertPoller() {
-  usePriceAlertPolling();
+function PriceAlertHydrator() {
+  useAlertsHydration();
   return null;
 }
 
@@ -69,7 +69,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       <ToastContainer />
 
       {/* Background services */}
-      <PriceAlertPoller />
+      <PriceAlertHydrator />
       <WalletAddressSync />
       <PushSyncer />
       <DcaExecutionWatcher />

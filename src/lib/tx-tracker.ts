@@ -3,6 +3,7 @@
 // Gọi addNotification khi tx confirm hoặc fail — đóng gap "submitted nhưng không biết kết quả".
 
 import type { NotificationCategory, NotificationContext } from '@/types/notifications';
+import { invalidatePortfolio } from '@/lib/invalidate';
 
 const HIRO_API = 'https://api.hiro.so';
 const POLL_INTERVAL_MS = 10_000;  // 10s — Stacks block time ~10s
@@ -39,11 +40,16 @@ export interface TrackTxOptions {
     duration?: number,
     context?: NotificationContext,
   ) => void;
+  // Optional: wallet address that submitted the tx. When provided, the
+  // portfolio snapshot cache for that address is invalidated on confirm so
+  // the UI sees the new balance/plan state immediately instead of waiting
+  // for the SWR refresh interval.
+  address?: string | null;
 }
 
 // Fire-and-forget — gọi sau openContractCall/openSTXTransfer onFinish.
 // Không block UI, không throw.
-export function trackTx({ txId, label, category, context, addNotification }: TrackTxOptions): void {
+export function trackTx({ txId, label, category, context, addNotification, address }: TrackTxOptions): void {
   let attempts = 0;
 
   const poll = async () => {
@@ -67,8 +73,10 @@ export function trackTx({ txId, label, category, context, addNotification }: Tra
         undefined, // keep in drawer
         { ...context, txId, action: 'confirmed' },
       );
+      invalidatePortfolio(address);
     } else {
-      // abort_by_response hoặc abort_by_post_condition
+      // abort_by_response hoặc abort_by_post_condition — STX fee was still
+      // burned, so the balance moved even though the action didn't take.
       addNotification(
         `${label} failed on-chain. Check Explorer for details.`,
         'error',
@@ -76,6 +84,7 @@ export function trackTx({ txId, label, category, context, addNotification }: Tra
         undefined,
         { ...context, txId, action: 'failed' },
       );
+      invalidatePortfolio(address);
     }
   };
 

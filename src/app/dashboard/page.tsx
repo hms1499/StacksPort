@@ -67,6 +67,10 @@ const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingToke
   ),
 });
 
+const DCAPerformanceCard = dynamic(() => import("@/components/dashboard/DCAPerformanceCard"), {
+  loading: () => null,
+});
+
 const PoxCycleCard = dynamic(() => import("@/components/dashboard/PoxCycleCard"), {
   loading: () => (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -150,6 +154,11 @@ export default function DashboardPage() {
           {/* PoX cycle countdown — Stacks-native featured card */}
           <MotionCard>
             <PoxCycleCard />
+          </MotionCard>
+
+          {/* DCA performance (auto-hides until user has executed ≥1 swap) */}
+          <MotionCard>
+            <DCAPerformanceCard />
           </MotionCard>
 
           {/* DCA Summary + Greed Index + Trending — 3-column row to reduce scroll */}

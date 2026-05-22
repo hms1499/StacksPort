@@ -22,15 +22,19 @@ import {
   getPlanExecutionHistory,
   aggregatePlanPerformance,
   blocksToInterval,
+  computeLumpSum,
+  utcIsoDateFromUnix,
   type DCAPlan,
+  type LumpSumScenario,
   type PlanPerformance,
 } from "@/lib/dca";
-import { getBtcUsdPrice } from "@/lib/stacks";
+import { getBtcUsdPrice, getHistoricalStxBtcPrices } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 
 interface PlanWithPerf {
   plan: DCAPlan;
   perf: PlanPerformance;
+  lumpSum?: LumpSumScenario | null; // null = price lookup failed; undefined = not yet fetched
 }
 
 function formatStx(n: number, dp = 2): string {
@@ -110,6 +114,52 @@ export default function DCAPerformanceContent() {
     return () => { cancelled = true; };
   }, [allPlans, planBundle]);
 
+  // Once the per-plan aggregation is done, fetch historical STX/BTC prices
+  // on each plan's first-execution date and enrich with a lump-sum scenario.
+  // Dates are deduped so two plans starting the same day share one fetch.
+  const [lumpSumLoading, setLumpSumLoading] = useState(false);
+  useEffect(() => {
+    if (!perPlan) return;
+    const eligible = perPlan.filter(
+      (p) => p.perf.executionCount > 0 && p.perf.firstExecutionAt && p.lumpSum === undefined
+    );
+    if (eligible.length === 0) return;
+
+    let cancelled = false;
+    setLumpSumLoading(true);
+    (async () => {
+      const uniqueDates = Array.from(
+        new Set(eligible.map((p) => utcIsoDateFromUnix(p.perf.firstExecutionAt!)))
+      );
+      const priceByDate = new Map<string, { stxUsd: number; btcUsd: number } | null>();
+      await Promise.all(
+        uniqueDates.map(async (d) => {
+          const prices = await getHistoricalStxBtcPrices(d);
+          priceByDate.set(d, prices);
+        })
+      );
+      if (cancelled) return;
+      setPerPlan((prev) => {
+        if (!prev) return prev;
+        return prev.map((p) => {
+          if (p.lumpSum !== undefined) return p;
+          if (p.perf.executionCount === 0 || !p.perf.firstExecutionAt) {
+            return { ...p, lumpSum: null };
+          }
+          const date = utcIsoDateFromUnix(p.perf.firstExecutionAt);
+          const prices = priceByDate.get(date) ?? null;
+          if (!prices) return { ...p, lumpSum: null };
+          return {
+            ...p,
+            lumpSum: computeLumpSum(p.perf, date, prices.stxUsd, prices.btcUsd),
+          };
+        });
+      });
+      setLumpSumLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [perPlan]);
+
   const totals = useMemo(() => {
     if (!perPlan) return null;
     const t = perPlan.reduce(
@@ -131,6 +181,23 @@ export default function DCAPerformanceContent() {
     totals && spotStxPerSbtc && totals.avgStxPerSbtc > 0
       ? ((spotStxPerSbtc - totals.avgStxPerSbtc) / spotStxPerSbtc) * 100
       : null;
+
+  // Aggregate lump-sum across plans where historical prices succeeded.
+  const lumpSumAggregate = useMemo(() => {
+    if (!perPlan) return null;
+    const eligible = perPlan.filter((p) => p.lumpSum);
+    if (eligible.length === 0) return null;
+    const sumActualSbtc = eligible.reduce((s, p) => s + p.perf.totalSbtcOut, 0);
+    const sumLumpSbtc   = eligible.reduce((s, p) => s + (p.lumpSum?.lumpSumSbtc ?? 0), 0);
+    const sumStxIn      = eligible.reduce((s, p) => s + p.perf.totalStxIn, 0);
+    const deltaSbtc = sumActualSbtc - sumLumpSbtc;
+    const deltaPct = sumLumpSbtc > 0 ? (deltaSbtc / sumLumpSbtc) * 100 : 0;
+    const totalEligiblePlans = perPlan.filter(
+      (p) => p.perf.executionCount > 0
+    ).length;
+    const skipped = totalEligiblePlans - eligible.length;
+    return { sumActualSbtc, sumLumpSbtc, sumStxIn, deltaSbtc, deltaPct, skipped, count: eligible.length };
+  }, [perPlan]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -284,6 +351,78 @@ export default function DCAPerformanceContent() {
                 </MotionCard>
               )}
 
+              {/* Lump-sum comparison (historical day-0 prices) */}
+              {lumpSumAggregate ? (
+                <MotionCard disableHover>
+                  <div
+                    className="glass-card rounded-2xl p-5"
+                    style={{
+                      ['--card-accent' as string]: lumpSumAggregate.deltaPct >= 0 ? '#00C27A' : '#F04A6E',
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                          style={{
+                            backgroundColor: lumpSumAggregate.deltaPct >= 0
+                              ? 'color-mix(in srgb, #00C27A 18%, transparent)'
+                              : 'color-mix(in srgb, #F04A6E 18%, transparent)',
+                          }}
+                        >
+                          <BarChart3 size={16} style={{ color: lumpSumAggregate.deltaPct >= 0 ? '#00C27A' : '#F04A6E' }} />
+                        </div>
+                        <div>
+                          <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
+                            DCA vs lump sum
+                            <span title="For each plan, we look up the STX-USD and BTC-USD closing prices on the day of that plan's first execution and ask: if you had dumped the same total STX-in into sBTC on day 0 at the then-spot rate, how much sBTC would you hold? The delta shows whether DCA beat or trailed that counterfactual buy. Excludes plans where historical prices couldn't be fetched.">
+                              <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
+                            </span>
+                          </h2>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                            Across {lumpSumAggregate.count} plan{lumpSumAggregate.count === 1 ? '' : 's'} ·
+                            actual <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatSbtc(lumpSumAggregate.sumActualSbtc)}</span> sBTC vs
+                            lump <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatSbtc(lumpSumAggregate.sumLumpSbtc)}</span> sBTC
+                          </p>
+                          {lumpSumAggregate.skipped > 0 && (
+                            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                              {lumpSumAggregate.skipped} plan{lumpSumAggregate.skipped === 1 ? '' : 's'} excluded — historical price unavailable
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p
+                          className="text-2xl font-bold font-data"
+                          style={{
+                            color: lumpSumAggregate.deltaPct >= 0 ? '#00C27A' : '#F04A6E',
+                            letterSpacing: '-0.02em',
+                          }}
+                        >
+                          {lumpSumAggregate.deltaPct >= 0 ? '+' : ''}{lumpSumAggregate.deltaPct.toFixed(1)}%
+                        </p>
+                        <p className="text-[11px] font-data" style={{ color: 'var(--text-muted)' }}>
+                          {lumpSumAggregate.deltaSbtc >= 0 ? '+' : ''}{formatSbtc(Math.abs(lumpSumAggregate.deltaSbtc))} sBTC vs lump
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </MotionCard>
+              ) : lumpSumLoading ? (
+                <MotionCard disableHover>
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-lg skeleton" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-40 rounded skeleton" />
+                        <div className="h-3 w-64 rounded skeleton" />
+                      </div>
+                      <div className="h-8 w-20 rounded skeleton" />
+                    </div>
+                  </div>
+                </MotionCard>
+              ) : null}
+
               {/* Per-plan breakdown */}
               <MotionCard disableHover>
                 <div
@@ -297,8 +436,15 @@ export default function DCAPerformanceContent() {
                     {perPlan
                       .filter((p) => p.perf.executionCount > 0)
                       .sort((a, b) => b.perf.totalStxIn - a.perf.totalStxIn)
-                      .map(({ plan, perf }) => (
-                        <PlanRow key={plan.id} plan={plan} perf={perf} stxUsd={stx?.price ?? 0} btcUsd={btcUsd ?? 0} />
+                      .map(({ plan, perf, lumpSum }) => (
+                        <PlanRow
+                          key={plan.id}
+                          plan={plan}
+                          perf={perf}
+                          stxUsd={stx?.price ?? 0}
+                          btcUsd={btcUsd ?? 0}
+                          lumpSum={lumpSum ?? null}
+                        />
                       ))}
                   </div>
                 </div>
@@ -339,8 +485,8 @@ function SummaryCard({
 }
 
 function PlanRow({
-  plan, perf, stxUsd, btcUsd,
-}: { plan: DCAPlan; perf: PlanPerformance; stxUsd: number; btcUsd: number }) {
+  plan, perf, stxUsd, btcUsd, lumpSum,
+}: { plan: DCAPlan; perf: PlanPerformance; stxUsd: number; btcUsd: number; lumpSum: LumpSumScenario | null }) {
   const planStxValueUsd = stxUsd ? perf.totalStxIn * stxUsd : null;
   const planSbtcValueUsd = btcUsd ? perf.totalSbtcOut * btcUsd : null;
   const cadence = blocksToInterval(plan.ivl);
@@ -402,6 +548,30 @@ function PlanRow({
           sub={planSbtcValueUsd !== null ? `≈ ${formatUSD(planSbtcValueUsd)} now` : undefined}
         />
       </div>
+
+      {lumpSum && (
+        <div
+          className="mt-3 pt-3 flex items-center justify-between flex-wrap gap-2"
+          style={{ borderTop: '1px dashed var(--border-subtle)' }}
+        >
+          <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+            <span className="font-semibold uppercase tracking-wider" style={{ letterSpacing: '0.08em' }}>vs lump sum</span>
+            {' '}on {formatDate(new Date(lumpSum.referenceDate + 'T00:00:00Z').getTime() / 1000)} —
+            lump would&apos;ve been <span className="font-data" style={{ color: 'var(--text-secondary)' }}>{formatSbtc(lumpSum.lumpSumSbtc)}</span> sBTC
+          </p>
+          <span
+            className="text-[11px] font-data font-bold px-2 py-0.5 rounded-md"
+            style={{
+              color: lumpSum.deltaPct >= 0 ? '#00C27A' : '#F04A6E',
+              backgroundColor: lumpSum.deltaPct >= 0
+                ? 'color-mix(in srgb, #00C27A 14%, transparent)'
+                : 'color-mix(in srgb, #F04A6E 14%, transparent)',
+            }}
+          >
+            {lumpSum.deltaPct >= 0 ? '+' : ''}{lumpSum.deltaPct.toFixed(1)}%
+          </span>
+        </div>
+      )}
 
       {perf.successfulEvents.length > 0 && (
         <Link

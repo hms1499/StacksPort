@@ -61,7 +61,7 @@ export default function PlanCardExpanded({
       </div>
 
       {active === "overview" && (
-        <OverviewTab plan={plan} onRefresh={onRefresh} onRequestCancel={onRequestCancel} />
+        <OverviewTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} onRequestCancel={onRequestCancel} />
       )}
       {active === "execute" && (
         <ExecuteTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} />

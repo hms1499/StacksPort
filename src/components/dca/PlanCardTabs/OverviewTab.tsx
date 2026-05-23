@@ -3,50 +3,58 @@
 import { useState } from "react";
 import { Pause, Play, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { type DCAPlan, microToSTX, stxToMicro, depositToPlan, pausePlan, resumePlan } from "@/lib/dca";
+import { formatRelativeBlockDate } from "@/lib/dca-preview";
 import { useNotificationStore } from "@/store/notificationStore";
 import MiniSparkline from "../MiniSparkline";
 
 interface OverviewTabProps {
   plan: DCAPlan;
+  currentBlock: number;
   onRefresh: () => void;
   onRequestCancel: () => void; // parent opens cancel modal
 }
 
-export default function OverviewTab({ plan, onRefresh, onRequestCancel }: OverviewTabProps) {
+export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCancel }: OverviewTabProps) {
   const { addNotification } = useNotificationStore();
   const [depositInput, setDepositInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const avgOutput = plan.tsd > 0 ? plan.tss / plan.tsd : 0; // avg uSTX per swap (rough)
-
-  const run = (fn: () => void) => { setLoading(true); fn(); };
+  const avgStxPerSwap = plan.tsd > 0 ? plan.tss / plan.tsd : 0;
+  const stopLoading = () => setLoading(false);
 
   const handleDeposit = () => {
     const n = parseFloat(depositInput);
     if (!n || n < 1) return;
-    run(() =>
-      depositToPlan(plan.id, stxToMicro(n),
-        ({ txId }) => {
-          setLoading(false); setDepositInput("");
-          addNotification(`Deposited ${n} STX (tx ${txId.slice(0,10)}…)`, "success", "dca", 5000);
-          onRefresh();
-        },
-        () => { setLoading(false); addNotification("Deposit failed", "error", "dca", 5000); },
-      ),
+    setLoading(true);
+    depositToPlan(plan.id, stxToMicro(n),
+      ({ txId }) => {
+        stopLoading(); setDepositInput("");
+        addNotification(`Deposited ${n} STX (tx ${txId.slice(0,10)}…)`, "success", "dca", 5000);
+        onRefresh();
+      },
+      stopLoading, // user dismissed the wallet — release the spinner silently
     );
   };
 
-  const handlePause = () =>
-    run(() => pausePlan(plan.id,
-      () => { setLoading(false); onRefresh(); },
-      () => { setLoading(false); addNotification("Pause failed", "error", "dca", 5000); },
-    ));
+  const handlePause = () => {
+    setLoading(true);
+    pausePlan(plan.id,
+      () => { stopLoading(); onRefresh(); },
+      stopLoading,
+    );
+  };
 
-  const handleResume = () =>
-    run(() => resumePlan(plan.id,
-      () => { setLoading(false); onRefresh(); },
-      () => { setLoading(false); addNotification("Resume failed", "error", "dca", 5000); },
-    ));
+  const handleResume = () => {
+    setLoading(true);
+    resumePlan(plan.id,
+      () => { stopLoading(); onRefresh(); },
+      stopLoading,
+    );
+  };
+
+  const shortfallStx = !plan.active && plan.bal < plan.amt
+    ? microToSTX(plan.amt - plan.bal)
+    : 0;
 
   return (
     <div className="flex flex-col gap-3">
@@ -55,8 +63,8 @@ export default function OverviewTab({ plan, onRefresh, onRequestCancel }: Overvi
         <div className="grid grid-cols-2 gap-2">
           <StatMini label="Swaps done" value={plan.tsd.toString()} />
           <StatMini label="STX spent" value={microToSTX(plan.tss).toFixed(1)} />
-          <StatMini label="Avg / swap" value={`${microToSTX(avgOutput).toFixed(2)} STX`} />
-          <StatMini label="Block created" value={plan.cat.toString()} />
+          <StatMini label="Avg STX / swap" value={microToSTX(avgStxPerSwap).toFixed(2)} />
+          <StatMini label="Created" value={formatRelativeBlockDate(currentBlock - plan.cat)} />
         </div>
         <div
           className="rounded-xl p-3 flex flex-col gap-2"
@@ -69,8 +77,8 @@ export default function OverviewTab({ plan, onRefresh, onRequestCancel }: Overvi
         </div>
       </div>
 
-      {/* Deposit row */}
-      {plan.active && (
+      {/* Deposit row — active plans get the input; paused plans get a hint */}
+      {plan.active ? (
         <div className="flex gap-2">
           <div className="relative flex-1">
             <input
@@ -97,6 +105,12 @@ export default function OverviewTab({ plan, onRefresh, onRequestCancel }: Overvi
             Add
           </button>
         </div>
+      ) : (
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+          {shortfallStx > 0
+            ? `Top up at least ${shortfallStx.toFixed(2)} more STX, then resume to add funds.`
+            : "Resume the plan to add funds."}
+        </p>
       )}
 
       {/* Action row */}

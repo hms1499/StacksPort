@@ -2,7 +2,7 @@
 
 import { AlertTriangle, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { type DCAPlan, microToSTX, blocksToInterval, TARGET_TOKENS } from "@/lib/dca";
-import { formatBlocksCountdown } from "@/lib/dca-preview";
+import { formatBlocksCountdown, formatRelativeBlockDate } from "@/lib/dca-preview";
 
 const STACKS_BLOCK_SECONDS = 600; // ~10 min per burn block
 
@@ -20,18 +20,6 @@ function formatAbsoluteTime(blocksLeft: number): string | null {
     return d.toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
   }
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
-
-function formatCreatedAt(blocksAgo: number): string {
-  if (blocksAgo <= 0) return "just now";
-  const msAgo = blocksAgo * STACKS_BLOCK_SECONDS * 1000;
-  const days = Math.floor(msAgo / (24 * 60 * 60 * 1000));
-  if (days === 0) return "today";
-  if (days < 7) return `${days}d ago`;
-  return new Date(Date.now() - msAgo).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
 }
 
 interface PlanCardRowProps {
@@ -97,7 +85,7 @@ export default function PlanCardRow({
           style={{ color: "var(--text-muted)" }}
           title={`Plan #${plan.id}`}
         >
-          · {blocksToInterval(plan.ivl)} · {formatCreatedAt(currentBlock - plan.cat)}
+          · {blocksToInterval(plan.ivl)} · {formatRelativeBlockDate(currentBlock - plan.cat)}
         </span>
         <span className="ml-auto text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
           {amtSTX.toFixed(2)} STX

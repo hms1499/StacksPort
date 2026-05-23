@@ -72,3 +72,19 @@ export function nextSwapCountdown(
 }
 
 export { blocksToInterval };
+
+/**
+ * Friendly past-date for a block delta (currentBlock - plan.cat).
+ * "just now" / "today" / "Xd ago" up to 7d, then absolute "MMM D".
+ */
+export function formatRelativeBlockDate(blocksAgo: number): string {
+  if (blocksAgo <= 0) return "just now";
+  const msAgo = blocksAgo * STACKS_BLOCK_SECONDS * 1000;
+  const days = Math.floor(msAgo / (24 * 60 * 60 * 1000));
+  if (days === 0) return "today";
+  if (days < 7) return `${days}d ago`;
+  return new Date(Date.now() - msAgo).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}

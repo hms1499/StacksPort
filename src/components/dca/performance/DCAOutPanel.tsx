@@ -78,7 +78,7 @@ export default function DCAOutPanel({
       const results: PlanWithPerf[] = [];
       for (const plan of allPlans) {
         try {
-          const events = await getSBTCPlanExecutionHistory(plan.id, plan.token, 100);
+          const events = await getSBTCPlanExecutionHistory(plan.id, plan.token, 100, plan.owner);
           const perf = aggregateSBTCPlanPerformance(plan.id, events);
           if (cancelled) return;
           results.push({ plan, perf });

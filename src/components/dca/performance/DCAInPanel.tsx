@@ -85,7 +85,7 @@ export default function DCAInPanel({
       const results: PlanWithPerf[] = [];
       for (const plan of allPlans) {
         try {
-          const events = await getPlanExecutionHistory(plan.id, 100);
+          const events = await getPlanExecutionHistory(plan.id, 100, plan.owner);
           const perf = aggregatePlanPerformance(plan.id, events);
           if (cancelled) return;
           results.push({ plan, perf });

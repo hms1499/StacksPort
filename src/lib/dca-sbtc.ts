@@ -9,6 +9,7 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 import { openContractCall } from "@stacks/connect";
+import { fetchTxOutputTransfer } from "./dca";
 
 export const DCA_SBTC_CONTRACT_ADDRESS =
   "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
@@ -306,7 +307,8 @@ function parseSBTCExecuteResult(repr: string | undefined): {
 export async function getSBTCPlanExecutionHistory(
   planId: number,
   targetTokenContract: string,
-  limit = 100
+  limit = 100,
+  userAddress?: string
 ): Promise<SBTCPlanExecutionEvent[]> {
   const contractId = `${DCA_SBTC_CONTRACT_ADDRESS}.${DCA_SBTC_CONTRACT_NAME}`;
   const res = await fetch(
@@ -361,6 +363,21 @@ export async function getSBTCPlanExecutionHistory(
       targetTokenContract,
     });
   }
+
+  if (userAddress) {
+    await Promise.all(
+      events.map(async (e) => {
+        if (e.status !== "success") return;
+        const amount = await fetchTxOutputTransfer(
+          e.txId,
+          targetTokenContract,
+          userAddress
+        );
+        if (amount !== undefined) e.tokenOut = amount;
+      })
+    );
+  }
+
   return events;
 }
 

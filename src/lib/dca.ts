@@ -352,6 +352,53 @@ function parseExecuteResult(repr: string | undefined): { netSwapped?: number; pr
 }
 
 /**
+ * Fetch the total amount of a specific FT asset transferred TO `recipient`
+ * within one transaction. Required because `/transactions_with_transfers`
+ * filters ft_transfers to the queried address; for DCA exec txs the output
+ * token lands on the user, not the vault, so we need a per-tx detail fetch
+ * to find the user-bound amount.
+ *
+ * Returns base-unit total, or undefined if no matching transfer found.
+ */
+export async function fetchTxOutputTransfer(
+  txId: string,
+  assetIdPrefix: string,
+  recipient: string
+): Promise<number | undefined> {
+  try {
+    const res = await fetch(
+      `${HIRO_API}/extended/v1/tx/${txId}?event_limit=50`,
+      { signal: AbortSignal.timeout(10_000) }
+    );
+    if (!res.ok) return undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const json = (await res.json()) as any;
+    const events = (json.events ?? []) as Array<{
+      event_type?: string;
+      asset?: {
+        asset_id?: string;
+        amount?: string;
+        recipient?: string;
+      };
+    }>;
+    let total = 0;
+    let found = false;
+    for (const ev of events) {
+      if (ev.event_type !== "fungible_token_asset") continue;
+      const a = ev.asset;
+      if (!a?.asset_id?.startsWith(assetIdPrefix)) continue;
+      if (a.recipient !== recipient) continue;
+      if (!a.amount) continue;
+      total += Number(a.amount);
+      found = true;
+    }
+    return found ? total : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Fetch recent `execute-dca` transactions targeting a specific plan.
  * Looks at the last `limit` txs sent to the DCA contract and filters by
  * function_name + first arg. Keeper bot invocations are included since
@@ -359,7 +406,8 @@ function parseExecuteResult(repr: string | undefined): { netSwapped?: number; pr
  */
 export async function getPlanExecutionHistory(
   planId: number,
-  limit = 50
+  limit = 50,
+  userAddress?: string
 ): Promise<PlanExecutionEvent[]> {
   const contractId = `${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}`;
   const res = await fetch(
@@ -410,6 +458,26 @@ export async function getPlanExecutionHistory(
       sbtcReceived,
     });
   }
+
+  // When the caller provides the plan owner, enrich each successful event
+  // with sbtcReceived by fetching the full event list per tx (the
+  // /transactions_with_transfers endpoint filters ft_transfers to the
+  // queried address, which is the vault — sBTC goes pool→router→user, so
+  // the vault's ft_transfers is always empty for execute-dca).
+  if (userAddress) {
+    await Promise.all(
+      events.map(async (e) => {
+        if (e.status !== "success") return;
+        const amount = await fetchTxOutputTransfer(
+          e.txId,
+          "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+          userAddress
+        );
+        if (amount !== undefined) e.sbtcReceived = amount;
+      })
+    );
+  }
+
   return events;
 }
 

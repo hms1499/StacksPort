@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Topbar from "@/components/layout/Topbar";
@@ -8,9 +9,12 @@ import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 import { useWalletStore } from "@/store/walletStore";
 import DCAInPanel from "./DCAInPanel";
+import DCAOutPanel from "./DCAOutPanel";
+import PerformanceTabs from "./PerformanceTabs";
 
 export default function DCAPerformanceContent() {
   const { isConnected, stxAddress } = useWalletStore();
+  const [tab, setTab] = useState<"in" | "out">("in");
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -25,7 +29,14 @@ export default function DCAPerformanceContent() {
               Back to plans
             </Link>
           </MotionCard>
-          <DCAInPanel isConnected={isConnected} stxAddress={stxAddress} />
+
+          <MotionCard disableHover>
+            <PerformanceTabs active={tab} onChange={setTab} />
+          </MotionCard>
+
+          {tab === "in"
+            ? <DCAInPanel isConnected={isConnected} stxAddress={stxAddress} />
+            : <DCAOutPanel isConnected={isConnected} stxAddress={stxAddress} />}
         </StaggerChildren>
       </AnimatedPage>
     </div>

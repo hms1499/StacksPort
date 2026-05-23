@@ -15,6 +15,14 @@ const PRESETS = [
   { label: "50 STX monthly",   amount: "50",  interval: "Monthly", deposit: "200" },
 ];
 
+// Polling cadence for auto-refresh. 60s keeps Hiro fan-out low (one
+// /v2/info + N getPlan per active plan) while still surfacing keeper-bot
+// executions within roughly one swap interval's grace period.
+const POLL_INTERVAL_MS = 60_000;
+// Minimum gap between auto-refreshes — protects the visibilitychange path
+// from immediately re-firing if the user just refreshed manually.
+const MIN_REFRESH_GAP_MS = 30_000;
+
 function fireFillForm(p: typeof PRESETS[number]) {
   window.dispatchEvent(new CustomEvent("dca:fill-form", { detail: p }));
 }
@@ -59,6 +67,26 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
     fetchData();
     return () => { abortRef.current?.abort(); };
   }, [fetchData]);
+
+  // Auto-refresh: poll every POLL_INTERVAL_MS while the tab is visible, and
+  // refresh on tab re-visibility (skipping if a manual/auto refresh just ran).
+  // Skips during in-flight loads to avoid stacking requests.
+  useEffect(() => {
+    const tryRefresh = () => {
+      if (document.hidden) return;
+      if (loading) return;
+      const since = lastUpdated ? Date.now() - lastUpdated.getTime() : Infinity;
+      if (since < MIN_REFRESH_GAP_MS) return;
+      fetchData();
+    };
+    const id = window.setInterval(tryRefresh, POLL_INTERVAL_MS);
+    const onVisibility = () => { if (!document.hidden) tryRefresh(); };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [fetchData, loading, lastUpdated]);
 
   const totalCount = (plans?.length ?? 0) + completedPlans.length;
   const header = (

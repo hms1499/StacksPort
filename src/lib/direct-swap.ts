@@ -50,35 +50,10 @@ import { ROUTE_TABLE, getRoute, type QuoteHop, type SwapRoute } from "./domain/s
 import { SWAP_TOKENS } from "./domain/swap/tokens";
 import { toRawAmount } from "./domain/swap/amount";
 import { MIN_SWAP_RAW } from "./domain/swap/limits";
-import { cvToHex, unwrapOkUint, hexToCV } from "./domain/swap/clarity";
+import { cvToHex, unwrapOkUint } from "./domain/swap/clarity";
 import { computePriceImpact } from "./domain/swap/quote-math";
 import type { QuoteResult } from "./domain/swap/quote-math";
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const HIRO_API = "https://api.hiro.so";
-const DUMMY_SENDER = "SP000000000000000000002Q6VF78";
-
-// ─── Clarity Helpers ─────────────────────────────────────────────────────────
-
-async function callReadOnly(
-  contractAddress: string,
-  contractName: string,
-  functionName: string,
-  args: string[]
-): Promise<ClarityValue> {
-  const res = await fetch(
-    `${HIRO_API}/v2/contracts/call-read/${contractAddress}/${contractName}/${functionName}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sender: DUMMY_SENDER, arguments: args }),
-    }
-  );
-  const data = await res.json();
-  if (!data.okay) throw new Error(data.cause ?? "Read-only call failed");
-  return hexToCV(data.result);
-}
+import { callReadOnly } from "./infra/stacks/read-only";
 
 // ─── Quote Fetcher ───────────────────────────────────────────────────────────
 

@@ -142,8 +142,14 @@ export default function HistoryTab({ planId }: Props) {
               {shortTx(ev.txId)}
             </span>
             <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-              {ev.blockHeight > 0 && `Block #${ev.blockHeight} · `}
-              {timeAgo(ev.blockTime)}
+              {ev.blockHeight === 0 && !ev.blockTime
+                ? "Awaiting confirmation"
+                : (
+                  <>
+                    {ev.blockHeight > 0 && `Block #${ev.blockHeight} · `}
+                    {timeAgo(ev.blockTime)}
+                  </>
+                )}
             </span>
           </div>
 

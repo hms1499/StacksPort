@@ -32,6 +32,10 @@ export default function PlanCardExpanded({
 }: PlanCardExpandedProps) {
   const [active, setActive] = useState<InnerTab>(defaultTab);
 
+  // Stable per-plan id prefix so multiple expanded cards on the same page
+  // don't share tab/panel element ids.
+  const idPrefix = `plan-${plan.id}`;
+
   return (
     <div className="border-t p-4 flex flex-col gap-3" style={{ borderColor: "var(--border-subtle)" }}>
       <div
@@ -44,8 +48,11 @@ export default function PlanCardExpanded({
           return (
             <button
               key={key}
+              id={`${idPrefix}-tab-${key}`}
               role="tab"
               aria-selected={isActive}
+              aria-controls={`${idPrefix}-panel-${key}`}
+              tabIndex={isActive ? 0 : -1}
               onClick={() => setActive(key)}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors"
               style={
@@ -60,13 +67,19 @@ export default function PlanCardExpanded({
         })}
       </div>
 
-      {active === "overview" && (
-        <OverviewTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} onRequestCancel={onRequestCancel} />
-      )}
-      {active === "execute" && (
-        <ExecuteTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} />
-      )}
-      {active === "history" && <HistoryTab planId={plan.id} />}
+      <div
+        id={`${idPrefix}-panel-${active}`}
+        role="tabpanel"
+        aria-labelledby={`${idPrefix}-tab-${active}`}
+      >
+        {active === "overview" && (
+          <OverviewTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} onRequestCancel={onRequestCancel} />
+        )}
+        {active === "execute" && (
+          <ExecuteTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} />
+        )}
+        {active === "history" && <HistoryTab planId={plan.id} />}
+      </div>
     </div>
   );
 }

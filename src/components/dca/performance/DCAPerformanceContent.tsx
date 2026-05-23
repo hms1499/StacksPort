@@ -30,6 +30,7 @@ import {
 } from "@/lib/dca";
 import { getBtcUsdPrice, getHistoricalStxBtcPrices } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
+import CostBasisChart from "./CostBasisChart";
 
 interface PlanWithPerf {
   plan: DCAPlan;
@@ -456,6 +457,11 @@ export default function DCAPerformanceContent() {
                   </div>
                 </MotionCard>
               ) : null}
+
+              {/* Cost-basis chart */}
+              <MotionCard disableHover>
+                <CostBasisChart perPlan={perPlan} />
+              </MotionCard>
 
               {/* Per-plan breakdown */}
               <MotionCard disableHover>

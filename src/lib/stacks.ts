@@ -707,6 +707,49 @@ export async function getHistoricalStxBtcPrices(
   }
 }
 
+/**
+ * Daily STX/USD + BTC/USD over the last `days` (CoinGecko market_chart).
+ * Two HTTP calls total — much cheaper than N per-day /history fetches when
+ * the chart needs continuous data. Returns a Map keyed by YYYY-MM-DD (UTC).
+ * `days` is clamped to [1, 365] (CoinGecko free-tier limit).
+ */
+export async function getHistoricalStxBtcRange(
+  days: number
+): Promise<Map<string, { stxUsd: number; btcUsd: number }>> {
+  const clamped = Math.min(365, Math.max(1, Math.round(days)));
+  const out = new Map<string, { stxUsd: number; btcUsd: number }>();
+  try {
+    const [stxRes, btcRes] = await Promise.all([
+      fetch(
+        `${COINGECKO_API}/coins/blockstack/market_chart?vs_currency=usd&days=${clamped}&interval=daily`,
+        { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) }
+      ),
+      fetch(
+        `${COINGECKO_API}/coins/bitcoin/market_chart?vs_currency=usd&days=${clamped}&interval=daily`,
+        { next: { revalidate: 3600 }, signal: AbortSignal.timeout(10_000) }
+      ),
+    ]);
+    if (!stxRes.ok || !btcRes.ok) return out;
+    const [stxJson, btcJson] = await Promise.all([stxRes.json(), btcRes.json()]);
+    const stxRows: [number, number][] = stxJson.prices ?? [];
+    const btcRows: [number, number][] = btcJson.prices ?? [];
+    const stxByDate = new Map<string, number>();
+    for (const [ts, v] of stxRows) {
+      stxByDate.set(new Date(ts).toISOString().slice(0, 10), v);
+    }
+    for (const [ts, v] of btcRows) {
+      const date = new Date(ts).toISOString().slice(0, 10);
+      const stxUsd = stxByDate.get(date);
+      if (stxUsd && stxUsd > 0 && v > 0) {
+        out.set(date, { stxUsd, btcUsd: v });
+      }
+    }
+    return out;
+  } catch {
+    return out;
+  }
+}
+
 export async function getBtcUsdPrice(): Promise<number> {
   try {
     const r = await fetch(

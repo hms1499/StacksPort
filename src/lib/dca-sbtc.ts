@@ -215,6 +215,24 @@ export async function getSBTCUserPlans(address: string): Promise<DCA_SBTCPlan[]>
   return plans.filter(Boolean) as DCA_SBTCPlan[];
 }
 
+/**
+ * Like getSBTCUserPlans, but split by `plan.active`. The on-chain uids list
+ * never shrinks (cancel-plan does not remove from uids), so completed/cancelled
+ * plans are still reachable here.
+ */
+export async function getAllSBTCUserPlans(
+  address: string
+): Promise<{ active: DCA_SBTCPlan[]; completed: DCA_SBTCPlan[] }> {
+  const plans = await getSBTCUserPlans(address);
+  const active: DCA_SBTCPlan[] = [];
+  const completed: DCA_SBTCPlan[] = [];
+  for (const p of plans) {
+    if (p.active) active.push(p);
+    else completed.push(p);
+  }
+  return { active, completed };
+}
+
 export async function getSBTCNextExecutionBlock(planId: number): Promise<number | null> {
   try {
     const cv = await readOnly("next-execution-block", [cvHex(uintCV(planId))]);

@@ -12,204 +12,29 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 
+// Re-exports — public API surface remains "@/lib/direct-swap".
+export type { SwapToken } from "./domain/swap/tokens";
+export {
+  SWAP_TOKENS,
+  SWAP_TOKEN_USD,
+  SWAP_PRICE_GECKO_IDS,
+} from "./domain/swap/tokens";
+export type { SwapRoute } from "./domain/swap/routes";
+export {
+  getRoute,
+  getValidDestinations,
+  getSwappableFromTokens,
+} from "./domain/swap/routes";
+
+// Internal — still used by quote/builder code that has not yet moved.
+import { ROUTE_TABLE, getRoute, type QuoteHop, type SwapRoute } from "./domain/swap/routes";
+import { SWAP_TOKENS, SWAP_TOKEN_USD } from "./domain/swap/tokens";
+import { SBTC } from "./domain/swap/contracts";
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const HIRO_API = "https://api.hiro.so";
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78";
-
-// XYK Core
-const XYK_CORE_ADDRESS = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
-const XYK_CORE_NAME = "xyk-core-v-1-2";
-
-// Pools
-const POOL_SBTC_STX = { address: "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", name: "xyk-pool-sbtc-stx-v-1-1" };
-const POOL_STX_AEUSDC = { address: "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", name: "xyk-pool-stx-aeusdc-v-1-2" };
-const POOL_AEUSDC_USDCX = { address: "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", name: "stableswap-pool-aeusdc-usdcx-v-1-1" };
-
-// Stableswap Core
-const SS_CORE_ADDRESS = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
-const SS_CORE_NAME = "stableswap-core-v-1-4";
-
-// Routers
-const ROUTER_STX_SBTC = { address: "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV", name: "bitflow-sbtc-swap-router" };
-const ROUTER_SBTC_USDCX = { address: "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV", name: "bitflow-usdcx-swap-router" };
-
-// Token contracts
-const SBTC = { address: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4", name: "sbtc-token" };
-const WSTX = { address: "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR", name: "token-stx-v-1-2" };
-const AEUSDC = { address: "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K", name: "token-aeusdc" };
-const USDCX = { address: "SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE", name: "usdcx" };
-
-// ─── Token Registry ──────────────────────────────────────────────────────────
-
-export interface SwapToken {
-  id: string;
-  symbol: string;
-  name: string;
-  contract: string | null; // null for native STX
-  decimals: number;
-  icon: string;
-}
-
-export const SWAP_TOKENS: SwapToken[] = [
-  { id: "stx", symbol: "STX", name: "Stacks", contract: null, decimals: 6, icon: "/tokens/stx.svg" },
-  { id: "sbtc", symbol: "sBTC", name: "sBTC", contract: `${SBTC.address}.${SBTC.name}`, decimals: 8, icon: "/tokens/sbtc.svg" },
-  { id: "usdcx", symbol: "USDCx", name: "USD Coin", contract: `${USDCX.address}.${USDCX.name}`, decimals: 6, icon: "/tokens/usdcx.svg" },
-];
-
-// ─── Route Resolver ──────────────────────────────────────────────────────────
-
-export type SwapRoute = {
-  from: string;
-  to: string;
-  method: "router" | "direct";
-  hops: string[];
-};
-
-// ROUTES is derived from ROUTE_TABLE below — single source of truth.
-
-// ─── Data-driven route table (single source of truth) ─────────────────────────
-// Every fact about a route lives in one entry: display, quote hops, and the
-// on-chain call. quote()/buildSwapParams() interpret this — adding a pair is a
-// data change, and a missing field is a compile error (not a runtime crash at
-// sign time). Not yet wired; see follow-up commits.
-
-type TokenRef = { address: string; name: string };
-
-/** One read-only hop. Read args are always [pool, xToken, yToken, uint(amt)];
- *  the output feeds the next hop's amount. */
-interface QuoteHop {
-  coreAddress: string;
-  coreName: string;
-  fn: "get-dx" | "get-dy";
-  pool: TokenRef;
-  xToken: TokenRef;
-  yToken: TokenRef;
-}
-
-/** How the swap is executed on-chain. `router` = aggregator entrypoint
- *  (amount, minOut, sender); `direct` = raw xyk-core (pool+tokens, amount,
- *  minOut). */
-type ExecSpec =
-  | { kind: "router"; contract: TokenRef; fn: string }
-  | {
-      kind: "direct";
-      contract: TokenRef;
-      fn: string;
-      pool: TokenRef;
-      xToken: TokenRef;
-      yToken: TokenRef;
-    };
-
-interface RouteSpec extends SwapRoute {
-  quote: QuoteHop[];
-  exec: ExecSpec;
-}
-
-const XYK_CORE: TokenRef = { address: XYK_CORE_ADDRESS, name: XYK_CORE_NAME };
-
-const ROUTE_TABLE: RouteSpec[] = [
-  {
-    from: "stx",
-    to: "sbtc",
-    method: "router",
-    hops: ["STX", "sBTC"],
-    quote: [
-      {
-        coreAddress: XYK_CORE_ADDRESS,
-        coreName: XYK_CORE_NAME,
-        fn: "get-dx",
-        pool: POOL_SBTC_STX,
-        xToken: SBTC,
-        yToken: WSTX,
-      },
-    ],
-    exec: { kind: "router", contract: ROUTER_STX_SBTC, fn: "swap-stx-for-token" },
-  },
-  {
-    from: "sbtc",
-    to: "stx",
-    method: "direct",
-    hops: ["sBTC", "STX"],
-    quote: [
-      {
-        coreAddress: XYK_CORE_ADDRESS,
-        coreName: XYK_CORE_NAME,
-        fn: "get-dy",
-        pool: POOL_SBTC_STX,
-        xToken: SBTC,
-        yToken: WSTX,
-      },
-    ],
-    exec: {
-      kind: "direct",
-      contract: XYK_CORE,
-      fn: "swap-x-for-y",
-      pool: POOL_SBTC_STX,
-      xToken: SBTC,
-      yToken: WSTX,
-    },
-  },
-  {
-    from: "sbtc",
-    to: "usdcx",
-    method: "router",
-    hops: ["sBTC", "STX", "aeUSDC", "USDCx"],
-    quote: [
-      {
-        coreAddress: XYK_CORE_ADDRESS,
-        coreName: XYK_CORE_NAME,
-        fn: "get-dy",
-        pool: POOL_SBTC_STX,
-        xToken: SBTC,
-        yToken: WSTX,
-      },
-      {
-        coreAddress: XYK_CORE_ADDRESS,
-        coreName: XYK_CORE_NAME,
-        fn: "get-dy",
-        pool: POOL_STX_AEUSDC,
-        xToken: WSTX,
-        yToken: AEUSDC,
-      },
-      {
-        coreAddress: SS_CORE_ADDRESS,
-        coreName: SS_CORE_NAME,
-        fn: "get-dy",
-        pool: POOL_AEUSDC_USDCX,
-        xToken: AEUSDC,
-        yToken: USDCX,
-      },
-    ],
-    exec: {
-      kind: "router",
-      contract: ROUTER_SBTC_USDCX,
-      fn: "swap-sbtc-for-token",
-    },
-  },
-];
-
-/** Display/resolver view of the table — the only place routes are listed. */
-const ROUTES: SwapRoute[] = ROUTE_TABLE.map(({ from, to, method, hops }) => ({
-  from,
-  to,
-  method,
-  hops,
-}));
-
-export function getRoute(fromId: string, toId: string): SwapRoute | null {
-  return ROUTES.find((r) => r.from === fromId && r.to === toId) ?? null;
-}
-
-export function getValidDestinations(fromId: string): SwapToken[] {
-  const validIds = ROUTES.filter((r) => r.from === fromId).map((r) => r.to);
-  return SWAP_TOKENS.filter((t) => validIds.includes(t.id));
-}
-
-export function getSwappableFromTokens(): SwapToken[] {
-  const fromIds = [...new Set(ROUTES.map((r) => r.from))];
-  return SWAP_TOKENS.filter((t) => fromIds.includes(t.id));
-}
 
 /**
  * Sanitize a raw `<input>` value into a safe decimal string: digits and a
@@ -426,27 +251,7 @@ export function lacksStxForFee(
 }
 
 // ─── USD valuation ───────────────────────────────────────────────────────────
-// Maps each swap token to its USD price source. geckoId = CoinGecko id used by
-// the existing /api/coingecko proxy; fixedUsd = stablecoin pegged to $1 (no
-// fetch). IDs reuse the verified mapping already in lib/stacks.ts — not guessed.
-
-export const SWAP_TOKEN_USD: Record<
-  string,
-  { geckoId: string | null; fixedUsd?: number }
-> = {
-  stx: { geckoId: "blockstack" },
-  sbtc: { geckoId: "bitcoin" },
-  usdcx: { geckoId: null, fixedUsd: 1 },
-};
-
-/** Deduped, non-null CoinGecko ids that must be fetched to price swap tokens. */
-export const SWAP_PRICE_GECKO_IDS: string[] = [
-  ...new Set(
-    Object.values(SWAP_TOKEN_USD)
-      .map((s) => s.geckoId)
-      .filter((id): id is string => id !== null)
-  ),
-];
+// SWAP_TOKEN_USD and SWAP_PRICE_GECKO_IDS are re-exported from domain/swap/tokens.
 
 /**
  * USD price of ONE unit of a swap token. `prices` is the CoinGecko

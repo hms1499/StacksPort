@@ -38,6 +38,10 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
 
   const handleExecute = () => {
     if (!routerInput.includes(".")) return;
+    // Defence-in-depth: the button is already gated on quotedSbtc != null, but
+    // submitting with minAmountOut === 0 would strip slippage protection
+    // entirely (the contract accepts 0 as a valid minimum), so reject here too.
+    if (quotedSbtc == null || minAmountOut <= 0) return;
     setLoading(true);
     executePlan(plan.id, routerInput.trim(), minAmountOut,
       ({ txId }) => {
@@ -54,10 +58,17 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
   };
 
   if (!canExecuteNow) {
+    const reason = !plan.active
+      ? "Plan is paused. Resume from the Overview tab."
+      : plan.bal < plan.amt
+        ? `Insufficient balance. Need ${microToSTX(plan.amt - plan.bal).toFixed(2)} more STX.`
+        : plan.leb === 0
+          ? "Pending first swap."
+          : `Next in ~${blocksLeft} block${blocksLeft === 1 ? "" : "s"}.`;
     return (
       <div className="rounded-xl p-4 text-center" style={{ background: "var(--bg-elevated)" }}>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Not ready to execute. {plan.leb === 0 ? "Pending first swap." : `Next in ~${blocksLeft} blocks.`}
+          Not ready to execute. {reason}
         </p>
       </div>
     );
@@ -133,7 +144,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
 
       <button
         onClick={handleExecute}
-        disabled={loading || quoteLoading || !!quoteError || !routerInput.includes(".")}
+        disabled={loading || quoteLoading || !!quoteError || quotedSbtc == null || !routerInput.includes(".")}
         className="gradient-dca-in px-4 py-2 rounded-lg text-white text-xs font-semibold flex items-center gap-1.5 disabled:opacity-40 self-start"
       >
         <Zap size={13} /> {loading ? "Executing…" : "Execute"}

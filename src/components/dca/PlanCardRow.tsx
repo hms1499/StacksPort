@@ -22,6 +22,18 @@ function formatAbsoluteTime(blocksLeft: number): string | null {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+function formatCreatedAt(blocksAgo: number): string {
+  if (blocksAgo <= 0) return "just now";
+  const msAgo = blocksAgo * STACKS_BLOCK_SECONDS * 1000;
+  const days = Math.floor(msAgo / (24 * 60 * 60 * 1000));
+  if (days === 0) return "today";
+  if (days < 7) return `${days}d ago`;
+  return new Date(Date.now() - msAgo).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
 interface PlanCardRowProps {
   plan: DCAPlan;
   currentBlock: number;
@@ -80,8 +92,12 @@ export default function PlanCardRow({
         <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
           {shortToken(plan.token)}
         </span>
-        <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-          · {blocksToInterval(plan.ivl)} · #{plan.id}
+        <span
+          className="text-xs"
+          style={{ color: "var(--text-muted)" }}
+          title={`Plan #${plan.id}`}
+        >
+          · {blocksToInterval(plan.ivl)} · {formatCreatedAt(currentBlock - plan.cat)}
         </span>
         <span className="ml-auto text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
           {amtSTX.toFixed(2)} STX

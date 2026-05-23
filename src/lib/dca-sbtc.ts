@@ -364,6 +364,66 @@ export async function getSBTCPlanExecutionHistory(
   return events;
 }
 
+export interface SBTCPlanPerformance {
+  planId: number;
+  executionCount: number;
+  /** sats (unscaled). */
+  totalSbtcIn: number;
+  /** Target-token in base units (e.g. USDCx, scaled by targetTokenDecimals). */
+  totalTokenOut: number;
+  /** sats per 1 base-unit token. */
+  avgSbtcPerToken: number;
+  /** Base-unit tokens per 1 sBTC (1 sBTC = 1e8 sats). */
+  avgTokenPerSbtc: number;
+  firstExecutionAt: number | null;
+  lastExecutionAt: number | null;
+  successfulEvents: SBTCPlanExecutionEvent[];
+  targetTokenContract: string | null;
+  targetTokenDecimals: number;
+}
+
+/**
+ * Aggregate execution events into per-plan performance numbers.
+ * Pure — no I/O. `targetTokenDecimals` defaults to 6 (USDCx).
+ */
+export function aggregateSBTCPlanPerformance(
+  planId: number,
+  events: SBTCPlanExecutionEvent[],
+  targetTokenDecimals = 6
+): SBTCPlanPerformance {
+  const successful = events.filter((e) => e.status === "success");
+  const totalSbtcInSats = successful.reduce((s, e) => s + (e.sbtcIn ?? 0), 0);
+  const totalTokenOutMicro = successful.reduce((s, e) => s + (e.tokenOut ?? 0), 0);
+  const totalTokenOut = totalTokenOutMicro / Math.pow(10, targetTokenDecimals);
+  const totalSbtc = totalSbtcInSats / 1e8;
+
+  const avgSbtcPerToken = totalTokenOut > 0 ? totalSbtcInSats / totalTokenOut : 0;
+  const avgTokenPerSbtc = totalSbtc > 0 ? totalTokenOut / totalSbtc : 0;
+
+  const times = successful.map((e) => e.blockTime).filter((t) => t > 0);
+  const firstExecutionAt = times.length ? Math.min(...times) : null;
+  const lastExecutionAt = times.length ? Math.max(...times) : null;
+
+  const targetTokenContract =
+    successful.find((e) => e.targetTokenContract)?.targetTokenContract ??
+    events.find((e) => e.targetTokenContract)?.targetTokenContract ??
+    null;
+
+  return {
+    planId,
+    executionCount: events.length,
+    totalSbtcIn: totalSbtcInSats,
+    totalTokenOut,
+    avgSbtcPerToken,
+    avgTokenPerSbtc,
+    firstExecutionAt,
+    lastExecutionAt,
+    successfulEvents: successful,
+    targetTokenContract,
+    targetTokenDecimals,
+  };
+}
+
 // ─── Write functions ──────────────────────────────────────────────────────────
 
 export function createSBTCPlan(

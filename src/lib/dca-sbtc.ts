@@ -246,6 +246,106 @@ export async function getSBTCBalance(address: string): Promise<number> {
   }
 }
 
+// ─── Execution history ────────────────────────────────────────────────────────
+
+export interface SBTCPlanExecutionEvent {
+  txId: string;
+  blockHeight: number;
+  blockTime: number; // unix seconds; 0 if pending
+  status: "success" | "pending" | "failed";
+  /** sBTC sats actually swapped (from tx_result net-swapped). */
+  sbtcIn?: number;
+  /** micro-STX fee (gas leg paid in STX). */
+  protocolFeeStx?: number;
+  /** Target-token base units credited to the plan owner in this tx,
+   *  extracted from ft_transfers filtered by the plan's target contract.
+   *  Undefined for non-success or when the asset did not appear. */
+  tokenOut?: number;
+  /** The asset-id prefix used to match ft_transfers (e.g. "SP120...usdcx"). */
+  targetTokenContract?: string;
+}
+
+function parseSBTCExecuteResult(repr: string | undefined): {
+  sbtcIn?: number;
+  protocolFeeStx?: number;
+} {
+  if (!repr) return {};
+  const net = repr.match(/net-swapped u(\d+)/);
+  const fee = repr.match(/protocol-fee u(\d+)/);
+  return {
+    sbtcIn: net ? Number(net[1]) : undefined,
+    protocolFeeStx: fee ? Number(fee[1]) : undefined,
+  };
+}
+
+/**
+ * Fetch recent `execute-dca` transactions on the sBTC vault for one plan.
+ * Mirrors `getPlanExecutionHistory` in dca.ts but scoped to dca-vault-sbtc-v2.
+ *
+ * `targetTokenContract` is the plan.token value (e.g. "SP120...usdcx"); the
+ * scanner filters ft_transfers by `asset_identifier` starting with that.
+ */
+export async function getSBTCPlanExecutionHistory(
+  planId: number,
+  targetTokenContract: string,
+  limit = 100
+): Promise<SBTCPlanExecutionEvent[]> {
+  const contractId = `${DCA_SBTC_CONTRACT_ADDRESS}.${DCA_SBTC_CONTRACT_NAME}`;
+  const res = await fetch(
+    `${HIRO_API}/extended/v1/address/${contractId}/transactions_with_transfers?limit=${limit}`,
+    { signal: AbortSignal.timeout(10_000) }
+  );
+  if (!res.ok) throw new Error(`Failed to fetch sBTC history: ${res.status}`);
+  const json = (await res.json()) as {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    results?: any[];
+  };
+
+  const events: SBTCPlanExecutionEvent[] = [];
+  for (const item of json.results ?? []) {
+    const tx = item.tx ?? item;
+    if (tx.tx_type !== "contract_call") continue;
+    const cc = tx.contract_call;
+    if (cc?.function_name !== "execute-dca") continue;
+    const firstArg = cc.function_args?.[0];
+    if (!firstArg || firstArg.repr !== `u${planId}`) continue;
+
+    const status =
+      tx.tx_status === "success" ? "success" :
+      tx.tx_status === "pending" ? "pending" : "failed";
+    const { sbtcIn, protocolFeeStx } = parseSBTCExecuteResult(tx.tx_result?.repr);
+
+    let tokenOut: number | undefined;
+    if (status === "success") {
+      const transfers = (item.ft_transfers ?? []) as Array<{
+        asset_identifier?: string;
+        amount?: string;
+      }>;
+      for (const t of transfers) {
+        if (
+          t.asset_identifier &&
+          t.asset_identifier.startsWith(targetTokenContract) &&
+          t.amount
+        ) {
+          tokenOut = (tokenOut ?? 0) + Number(t.amount);
+        }
+      }
+    }
+
+    events.push({
+      txId: tx.tx_id,
+      blockHeight: Number(tx.block_height ?? 0),
+      blockTime: Number(tx.burn_block_time ?? tx.block_time ?? 0),
+      status,
+      sbtcIn,
+      protocolFeeStx,
+      tokenOut,
+      targetTokenContract,
+    });
+  }
+  return events;
+}
+
 // ─── Write functions ──────────────────────────────────────────────────────────
 
 export function createSBTCPlan(

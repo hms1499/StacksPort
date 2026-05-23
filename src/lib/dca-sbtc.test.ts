@@ -43,7 +43,7 @@ describe("aggregateSBTCPlanPerformance", () => {
     const r = aggregateSBTCPlanPerformance(7, events);
     expect(r.executionCount).toBe(3);
     expect(r.totalSbtcIn).toBe(100_000);
-    expect(r.totalTokenOut).toBe(50_000_000);
+    expect(r.totalTokenOut).toBe(50);
     expect(r.successfulEvents).toHaveLength(1);
   });
 

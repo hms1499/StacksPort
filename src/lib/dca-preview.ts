@@ -4,7 +4,9 @@
 
 import { INTERVALS, blocksToInterval } from "./dca";
 
-const STACKS_BLOCK_SECONDS = 600; // ~10 min target (Nakamoto); rough ETA use only
+// Nakamoto Stacks: ~6.5 blocks/min (~9.2 s/block). Daily=650 blocks ≈ 1.7 h.
+// Must stay in sync with INTERVALS in ./dca.ts.
+const STACKS_BLOCK_SECONDS = 9.2;
 
 /**
  * Number of swaps the plan can afford given deposit and per-swap amount.
@@ -17,7 +19,7 @@ export function swapsCount(depositStx: number, amountStx: number): number {
 
 /**
  * Estimated calendar end-date for a DCA plan.
- * Returns a Date that is `swaps * intervalBlocks * 10min` from now, or null on invalid.
+ * Returns a Date that is `swaps * intervalBlocks * 9.2s` from now, or null on invalid.
  */
 export function estimateEndDate(
   depositStx: number,

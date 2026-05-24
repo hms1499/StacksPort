@@ -4,7 +4,9 @@ import { AlertTriangle, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { type DCAPlan, microToSTX, blocksToInterval, TARGET_TOKENS } from "@/lib/dca";
 import { formatBlocksCountdown, formatRelativeBlockDate } from "@/lib/dca-preview";
 
-const STACKS_BLOCK_SECONDS = 600; // ~10 min per burn block
+// Nakamoto Stacks: ~6.5 blocks/min (~9.2 s/block). Must stay in sync with
+// INTERVALS in src/lib/dca.ts (Daily=650 blocks ≈ 1.7 h).
+const STACKS_BLOCK_SECONDS = 9.2;
 
 function formatAbsoluteTime(blocksLeft: number): string | null {
   if (blocksLeft <= 0) return null;

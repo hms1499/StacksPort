@@ -19,6 +19,7 @@ import {
   type DCA_SBTCPlan,
   type SBTCPlanPerformance,
 } from "@/lib/dca-sbtc";
+import { batchedMap } from "@/lib/dca";
 import { getBtcUsdPrice } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 import CostBasisOutChart from "./CostBasisOutChart";
@@ -76,18 +77,14 @@ export default function DCAOutPanel({
     let cancelled = false;
     setHistoryLoading(true);
     (async () => {
-      const results: PlanWithPerf[] = [];
-      for (const plan of allPlans) {
+      const results = await batchedMap(allPlans, async (plan) => {
         try {
           const events = await getSBTCPlanExecutionHistory(plan.id, plan.token, 100, plan.owner);
-          const perf = aggregateSBTCPlanPerformance(plan.id, events);
-          if (cancelled) return;
-          results.push({ plan, perf });
+          return { plan, perf: aggregateSBTCPlanPerformance(plan.id, events) };
         } catch {
-          if (cancelled) return;
-          results.push({ plan, perf: aggregateSBTCPlanPerformance(plan.id, []) });
+          return { plan, perf: aggregateSBTCPlanPerformance(plan.id, []) };
         }
-      }
+      }, 5);
       if (!cancelled) {
         setPerPlan(results);
         setHistoryLoading(false);

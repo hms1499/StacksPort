@@ -14,6 +14,7 @@ import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import { Wallet } from "lucide-react";
 import { useSTXMarketStats } from "@/hooks/useMarketData";
 import {
+  batchedMap,
   getAllUserPlans,
   getPlanExecutionHistory,
   aggregatePlanPerformance,
@@ -82,18 +83,14 @@ export default function DCAInPanel({
     let cancelled = false;
     setHistoryLoading(true);
     (async () => {
-      const results: PlanWithPerf[] = [];
-      for (const plan of allPlans) {
+      const results = await batchedMap(allPlans, async (plan) => {
         try {
           const events = await getPlanExecutionHistory(plan.id, 100, plan.owner);
-          const perf = aggregatePlanPerformance(plan.id, events);
-          if (cancelled) return;
-          results.push({ plan, perf });
+          return { plan, perf: aggregatePlanPerformance(plan.id, events) };
         } catch {
-          if (cancelled) return;
-          results.push({ plan, perf: aggregatePlanPerformance(plan.id, []) });
+          return { plan, perf: aggregatePlanPerformance(plan.id, []) };
         }
-      }
+      }, 5);
       if (!cancelled) {
         setPerPlan(results);
         setHistoryLoading(false);

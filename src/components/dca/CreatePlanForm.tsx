@@ -50,7 +50,11 @@ export default function CreatePlanForm({ onCreated }: Props) {
 
   const amt = parseFloat(amountPerSwap) || 0;
   const dep = parseFloat(initialDeposit) || 0;
-  const maxDeposit = stxBalance != null ? Math.max(0, Math.floor((stxBalance - 0.01) * 100) / 100) : 0;
+  // Reserve enough STX for the create-plan tx fee. 0.01 was tight enough that
+  // congested-period base fees could exceed it, leaving the wallet unable to
+  // sign. 0.05 STX (~$0.05) is a comfortable buffer across normal load.
+  const STX_FEE_BUFFER = 0.05;
+  const maxDeposit = stxBalance != null ? Math.max(0, Math.floor((stxBalance - STX_FEE_BUFFER) * 100) / 100) : 0;
   const insufficientBalance = stxBalance != null && dep > stxBalance;
 
   useEffect(() => {

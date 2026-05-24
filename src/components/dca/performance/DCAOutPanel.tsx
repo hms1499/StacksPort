@@ -322,7 +322,7 @@ function PlanRow({ plan, perf, btcUsd }:
       </div>
 
       {perf.successfulEvents.length > 0 && (
-        <Link href={`https://explorer.hiro.so/txid/${perf.successfulEvents[0].txId}?chain=mainnet`}
+        <Link href={`https://explorer.hiro.so/txid/${perf.successfulEvents[perf.successfulEvents.length - 1].txId}?chain=mainnet`}
           target="_blank" rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
           style={{ color: 'var(--accent)' }}>

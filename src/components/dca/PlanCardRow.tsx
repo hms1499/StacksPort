@@ -69,11 +69,9 @@ export default function PlanCardRow({
   const progressClass = mode === "in" ? "gradient-dca-in" : "gradient-dca-out";
 
   return (
-    <button
-      type="button"
+    <div
       onClick={onToggle}
-      className="w-full text-left p-4 flex flex-col gap-2 hover:brightness-105 transition-all"
-      aria-expanded={expanded}
+      className="w-full text-left p-4 flex flex-col gap-2 hover:brightness-105 transition-all cursor-pointer"
     >
       {/* Line 1: token pair + id + amount + chevron */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -92,11 +90,16 @@ export default function PlanCardRow({
         <span className="ml-auto text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
           {amtSTX.toFixed(2)} STX
         </span>
-        {expanded ? (
-          <ChevronUp size={16} style={{ color: "var(--text-muted)" }} />
-        ) : (
-          <ChevronDown size={16} style={{ color: "var(--text-muted)" }} />
-        )}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse plan details" : "Expand plan details"}
+          className="rounded p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-1"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
       </div>
 
       {/* Line 2: status + progress bar + counts */}
@@ -147,16 +150,15 @@ export default function PlanCardRow({
           </span>
         )}
         {canExecuteNow && onExecuteShortcut && (
-          <span
+          <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); onExecuteShortcut(); }}
-            role="button"
-            tabIndex={0}
-            className={`${mode === "in" ? "gradient-dca-in" : "gradient-dca-out"} ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold text-white cursor-pointer`}
+            className={`${mode === "in" ? "gradient-dca-in" : "gradient-dca-out"} ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-1`}
           >
             <Zap size={10} /> Execute
-          </span>
+          </button>
         )}
       </div>
-    </button>
+    </div>
   );
 }

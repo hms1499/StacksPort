@@ -26,6 +26,7 @@ import {
 } from "@/lib/dca-sbtc";
 import { formatBlocksCountdown } from "@/lib/dca-preview";
 import { useNotificationStore } from "@/store/notificationStore";
+import OutPlanHistory from "./OutPlanHistory";
 
 interface Props {
   plan: DCA_SBTCPlan;
@@ -375,6 +376,10 @@ export default function OutPlanCard({ plan, currentBlock, onRefresh, isExpanded,
                     <Trash2 size={14} /> Cancel & Refund
                   </button>
                 )}
+              </div>
+
+              <div className="pt-2 border-t" style={{ borderColor: "var(--border-subtle)" }}>
+                <OutPlanHistory plan={plan} />
               </div>
             </div>
           </motion.div>

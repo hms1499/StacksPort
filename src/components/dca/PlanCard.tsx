@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { type DCAPlan, microToSTX, cancelPlan } from "@/lib/dca";
@@ -25,6 +26,24 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const balSTX = microToSTX(plan.bal);
+  const keepBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  // Modal a11y: Escape closes, body scroll locks, focus moves to safe action.
+  useEffect(() => {
+    if (!cancelOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !cancelLoading) setCancelOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    // Focus the safe "Keep Plan" button rather than the destructive one.
+    requestAnimationFrame(() => keepBtnRef.current?.focus());
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [cancelOpen, cancelLoading]);
 
   const handleExecuteShortcut = () => {
     setDefaultTab("execute");
@@ -91,10 +110,17 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
         )}
       </AnimatePresence>
 
-      {/* Cancel modal */}
-      {cancelOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      {cancelOpen && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          onClick={() => { if (!cancelLoading) setCancelOpen(false); }}
+          role="presentation"
+        >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`cancel-plan-${plan.id}-title`}
+            onClick={(e) => e.stopPropagation()}
             className="rounded-2xl w-[90%] max-w-sm p-6 flex flex-col gap-4"
             style={{ background: "var(--bg-card)", boxShadow: "var(--shadow-card-hover)" }}
           >
@@ -106,7 +132,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
                 <Trash2 size={18} style={{ color: "var(--negative)" }} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Cancel & Refund</h3>
+                <h3 id={`cancel-plan-${plan.id}-title`} className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Cancel & Refund</h3>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>Plan #{plan.id}</p>
               </div>
             </div>
@@ -116,9 +142,10 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
             </p>
             <div className="flex gap-2">
               <button
+                ref={keepBtnRef}
                 onClick={() => setCancelOpen(false)}
                 disabled={cancelLoading}
-                className="flex-1 py-2.5 rounded-xl text-sm font-medium disabled:opacity-40"
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium disabled:opacity-40 focus:outline-none focus:ring-2"
                 style={{ border: "1px solid var(--border-default)", color: "var(--text-secondary)", background: "var(--bg-card)" }}
               >
                 Keep Plan
@@ -126,14 +153,15 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
               <button
                 onClick={confirmCancel}
                 disabled={cancelLoading}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-40"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-40 focus:outline-none focus:ring-2"
                 style={{ background: "var(--negative)" }}
               >
                 Cancel & Refund
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

@@ -155,8 +155,10 @@ export default function CostBasisChart({ perPlan }: Props) {
     return out;
   }, [firstDate, todayISO, sortedEvents, dailyDelta, pricesByDate]);
 
-  if (sortedEvents.length < 2) {
-    // One data point makes a useless chart; show a hint instead.
+  // Guard on distinct UTC days, not raw event count: multiple executions in
+  // the same day collapse to one bucket and would render an invisible chart
+  // (single point with dot={false}).
+  if (dailyDelta.size < 2) {
     return (
       <ChartShell>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -194,7 +196,7 @@ export default function CostBasisChart({ perPlan }: Props) {
               dataKey="date"
               tick={{ fontSize: 10, fill: "var(--text-muted)" }}
               tickFormatter={(d: string) =>
-                new Date(d + "T00:00:00Z").toLocaleDateString(undefined, { month: "short", day: "numeric" })
+                new Date(d + "T00:00:00Z").toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" })
               }
               minTickGap={24}
               stroke="var(--border-subtle)"
@@ -293,6 +295,7 @@ function CostBasisTooltip({ active, payload, label }: { active?: boolean; payloa
           month: "short",
           day: "numeric",
           year: "numeric",
+          timeZone: "UTC",
         })}
       </div>
       <div className="flex items-center justify-between gap-3 font-data">

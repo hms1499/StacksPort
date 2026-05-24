@@ -114,11 +114,14 @@ export default function DCAInPanel({
         new Set(eligible.map((p) => utcIsoDateFromUnix(p.perf.firstExecutionAt!)))
       );
       const priceByDate = new Map<string, { stxUsd: number; btcUsd: number } | null>();
-      await Promise.all(uniqueDates.map(async (d) => {
+      // Cap concurrency: CoinGecko free tier rate-limits aggressively, and a
+      // user with 10 plans on different first-execution dates would otherwise
+      // fan out 10 parallel /history calls.
+      await batchedMap(uniqueDates, async (d) => {
         const prices = await getHistoricalStxBtcPrices(d);
         priceByDate.set(d, prices);
-      }));
-      if (cancelled) return;
+      }, 3);
+      if (cancelled) { setLumpSumLoading(false); return; }
       setPerPlan((prev) => {
         if (!prev) return prev;
         return prev.map((p) => {

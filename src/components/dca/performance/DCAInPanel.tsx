@@ -275,9 +275,14 @@ export default function DCAInPanel({
                 <div>
                   <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
                     Your basis vs today&apos;s spot
-                    <span title="Compares your weighted-avg STX per sBTC across all executed swaps against the current STX/sBTC rate (BTC USD / STX USD). Positive % means you got more sBTC per STX than today's spot would give you.">
+                    <button
+                      type="button"
+                      title="Compares your weighted-avg STX per sBTC across all executed swaps against the current STX/sBTC rate (BTC USD / STX USD). Positive % means you got more sBTC per STX than today's spot would give you."
+                      aria-label="About: Your basis vs today's spot"
+                      className="inline-flex items-center focus:outline-none focus-visible:ring-2 rounded"
+                    >
                       <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
-                    </span>
+                    </button>
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                     Spot: 1 sBTC = <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatStx(spotStxPerSbtc, 0)}</span> STX ·
@@ -316,9 +321,14 @@ export default function DCAInPanel({
                 <div>
                   <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
                     DCA vs lump sum
-                    <span title="For each plan, we look up the STX-USD and BTC-USD closing prices on the day of that plan's first execution and ask: if you had dumped the same total STX-in into sBTC on day 0 at the then-spot rate, how much sBTC would you hold? The delta shows whether DCA beat or trailed that counterfactual buy. Excludes plans where historical prices couldn't be fetched.">
+                    <button
+                      type="button"
+                      title="For each plan, we look up the STX-USD and BTC-USD closing prices on the day of that plan's first execution and ask: if you had dumped the same total STX-in into sBTC on day 0 at the then-spot rate, how much sBTC would you hold? The delta shows whether DCA beat or trailed that counterfactual buy. Excludes plans where historical prices couldn't be fetched."
+                      aria-label="About: DCA vs lump sum"
+                      className="inline-flex items-center focus:outline-none focus-visible:ring-2 rounded"
+                    >
                       <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
-                    </span>
+                    </button>
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                     Across {lumpSumAggregate.count} plan{lumpSumAggregate.count === 1 ? '' : 's'} ·

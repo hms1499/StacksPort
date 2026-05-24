@@ -218,9 +218,14 @@ export default function DCAOutPanel({
                 <div>
                   <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
                     Your sell rate vs today&apos;s spot
-                    <span title="Weighted-avg USDCx received per sBTC across executions vs current sBTC→USDCx rate (BTC USD, since USDCx ≈ $1). Positive % means you sold at better-than-current rates.">
+                    <button
+                      type="button"
+                      title="Weighted-avg USDCx received per sBTC across executions vs current sBTC→USDCx rate (BTC USD, since USDCx ≈ $1). Positive % means you sold at better-than-current rates."
+                      aria-label="About: Your sell rate vs today's spot"
+                      className="inline-flex items-center focus:outline-none focus-visible:ring-2 rounded"
+                    >
                       <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
-                    </span>
+                    </button>
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                     Spot: 1 sBTC ≈ <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatNum(spotTokenPerSbtc, 0)}</span> {TOKEN_LABEL} ·

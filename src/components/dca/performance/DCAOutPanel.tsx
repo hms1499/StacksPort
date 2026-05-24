@@ -21,6 +21,7 @@ import {
 } from "@/lib/dca-sbtc";
 import { getBtcUsdPrice } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
+import CostBasisOutChart from "./CostBasisOutChart";
 
 interface PlanWithPerf {
   plan: DCA_SBTCPlan;
@@ -243,6 +244,10 @@ export default function DCAOutPanel({
           </div>
         </MotionCard>
       )}
+
+      <MotionCard disableHover>
+        <CostBasisOutChart perPlan={perPlan} />
+      </MotionCard>
 
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>

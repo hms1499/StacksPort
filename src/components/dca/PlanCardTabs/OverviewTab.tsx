@@ -5,7 +5,6 @@ import { Pause, Play, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { type DCAPlan, microToSTX, stxToMicro, depositToPlan, pausePlan, resumePlan } from "@/lib/dca";
 import { formatRelativeBlockDate } from "@/lib/dca-preview";
 import { useNotificationStore } from "@/store/notificationStore";
-import MiniSparkline from "../MiniSparkline";
 
 interface OverviewTabProps {
   plan: DCAPlan;
@@ -58,23 +57,12 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Stats + sparkline row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="grid grid-cols-2 gap-2">
-          <StatMini label="Swaps done" value={plan.tsd.toString()} />
-          <StatMini label="STX spent" value={microToSTX(plan.tss).toFixed(1)} />
-          <StatMini label="Avg STX / swap" value={microToSTX(avgStxPerSwap).toFixed(2)} />
-          <StatMini label="Created" value={formatRelativeBlockDate(currentBlock - plan.cat)} />
-        </div>
-        <div
-          className="rounded-xl p-3 flex flex-col gap-2"
-          style={{ background: "var(--bg-elevated)" }}
-        >
-          <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-            sBTC price (7d)
-          </p>
-          <MiniSparkline />
-        </div>
+      {/* Stats row */}
+      <div className="grid grid-cols-2 gap-2">
+        <StatMini label="Swaps done" value={plan.tsd.toString()} />
+        <StatMini label="STX spent" value={microToSTX(plan.tss).toFixed(1)} />
+        <StatMini label="Avg STX / swap" value={microToSTX(avgStxPerSwap).toFixed(2)} />
+        <StatMini label="Created" value={formatRelativeBlockDate(currentBlock - plan.cat)} />
       </div>
 
       {/* Deposit row — active plans get the input; paused plans get a hint */}

@@ -34,12 +34,23 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  // Ticks every 5s so the "Xs ago" label re-renders without state churn from upstream.
+  const [, setNowTick] = useState(0);
+  useEffect(() => {
+    if (!lastUpdated) return;
+    const id = window.setInterval(() => setNowTick((n) => n + 1), 5_000);
+    return () => window.clearInterval(id);
+  }, [lastUpdated]);
+  // Monotonic request id — every fetch increments; only the latest may
+  // commit state. Protects against address-switch races where the SDK
+  // call (getAllUserPlans) can't be aborted mid-flight.
+  const requestIdRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
 
   const fetchData = useCallback(async () => {
-    // Cancel any in-flight request from a previous address
     abortRef.current?.abort();
     abortRef.current = new AbortController();
+    const reqId = ++requestIdRef.current;
 
     setLoading(true);
     try {
@@ -47,6 +58,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
         getAllUserPlans(address),
         fetch("https://api.hiro.so/v2/info", { signal: abortRef.current.signal }).then((r) => r.json()),
       ]);
+      if (reqId !== requestIdRef.current) return; // stale
       const block = blockRes?.stacks_tip_height ?? 0;
       setPlans(active);
       setCompletedPlans(completed);
@@ -55,17 +67,22 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
       onPlansLoaded?.(active, block);
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
+      if (reqId !== requestIdRef.current) return;
       console.error("Failed to fetch plans:", err);
       setPlans([]);
       setCompletedPlans([]);
     } finally {
-      setLoading(false);
+      if (reqId === requestIdRef.current) setLoading(false);
     }
   }, [address, onPlansLoaded]);
 
   useEffect(() => {
     fetchData();
-    return () => { abortRef.current?.abort(); };
+    return () => {
+      abortRef.current?.abort();
+      // Bump so any in-flight resolves see themselves as stale.
+      requestIdRef.current++;
+    };
   }, [fetchData]);
 
   // Auto-refresh: poll every POLL_INTERVAL_MS while the tab is visible, and

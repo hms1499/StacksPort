@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Zap, Loader2 } from "lucide-react";
+import { Zap, Loader2, AlertTriangle } from "lucide-react";
 import { type DCAPlan, microToSTX, executePlan, DEFAULT_SWAP_ROUTER } from "@/lib/dca";
+
+// Known-good router contracts. Anything outside this set is flagged as
+// "custom" and the user must explicitly opt in via the Advanced disclosure.
+const KNOWN_ROUTERS = new Set<string>([DEFAULT_SWAP_ROUTER]);
+
+// SIP-010 contract id shape: SP/ST + base58 + "." + name (no spaces).
+const CONTRACT_ID_RE = /^S[PT][0-9A-Z]+\.[a-zA-Z][a-zA-Z0-9-]*$/;
 import { quoteSbtcForUstx, netUstxAfterFee } from "@/lib/dca-quote";
 import { useNotificationStore } from "@/store/notificationStore";
 
@@ -15,6 +22,7 @@ interface ExecuteTabProps {
 export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTabProps) {
   const { addNotification } = useNotificationStore();
   const [routerInput, setRouterInput] = useState(DEFAULT_SWAP_ROUTER);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [slippage, setSlippage] = useState(1);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quotedSbtc, setQuotedSbtc] = useState<number | null>(null);
@@ -36,14 +44,18 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
       .finally(() => setQuoteLoading(false));
   }, [canExecuteNow, netUstx]);
 
+  const trimmedRouter = routerInput.trim();
+  const routerValid = CONTRACT_ID_RE.test(trimmedRouter);
+  const isCustomRouter = routerValid && !KNOWN_ROUTERS.has(trimmedRouter);
+
   const handleExecute = () => {
-    if (!routerInput.includes(".")) return;
+    if (!routerValid) return;
     // Defence-in-depth: the button is already gated on quotedSbtc != null, but
     // submitting with minAmountOut === 0 would strip slippage protection
     // entirely (the contract accepts 0 as a valid minimum), so reject here too.
     if (quotedSbtc == null || minAmountOut <= 0) return;
     setLoading(true);
-    executePlan(plan.id, routerInput.trim(), minAmountOut,
+    executePlan(plan.id, trimmedRouter, minAmountOut,
       ({ txId }) => {
         setLoading(false);
         addNotification("Plan executed! Swap completed", "success", "dca", 5000,
@@ -125,26 +137,68 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
         ) : null}
       </div>
 
-      {/* Router */}
+      {/* Router — default hidden; advanced users can override under disclosure */}
       <div className="flex flex-col gap-1">
-        <label className="text-[10px] font-medium" style={{ color: "var(--text-secondary)" }}>Swap Router</label>
-        <input
-          type="text"
-          value={routerInput}
-          onChange={(e) => setRouterInput(e.target.value)}
-          placeholder="SP….swap-router-contract"
-          className="w-full px-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:ring-2"
-          style={{
-            border: "1px solid var(--border-subtle)",
-            background: "var(--bg-card)",
-            color: "var(--text-primary)",
-          }}
-        />
+        <div className="flex items-center justify-between">
+          <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+            Routing via <span className="font-mono">bitflow-sbtc-swap-router</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-[10px] font-semibold focus:outline-none focus:underline"
+            style={{ color: "var(--accent)" }}
+          >
+            {showAdvanced ? "Hide" : "Advanced"}
+          </button>
+        </div>
+        {showAdvanced && (
+          <div className="flex flex-col gap-1.5 mt-1">
+            <input
+              type="text"
+              value={routerInput}
+              onChange={(e) => setRouterInput(e.target.value)}
+              placeholder="SP….swap-router-contract"
+              className="w-full px-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:ring-2"
+              style={{
+                border: `1px solid ${routerValid ? "var(--border-subtle)" : "var(--negative)"}`,
+                background: "var(--bg-card)",
+                color: "var(--text-primary)",
+              }}
+            />
+            {!routerValid && (
+              <span className="text-[10px]" style={{ color: "var(--negative)" }}>
+                Not a valid contract id (e.g. SP….contract-name).
+              </span>
+            )}
+            {isCustomRouter && (
+              <span
+                className="inline-flex items-start gap-1 text-[10px] leading-tight rounded-md px-2 py-1.5"
+                style={{
+                  background: "color-mix(in srgb, var(--warning) 12%, transparent)",
+                  color: "var(--warning)",
+                  border: "1px solid color-mix(in srgb, var(--warning) 28%, transparent)",
+                }}
+              >
+                <AlertTriangle size={11} className="mt-px shrink-0" />
+                <span>Custom router — executions through unverified contracts can drain your swap. Only use if you know the contract.</span>
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => setRouterInput(DEFAULT_SWAP_ROUTER)}
+              className="text-[10px] self-start focus:outline-none focus:underline"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Reset to default
+            </button>
+          </div>
+        )}
       </div>
 
       <button
         onClick={handleExecute}
-        disabled={loading || quoteLoading || !!quoteError || quotedSbtc == null || !routerInput.includes(".")}
+        disabled={loading || quoteLoading || !!quoteError || quotedSbtc == null || !routerValid}
         className="gradient-dca-in px-4 py-2 rounded-lg text-white text-xs font-semibold flex items-center gap-1.5 disabled:opacity-40 self-start"
       >
         <Zap size={13} /> {loading ? "Executing…" : "Execute"}

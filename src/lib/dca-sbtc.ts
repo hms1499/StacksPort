@@ -9,7 +9,7 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 import { openContractCall } from "@stacks/connect";
-import { fetchTxOutputTransfer } from "./dca";
+import { fetchTxOutputTransfer, batchedMap } from "./dca";
 
 export const DCA_SBTC_CONTRACT_ADDRESS =
   "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
@@ -365,17 +365,15 @@ export async function getSBTCPlanExecutionHistory(
   }
 
   if (userAddress) {
-    await Promise.all(
-      events.map(async (e) => {
-        if (e.status !== "success") return;
-        const amount = await fetchTxOutputTransfer(
-          e.txId,
-          targetTokenContract,
-          userAddress
-        );
-        if (amount !== undefined) e.tokenOut = amount;
-      })
-    );
+    await batchedMap(events, async (e) => {
+      if (e.status !== "success") return;
+      const amount = await fetchTxOutputTransfer(
+        e.txId,
+        targetTokenContract,
+        userAddress
+      );
+      if (amount !== undefined) e.tokenOut = amount;
+    }, 5);
   }
 
   return events;

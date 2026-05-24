@@ -31,7 +31,7 @@ function hiroHeaders(extra: Record<string, string> = {}): Record<string, string>
   return { ...extra, ...(key ? { "x-hiro-api-key": key } : {}) };
 }
 
-async function batchedMap<T, R>(
+export async function batchedMap<T, R>(
   items: T[],
   fn: (item: T) => Promise<R>,
   concurrency = 3
@@ -465,17 +465,15 @@ export async function getPlanExecutionHistory(
   // queried address, which is the vault — sBTC goes pool→router→user, so
   // the vault's ft_transfers is always empty for execute-dca).
   if (userAddress) {
-    await Promise.all(
-      events.map(async (e) => {
-        if (e.status !== "success") return;
-        const amount = await fetchTxOutputTransfer(
-          e.txId,
-          "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
-          userAddress
-        );
-        if (amount !== undefined) e.sbtcReceived = amount;
-      })
-    );
+    await batchedMap(events, async (e) => {
+      if (e.status !== "success") return;
+      const amount = await fetchTxOutputTransfer(
+        e.txId,
+        "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
+        userAddress
+      );
+      if (amount !== undefined) e.sbtcReceived = amount;
+    }, 5);
   }
 
   return events;

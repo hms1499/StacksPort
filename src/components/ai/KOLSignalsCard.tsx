@@ -21,7 +21,8 @@ const sentimentConfig = {
   neutral: { Icon: ArrowRight,   color: "#94A3B8" },
 };
 
-export default function KOLSignalsCard({ data }: { data: KOLSignalsData }) {
+export default function KOLSignalsCard({ data }: { data: KOLSignalsData | undefined }) {
+  if (!data) return null;
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
       {/* Header */}

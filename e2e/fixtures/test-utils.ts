@@ -178,20 +178,22 @@ export async function mockAPIs(page: Page) {
             { label: "RSI overbought", type: "bearish" },
           ],
         },
-        trends: {
-          summary: "STX showing upward momentum with increasing volume.",
-          tokens: [
+        kolSignals: {
+          summary: "Social chatter on Stacks is trending bullish across LunarCrush.",
+          coins: [
             {
               symbol: "STX",
-              direction: "up",
-              insight: "Breaking above key resistance at $1.30",
-              changePercent: 5.2,
+              sentiment: "bullish",
+              galaxyScore: 72,
+              socialVolume: 12400,
+              insight: "Breakout chatter peaking.",
             },
             {
               symbol: "sBTC",
-              direction: "up",
-              insight: "Following BTC trend closely",
-              changePercent: 2.1,
+              sentiment: "neutral",
+              galaxyScore: 55,
+              socialVolume: 3200,
+              insight: "Steady adoption mentions.",
             },
           ],
         },

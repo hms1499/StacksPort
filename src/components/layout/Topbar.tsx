@@ -104,6 +104,8 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
+              aria-label="Open account menu"
+              data-connected="true"
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-200"
               style={{
                 backgroundColor: 'var(--accent-dim)',

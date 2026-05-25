@@ -23,14 +23,11 @@ test.describe("Notifications Page (Connected)", () => {
 
   test("All tab is active by default", async ({ page }) => {
     const allTab = page.getByRole("button", { name: "All", exact: true });
-    // Active tab has border-[#408A71] class
-    await expect(allTab).toHaveClass(/border-\[#408A71\]/);
+    await expect(allTab).toHaveAttribute("data-active", "true");
   });
 
   test("renders search input", async ({ page }) => {
-    await expect(
-      page.getByPlaceholder("Search notifications...")
-    ).toBeVisible();
+    await expect(page.getByPlaceholder("Search...")).toBeVisible();
   });
 
   test("renders sort button", async ({ page }) => {
@@ -50,11 +47,11 @@ test.describe("Notifications Page (Connected)", () => {
   test("clicking filter tabs switches active state", async ({ page }) => {
     const transactionsTab = page.getByRole("button", { name: "Transactions", exact: true });
     await transactionsTab.click();
-    await expect(transactionsTab).toHaveClass(/border-\[#408A71\]/);
+    await expect(transactionsTab).toHaveAttribute("data-active", "true");
   });
 
   test("search input accepts text", async ({ page }) => {
-    const searchInput = page.getByPlaceholder("Search notifications...");
+    const searchInput = page.getByPlaceholder("Search...");
     await searchInput.fill("swap");
     await expect(searchInput).toHaveValue("swap");
   });

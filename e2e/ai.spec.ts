@@ -23,12 +23,19 @@ test.describe("AI Page (Connected)", () => {
 
   test("renders sentiment card with data", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Market Sentiment" })).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(/Bullish/i)).toBeVisible();
+    // Bullish appears in both the sentiment chip and the social-signals summary;
+    // scope to the sentiment chip (the rounded-full pill with score).
+    await expect(page.getByText(/Bullish\s*\(\+?\d+\)/)).toBeVisible();
   });
 
-  test("renders trend analysis card", async ({ page }) => {
-    await expect(page.getByText("Trend Analysis")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText("STX").first()).toBeVisible();
+  test("renders social signals card", async ({ page }) => {
+    // The Trends card was replaced with KOLSignalsCard (LunarCrush social signals).
+    const heading = page.getByRole("heading", { name: "Social Signals" });
+    await expect(heading).toBeVisible({ timeout: 10000 });
+    // Scope to the same card to avoid colliding with the topbar STX chip
+    // (hidden on mobile) and other STX mentions on the page.
+    const card = heading.locator("xpath=ancestor::div[contains(@class,'glass-card')][1]");
+    await expect(card.getByText("LunarCrush").first()).toBeVisible();
   });
 
   test("renders smart alerts card", async ({ page }) => {

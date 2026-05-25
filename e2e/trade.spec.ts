@@ -77,7 +77,7 @@ test.describe("Trade Page (Connected)", () => {
   });
 
   test("renders info panels", async ({ page }) => {
-    await expect(page.locator("h3").filter({ hasText: "Best Routes" })).toBeVisible();
+    await expect(page.locator("h3").filter({ hasText: "On-chain Routing" })).toBeVisible();
     await expect(page.locator("h3").filter({ hasText: "Real Yield" })).toBeVisible();
   });
 

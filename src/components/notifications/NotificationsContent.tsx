@@ -159,6 +159,8 @@ export default function NotificationsContent() {
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
+                  data-active={activeTab === tab.key}
+                  aria-pressed={activeTab === tab.key}
                   className="px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap shrink-0"
                   style={{
                     borderBottomColor: activeTab === tab.key ? 'var(--accent)' : 'transparent',
@@ -224,6 +226,7 @@ export default function NotificationsContent() {
               <div className="relative">
                 <button
                   onClick={() => setIsSortOpen(!isSortOpen)}
+                  aria-label="Sort"
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
                   style={{ border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}
                 >

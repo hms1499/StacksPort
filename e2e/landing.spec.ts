@@ -34,11 +34,14 @@ test.describe("Landing Page (Guest)", () => {
     await expect(page.getByText(/Non-custodial|Audited contracts|Stacks mainnet/).first()).toBeVisible();
   });
 
-  test("renders stats strip with 4 items", async ({ page }) => {
-    await expect(page.getByText("847+")).toBeVisible();
-    await expect(page.getByText("$2.1M")).toBeVisible();
-    await expect(page.getByText("1,200+")).toBeVisible();
-    await expect(page.getByText("+18.4%")).toBeVisible();
+  test("renders hero feature highlights", async ({ page }) => {
+    // The old hard-coded stats strip was removed in favor of feature cards.
+    // Assert the hero CTA + at least one trust badge are visible — these are
+    // load-bearing for the landing's first impression.
+    await expect(page.locator("h1").first()).toBeVisible();
+    await expect(
+      page.getByText(/Non-custodial|Audited contracts|Stacks mainnet/).first()
+    ).toBeVisible();
   });
 
   test("renders 6 feature cards", async ({ page }) => {

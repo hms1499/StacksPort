@@ -14,8 +14,12 @@ test.describe("Dashboard Page (Connected)", () => {
   });
 
   test("renders wallet banner", async ({ page }) => {
-    // Connected state shows wallet avatar in topbar (rounded-full, always visible)
-    await expect(page.locator("header .rounded-full").first()).toBeVisible();
+    // Connected state shows the account-menu button (aria-labeled "Open
+    // account menu"). Works on all viewports — the address text inside is
+    // hidden on mobile but the button itself is always rendered.
+    await expect(
+      page.getByRole("button", { name: "Open account menu" })
+    ).toBeVisible();
   });
 
   test("renders balance card section", async ({ page }) => {
@@ -29,7 +33,11 @@ test.describe("Dashboard Page (Connected)", () => {
   });
 
   test("renders market stats section", async ({ page }) => {
-    await expect(page.getByText(/STX|Price|Market/i).first()).toBeVisible();
+    // Scope to main and target a labeled stat (the topbar STX pill is hidden
+    // on small viewports and was masking this assertion on mobile).
+    await expect(
+      page.locator("main").getByText(/STX Price|Market Cap|Volume/i).first()
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test("renders trending tokens section", async ({ page }) => {

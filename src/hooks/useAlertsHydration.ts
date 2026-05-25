@@ -46,6 +46,13 @@ export function useAlertsHydration(): void {
   const stxAddress = useWalletStore((s) => s.stxAddress);
   const setAlerts = usePriceAlertStore((s) => s.setAlerts);
 
+  // Clear the store on disconnect or wallet switch BEFORE the next fetch
+  // resolves — otherwise the panel briefly shows the previous wallet's
+  // alerts to a new user. Reset is synchronous so no flash.
+  useEffect(() => {
+    if (!stxAddress) setAlerts([]);
+  }, [stxAddress, setAlerts]);
+
   const { data } = useSWR(
     stxAddress ? ['price-alerts', stxAddress] : null,
     () => fetchAlerts(stxAddress!),
@@ -57,8 +64,10 @@ export function useAlertsHydration(): void {
   );
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || !stxAddress) return;
+    // Merge with the store's *current* local copy. Since we clear above on
+    // address change, this can't pollute createdAt across wallets.
     const local = usePriceAlertStore.getState().alerts;
     setAlerts(toLocalShape(data, local));
-  }, [data, setAlerts]);
+  }, [data, stxAddress, setAlerts]);
 }

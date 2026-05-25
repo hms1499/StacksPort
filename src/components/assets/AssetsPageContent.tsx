@@ -14,6 +14,7 @@ import SBTCMonitor from "@/components/assets/SBTCMonitor";
 import AssetTransactionHistory from "@/components/assets/AssetTransactionHistory";
 import PnLTracker from "@/components/assets/PnLTracker";
 import PortfolioPerformanceChart from "@/components/assets/PortfolioPerformanceChart";
+import YieldOpportunities from "@/components/assets/YieldOpportunities";
 
 export default function AssetsPageContent() {
   const { stxAddress, isConnected } = useWalletStore();
@@ -49,6 +50,9 @@ export default function AssetsPageContent() {
               <StackingTracker />
               <SBTCMonitor />
             </div>
+          </MotionCard>
+          <MotionCard>
+            <YieldOpportunities />
           </MotionCard>
           <MotionCard>
             <AssetTransactionHistory />

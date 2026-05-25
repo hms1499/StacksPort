@@ -13,6 +13,7 @@ import StackingTracker from "@/components/assets/StackingTracker";
 import SBTCMonitor from "@/components/assets/SBTCMonitor";
 import AssetTransactionHistory from "@/components/assets/AssetTransactionHistory";
 import PnLTracker from "@/components/assets/PnLTracker";
+import PortfolioPerformanceChart from "@/components/assets/PortfolioPerformanceChart";
 
 export default function AssetsPageContent() {
   const { stxAddress, isConnected } = useWalletStore();
@@ -33,6 +34,9 @@ export default function AssetsPageContent() {
               <PortfolioSummary stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
               <HealthScore stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />
             </div>
+          </MotionCard>
+          <MotionCard>
+            <PortfolioPerformanceChart />
           </MotionCard>
           <MotionCard>
             <TokenHoldings stx={stx} tokens={tokens} totalUsd={totalUsd} loading={loading} />

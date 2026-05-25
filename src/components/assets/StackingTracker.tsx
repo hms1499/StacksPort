@@ -214,13 +214,16 @@ export default function StackingTracker() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isConnected || !stxAddress) return;
+    // Reset synchronously on disconnect or wallet switch so the previous
+    // wallet's status can't flash to the next user.
+    setStatus(null);
+    if (!isConnected || !stxAddress) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
-    Promise.resolve()
-      .then(() => {
-        if (!cancelled) setLoading(true);
-        return getStackingStatus(stxAddress);
-      })
+    setLoading(true);
+    getStackingStatus(stxAddress)
       .then((result) => {
         if (!cancelled) setStatus(result);
       })

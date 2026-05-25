@@ -218,13 +218,14 @@ export default function SBTCMonitor() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isConnected || !stxAddress) return;
+    setData(null);
+    if (!isConnected || !stxAddress) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
-    Promise.resolve()
-      .then(() => {
-        if (!cancelled) setLoading(true);
-        return getSBTCData(stxAddress);
-      })
+    setLoading(true);
+    getSBTCData(stxAddress)
       .then((result) => {
         if (!cancelled) setData(result);
       })

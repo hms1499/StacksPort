@@ -50,8 +50,6 @@ export default function PlanCardRow({
 }: PlanCardRowProps) {
   const balSTX = microToSTX(plan.bal);
   const amtSTX = microToSTX(plan.amt);
-  const totalSwaps = Math.floor((plan.tss + plan.bal) / Math.max(plan.amt, 1));
-  const progressPct = totalSwaps > 0 ? Math.round((plan.tsd / totalSwaps) * 100) : 0;
   const nextBlock = plan.leb === 0 ? currentBlock : plan.leb + plan.ivl;
   const blocksLeft = Math.max(0, nextBlock - currentBlock);
   const canExecuteNow = plan.active && plan.bal >= plan.amt && blocksLeft === 0;
@@ -65,8 +63,6 @@ export default function PlanCardRow({
   const statusLabel = !plan.active
     ? plan.bal > 0 ? "Paused" : "Depleted"
     : "Active";
-
-  const progressClass = mode === "in" ? "gradient-dca-in" : "gradient-dca-out";
 
   return (
     <div
@@ -108,11 +104,12 @@ export default function PlanCardRow({
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusDotColor }} />
           {statusLabel}
         </span>
-        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-elevated)" }}>
-          <div className={`${progressClass} h-full`} style={{ width: `${progressPct}%` }} />
-        </div>
-        <span className="text-[11px] font-data" style={{ color: "var(--text-muted)" }}>
-          {plan.tsd}/{totalSwaps} · {balSTX.toFixed(1)} STX left
+        <span
+          className="ml-auto text-[11px] font-data"
+          style={{ color: "var(--text-muted)" }}
+          title="Swaps executed · swaps the current balance can still afford"
+        >
+          {plan.tsd} done · {swapsRemaining} affordable · {balSTX.toFixed(1)} STX left
         </span>
       </div>
 

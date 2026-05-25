@@ -35,12 +35,16 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   // Ticks every 5s so the "Xs ago" label re-renders without state churn from upstream.
+  // Only depend on whether we have *any* lastUpdated (boolean) — otherwise the
+  // interval would be torn down and recreated on every fetch, causing skipped
+  // ticks.
   const [, setNowTick] = useState(0);
+  const hasLastUpdated = lastUpdated !== null;
   useEffect(() => {
-    if (!lastUpdated) return;
+    if (!hasLastUpdated) return;
     const id = window.setInterval(() => setNowTick((n) => n + 1), 5_000);
     return () => window.clearInterval(id);
-  }, [lastUpdated]);
+  }, [hasLastUpdated]);
   // Monotonic request id — every fetch increments; only the latest may
   // commit state. Protects against address-switch races where the SDK
   // call (getAllUserPlans) can't be aborted mid-flight.
@@ -88,11 +92,19 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
   // Auto-refresh: poll every POLL_INTERVAL_MS while the tab is visible, and
   // refresh on tab re-visibility (skipping if a manual/auto refresh just ran).
   // Skips during in-flight loads to avoid stacking requests.
+  //
+  // `loading` and `lastUpdated` go through refs so this effect can depend
+  // only on the stable `fetchData` identity — otherwise the interval is torn
+  // down and recreated on every fetch, sometimes missing a refresh entirely.
+  const loadingRef = useRef(loading);
+  const lastUpdatedRef = useRef(lastUpdated);
+  useEffect(() => { loadingRef.current = loading; }, [loading]);
+  useEffect(() => { lastUpdatedRef.current = lastUpdated; }, [lastUpdated]);
   useEffect(() => {
     const tryRefresh = () => {
       if (document.hidden) return;
-      if (loading) return;
-      const since = lastUpdated ? Date.now() - lastUpdated.getTime() : Infinity;
+      if (loadingRef.current) return;
+      const since = lastUpdatedRef.current ? Date.now() - lastUpdatedRef.current.getTime() : Infinity;
       if (since < MIN_REFRESH_GAP_MS) return;
       fetchData();
     };
@@ -103,7 +115,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
       window.clearInterval(id);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [fetchData, loading, lastUpdated]);
+  }, [fetchData]);
 
   const totalCount = (plans?.length ?? 0) + completedPlans.length;
   const header = (

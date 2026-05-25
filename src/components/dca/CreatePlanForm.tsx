@@ -40,7 +40,7 @@ export default function CreatePlanForm({ onCreated, existingPlanCount = 0 }: Pro
   const [estSbtc, setEstSbtc] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!stxAddress) return;
+    if (!stxAddress) { setStxBalance(null); return; }
     getSTXBalance(stxAddress).then((bal) => setStxBalance(microToSTX(bal)));
   }, [stxAddress]);
 

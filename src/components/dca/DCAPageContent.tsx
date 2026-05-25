@@ -92,7 +92,7 @@ export default function DCAPageContent() {
                   </MobileCollapsibleForm>
                 </div>
                 <div className="order-1 lg:order-2">
-                  <MyOutPlans key={outRefreshKey} address={stxAddress!} />
+                  <MyOutPlans key={`${stxAddress}-${outRefreshKey}`} address={stxAddress!} />
                 </div>
               </div>
             )}

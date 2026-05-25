@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BarChart3, Zap, History } from "lucide-react";
 import { type DCAPlan } from "@/lib/dca";
 import OverviewTab from "./PlanCardTabs/OverviewTab";
@@ -31,6 +31,12 @@ export default function PlanCardExpanded({
   defaultTab = "overview",
 }: PlanCardExpandedProps) {
   const [active, setActive] = useState<InnerTab>(defaultTab);
+
+  // Sync when parent changes defaultTab on an already-expanded card (e.g.
+  // user clicks the "Execute" shortcut on a card that's already open).
+  useEffect(() => {
+    setActive(defaultTab);
+  }, [defaultTab]);
 
   // Stable per-plan id prefix so multiple expanded cards on the same page
   // don't share tab/panel element ids.

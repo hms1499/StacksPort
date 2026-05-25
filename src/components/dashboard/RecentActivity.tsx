@@ -210,8 +210,9 @@ function RecentActivity() {
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: txData, isLoading } = useTransactions(addr);
 
-  const txs: TxItem[] = (txData?.results ?? []).map((r: unknown) =>
-    parseTx(r, stxAddress ?? "")
+  const txs: TxItem[] = useMemo(
+    () => (txData?.results ?? []).map((r: unknown) => parseTx(r, stxAddress ?? "")),
+    [txData, stxAddress]
   );
 
   const grouped = useMemo(() => {

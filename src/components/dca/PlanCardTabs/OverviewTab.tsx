@@ -5,6 +5,8 @@ import { Pause, Play, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { type DCAPlan, microToSTX, stxToMicro, depositToPlan, pausePlan, resumePlan } from "@/lib/dca";
 import { formatRelativeBlockDate } from "@/lib/dca-preview";
 import { useNotificationStore } from "@/store/notificationStore";
+import { useWalletStore } from "@/store/walletStore";
+import { trackTx } from "@/lib/tx-tracker";
 
 interface OverviewTabProps {
   plan: DCAPlan;
@@ -15,6 +17,7 @@ interface OverviewTabProps {
 
 export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCancel }: OverviewTabProps) {
   const { addNotification } = useNotificationStore();
+  const stxAddress = useWalletStore((s) => s.stxAddress);
   const [depositInput, setDepositInput] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +32,14 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
       ({ txId }) => {
         stopLoading(); setDepositInput("");
         addNotification(`Deposited ${n} STX (tx ${txId.slice(0,10)}…)`, "success", "dca", 5000);
+        trackTx({
+          txId,
+          label: `Plan #${plan.id} deposit +${n} STX`,
+          category: "dca",
+          context: { planId: String(plan.id), txId, amount: n.toFixed(2) },
+          addNotification,
+          address: stxAddress,
+        });
         onRefresh();
       },
       stopLoading, // user dismissed the wallet — release the spinner silently
@@ -38,7 +49,18 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
   const handlePause = () => {
     setLoading(true);
     pausePlan(plan.id,
-      () => { stopLoading(); onRefresh(); },
+      ({ txId }) => {
+        stopLoading();
+        trackTx({
+          txId,
+          label: `Plan #${plan.id} paused`,
+          category: "dca",
+          context: { planId: String(plan.id), txId },
+          addNotification,
+          address: stxAddress,
+        });
+        onRefresh();
+      },
       stopLoading,
     );
   };
@@ -46,7 +68,18 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
   const handleResume = () => {
     setLoading(true);
     resumePlan(plan.id,
-      () => { stopLoading(); onRefresh(); },
+      ({ txId }) => {
+        stopLoading();
+        trackTx({
+          txId,
+          label: `Plan #${plan.id} resumed`,
+          category: "dca",
+          context: { planId: String(plan.id), txId },
+          addNotification,
+          address: stxAddress,
+        });
+        onRefresh();
+      },
       stopLoading,
     );
   };

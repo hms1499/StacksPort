@@ -12,6 +12,8 @@ const KNOWN_ROUTERS = new Set<string>([DEFAULT_SWAP_ROUTER]);
 const CONTRACT_ID_RE = /^S[PT][0-9A-Z]+\.[a-zA-Z][a-zA-Z0-9-]*$/;
 import { quoteSbtcForUstx, netUstxAfterFee } from "@/lib/dca-quote";
 import { useNotificationStore } from "@/store/notificationStore";
+import { useWalletStore } from "@/store/walletStore";
+import { trackTx } from "@/lib/tx-tracker";
 
 interface ExecuteTabProps {
   plan: DCAPlan;
@@ -21,6 +23,7 @@ interface ExecuteTabProps {
 
 export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTabProps) {
   const { addNotification } = useNotificationStore();
+  const stxAddress = useWalletStore((s) => s.stxAddress);
   const [routerInput, setRouterInput] = useState(DEFAULT_SWAP_ROUTER);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [slippage, setSlippage] = useState(1);
@@ -60,6 +63,14 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
         setLoading(false);
         addNotification("Plan executed! Swap completed", "success", "dca", 5000,
           { planId: String(plan.id), txId, action: "executed" });
+        trackTx({
+          txId,
+          label: `Plan #${plan.id} executed`,
+          category: "dca",
+          context: { planId: String(plan.id), txId, action: "executed" },
+          addNotification,
+          address: stxAddress,
+        });
         onRefresh();
       },
       () => {

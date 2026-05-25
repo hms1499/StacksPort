@@ -19,6 +19,8 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
+import { useNotificationStore } from "@/store/notificationStore";
+import { trackTx } from "@/lib/tx-tracker";
 import { formatAmount } from "@/lib/utils";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -73,6 +75,7 @@ const USDCX_IMG = "https://assets.hiro.so/api/mainnet/token-metadata-api/SP120SB
 
 export default function MigrationWidget() {
   const { stxAddress, isConnected, network } = useWalletStore();
+  const { addNotification } = useNotificationStore();
 
   const [direction, setDirection] = useState<Direction>("x-to-y");
   const [amount, setAmount] = useState("");
@@ -81,6 +84,9 @@ export default function MigrationWidget() {
   const [aeBalance, setAeBalance] = useState<number | null>(null);
   const [usdcxBalance, setUsdcxBalance] = useState<number | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  // Bumped after a successful migration so the balance effect re-runs and
+  // the widget shows the new post-swap balance immediately.
+  const [balanceNonce, setBalanceNonce] = useState(0);
 
   const [output, setOutput] = useState<number | null>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -88,6 +94,19 @@ export default function MigrationWidget() {
   const [txId, setTxId] = useState<string | null>(null);
 
   const quoteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Monotonic request id — only the latest in-flight quote may commit state,
+  // so a slow earlier quote can't clobber a newer one.
+  const quoteReqId = useRef(0);
+
+  // Clear all form / status state on wallet switch or disconnect so a
+  // previous user's success screen or quote doesn't leak to the next user.
+  useEffect(() => {
+    setAmount("");
+    setOutput(null);
+    setStatus("idle");
+    setErrorMsg(null);
+    setTxId(null);
+  }, [stxAddress]);
 
   // Derived
   const fromSymbol = direction === "x-to-y" ? "aeUSDC" : "USDCx";
@@ -96,7 +115,7 @@ export default function MigrationWidget() {
   const toImg = direction === "x-to-y" ? USDCX_IMG : AEUSDC_IMG;
   const fromBalance = direction === "x-to-y" ? aeBalance : usdcxBalance;
 
-  // Fetch balances
+  // Fetch balances — also re-runs after a successful migration via balanceNonce
   useEffect(() => {
     if (!stxAddress) { setAeBalance(null); setUsdcxBalance(null); return; }
     setBalanceLoading(true);
@@ -107,20 +126,24 @@ export default function MigrationWidget() {
       .then(([ae, usdcx]) => { setAeBalance(ae); setUsdcxBalance(usdcx); })
       .catch(() => { setAeBalance(null); setUsdcxBalance(null); })
       .finally(() => setBalanceLoading(false));
-  }, [stxAddress]);
+  }, [stxAddress, balanceNonce]);
 
   // Debounced quote
   const fetchQuote = useCallback(async (dir: Direction, amt: number) => {
     if (amt <= 0) { setOutput(null); setStatus("idle"); return; }
+    const myReqId = ++quoteReqId.current;
     setStatus("quoting");
     setErrorMsg(null);
     try {
       const res = await fetch(`/api/stableswap/quote?direction=${dir}&amount=${amt}`);
+      if (myReqId !== quoteReqId.current) return;
       const data: { output?: number; error?: string } = await res.json();
+      if (myReqId !== quoteReqId.current) return;
       if (data.error) throw new Error(data.error);
       setOutput(data.output ?? null);
       setStatus(data.output != null ? "ready" : "idle");
     } catch (e) {
+      if (myReqId !== quoteReqId.current) return;
       setOutput(null);
       setStatus("error");
       setErrorMsg(e instanceof Error ? e.message : "Failed to get quote");
@@ -155,7 +178,10 @@ export default function MigrationWidget() {
     setErrorMsg(null);
 
     try {
-      const amountMicro = BigInt(Math.round(parseFloat(amount) * 1e6));
+      // floor (not round) so amountMicro can never exceed the user's
+      // displayed balance by 1 micro and trigger an on-chain post-condition
+      // failure.
+      const amountMicro = BigInt(Math.floor(parseFloat(amount) * 1e6));
       const minOutputMicro = BigInt(Math.floor(output * 1e6 * (1 - slippage / 100)));
 
       const poolCV = contractPrincipalCV(POOL_ADDRESS, POOL_NAME);
@@ -189,7 +215,20 @@ export default function MigrationWidget() {
         postConditions,
         postConditionMode: PostConditionMode.Deny,
         network,
-        onFinish: ({ txId: id }) => { setTxId(id); setStatus("success"); },
+        onFinish: ({ txId: id }) => {
+          setTxId(id);
+          setStatus("success");
+          trackTx({
+            txId: id,
+            label: `Migrate ${fromSymbol} → ${toSymbol}`,
+            category: "swap",
+            context: { txId: id, action: "migration", amount },
+            addNotification,
+            address: stxAddress,
+          });
+          // Re-fetch balances so the new post-swap amounts show up immediately.
+          setBalanceNonce((n) => n + 1);
+        },
         onCancel: () => setStatus("ready"),
       });
     } catch (e) {

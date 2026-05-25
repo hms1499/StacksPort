@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -216,13 +216,19 @@ export default function AssetTransactionHistory() {
   const [offset, setOffset] = useState(0);
   const [filter, setFilter] = useState<FilterTab>("all");
 
+  // Monotonic request id so out-of-order responses (wallet switch, fast
+  // pagination clicks) can't overwrite newer data.
+  const reqIdRef = useRef(0);
+
   const fetchTxs = useCallback(
     async (currentOffset: number, append: boolean) => {
       if (!isConnected || !stxAddress) return;
+      const myReqId = ++reqIdRef.current;
       if (append) setLoadingMore(true); else setLoading(true);
 
       try {
         const data = await getTransactions(stxAddress, PAGE_SIZE, currentOffset);
+        if (myReqId !== reqIdRef.current) return;
         const results: TxItem[] = (data.results ?? []).map((r: unknown) =>
           parseTx(r, stxAddress)
         );
@@ -230,15 +236,21 @@ export default function AssetTransactionHistory() {
         setHasMore(results.length === PAGE_SIZE);
         setOffset(currentOffset + results.length);
       } catch (e) {
+        if (myReqId !== reqIdRef.current) return;
         console.error(e);
       } finally {
-        if (append) setLoadingMore(false); else setLoading(false);
+        if (myReqId === reqIdRef.current) {
+          if (append) setLoadingMore(false); else setLoading(false);
+        }
       }
     },
     [stxAddress, isConnected]
   );
 
   useEffect(() => {
+    // Bump reqId so any pending fetch from the previous wallet is dropped
+    // when its response arrives.
+    reqIdRef.current++;
     setAllTxs([]);
     setOffset(0);
     setHasMore(true);

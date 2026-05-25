@@ -462,6 +462,7 @@ export default function SwapWidget() {
     setAmountIn("");
     setQuote(null);
     setStatus("idle");
+    setErrorMsg(null);
   }
 
   const canFlip = toToken ? !!getRoute(toToken.id, fromToken.id) : false;
@@ -477,6 +478,7 @@ export default function SwapWidget() {
     setAmountIn("");
     setQuote(null);
     setStatus("idle");
+    setErrorMsg(null);
   }
 
   // Execute swap
@@ -502,6 +504,10 @@ export default function SwapWidget() {
 
     setStatus("swapping");
     setErrorMsg(null);
+    // Invalidate any in-flight quote refresh — once we commit to signing
+    // with the on-screen quote, a later refresh resolving mid-sign must
+    // not overwrite `quote` and silently change minAmountOut.
+    quoteReqId.current++;
 
     try {
       const minAmountOutRaw = applySlippageFloor(

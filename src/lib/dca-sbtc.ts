@@ -426,7 +426,7 @@ export function aggregateSBTCPlanPerformance(
 
   return {
     planId,
-    executionCount: events.length,
+    executionCount: successful.length,
     totalSbtcIn: totalSbtcInSats,
     totalTokenOut,
     avgSbtcPerToken,

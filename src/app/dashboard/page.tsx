@@ -102,6 +102,10 @@ const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"), {
   ),
 });
 
+const AlertsPanel = dynamic(() => import("@/components/dashboard/AlertsPanel"), {
+  loading: () => null,
+});
+
 const RecentActivity = dynamic(() => import("@/components/dashboard/RecentActivity"), {
   loading: () => (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -154,6 +158,11 @@ export default function DashboardPage() {
           {/* PoX cycle countdown — Stacks-native featured card */}
           <MotionCard>
             <PoxCycleCard />
+          </MotionCard>
+
+          {/* Price alerts (auto-hides when user has zero alerts) */}
+          <MotionCard>
+            <AlertsPanel />
           </MotionCard>
 
           {/* DCA performance (auto-hides until user has executed ≥1 swap) */}

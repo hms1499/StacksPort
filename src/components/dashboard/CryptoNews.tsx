@@ -117,7 +117,7 @@ export default function CryptoNews() {
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No news available</p>
             </div>
           )
-          : news.map((item, i) => <NewsRow key={i} item={item} />)}
+          : news.map((item) => <NewsRow key={item.url} item={item} />)}
       </div>
     </div>
   );

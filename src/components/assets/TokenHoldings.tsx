@@ -11,6 +11,19 @@ import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import Sparkline from "@/components/dashboard/Sparkline";
 
+/** Convert a human-readable balance to its raw on-chain integer string.
+ * Avoids `balance * 10**decimals` which loses precision at high decimals +
+ * large values (e.g. 8-decimal token with balance > ~90M). Uses toFixed +
+ * string ops so the result is exact up to whatever precision the upstream
+ * balance float already carried. */
+function humanBalanceToRaw(balance: number, decimals: number): string {
+  if (!Number.isFinite(balance) || balance <= 0) return "0";
+  const fixed = balance.toFixed(decimals);
+  const [whole, frac = ""] = fixed.split(".");
+  const joined = (whole + frac.padEnd(decimals, "0")).replace(/^0+(?=\d)/, "");
+  return joined || "0";
+}
+
 function formatBalance(n: number): string {
   if (n === 0) return "0";
   if (n >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
@@ -223,7 +236,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
     setSendToken({
       symbol: t.symbol,
       name: t.name,
-      rawBalance: String(Math.round(t.balance * Math.pow(10, t.decimals))),
+      rawBalance: humanBalanceToRaw(t.balance, t.decimals),
       decimals: t.decimals,
       contractId: t.contractId,
       imageUri: t.imageUri,

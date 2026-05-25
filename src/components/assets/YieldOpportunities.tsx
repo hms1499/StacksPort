@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useUserDCAPlans, useTokensWithValues } from "@/hooks/useMarketData";
+import { getStackingStatus } from "@/lib/stacks";
 
 type Opportunity = {
   id: string;
@@ -80,10 +81,26 @@ function YieldOpportunities() {
   const { data: tokens } = useTokensWithValues(addr);
   const { data: plans } = useUserDCAPlans(addr);
 
-  const isStacking = useMemo(
+  // Liquid-stacking signal from token holdings (stSTX > 0).
+  const hasLiquidStacking = useMemo(
     () => (tokens?.tokens ?? []).some((t) => t.symbol === "stSTX" && t.balance > 0),
     [tokens]
   );
+
+  // Pooled / solo stacking signal — read from PoX, no liquid token involved.
+  // Cheap to fetch (one read-only call) and only runs when wallet is connected.
+  const [hasPoxStacking, setHasPoxStacking] = useState(false);
+  useEffect(() => {
+    setHasPoxStacking(false);
+    if (!addr) return;
+    let cancelled = false;
+    getStackingStatus(addr)
+      .then((s) => { if (!cancelled) setHasPoxStacking(s.isStacking); })
+      .catch(() => { /* swallow — defaults to false */ });
+    return () => { cancelled = true; };
+  }, [addr]);
+
+  const isStacking = hasLiquidStacking || hasPoxStacking;
   const hasDca = (plans?.length ?? 0) > 0;
   const dcaExecutions = useMemo(
     () => (plans ?? []).reduce((sum, p) => sum + p.tsd, 0),
@@ -156,7 +173,7 @@ function YieldOpportunities() {
               style={{ backgroundColor: "var(--border-subtle)" }}
             >
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                 style={{ backgroundColor: o.iconBg, color: o.iconColor }}
               >
                 <Icon size={18} />
@@ -191,7 +208,7 @@ function YieldOpportunities() {
                 </p>
               </div>
 
-              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+              <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <span
                   className="text-sm font-bold font-data"
                   style={{ color: o.iconColor }}

@@ -19,9 +19,16 @@ const DEPOSIT_PERCENTS: Array<{ label: string; pct: number }> = [
 
 interface Props {
   onCreated: () => void;
+  /** Total plan count for the connected wallet (incl. inactive). Used to
+   * pre-empt the contract's max-10 revert. */
+  existingPlanCount?: number;
 }
 
-export default function CreatePlanForm({ onCreated }: Props) {
+// Contract enforces this; we mirror it client-side so the user doesn't pay a
+// signing fee on a tx that will revert.
+const MAX_PLANS_PER_USER = 10;
+
+export default function CreatePlanForm({ onCreated, existingPlanCount = 0 }: Props) {
   const { stxAddress } = useWalletStore();
   const { addNotification } = useNotificationStore();
   const [amountPerSwap, setAmountPerSwap] = useState("");
@@ -68,6 +75,9 @@ export default function CreatePlanForm({ onCreated }: Props) {
   }, [amt]);
 
   const validate = (): string | null => {
+    if (existingPlanCount >= MAX_PLANS_PER_USER) {
+      return `Plan limit reached (${MAX_PLANS_PER_USER}). Cancel an old plan first.`;
+    }
     if (amt < 1) return "Minimum 1 STX per swap";
     if (dep < 2) return "Minimum deposit 2 STX";
     if (dep < amt) return "Initial deposit must be ≥ amount per swap";

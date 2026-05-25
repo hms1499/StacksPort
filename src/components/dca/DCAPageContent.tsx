@@ -77,7 +77,7 @@ export default function DCAPageContent() {
               <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
                 <div className="order-2 lg:order-1 lg:sticky lg:top-6">
                   <MobileCollapsibleForm title="Create DCA In plan" openOnEvent="dca:fill-form">
-                    <CreatePlanForm onCreated={handleRefresh} />
+                    <CreatePlanForm onCreated={handleRefresh} existingPlanCount={userPlans.length} />
                   </MobileCollapsibleForm>
                 </div>
                 <div className="order-1 lg:order-2">

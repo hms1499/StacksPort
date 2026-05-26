@@ -6,6 +6,8 @@ import { ReactNode } from "react";
 type Props = {
   /** Hide the drag handle (eg. for banners that span full width and shouldn't be moved). */
   noDrag?: boolean;
+  /** When false the widget renders without drag affordances (view mode). */
+  isEditing?: boolean;
   children: ReactNode;
 };
 
@@ -17,13 +19,14 @@ type Props = {
  * `min-h-0` + `overflow-auto` lets long content (lists, tables) scroll inside
  * the cell instead of overflowing into neighbours when the cell is shrunk.
  */
-export default function WidgetShell({ noDrag, children }: Props) {
+export default function WidgetShell({ noDrag, isEditing = false, children }: Props) {
+  const showHandle = !noDrag && isEditing;
   return (
     <div className="h-full w-full flex flex-col overflow-hidden relative">
-      {!noDrag && (
+      {showHandle && (
         <button
           type="button"
-          className="drag-handle absolute top-2 right-2 z-10 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground p-1.5 rounded-md hover:bg-muted/50 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="drag-handle absolute top-2 right-2 z-10 cursor-grab active:cursor-grabbing text-muted-foreground/70 hover:text-foreground p-1.5 rounded-md hover:bg-muted/50 transition-colors"
           aria-label="Drag to reorder"
           title="Drag to reorder"
         >

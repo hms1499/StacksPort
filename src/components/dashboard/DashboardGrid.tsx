@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { RotateCcw } from "lucide-react";
+import { Check, Pencil, RotateCcw } from "lucide-react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
@@ -49,6 +49,10 @@ export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
   const visible = useDashboardVisibility();
   const isMobile = useIsMobile();
+  // Edit mode is session-only: explicit opt-in each visit avoids users
+  // leaving themselves in a draggable state forever and accidentally moving
+  // widgets while reading.
+  const [isEditing, setIsEditing] = useState(false);
 
   const widgets = useMemo(
     () => [
@@ -85,23 +89,43 @@ export default function DashboardGrid() {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2 min-h-[28px]">
             <span className="text-xs text-muted-foreground/70">
-              Drag the handle in each card to reorder · drag the bottom-right corner to resize
+              {isEditing
+                ? "Drag the handle to reorder · drag the bottom-right corner to resize"
+                : null}
             </span>
-            <button
-              type="button"
-              onClick={reset}
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-              title="Reset to default layout"
-            >
-              <RotateCcw size={12} />
-              Reset layout
-            </button>
+            <div className="flex items-center gap-1">
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+                  title="Reset to default layout"
+                >
+                  <RotateCcw size={12} />
+                  Reset layout
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsEditing((v) => !v)}
+                className={`inline-flex items-center gap-1.5 text-xs transition-colors px-2 py-1 rounded-md ${
+                  isEditing
+                    ? "text-[var(--accent)] hover:bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                }`}
+                title={isEditing ? "Finish editing" : "Customize layout"}
+                aria-pressed={isEditing}
+              >
+                {isEditing ? <Check size={12} /> : <Pencil size={12} />}
+                {isEditing ? "Done" : "Customize"}
+              </button>
+            </div>
           </div>
 
           <ResponsiveGridLayout
-            className={`layout ${hydrated ? "" : "opacity-0"}`}
+            className={`layout ${hydrated ? "" : "opacity-0"} ${isEditing ? "is-editing" : ""}`}
             layouts={layouts}
             breakpoints={{ lg: 900, md: 640 }}
             cols={{ lg: 12, md: 8 }}
@@ -112,10 +136,12 @@ export default function DashboardGrid() {
             onLayoutChange={onLayoutChange}
             compactType="vertical"
             useCSSTransforms
+            isDraggable={isEditing}
+            isResizable={isEditing}
           >
             {visibleWidgets.map((w) => (
               <div key={w.i} className="group">
-                <WidgetShell>{w.node}</WidgetShell>
+                <WidgetShell isEditing={isEditing}>{w.node}</WidgetShell>
               </div>
             ))}
           </ResponsiveGridLayout>

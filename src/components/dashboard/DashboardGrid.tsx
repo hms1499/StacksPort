@@ -7,20 +7,23 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import WidgetShell from "@/components/dashboard/WidgetShell";
 
-// Below-the-fold widgets — lazy load to keep initial JS small.
-const WalletBanner = dynamic(() => import("@/components/dashboard/WalletBanner"));
-const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
+// Always-rendered widgets that go in the resizable grid.
 const BalanceCard = dynamic(() => import("@/components/dashboard/BalanceCard"));
-const QuickActions = dynamic(() => import("@/components/dashboard/QuickActions"));
 const STXMarketStats = dynamic(() => import("@/components/dashboard/STXMarketStats"));
 const PoxCycleCard = dynamic(() => import("@/components/dashboard/PoxCycleCard"));
-const AlertsPanel = dynamic(() => import("@/components/dashboard/AlertsPanel"));
-const DCAPerformanceCard = dynamic(() => import("@/components/dashboard/DCAPerformanceCard"));
-const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"));
 const GreedIndexCard = dynamic(() => import("@/components/dashboard/GreedIndexCard"));
 const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingTokens"));
 const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"));
 const RecentActivity = dynamic(() => import("@/components/dashboard/RecentActivity"));
+
+// Conditional widgets — render outside the grid as a normal stack above it,
+// so when they self-hide they don't leave empty cells.
+const WalletBanner = dynamic(() => import("@/components/dashboard/WalletBanner"));
+const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
+const QuickActions = dynamic(() => import("@/components/dashboard/QuickActions"));
+const AlertsPanel = dynamic(() => import("@/components/dashboard/AlertsPanel"));
+const DCAPerformanceCard = dynamic(() => import("@/components/dashboard/DCAPerformanceCard"));
+const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"));
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -29,26 +32,33 @@ export default function DashboardGrid() {
 
   const widgets = useMemo(
     () => [
-      { i: "wallet-banner", node: <WidgetShell noDrag><WalletBanner /></WidgetShell> },
-      { i: "welcome-steps", node: <WidgetShell><WelcomeSteps /></WidgetShell> },
-      { i: "balance", node: <WidgetShell><BalanceCard /></WidgetShell> },
-      { i: "quick-actions", node: <WidgetShell><QuickActions /></WidgetShell> },
-      { i: "stx-stats", node: <WidgetShell><STXMarketStats /></WidgetShell> },
-      { i: "pox-cycle", node: <WidgetShell><PoxCycleCard /></WidgetShell> },
-      { i: "alerts", node: <WidgetShell><AlertsPanel /></WidgetShell> },
-      { i: "dca-perf", node: <WidgetShell><DCAPerformanceCard /></WidgetShell> },
-      { i: "dca-summary", node: <WidgetShell><DCASummaryCard /></WidgetShell> },
-      { i: "greed", node: <WidgetShell><GreedIndexCard /></WidgetShell> },
-      { i: "trending", node: <WidgetShell><TrendingTokens /></WidgetShell> },
-      { i: "news", node: <WidgetShell><CryptoNews /></WidgetShell> },
-      { i: "activity", node: <WidgetShell><RecentActivity /></WidgetShell> },
+      { i: "balance", node: <BalanceCard /> },
+      { i: "stx-stats", node: <STXMarketStats /> },
+      { i: "pox-cycle", node: <PoxCycleCard /> },
+      { i: "greed", node: <GreedIndexCard /> },
+      { i: "trending", node: <TrendingTokens /> },
+      { i: "news", node: <CryptoNews /> },
+      { i: "activity", node: <RecentActivity /> },
     ],
     [],
   );
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-end mb-2">
+      {/* Conditional widgets — natural flow above the grid */}
+      <div className="space-y-4 mb-4">
+        <WalletBanner />
+        <WelcomeSteps />
+        <QuickActions />
+        <AlertsPanel />
+        <DCAPerformanceCard />
+        <DCASummaryCard />
+      </div>
+
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-muted-foreground/70">
+          Drag the handle in each card to reorder · drag the bottom-right corner to resize
+        </span>
         <button
           type="button"
           onClick={reset}
@@ -63,7 +73,7 @@ export default function DashboardGrid() {
       <ResponsiveGridLayout
         className={`layout ${hydrated ? "" : "opacity-0"}`}
         layouts={layouts}
-        breakpoints={{ lg: 1024, md: 640, sm: 0 }}
+        breakpoints={{ lg: 900, md: 640, sm: 0 }}
         cols={{ lg: 12, md: 8, sm: 1 }}
         rowHeight={80}
         margin={[16, 16]}
@@ -74,8 +84,8 @@ export default function DashboardGrid() {
         useCSSTransforms
       >
         {widgets.map((w) => (
-          <div key={w.i} className="relative group">
-            {w.node}
+          <div key={w.i} className="group">
+            <WidgetShell>{w.node}</WidgetShell>
           </div>
         ))}
       </ResponsiveGridLayout>

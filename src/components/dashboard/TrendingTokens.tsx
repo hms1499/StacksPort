@@ -142,8 +142,8 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>{token.symbol}</p>
       </div>
 
-      {/* Sparkline */}
-      <div className="flex-shrink-0">
+      {/* Sparkline — hide on narrow containers to give the name room */}
+      <div className="flex-shrink-0 hidden @[360px]:block">
         <Sparkline prices={token.sparkline} isPositive={isPositive} />
       </div>
 
@@ -196,7 +196,7 @@ export default function TrendingTokens() {
 
   return (
     <div
-      className="glass-card rounded-2xl p-5 shadow-sm"
+      className="@container glass-card rounded-2xl p-5 shadow-sm"
       style={{ ['--card-accent' as string]: '#FB7185' }}
     >
       {/* Header */}

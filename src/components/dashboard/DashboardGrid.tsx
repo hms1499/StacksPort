@@ -5,36 +5,42 @@ import dynamic from "next/dynamic";
 import { RotateCcw } from "lucide-react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
+import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
 import WidgetShell from "@/components/dashboard/WidgetShell";
 
-// Always-rendered widgets that go in the resizable grid.
+// Grid widgets — all are resizable. Connected-only ones are filtered via
+// useDashboardVisibility so they don't leave empty cells when hidden.
 const BalanceCard = dynamic(() => import("@/components/dashboard/BalanceCard"));
+const QuickActions = dynamic(() => import("@/components/dashboard/QuickActions"));
 const STXMarketStats = dynamic(() => import("@/components/dashboard/STXMarketStats"));
 const PoxCycleCard = dynamic(() => import("@/components/dashboard/PoxCycleCard"));
+const AlertsPanel = dynamic(() => import("@/components/dashboard/AlertsPanel"));
+const DCAPerformanceCard = dynamic(() => import("@/components/dashboard/DCAPerformanceCard"));
+const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"));
 const GreedIndexCard = dynamic(() => import("@/components/dashboard/GreedIndexCard"));
 const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingTokens"));
 const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"));
 const RecentActivity = dynamic(() => import("@/components/dashboard/RecentActivity"));
 
-// Conditional widgets — render outside the grid as a normal stack above it,
-// so when they self-hide they don't leave empty cells.
+// Banner-style widgets — natural flow above the grid, not resizable.
 const WalletBanner = dynamic(() => import("@/components/dashboard/WalletBanner"));
 const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
-const QuickActions = dynamic(() => import("@/components/dashboard/QuickActions"));
-const AlertsPanel = dynamic(() => import("@/components/dashboard/AlertsPanel"));
-const DCAPerformanceCard = dynamic(() => import("@/components/dashboard/DCAPerformanceCard"));
-const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"));
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
+  const visible = useDashboardVisibility();
 
   const widgets = useMemo(
     () => [
       { i: "balance", node: <BalanceCard /> },
+      { i: "quick-actions", node: <QuickActions /> },
       { i: "stx-stats", node: <STXMarketStats /> },
       { i: "pox-cycle", node: <PoxCycleCard /> },
+      { i: "alerts", node: <AlertsPanel /> },
+      { i: "dca-perf", node: <DCAPerformanceCard /> },
+      { i: "dca-summary", node: <DCASummaryCard /> },
       { i: "greed", node: <GreedIndexCard /> },
       { i: "trending", node: <TrendingTokens /> },
       { i: "news", node: <CryptoNews /> },
@@ -43,16 +49,14 @@ export default function DashboardGrid() {
     [],
   );
 
+  const visibleWidgets = widgets.filter((w) => visible.has(w.i as never));
+
   return (
     <div className="w-full">
-      {/* Conditional widgets — natural flow above the grid */}
+      {/* Banner-style widgets — natural flow */}
       <div className="space-y-4 mb-4">
         <WalletBanner />
         <WelcomeSteps />
-        <QuickActions />
-        <AlertsPanel />
-        <DCAPerformanceCard />
-        <DCASummaryCard />
       </div>
 
       <div className="flex items-center justify-between mb-2">
@@ -83,7 +87,7 @@ export default function DashboardGrid() {
         compactType="vertical"
         useCSSTransforms
       >
-        {widgets.map((w) => (
+        {visibleWidgets.map((w) => (
           <div key={w.i} className="group">
             <WidgetShell>{w.node}</WidgetShell>
           </div>

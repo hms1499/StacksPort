@@ -28,7 +28,7 @@ type WidgetSpec = {
 // Row height = 80px.
 export const WIDGETS: WidgetSpec[] = [
   { i: "balance",       lg: { x: 0, y: 0,  w: 12, h: 6, minW: 6, minH: 4 }, md: { x: 0, y: 0,  w: 8, h: 6 }, sm: { x: 0, y: 0,  w: 1, h: 6 } },
-  { i: "quick-actions", lg: { x: 0, y: 6,  w: 12, h: 2, minW: 6, minH: 2 }, md: { x: 0, y: 6,  w: 8, h: 2 }, sm: { x: 0, y: 6,  w: 1, h: 3 } },
+  { i: "quick-actions", lg: { x: 0, y: 6,  w: 12, h: 1, minW: 6, minH: 1 }, md: { x: 0, y: 6,  w: 8, h: 1 }, sm: { x: 0, y: 6,  w: 1, h: 2 } },
   { i: "stx-stats",     lg: { x: 0, y: 8,  w: 12, h: 3, minW: 6, minH: 2 }, md: { x: 0, y: 8,  w: 8, h: 3 }, sm: { x: 0, y: 9,  w: 1, h: 7 } },
   { i: "pox-cycle",     lg: { x: 0, y: 11, w: 12, h: 4, minW: 6, minH: 3 }, md: { x: 0, y: 11, w: 8, h: 4 }, sm: { x: 0, y: 16, w: 1, h: 4 } },
   { i: "alerts",        lg: { x: 0, y: 15, w: 6,  h: 4, minW: 3, minH: 3 }, md: { x: 0, y: 15, w: 4, h: 4 }, sm: { x: 0, y: 20, w: 1, h: 4 } },

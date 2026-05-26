@@ -49,7 +49,7 @@ export default function QuickActions() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 items-center content-center">
         <Link href="/trade">
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             className={`${BTN} cursor-pointer`}

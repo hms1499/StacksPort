@@ -40,8 +40,10 @@ export const WIDGETS: WidgetSpec[] = [
   { i: "dca-summary",   lg: { x: 0, y: 19, w: 4,  h: 5, minW: 3, minH: 3 }, md: { x: 0, y: 19, w: 4, h: 5, minW: 3, minH: 3 } },
   { i: "greed",         lg: { x: 4, y: 19, w: 4,  h: 5, minW: 3, minH: 3 }, md: { x: 4, y: 19, w: 4, h: 5, minW: 3, minH: 3 } },
   { i: "trending",      lg: { x: 8, y: 19, w: 4,  h: 5, minW: 3, minH: 4 }, md: { x: 0, y: 24, w: 8, h: 5, minW: 4, minH: 4 } },
-  { i: "news",          lg: { x: 0, y: 24, w: 8,  h: 6, minW: 4, minH: 4 }, md: { x: 0, y: 29, w: 8, h: 6, minW: 4, minH: 4 } },
-  { i: "activity",      lg: { x: 8, y: 24, w: 4,  h: 6, minW: 3, minH: 4 }, md: { x: 0, y: 35, w: 8, h: 6, minW: 4, minH: 4 } },
+  // news + activity scroll internally now, so minH can drop to 2 (160px) —
+  // enough to show ~2 items + a scroll affordance without clipping the header.
+  { i: "news",          lg: { x: 0, y: 24, w: 8,  h: 6, minW: 4, minH: 2 }, md: { x: 0, y: 29, w: 8, h: 6, minW: 4, minH: 2 } },
+  { i: "activity",      lg: { x: 8, y: 24, w: 4,  h: 6, minW: 3, minH: 2 }, md: { x: 0, y: 35, w: 8, h: 6, minW: 4, minH: 2 } },
 ];
 
 const KNOWN_IDS: Set<string> = new Set(WIDGETS.map((w) => w.i));

@@ -2,55 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Layout, Layouts } from "react-grid-layout";
+import { KNOWN_WIDGET_IDS, WIDGETS } from "@/components/dashboard/widget-registry";
 
 // v5: dropped `sm` breakpoint (mobile renders as plain stack outside RGL) and
 // added minW/minH on `md` so resize stops short of unusable widget sizes.
 const STORAGE_KEY = "dashboard-layout-v5";
 
-export type WidgetId =
-  | "balance"
-  | "quick-actions"
-  | "stx-stats"
-  | "pox-cycle"
-  | "alerts"
-  | "dca-perf"
-  | "dca-summary"
-  | "greed"
-  | "trending"
-  | "news"
-  | "activity";
-
-type Cell = { x: number; y: number; w: number; h: number; minW?: number; minH?: number };
-
-type WidgetSpec = {
-  i: WidgetId;
-  lg: Cell;
-  md: Cell;
-};
-
-// Row height = 80px. minW/minH set per-breakpoint so resize handle stops at a
-// size where the widget's content is still usable.
-export const WIDGETS: WidgetSpec[] = [
-  { i: "balance",       lg: { x: 0, y: 0,  w: 12, h: 6, minW: 6, minH: 4 }, md: { x: 0, y: 0,  w: 8, h: 6, minW: 4, minH: 4 } },
-  { i: "quick-actions", lg: { x: 0, y: 6,  w: 12, h: 1, minW: 6, minH: 1 }, md: { x: 0, y: 6,  w: 8, h: 1, minW: 4, minH: 1 } },
-  { i: "stx-stats",     lg: { x: 0, y: 8,  w: 12, h: 3, minW: 6, minH: 2 }, md: { x: 0, y: 8,  w: 8, h: 3, minW: 4, minH: 2 } },
-  { i: "pox-cycle",     lg: { x: 0, y: 11, w: 12, h: 4, minW: 6, minH: 3 }, md: { x: 0, y: 11, w: 8, h: 4, minW: 4, minH: 3 } },
-  { i: "alerts",        lg: { x: 0, y: 15, w: 6,  h: 4, minW: 3, minH: 3 }, md: { x: 0, y: 15, w: 4, h: 4, minW: 3, minH: 3 } },
-  { i: "dca-perf",      lg: { x: 6, y: 15, w: 6,  h: 4, minW: 3, minH: 3 }, md: { x: 4, y: 15, w: 4, h: 4, minW: 3, minH: 3 } },
-  { i: "dca-summary",   lg: { x: 0, y: 19, w: 4,  h: 5, minW: 3, minH: 3 }, md: { x: 0, y: 19, w: 4, h: 5, minW: 3, minH: 3 } },
-  { i: "greed",         lg: { x: 4, y: 19, w: 4,  h: 5, minW: 3, minH: 3 }, md: { x: 4, y: 19, w: 4, h: 5, minW: 3, minH: 3 } },
-  { i: "trending",      lg: { x: 8, y: 19, w: 4,  h: 5, minW: 3, minH: 4 }, md: { x: 0, y: 24, w: 8, h: 5, minW: 4, minH: 4 } },
-  // news + activity scroll internally now, so minH can drop to 2 (160px) —
-  // enough to show ~2 items + a scroll affordance without clipping the header.
-  { i: "news",          lg: { x: 0, y: 24, w: 8,  h: 6, minW: 4, minH: 2 }, md: { x: 0, y: 29, w: 8, h: 6, minW: 4, minH: 2 } },
-  { i: "activity",      lg: { x: 8, y: 24, w: 4,  h: 6, minW: 3, minH: 2 }, md: { x: 0, y: 35, w: 8, h: 6, minW: 4, minH: 2 } },
-];
-
-const KNOWN_IDS: Set<string> = new Set(WIDGETS.map((w) => w.i));
+// Re-export so existing consumers (hooks, components) don't need to learn
+// about widget-registry.ts unless they want richer entry metadata.
+export type { WidgetId } from "@/components/dashboard/widget-registry";
 
 function buildDefaultLayouts(): Layouts {
   const pick = (bp: "lg" | "md"): Layout[] =>
-    WIDGETS.map((w) => ({ i: w.i, ...w[bp] }));
+    WIDGETS.map((w) => ({ i: w.id, ...w[bp] }));
   return { lg: pick("lg"), md: pick("md") };
 }
 
@@ -59,7 +23,7 @@ function isValidLayoutItem(it: unknown): it is Layout {
   const l = it as Record<string, unknown>;
   return (
     typeof l.i === "string" &&
-    KNOWN_IDS.has(l.i) &&
+    KNOWN_WIDGET_IDS.has(l.i) &&
     Number.isFinite(l.x) && (l.x as number) >= 0 &&
     Number.isFinite(l.y) && (l.y as number) >= 0 &&
     Number.isFinite(l.w) && (l.w as number) > 0 &&

@@ -7,25 +7,12 @@ import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
 import WidgetShell, { type KeyboardMoveHandler } from "@/components/dashboard/WidgetShell";
+import { WIDGETS } from "@/components/dashboard/widget-registry";
 import { track } from "@/lib/telemetry";
 
 const BREAKPOINTS = { lg: 900, md: 640 } as const;
 const COLS = { lg: 12, md: 8 } as const;
 type BreakpointKey = keyof typeof COLS;
-
-const WIDGET_LABELS: Record<string, string> = {
-  "balance": "Balance",
-  "quick-actions": "Quick actions",
-  "stx-stats": "STX market stats",
-  "pox-cycle": "PoX cycle",
-  "alerts": "Price alerts",
-  "dca-perf": "DCA performance",
-  "dca-summary": "DCA summary",
-  "greed": "Fear and greed index",
-  "trending": "Trending tokens",
-  "news": "Crypto news",
-  "activity": "Recent activity",
-};
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
@@ -46,42 +33,12 @@ function useIsMobile() {
   return isMobile;
 }
 
-// Grid widgets — all are resizable. Connected-only ones are filtered via
-// useDashboardVisibility so they don't leave empty cells when hidden.
-const BalanceCard = dynamic(() => import("@/components/dashboard/BalanceCard"));
-const QuickActions = dynamic(() => import("@/components/dashboard/QuickActions"));
-const STXMarketStats = dynamic(() => import("@/components/dashboard/STXMarketStats"));
-const PoxCycleCard = dynamic(() => import("@/components/dashboard/PoxCycleCard"));
-const AlertsPanel = dynamic(() => import("@/components/dashboard/AlertsPanel"));
-const DCAPerformanceCard = dynamic(() => import("@/components/dashboard/DCAPerformanceCard"));
-const DCASummaryCard = dynamic(() => import("@/components/dashboard/DCASummaryCard"));
-const GreedIndexCard = dynamic(() => import("@/components/dashboard/GreedIndexCard"));
-const TrendingTokens = dynamic(() => import("@/components/dashboard/TrendingTokens"));
-const CryptoNews = dynamic(() => import("@/components/dashboard/CryptoNews"));
-const RecentActivity = dynamic(() => import("@/components/dashboard/RecentActivity"));
-
-// Banner-style widgets — natural flow above the grid, not resizable.
+// Banner-style widgets — natural flow above the grid, not resizable. The
+// grid widgets themselves live in widget-registry.ts.
 const WalletBanner = dynamic(() => import("@/components/dashboard/WalletBanner"));
 const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps"));
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
-
-// Static — JSX elements here have no dependencies, so building this once at
-// module scope is both correct and cheaper than re-creating per render. The
-// dynamic() refs above are stable module-level constants.
-const WIDGET_NODES: ReadonlyArray<{ i: string; node: React.ReactNode }> = [
-  { i: "balance", node: <BalanceCard /> },
-  { i: "quick-actions", node: <QuickActions /> },
-  { i: "stx-stats", node: <STXMarketStats /> },
-  { i: "pox-cycle", node: <PoxCycleCard /> },
-  { i: "alerts", node: <AlertsPanel /> },
-  { i: "dca-perf", node: <DCAPerformanceCard /> },
-  { i: "dca-summary", node: <DCASummaryCard /> },
-  { i: "greed", node: <GreedIndexCard /> },
-  { i: "trending", node: <TrendingTokens /> },
-  { i: "news", node: <CryptoNews /> },
-  { i: "activity", node: <RecentActivity /> },
-];
 
 export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
@@ -161,7 +118,7 @@ export default function DashboardGrid() {
     const updated = current.map((l) => (l.i === id ? { ...l, x: newX, y: newY, w: newW, h: newH } : l));
     const all = { ...layouts, [bp]: updated };
     handleLayoutChange(updated, all);
-    const label = WIDGET_LABELS[id] ?? id;
+    const label = WIDGETS.find((w) => w.id === id)?.label ?? id;
     if (dw !== 0 || dh !== 0) {
       announce(`${label} resized to ${newW} columns by ${newH} rows`);
     } else {
@@ -169,7 +126,7 @@ export default function DashboardGrid() {
     }
   };
 
-  const visibleWidgets = WIDGET_NODES.filter((w) => visible.has(w.i as never));
+  const visibleWidgets = WIDGETS.filter((w) => visible.has(w.id));
 
   return (
     <div className="w-full">
@@ -181,9 +138,14 @@ export default function DashboardGrid() {
 
       {isMobile ? (
         <div className="space-y-4">
-          {visibleWidgets.map((w) => (
-            <div key={w.i}>{w.node}</div>
-          ))}
+          {visibleWidgets.map((w) => {
+            const W = w.component;
+            return (
+              <div key={w.id}>
+                <W />
+              </div>
+            );
+          })}
         </div>
       ) : (
         <>
@@ -242,18 +204,21 @@ export default function DashboardGrid() {
             isDraggable={isEditing}
             isResizable={isEditing}
           >
-            {visibleWidgets.map((w) => (
-              <div key={w.i} className="group">
-                <WidgetShell
-                  isEditing={isEditing}
-                  widgetId={w.i}
-                  widgetLabel={WIDGET_LABELS[w.i]}
-                  onKeyboardMove={moveWidget}
-                >
-                  {w.node}
-                </WidgetShell>
-              </div>
-            ))}
+            {visibleWidgets.map((w) => {
+              const W = w.component;
+              return (
+                <div key={w.id} className="group">
+                  <WidgetShell
+                    isEditing={isEditing}
+                    widgetId={w.id}
+                    widgetLabel={w.label}
+                    onKeyboardMove={moveWidget}
+                  >
+                    <W />
+                  </WidgetShell>
+                </div>
+              );
+            })}
           </ResponsiveGridLayout>
 
           {/* Screen-reader-only live region for keyboard move announcements. */}

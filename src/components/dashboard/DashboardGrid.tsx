@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Check, Pencil, RotateCcw } from "lucide-react";
-import { Responsive, WidthProvider } from "react-grid-layout";
+import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
 import WidgetShell from "@/components/dashboard/WidgetShell";
+import { track } from "@/lib/telemetry";
 
 // Below this width we render widgets as a plain stack — RGL drag/resize is
 // unusable on a single-column touch layout (drag handle relies on hover, and
@@ -54,6 +55,40 @@ export default function DashboardGrid() {
   // widgets while reading.
   const [isEditing, setIsEditing] = useState(false);
 
+  // One-shot telemetry guards. Each session counts at most once for the
+  // "did the user actually mutate anything" metric — that's the signal we
+  // care about, not the per-drag spam.
+  const viewedRef = useRef(false);
+  const mutatedRef = useRef(false);
+  useEffect(() => {
+    if (viewedRef.current) return;
+    viewedRef.current = true;
+    track("dashboard_viewed");
+  }, []);
+
+  const toggleEdit = () => {
+    setIsEditing((v) => {
+      const next = !v;
+      track(next ? "dashboard_edit_mode_on" : "dashboard_edit_mode_off");
+      return next;
+    });
+  };
+
+  const handleLayoutChange = (current: Layout[], all: Layouts) => {
+    onLayoutChange(current, all);
+    // Only fire on user-initiated changes (i.e. while editing) and only the
+    // first time per session — we want a unique-user counter, not drag spam.
+    if (isEditing && !mutatedRef.current) {
+      mutatedRef.current = true;
+      track("dashboard_layout_mutated");
+    }
+  };
+
+  const handleReset = () => {
+    reset();
+    track("dashboard_layout_reset");
+  };
+
   const widgets = useMemo(
     () => [
       { i: "balance", node: <BalanceCard /> },
@@ -99,7 +134,7 @@ export default function DashboardGrid() {
               {isEditing && (
                 <button
                   type="button"
-                  onClick={reset}
+                  onClick={handleReset}
                   className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
                   title="Reset to default layout"
                 >
@@ -109,7 +144,7 @@ export default function DashboardGrid() {
               )}
               <button
                 type="button"
-                onClick={() => setIsEditing((v) => !v)}
+                onClick={toggleEdit}
                 className={`inline-flex items-center gap-1.5 text-xs transition-colors px-2 py-1 rounded-md ${
                   isEditing
                     ? "text-[var(--accent)] hover:bg-muted/50"
@@ -133,7 +168,7 @@ export default function DashboardGrid() {
             margin={[16, 16]}
             containerPadding={[0, 0]}
             draggableHandle=".drag-handle"
-            onLayoutChange={onLayoutChange}
+            onLayoutChange={handleLayoutChange}
             compactType="vertical"
             useCSSTransforms
             isDraggable={isEditing}

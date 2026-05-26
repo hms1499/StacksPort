@@ -127,7 +127,7 @@ function BalanceCard() {
   return (
     <div
       ref={cardRef}
-      className="glass-card rounded-2xl p-5 overflow-hidden"
+      className="glass-card rounded-2xl p-5 overflow-hidden flex flex-col"
     >
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">
@@ -314,8 +314,9 @@ function BalanceCard() {
       </div>
 
       {/* ── Chart ── */}
+      <div className="flex-1 min-h-[110px] mt-2">
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={110}>
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="balanceGrad" x1="0" y1="0" x2="0" y2="1">
@@ -357,12 +358,13 @@ function BalanceCard() {
         </ResponsiveContainer>
       ) : (
         <div
-          className="h-[110px] rounded-xl flex items-center justify-center"
+          className="h-full min-h-[110px] rounded-xl flex items-center justify-center"
           style={{ backgroundColor: 'var(--border-subtle)' }}
         >
           <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Loading chart…</span>
         </div>
       )}
+      </div>
     </div>
   );
 }

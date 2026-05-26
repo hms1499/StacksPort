@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Layout, Layouts } from "react-grid-layout";
 
-const STORAGE_KEY = "dashboard-layout-v3";
+const STORAGE_KEY = "dashboard-layout-v4";
 
 export type WidgetId =
   | "balance"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Check, Pencil, RotateCcw } from "lucide-react";
 import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid-layout";
@@ -46,6 +46,23 @@ const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps")
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
+// Static — JSX elements here have no dependencies, so building this once at
+// module scope is both correct and cheaper than re-creating per render. The
+// dynamic() refs above are stable module-level constants.
+const WIDGET_NODES: ReadonlyArray<{ i: string; node: React.ReactNode }> = [
+  { i: "balance", node: <BalanceCard /> },
+  { i: "quick-actions", node: <QuickActions /> },
+  { i: "stx-stats", node: <STXMarketStats /> },
+  { i: "pox-cycle", node: <PoxCycleCard /> },
+  { i: "alerts", node: <AlertsPanel /> },
+  { i: "dca-perf", node: <DCAPerformanceCard /> },
+  { i: "dca-summary", node: <DCASummaryCard /> },
+  { i: "greed", node: <GreedIndexCard /> },
+  { i: "trending", node: <TrendingTokens /> },
+  { i: "news", node: <CryptoNews /> },
+  { i: "activity", node: <RecentActivity /> },
+];
+
 export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
   const visible = useDashboardVisibility();
@@ -89,24 +106,7 @@ export default function DashboardGrid() {
     track("dashboard_layout_reset");
   };
 
-  const widgets = useMemo(
-    () => [
-      { i: "balance", node: <BalanceCard /> },
-      { i: "quick-actions", node: <QuickActions /> },
-      { i: "stx-stats", node: <STXMarketStats /> },
-      { i: "pox-cycle", node: <PoxCycleCard /> },
-      { i: "alerts", node: <AlertsPanel /> },
-      { i: "dca-perf", node: <DCAPerformanceCard /> },
-      { i: "dca-summary", node: <DCASummaryCard /> },
-      { i: "greed", node: <GreedIndexCard /> },
-      { i: "trending", node: <TrendingTokens /> },
-      { i: "news", node: <CryptoNews /> },
-      { i: "activity", node: <RecentActivity /> },
-    ],
-    [],
-  );
-
-  const visibleWidgets = widgets.filter((w) => visible.has(w.i as never));
+  const visibleWidgets = WIDGET_NODES.filter((w) => visible.has(w.i as never));
 
   return (
     <div className="w-full">
@@ -169,7 +169,11 @@ export default function DashboardGrid() {
             containerPadding={[0, 0]}
             draggableHandle=".drag-handle"
             onLayoutChange={handleLayoutChange}
-            compactType="vertical"
+            // null = free placement: widgets stay where the user dropped
+            // them instead of auto-shifting up. Avoids the "everything jumps"
+            // feeling on drag/resize.
+            compactType={null}
+            preventCollision
             useCSSTransforms
             isDraggable={isEditing}
             isResizable={isEditing}

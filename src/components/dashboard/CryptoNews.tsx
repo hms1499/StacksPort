@@ -94,10 +94,10 @@ export default function CryptoNews() {
 
   return (
     <div
-      className="glass-card rounded-2xl p-5 shadow-sm"
+      className="glass-card rounded-2xl p-5 shadow-sm h-full flex flex-col overflow-hidden"
       style={{ ['--card-accent' as string]: '#60A5FA' }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-1.5">
           <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Crypto News</h2>
           <span className="text-[10px] font-semibold bg-red-50 text-red-500 px-1.5 py-0.5 rounded-md">
@@ -107,7 +107,7 @@ export default function CryptoNews() {
         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>CoinTelegraph · CoinDesk</span>
       </div>
 
-      <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="divide-y flex-1 min-h-0 overflow-y-auto" style={{ borderColor: 'var(--border-subtle)' }}>
         {isLoading
           ? [...Array(5)].map((_, i) => <SkeletonRow key={i} />)
           : !news || news.length === 0

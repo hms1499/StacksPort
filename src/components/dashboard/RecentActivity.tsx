@@ -229,10 +229,10 @@ function RecentActivity() {
 
   return (
     <div
-      className="glass-card rounded-2xl p-5 shadow-sm flex flex-col"
+      className="glass-card rounded-2xl p-5 shadow-sm h-full flex flex-col overflow-hidden"
       style={{ ['--card-accent' as string]: '#FB923C' }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Activity</h2>
         {isConnected && stxAddress && (
           <a
@@ -247,55 +247,57 @@ function RecentActivity() {
         )}
       </div>
 
-      {!isConnected ? (
-        <EmptyState
-          icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
-          title="Connect to see your history"
-          description="Your swaps, transfers, and DCA executions will show up here in real time."
-          action={<ConnectWalletCTA />}
-        />
-      ) : isLoading ? (
-        <div className="space-y-1">
-          {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
-        </div>
-      ) : txs.length === 0 ? (
-        <EmptyState
-          accentColor="#F7931A"
-          icon={<Sparkles size={28} style={{ color: '#F7931A' }} />}
-          title="A clean slate"
-          description="Your first swap, transfer, or DCA execution will appear here."
-          action={
-            <Link
-              href="/trade"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-              style={{
-                backgroundColor: '#F7931A',
-                color: '#1a0f00',
-                boxShadow: '0 0 14px rgba(247, 147, 26, 0.35)',
-              }}
-            >
-              Make your first swap
-              <ArrowUpRight size={14} />
-            </Link>
-          }
-        />
-      ) : (
-        <div className="space-y-3">
-          {grouped.map((group) => (
-            <div key={group.label}>
-              <div
-                className="text-[10px] font-bold tracking-widest uppercase mb-1 px-2"
-                style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        {!isConnected ? (
+          <EmptyState
+            icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
+            title="Connect to see your history"
+            description="Your swaps, transfers, and DCA executions will show up here in real time."
+            action={<ConnectWalletCTA />}
+          />
+        ) : isLoading ? (
+          <div className="space-y-1">
+            {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
+          </div>
+        ) : txs.length === 0 ? (
+          <EmptyState
+            accentColor="#F7931A"
+            icon={<Sparkles size={28} style={{ color: '#F7931A' }} />}
+            title="A clean slate"
+            description="Your first swap, transfer, or DCA execution will appear here."
+            action={
+              <Link
+                href="/trade"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  backgroundColor: '#F7931A',
+                  color: '#1a0f00',
+                  boxShadow: '0 0 14px rgba(247, 147, 26, 0.35)',
+                }}
               >
-                {group.label}
+                Make your first swap
+                <ArrowUpRight size={14} />
+              </Link>
+            }
+          />
+        ) : (
+          <div className="space-y-3">
+            {grouped.map((group) => (
+              <div key={group.label}>
+                <div
+                  className="text-[10px] font-bold tracking-widest uppercase mb-1 px-2"
+                  style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
+                >
+                  {group.label}
+                </div>
+                <div className="space-y-0.5">
+                  {group.items.map((tx) => <TxRow key={tx.txId} tx={tx} />)}
+                </div>
               </div>
-              <div className="space-y-0.5">
-                {group.items.map((tx) => <TxRow key={tx.txId} tx={tx} />)}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

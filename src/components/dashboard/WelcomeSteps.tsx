@@ -231,7 +231,7 @@ export default function WelcomeSteps() {
                       className="text-xs font-semibold transition-all"
                       style={{
                         color: step.done ? 'var(--accent)' : 'var(--text-primary)',
-                        textDecoration: step.done ? 'line-through' : 'none',
+                        textDecorationLine: step.done ? 'line-through' : 'none',
                         textDecorationColor: 'color-mix(in srgb, var(--accent) 50%, transparent)',
                         opacity: step.done ? 0.85 : 1,
                       }}

@@ -1,12 +1,29 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { RotateCcw } from "lucide-react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
 import WidgetShell from "@/components/dashboard/WidgetShell";
+
+// Below this width we render widgets as a plain stack — RGL drag/resize is
+// unusable on a single-column touch layout (drag handle relies on hover, and
+// there's nothing meaningful to resize horizontally).
+const MOBILE_MAX_WIDTH = 639;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_MAX_WIDTH}px)`);
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isMobile;
+}
 
 // Grid widgets — all are resizable. Connected-only ones are filtered via
 // useDashboardVisibility so they don't leave empty cells when hidden.
@@ -31,6 +48,7 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
   const visible = useDashboardVisibility();
+  const isMobile = useIsMobile();
 
   const widgets = useMemo(
     () => [
@@ -59,40 +77,50 @@ export default function DashboardGrid() {
         <WelcomeSteps />
       </div>
 
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-muted-foreground/70">
-          Drag the handle in each card to reorder · drag the bottom-right corner to resize
-        </span>
-        <button
-          type="button"
-          onClick={reset}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-          title="Reset to default layout"
-        >
-          <RotateCcw size={12} />
-          Reset layout
-        </button>
-      </div>
-
-      <ResponsiveGridLayout
-        className={`layout ${hydrated ? "" : "opacity-0"}`}
-        layouts={layouts}
-        breakpoints={{ lg: 900, md: 640, sm: 0 }}
-        cols={{ lg: 12, md: 8, sm: 1 }}
-        rowHeight={80}
-        margin={[16, 16]}
-        containerPadding={[0, 0]}
-        draggableHandle=".drag-handle"
-        onLayoutChange={onLayoutChange}
-        compactType="vertical"
-        useCSSTransforms
-      >
-        {visibleWidgets.map((w) => (
-          <div key={w.i} className="group">
-            <WidgetShell>{w.node}</WidgetShell>
+      {isMobile ? (
+        <div className="space-y-4">
+          {visibleWidgets.map((w) => (
+            <div key={w.i}>{w.node}</div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-muted-foreground/70">
+              Drag the handle in each card to reorder · drag the bottom-right corner to resize
+            </span>
+            <button
+              type="button"
+              onClick={reset}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+              title="Reset to default layout"
+            >
+              <RotateCcw size={12} />
+              Reset layout
+            </button>
           </div>
-        ))}
-      </ResponsiveGridLayout>
+
+          <ResponsiveGridLayout
+            className={`layout ${hydrated ? "" : "opacity-0"}`}
+            layouts={layouts}
+            breakpoints={{ lg: 900, md: 640 }}
+            cols={{ lg: 12, md: 8 }}
+            rowHeight={80}
+            margin={[16, 16]}
+            containerPadding={[0, 0]}
+            draggableHandle=".drag-handle"
+            onLayoutChange={onLayoutChange}
+            compactType="vertical"
+            useCSSTransforms
+          >
+            {visibleWidgets.map((w) => (
+              <div key={w.i} className="group">
+                <WidgetShell>{w.node}</WidgetShell>
+              </div>
+            ))}
+          </ResponsiveGridLayout>
+        </>
+      )}
     </div>
   );
 }

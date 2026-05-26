@@ -6,8 +6,28 @@ import { Check, Pencil, RotateCcw } from "lucide-react";
 import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
-import WidgetShell from "@/components/dashboard/WidgetShell";
+import WidgetShell, { type KeyboardMoveHandler } from "@/components/dashboard/WidgetShell";
 import { track } from "@/lib/telemetry";
+
+const BREAKPOINTS = { lg: 900, md: 640 } as const;
+const COLS = { lg: 12, md: 8 } as const;
+type BreakpointKey = keyof typeof COLS;
+
+const WIDGET_LABELS: Record<string, string> = {
+  "balance": "Balance",
+  "quick-actions": "Quick actions",
+  "stx-stats": "STX market stats",
+  "pox-cycle": "PoX cycle",
+  "alerts": "Price alerts",
+  "dca-perf": "DCA performance",
+  "dca-summary": "DCA summary",
+  "greed": "Fear and greed index",
+  "trending": "Trending tokens",
+  "news": "Crypto news",
+  "activity": "Recent activity",
+};
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
 // Below this width we render widgets as a plain stack — RGL drag/resize is
 // unusable on a single-column touch layout (drag handle relies on hover, and
@@ -106,6 +126,49 @@ export default function DashboardGrid() {
     track("dashboard_layout_reset");
   };
 
+  // Track RGL's active breakpoint so keyboard moves edit the right layout
+  // array. Default "lg" matches what RGL picks for desktop on first render.
+  const [currentBp, setCurrentBp] = useState<BreakpointKey>("lg");
+
+  // Polite live region for screen readers — announces the widget's new
+  // position when it's moved/resized via keyboard. Cleared shortly after to
+  // avoid stale announcements on subsequent moves.
+  const [liveMessage, setLiveMessage] = useState("");
+  const liveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announce = (msg: string) => {
+    setLiveMessage(msg);
+    if (liveTimer.current) clearTimeout(liveTimer.current);
+    liveTimer.current = setTimeout(() => setLiveMessage(""), 1500);
+  };
+  useEffect(() => () => {
+    if (liveTimer.current) clearTimeout(liveTimer.current);
+  }, []);
+
+  const moveWidget: KeyboardMoveHandler = (id, dx, dy, dw, dh) => {
+    if (!isEditing) return;
+    const bp = currentBp;
+    const cols = COLS[bp];
+    const current = layouts[bp] ?? [];
+    const item = current.find((l) => l.i === id);
+    if (!item) return;
+    const minW = item.minW ?? 1;
+    const minH = item.minH ?? 1;
+    const newW = clamp(item.w + dw, minW, cols);
+    const newH = Math.max(minH, item.h + dh);
+    const newX = clamp(item.x + dx, 0, cols - newW);
+    const newY = Math.max(0, item.y + dy);
+    if (newX === item.x && newY === item.y && newW === item.w && newH === item.h) return;
+    const updated = current.map((l) => (l.i === id ? { ...l, x: newX, y: newY, w: newW, h: newH } : l));
+    const all = { ...layouts, [bp]: updated };
+    handleLayoutChange(updated, all);
+    const label = WIDGET_LABELS[id] ?? id;
+    if (dw !== 0 || dh !== 0) {
+      announce(`${label} resized to ${newW} columns by ${newH} rows`);
+    } else {
+      announce(`${label} moved to column ${newX + 1}, row ${newY + 1}`);
+    }
+  };
+
   const visibleWidgets = WIDGET_NODES.filter((w) => visible.has(w.i as never));
 
   return (
@@ -127,7 +190,7 @@ export default function DashboardGrid() {
           <div className="flex items-center justify-between mb-2 min-h-[28px]">
             <span className="text-xs text-muted-foreground/70">
               {isEditing
-                ? "Drag the handle to reorder · drag the bottom-right corner to resize"
+                ? "Drag the handle or use arrow keys to reorder · drag the corner or shift + arrow to resize"
                 : null}
             </span>
             <div className="flex items-center gap-1">
@@ -162,13 +225,14 @@ export default function DashboardGrid() {
           <ResponsiveGridLayout
             className={`layout ${hydrated ? "" : "opacity-0"} ${isEditing ? "is-editing" : ""}`}
             layouts={layouts}
-            breakpoints={{ lg: 900, md: 640 }}
-            cols={{ lg: 12, md: 8 }}
+            breakpoints={BREAKPOINTS}
+            cols={COLS}
             rowHeight={80}
             margin={[16, 16]}
             containerPadding={[0, 0]}
             draggableHandle=".drag-handle"
             onLayoutChange={handleLayoutChange}
+            onBreakpointChange={(bp) => setCurrentBp(bp as BreakpointKey)}
             // null = free placement: widgets stay where the user dropped
             // them instead of auto-shifting up. Avoids the "everything jumps"
             // feeling on drag/resize.
@@ -180,10 +244,26 @@ export default function DashboardGrid() {
           >
             {visibleWidgets.map((w) => (
               <div key={w.i} className="group">
-                <WidgetShell isEditing={isEditing}>{w.node}</WidgetShell>
+                <WidgetShell
+                  isEditing={isEditing}
+                  widgetId={w.i}
+                  widgetLabel={WIDGET_LABELS[w.i]}
+                  onKeyboardMove={moveWidget}
+                >
+                  {w.node}
+                </WidgetShell>
               </div>
             ))}
           </ResponsiveGridLayout>
+
+          {/* Screen-reader-only live region for keyboard move announcements. */}
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="sr-only"
+          >
+            {liveMessage}
+          </div>
         </>
       )}
     </div>

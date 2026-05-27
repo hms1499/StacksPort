@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, TrendingUp, TrendingDown } from "lucide-react";
+import { X, TrendingUp, TrendingDown, Bell } from "lucide-react";
 import { usePriceAlertStore } from "@/store/priceAlertStore";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { PRICE_ALERT_TOKENS, type PriceAlertCondition } from "@/types/priceAlerts";
 import type { TokenWithValue } from "@/lib/stacks";
 
@@ -24,6 +25,24 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
   const [condition, setCondition] = useState<PriceAlertCondition>("above");
   const [targetPrice, setTargetPrice] = useState("");
   const [error, setError] = useState("");
+
+  const { permission, isSupported, subscribe } = usePushNotifications();
+  const totalAlerts = usePriceAlertStore((s) => s.alerts.length);
+  const [pushPromptDismissed, setPushPromptDismissed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+
+  const showPushPrompt =
+    !pushPromptDismissed && isSupported && permission !== "granted" && totalAlerts >= 1;
+
+  const handleEnablePush = async () => {
+    setSubscribing(true);
+    try {
+      await subscribe();
+    } finally {
+      setSubscribing(false);
+      setPushPromptDismissed(true);
+    }
+  };
 
   const geckoId = PRICE_ALERT_TOKENS.find((t) => t.symbol === token.symbol)?.geckoId;
 
@@ -236,6 +255,39 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
           Create alert
         </button>
       </form>
+
+      {showPushPrompt && (
+        <div
+          className="mt-3 pt-3 border-t flex items-start gap-2"
+          style={{ borderColor: "var(--border-subtle)" }}
+        >
+          <Bell size={14} className="mt-0.5 shrink-0" style={{ color: "#408A71" }} />
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] leading-snug" style={{ color: "var(--text-secondary)" }}>
+              Bật thông báo để nhận alert ngay cả khi đóng app
+            </p>
+            <div className="flex gap-2 mt-1.5">
+              <button
+                type="button"
+                onClick={handleEnablePush}
+                disabled={subscribing}
+                className="text-[11px] font-medium disabled:opacity-50"
+                style={{ color: "#408A71" }}
+              >
+                {subscribing ? "Đang bật..." : "Bật"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPushPromptDismissed(true)}
+                className="text-[11px]"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Bỏ qua
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

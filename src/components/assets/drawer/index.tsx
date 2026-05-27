@@ -13,6 +13,7 @@ import TokenTransactions from "./Transactions";
 import InlineQuickSend from "./QuickSend";
 import InlineQuickSwap from "./QuickSwap";
 import AlertPopover from "./AlertPopover";
+import { PRICE_ALERT_TOKENS } from "@/types/priceAlerts";
 
 interface Props {
   token: TokenWithValue | null;
@@ -66,6 +67,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
   const change24h = token.change24h;
   const isPositive = (change24h ?? 0) >= 0;
   const isSTX = !token.contractId || token.contractId === "stx";
+  const isAlertSupported = PRICE_ALERT_TOKENS.some((t) => t.symbol === token.symbol);
   const geckoId = getGeckoIdForContract(token.contractId);
 
   const onCopy = async () => {
@@ -87,6 +89,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
   };
 
   const onAlert = () => {
+    if (!isAlertSupported) return;
     setAlertOpen((o) => !o);
   };
 
@@ -236,6 +239,8 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
               icon={<Bell size={16} />}
               label="Alert"
               onClick={onAlert}
+              disabled={!isAlertSupported}
+              title={!isAlertSupported ? "Alerts available for STX, BTC, WELSH, ALEX, VELAR, stSTX" : undefined}
             />
           </div>
         </div>
@@ -284,13 +289,15 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
           </dl>
         </div>
 
-        <AlertPopover
-          token={token}
-          currentPrice={token.priceUsd}
-          open={alertOpen}
-          onClose={() => setAlertOpen(false)}
-          anchorRef={alertBtnRef}
-        />
+        {isAlertSupported && (
+          <AlertPopover
+            token={token}
+            currentPrice={token.priceUsd}
+            open={alertOpen}
+            onClose={() => setAlertOpen(false)}
+            anchorRef={alertBtnRef}
+          />
+        )}
       </div>
     </div>
   );

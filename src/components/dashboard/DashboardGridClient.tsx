@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { SWRConfig } from "swr";
+import type { MarketSnapshot } from "@/lib/server/market-snapshot";
 
 const DashboardGrid = dynamic(() => import("@/components/dashboard/DashboardGrid"), {
   ssr: false,
@@ -16,6 +18,21 @@ const DashboardGrid = dynamic(() => import("@/components/dashboard/DashboardGrid
   ),
 });
 
-export default function DashboardGridClient() {
-  return <DashboardGrid />;
+interface Props {
+  marketSnapshot?: MarketSnapshot;
+}
+
+export default function DashboardGridClient({ marketSnapshot }: Props) {
+  // Seeds the SWR cache for `useMarketSnapshot()` so consumers render with
+  // server-fetched data on first paint. The key must match SNAPSHOT_KEY in
+  // useMarketSnapshot.ts ("market-snapshot").
+  const fallback = marketSnapshot
+    ? { "market-snapshot": marketSnapshot }
+    : {};
+
+  return (
+    <SWRConfig value={{ fallback }}>
+      <DashboardGrid />
+    </SWRConfig>
+  );
 }

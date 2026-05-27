@@ -16,6 +16,10 @@ interface Props {
 
 export default function AlertPopover({ token, currentPrice, open, onClose, anchorRef }: Props) {
   const addAlert = usePriceAlertStore((s) => s.addAlert);
+  const removeAlert = usePriceAlertStore((s) => s.removeAlert);
+  const existingAlerts = usePriceAlertStore((s) =>
+    s.alerts.filter((a) => a.tokenSymbol === token.symbol)
+  );
 
   const [condition, setCondition] = useState<PriceAlertCondition>("above");
   const [targetPrice, setTargetPrice] = useState("");
@@ -93,6 +97,50 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
       <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>
         Current: ${currentPrice.toLocaleString()}
       </p>
+
+      {existingAlerts.length > 0 && (
+        <div className="mb-3 space-y-1.5">
+          <p className="text-[11px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+            Existing alerts ({existingAlerts.length})
+          </p>
+          {existingAlerts.map((a) => (
+            <div
+              key={a.id}
+              className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg"
+              style={{ backgroundColor: "var(--bg-elevated)" }}
+            >
+              <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-secondary)" }}>
+                {a.condition === "above" ? (
+                  <TrendingUp size={12} className="text-green-500" />
+                ) : (
+                  <TrendingDown size={12} className="text-red-500" />
+                )}
+                {a.condition === "above" ? "Above" : "Below"} ${a.targetPrice.toLocaleString()}
+                <span
+                  className={`ml-1 text-[10px] px-1.5 py-0.5 rounded ${
+                    a.isActive
+                      ? "bg-green-500/10 text-green-600"
+                      : "bg-gray-500/10 text-gray-500"
+                  }`}
+                >
+                  {a.isActive ? "Active" : "Triggered"}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => removeAlert(a.id)}
+                aria-label={`Delete ${a.condition} $${a.targetPrice} alert`}
+                className="p-1 rounded transition-colors"
+                style={{ color: "var(--text-muted)" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="grid grid-cols-2 gap-2">

@@ -122,6 +122,96 @@ export function useTokenPriceHistory(geckoId: string | null, days: number) {
   );
 }
 
+// Per-token 24h stats from CoinGecko `/coins/{id}` — used in TokenDetailDrawer.
+export interface TokenMarketStats {
+  high24h: number | null;
+  low24h: number | null;
+  volume24h: number | null;
+  marketCap: number | null;
+}
+
+async function fetchTokenMarketStats(geckoId: string): Promise<TokenMarketStats> {
+  const params =
+    "localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false";
+  const res = await fetch(`/api/coingecko/coins/${geckoId}?${params}`);
+  if (!res.ok) throw new Error(`token stats ${res.status}`);
+  const json = (await res.json()) as {
+    market_data?: {
+      high_24h?: { usd?: number };
+      low_24h?: { usd?: number };
+      total_volume?: { usd?: number };
+      market_cap?: { usd?: number };
+    };
+  };
+  const m = json.market_data ?? {};
+  return {
+    high24h: m.high_24h?.usd ?? null,
+    low24h: m.low_24h?.usd ?? null,
+    volume24h: m.total_volume?.usd ?? null,
+    marketCap: m.market_cap?.usd ?? null,
+  };
+}
+
+export function useTokenMarketStats(geckoId: string | null) {
+  return useSWR<TokenMarketStats>(
+    geckoId ? ["token-market-stats", geckoId] : null,
+    () => fetchTokenMarketStats(geckoId!),
+    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
+  );
+}
+
+// Per-token transactions filtered to those that moved this token.
+async function fetchTokenTransactions(params: {
+  address: string;
+  contractId: string;
+  decimals: number;
+  symbol: string;
+  limit: number;
+}) {
+  const q = new URLSearchParams({
+    address: params.address,
+    contractId: params.contractId,
+    decimals: String(params.decimals),
+    symbol: params.symbol,
+    limit: String(params.limit),
+  });
+  const res = await fetch(`/api/portfolio/token-transactions?${q.toString()}`);
+  if (!res.ok) throw new Error(`token tx ${res.status}`);
+  return res.json() as Promise<{ results: TokenTxRow[] }>;
+}
+
+export interface TokenTxRow {
+  txId: string;
+  txType: string;
+  status: "success" | "pending" | "failed";
+  timestamp: number;
+  direction: "in" | "out" | "neutral";
+  amount: number | null;
+  symbol: string;
+  contractCall?: { contractId: string; functionName: string };
+  counterpart?: string;
+}
+
+export function useTokenTransactions(
+  address: string | undefined,
+  contractId: string | undefined,
+  opts: { decimals: number; symbol: string; limit?: number }
+) {
+  const enabled = !!address && !!contractId;
+  return useSWR<{ results: TokenTxRow[] }>(
+    enabled ? ["token-tx", address, contractId, opts.limit ?? 8] : null,
+    () =>
+      fetchTokenTransactions({
+        address: address!,
+        contractId: contractId!,
+        decimals: opts.decimals,
+        symbol: opts.symbol,
+        limit: opts.limit ?? 8,
+      }),
+    { refreshInterval: FAST_REFRESH, dedupingInterval: 20_000 }
+  );
+}
+
 export function useSTXPriceHistory(days: number, enabled = true) {
   return useSWR<{ date: string; value: number }[]>(
     enabled ? ["stx-price-history", days] : null,

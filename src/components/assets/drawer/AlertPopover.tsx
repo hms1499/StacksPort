@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, TrendingUp, TrendingDown, Bell } from "lucide-react";
 import { usePriceAlertStore } from "@/store/priceAlertStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -21,6 +21,8 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
   const existingAlerts = usePriceAlertStore((s) =>
     s.alerts.filter((a) => a.tokenSymbol === token.symbol)
   );
+
+  const firstFocusRef = useRef<HTMLInputElement>(null);
 
   const [condition, setCondition] = useState<PriceAlertCondition>("above");
   const [targetPrice, setTargetPrice] = useState("");
@@ -70,6 +72,15 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, [open, onClose, anchorRef]);
+
+  useEffect(() => {
+    if (open) {
+      const t = setTimeout(() => firstFocusRef.current?.focus(), 50);
+      return () => clearTimeout(t);
+    } else {
+      anchorRef.current?.focus();
+    }
+  }, [open, anchorRef]);
 
   if (!open || !geckoId) return null;
 
@@ -221,6 +232,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
           <div className="relative">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs" style={{ color: "var(--text-muted)" }}>$</span>
             <input
+              ref={firstFocusRef}
               type="number"
               step="any"
               min="0"

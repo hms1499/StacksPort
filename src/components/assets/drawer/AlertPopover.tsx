@@ -143,6 +143,35 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
       )}
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        {currentPrice > 0 && (
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Quick:</span>
+            <button
+              type="button"
+              onClick={() => {
+                setTargetPrice((currentPrice * 1.05).toFixed(currentPrice >= 1 ? 2 : 6));
+                setCondition("above");
+                if (error) setError("");
+              }}
+              className="px-2 py-1 rounded-md text-[11px] font-medium border transition-colors hover:bg-green-50"
+              style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
+            >
+              +5% ${(currentPrice * 1.05).toFixed(currentPrice >= 1 ? 2 : 6)}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setTargetPrice((currentPrice * 0.95).toFixed(currentPrice >= 1 ? 2 : 6));
+                setCondition("below");
+                if (error) setError("");
+              }}
+              className="px-2 py-1 rounded-md text-[11px] font-medium border transition-colors hover:bg-red-50"
+              style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
+            >
+              -5% ${(currentPrice * 0.95).toFixed(currentPrice >= 1 ? 2 : 6)}
+            </button>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"

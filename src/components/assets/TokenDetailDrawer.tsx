@@ -270,44 +270,94 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
   );
 }
 
+const CHART_RANGES = [
+  { key: "24h", label: "24h", days: 1 },
+  { key: "7d", label: "7d", days: 7 },
+  { key: "30d", label: "30d", days: 30 },
+] as const;
+type ChartRangeKey = (typeof CHART_RANGES)[number]["key"];
+
 function TokenPriceChart({ geckoId, symbol }: { geckoId: string; symbol: string }) {
   const isDark = useThemeStore((s) => s.theme === "dark");
-  const { data, isLoading } = useTokenPriceHistory(geckoId, 7);
+  const [rangeKey, setRangeKey] = useState<ChartRangeKey>("7d");
+  const days = CHART_RANGES.find((r) => r.key === rangeKey)!.days;
+  const { data, isLoading } = useTokenPriceHistory(geckoId, days);
 
   const { chartData, isPositive, color } = useMemo(() => {
     const rows = (data ?? []).map((p) => ({
       t: p.t,
       price: p.price,
-      label: new Date(p.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      label:
+        days === 1
+          ? new Date(p.t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+          : new Date(p.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     }));
     const up = rows.length >= 2 ? rows[rows.length - 1].price >= rows[0].price : true;
     const c = up ? (isDark ? "#00E5A0" : "#00C27A") : isDark ? "#F87171" : "#EF4444";
     return { chartData: rows, isPositive: up, color: c };
-  }, [data, isDark]);
+  }, [data, isDark, days]);
+
+  const rangeTabs = (
+    <div
+      className="inline-flex rounded-lg p-0.5 text-[11px] font-semibold"
+      style={{ backgroundColor: "var(--bg-elevated)" }}
+      role="tablist"
+      aria-label="Chart range"
+    >
+      {CHART_RANGES.map((r) => {
+        const active = r.key === rangeKey;
+        return (
+          <button
+            key={r.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => setRangeKey(r.key)}
+            className="px-2 py-1 rounded-md transition-colors"
+            style={{
+              backgroundColor: active ? "var(--bg-card)" : "transparent",
+              color: active ? "var(--text-primary)" : "var(--text-muted)",
+              boxShadow: active ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
+            }}
+          >
+            {r.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   if (!data && isLoading) {
     return (
-      <div
-        className="h-32 rounded-xl animate-pulse"
-        style={{ backgroundColor: "var(--border-subtle)" }}
-        aria-hidden
-      />
+      <div>
+        <div className="flex justify-end mb-2">{rangeTabs}</div>
+        <div
+          className="h-32 rounded-xl animate-pulse"
+          style={{ backgroundColor: "var(--border-subtle)" }}
+          aria-hidden
+        />
+      </div>
     );
   }
 
   if (chartData.length < 2) {
     return (
-      <div
-        className="h-32 rounded-xl flex items-center justify-center text-xs"
-        style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
-      >
-        Price history unavailable
+      <div>
+        <div className="flex justify-end mb-2">{rangeTabs}</div>
+        <div
+          className="h-32 rounded-xl flex items-center justify-center text-xs"
+          style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+        >
+          Price history unavailable
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-32">
+    <div>
+      <div className="flex justify-end mb-2">{rangeTabs}</div>
+      <div className="h-32">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
           <defs>
@@ -342,12 +392,13 @@ function TokenPriceChart({ geckoId, symbol }: { geckoId: string; symbol: string 
           />
         </AreaChart>
       </ResponsiveContainer>
-      <p
-        className="text-[10px] mt-1 text-right"
-        style={{ color: "var(--text-muted)" }}
-      >
-        7d · {isPositive ? "▲" : "▼"} via CoinGecko
-      </p>
+        <p
+          className="text-[10px] mt-1 text-right"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {rangeKey} · {isPositive ? "▲" : "▼"} via CoinGecko
+        </p>
+      </div>
     </div>
   );
 }

@@ -308,7 +308,10 @@ export default function SwapWidget() {
 
   const [fromToken, setFromToken] = useState<SwapToken>(initialPair.from);
   const [toToken, setToToken] = useState<SwapToken | null>(initialPair.to);
-  const [amountIn, setAmountIn] = useState("");
+  const [amountIn, setAmountIn] = useState(() => {
+    const raw = searchParams.get("amount") ?? "";
+    return raw ? sanitizeAmountInput(raw, initialPair.from.decimals) : "";
+  });
   const [slippage, setSlippage] = useState(0.5);
 
   const [fromBalance, setFromBalance] = useState<number | null>(null);

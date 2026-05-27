@@ -13,6 +13,7 @@ import {
   type SBTCData,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
+import { recordSnapshot } from "./portfolio-history";
 
 // Top-N transactions cached in the snapshot. Callers slice client-side to the
 // limit they need (8 for RecentActivity, 20 for WelcomeSteps).
@@ -87,6 +88,16 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     safe(getStackingStatus(address)),
     safe(getSBTCData(address)),
   ]);
+
+  if (tokensWithValues && tokensWithValues.totalUsd > 0) {
+    // Fire-and-forget: never block the response on history writes.
+    void recordSnapshot(
+      address,
+      tokensWithValues.stx,
+      tokensWithValues.tokens,
+      tokensWithValues.totalUsd
+    ).catch(() => {});
+  }
 
   return {
     generatedAt: Date.now(),

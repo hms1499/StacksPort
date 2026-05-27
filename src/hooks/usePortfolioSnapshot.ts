@@ -7,7 +7,12 @@ import type {
   TransactionsPage,
   TokensWithValues,
 } from "@/lib/server/portfolio-snapshot";
-import type { PortfolioValue, PnLData } from "@/lib/stacks";
+import type {
+  PortfolioValue,
+  PnLData,
+  StackingStatus,
+  SBTCData,
+} from "@/lib/stacks";
 import type { DCAPlan } from "@/lib/dca";
 
 const REFRESH_MS = 30_000;
@@ -53,6 +58,10 @@ export const useTokensWithValuesSnap = selector<TokensWithValues>(
 );
 export const useUserDCAPlansSnap = selector<DCAPlan[]>((s) => s.dcaPlans);
 export const usePnLDataSnap = selector<PnLData>((s) => s.pnl);
+export const useStackingStatusSnap = selector<StackingStatus>(
+  (s) => s.stackingStatus
+);
+export const useSBTCDataSnap = selector<SBTCData>((s) => s.sbtcData);
 
 // Transactions: snapshot caches top 20; consumers slice to their own limit.
 export function useTransactionsSnap(

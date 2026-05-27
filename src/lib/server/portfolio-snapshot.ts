@@ -4,9 +4,13 @@ import {
   getTransactions,
   getTokensWithValues,
   getPnLData,
+  getStackingStatus,
+  getSBTCData,
   type PortfolioValue,
   type TokenWithValue,
   type PnLData,
+  type StackingStatus,
+  type SBTCData,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
 
@@ -35,6 +39,8 @@ export interface PortfolioSnapshot {
   transactions: TransactionsPage | null;
   dcaPlans: DCAPlan[] | null;
   pnl: PnLData | null;
+  stackingStatus: StackingStatus | null;
+  sbtcData: SBTCData | null;
 }
 
 function timeout<T>(p: Promise<T>, ms: number): Promise<T> {
@@ -62,15 +68,25 @@ async function safe<T>(p: Promise<T>): Promise<T | null> {
 }
 
 export async function getPortfolioSnapshot(address: string): Promise<PortfolioSnapshot> {
-  const [portfolio, fungibleTokens, tokensWithValues, transactions, dcaPlans, pnl] =
-    await Promise.all([
-      safe(getPortfolioValue(address)),
-      safe(getFungibleTokens(address)),
-      safe(getTokensWithValues(address)),
-      safe(getTransactions(address, TX_LIMIT)),
-      safe(getUserPlans(address)),
-      safe(getPnLData(address)),
-    ]);
+  const [
+    portfolio,
+    fungibleTokens,
+    tokensWithValues,
+    transactions,
+    dcaPlans,
+    pnl,
+    stackingStatus,
+    sbtcData,
+  ] = await Promise.all([
+    safe(getPortfolioValue(address)),
+    safe(getFungibleTokens(address)),
+    safe(getTokensWithValues(address)),
+    safe(getTransactions(address, TX_LIMIT)),
+    safe(getUserPlans(address)),
+    safe(getPnLData(address)),
+    safe(getStackingStatus(address)),
+    safe(getSBTCData(address)),
+  ]);
 
   return {
     generatedAt: Date.now(),
@@ -81,6 +97,8 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     transactions,
     dcaPlans,
     pnl,
+    stackingStatus,
+    sbtcData,
   };
 }
 

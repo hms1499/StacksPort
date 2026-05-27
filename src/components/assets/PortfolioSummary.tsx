@@ -8,6 +8,53 @@ import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
+import { useWalletStore } from "@/store/walletStore";
+import {
+  usePortfolioHistorySnap,
+  type PortfolioHistoryPoint,
+} from "@/hooks/useMarketData";
+
+// Tiny inline sparkline. Recharts would be overkill in a header that
+// remounts on every tab switch; a plain <path> is cheaper.
+function Sparkline({
+  points,
+  color,
+}: {
+  points: PortfolioHistoryPoint[];
+  color: string;
+}) {
+  const path = useMemo(() => {
+    if (points.length < 2) return null;
+    const values = points.map((p) => p.totalUsd);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const span = max - min || 1;
+    const w = 64;
+    const h = 20;
+    const step = w / (points.length - 1);
+    return points
+      .map((p, i) => {
+        const x = i * step;
+        const y = h - ((p.totalUsd - min) / span) * h;
+        return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(" ");
+  }, [points]);
+
+  if (!path) return null;
+
+  return (
+    <svg width={64} height={20} className="shrink-0" aria-hidden>
+      <path
+        d={path}
+        fill="none"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 const ALLOCATION_COLORS = [
   "#408A71", // brand green — STX
@@ -113,8 +160,23 @@ const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }:
 });
 
 export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Props) {
-  const change24h = stx?.change24h ?? 0;
+  const { stxAddress, isConnected } = useWalletStore();
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data: history } = usePortfolioHistorySnap(addr, "24h");
+
+  // Real portfolio 24h delta when we have ≥2 points; otherwise fall back to
+  // STX's 24h change (still useful — STX dominates most users' net worth).
+  const points = history?.points ?? [];
+  const hasRealDelta = points.length >= 2;
+  const change24h = hasRealDelta
+    ? (() => {
+        const first = points[0].totalUsd;
+        const last = points[points.length - 1].totalUsd;
+        return first === 0 ? 0 : ((last - first) / first) * 100;
+      })()
+    : stx?.change24h ?? 0;
   const isPositive = change24h >= 0;
+  const sparkColor = isPositive ? "#10b981" : "#ef4444";
 
   if (!loading && !stx) {
     return (
@@ -164,8 +226,15 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
             >
               {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
               {formatPercent(change24h)}
-              <span className="font-normal text-xs ml-0.5" style={{ color: 'var(--text-muted)' }}>24h</span>
+              <span
+                className="font-normal text-xs ml-0.5"
+                style={{ color: 'var(--text-muted)' }}
+                title={hasRealDelta ? "Portfolio 24h" : "STX 24h (portfolio history still recording)"}
+              >
+                24h
+              </span>
             </span>
+            {hasRealDelta && <Sparkline points={points} color={sparkColor} />}
           </div>
 
           <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>

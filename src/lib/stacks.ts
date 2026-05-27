@@ -29,6 +29,15 @@ const CONTRACT_NAME_TO_GECKO: Record<string, { geckoId: string | null; decimals:
   "usdcx": { geckoId: null, decimals: 6, fixedUsdPrice: 1 },
 };
 
+// CoinGecko id resolver for a TokenWithValue. Returns null for tokens not in
+// the known map or pegged stablecoins (no real price chart to show).
+export function getGeckoIdForContract(contractId: string): string | null {
+  if (!contractId || contractId === "stx") return "blockstack";
+  const contractName = contractId.split(".")[1];
+  if (!contractName) return null;
+  return CONTRACT_NAME_TO_GECKO[contractName]?.geckoId ?? null;
+}
+
 export interface PortfolioValue {
   totalUSD: number;
   stxUSD: number;

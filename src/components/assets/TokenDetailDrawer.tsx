@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, ArrowUpRight, ArrowDownLeft, Repeat, Bell, Copy, Check, TrendingUp, TrendingDown } from "lucide-react";
-import type { TokenWithValue } from "@/lib/stacks";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
+import { getGeckoIdForContract, type TokenWithValue } from "@/lib/stacks";
+import { useTokenPriceHistory } from "@/hooks/useMarketData";
+import { useThemeStore } from "@/store/themeStore";
 import { formatUSD } from "@/lib/utils";
 
 interface Props {
@@ -55,6 +58,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
   const change24h = token.change24h;
   const isPositive = (change24h ?? 0) >= 0;
   const isSTX = !token.contractId || token.contractId === "stx";
+  const geckoId = getGeckoIdForContract(token.contractId);
 
   const onCopy = async () => {
     try {
@@ -164,7 +168,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
           </div>
         </div>
 
-        {/* Price */}
+        {/* Price + chart */}
         <div className="p-5" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
           <div className="flex items-baseline justify-between">
             <div>
@@ -188,6 +192,11 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
               </span>
             )}
           </div>
+          {geckoId && (
+            <div className="mt-4">
+              <TokenPriceChart geckoId={geckoId} symbol={token.symbol} />
+            </div>
+          )}
         </div>
 
         {/* Actions */}
@@ -244,6 +253,88 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
           </dl>
         </div>
       </div>
+    </div>
+  );
+}
+
+function TokenPriceChart({ geckoId, symbol }: { geckoId: string; symbol: string }) {
+  const isDark = useThemeStore((s) => s.theme === "dark");
+  const { data, isLoading } = useTokenPriceHistory(geckoId, 7);
+
+  const { chartData, isPositive, color } = useMemo(() => {
+    const rows = (data ?? []).map((p) => ({
+      t: p.t,
+      price: p.price,
+      label: new Date(p.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    }));
+    const up = rows.length >= 2 ? rows[rows.length - 1].price >= rows[0].price : true;
+    const c = up ? (isDark ? "#00E5A0" : "#00C27A") : isDark ? "#F87171" : "#EF4444";
+    return { chartData: rows, isPositive: up, color: c };
+  }, [data, isDark]);
+
+  if (!data && isLoading) {
+    return (
+      <div
+        className="h-32 rounded-xl animate-pulse"
+        style={{ backgroundColor: "var(--border-subtle)" }}
+        aria-hidden
+      />
+    );
+  }
+
+  if (chartData.length < 2) {
+    return (
+      <div
+        className="h-32 rounded-xl flex items-center justify-center text-xs"
+        style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+      >
+        Price history unavailable
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-32">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id={`tokGrad-${geckoId}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <XAxis dataKey="label" hide />
+          <YAxis hide domain={["auto", "auto"]} />
+          <Tooltip
+            contentStyle={{
+              background: isDark ? "var(--bg-elevated)" : "#fff",
+              border: `1px solid ${isDark ? "var(--border-default)" : "#E2EAF4"}`,
+              borderRadius: "10px",
+              fontSize: 11,
+              fontFamily: "var(--font-mono)",
+              color: isDark ? "#DDE8F8" : "#0A1628",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.18)",
+            }}
+            formatter={(v: unknown) => [`$${Number(v).toLocaleString("en-US", { maximumFractionDigits: 6 })}`, symbol]}
+          />
+          <Area
+            type="monotone"
+            dataKey="price"
+            stroke={color}
+            strokeWidth={1.75}
+            fill={`url(#tokGrad-${geckoId})`}
+            dot={false}
+            activeDot={{ r: 3, strokeWidth: 0, fill: color }}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+      <p
+        className="text-[10px] mt-1 text-right"
+        style={{ color: "var(--text-muted)" }}
+      >
+        7d · {isPositive ? "▲" : "▼"} via CoinGecko
+      </p>
     </div>
   );
 }

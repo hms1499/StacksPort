@@ -14,22 +14,32 @@ import {
 import { TrendingDown, TrendingUp, LineChart as LineChartIcon } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
-import { usePortfolio, usePortfolioHistory } from "@/hooks/useMarketData";
+import {
+  usePortfolioHistorySnap,
+  type PortfolioHistoryRange,
+} from "@/hooks/useMarketData";
 import { formatUSD, formatPercent } from "@/lib/utils";
 import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 
-type Period = "1D" | "1W" | "1M" | "3M" | "1Y";
+type Period = "1D" | "1W" | "1M" | "All";
 
-const PERIOD_DAYS: Record<Period, number> = {
-  "1D": 1,
-  "1W": 7,
-  "1M": 30,
-  "3M": 90,
-  "1Y": 365,
+const PERIOD_TO_RANGE: Record<Period, PortfolioHistoryRange> = {
+  "1D": "24h",
+  "1W": "7d",
+  "1M": "30d",
+  All: "all",
 };
 
-const PERIODS: Period[] = ["1D", "1W", "1M", "3M", "1Y"];
+const PERIODS: Period[] = ["1D", "1W", "1M", "All"];
+
+function formatTick(t: number, range: PortfolioHistoryRange): string {
+  const d = new Date(t);
+  if (range === "24h") {
+    return d.toLocaleTimeString("en-US", { hour: "numeric", hour12: true });
+  }
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 function PortfolioPerformanceChart() {
   const { stxAddress, isConnected } = useWalletStore();
@@ -37,14 +47,18 @@ function PortfolioPerformanceChart() {
   const [period, setPeriod] = useState<Period>("1M");
 
   const addr = isConnected && stxAddress ? stxAddress : undefined;
-  const { data: portfolio } = usePortfolio(addr);
-  const { data: history, isLoading } = usePortfolioHistory(
-    addr,
-    portfolio,
-    PERIOD_DAYS[period]
-  );
+  const range = PERIOD_TO_RANGE[period];
+  const { data, isLoading } = usePortfolioHistorySnap(addr, range);
 
-  const chartData = history ?? [];
+  const chartData = useMemo(
+    () =>
+      (data?.points ?? []).map((p) => ({
+        date: formatTick(p.t, range),
+        value: p.totalUsd,
+        t: p.t,
+      })),
+    [data, range]
+  );
 
   const { changeUsd, changePct, isPositive, startValue } = useMemo(() => {
     if (chartData.length < 2) {
@@ -85,12 +99,20 @@ function PortfolioPerformanceChart() {
         <EmptyState
           icon={<LineChartIcon size={32} />}
           title="Track portfolio over time"
-          description="Connect your wallet to see how your holdings have moved across 1D, 1W, 1M, 3M, and 1Y."
+          description="Connect your wallet to record net-worth history. Tracking begins on your first visit."
           action={<ConnectWalletCTA />}
         />
       </div>
     );
   }
+
+  const firstSeenLabel = data?.firstSeenAt
+    ? `Tracking since ${new Date(data.firstSeenAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}`
+    : null;
 
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -248,13 +270,24 @@ function PortfolioPerformanceChart() {
         </ResponsiveContainer>
       ) : (
         <div
-          className="h-65 rounded-xl flex items-center justify-center"
+          className="h-65 rounded-xl flex items-center justify-center px-6 text-center"
           style={{ backgroundColor: "var(--border-subtle)" }}
         >
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-            {isLoading ? "Loading chart…" : "Not enough history yet"}
+            {isLoading
+              ? "Loading chart…"
+              : "Not enough history yet — net worth is recorded each time you visit. Check back in an hour for your first data point."}
           </span>
         </div>
+      )}
+
+      {firstSeenLabel && (
+        <p
+          className="mt-3 text-[10px] uppercase tracking-wide"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {firstSeenLabel}
+        </p>
       )}
     </div>
   );

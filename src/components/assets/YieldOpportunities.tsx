@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useUserDCAPlans, useTokensWithValues } from "@/hooks/useMarketData";
-import { getStackingStatus } from "@/lib/stacks";
+import { useStackingStatusSnap } from "@/hooks/usePortfolioSnapshot";
 
 type Opportunity = {
   id: string;
@@ -87,18 +87,10 @@ function YieldOpportunities() {
     [tokens]
   );
 
-  // Pooled / solo stacking signal — read from PoX, no liquid token involved.
-  // Cheap to fetch (one read-only call) and only runs when wallet is connected.
-  const [hasPoxStacking, setHasPoxStacking] = useState(false);
-  useEffect(() => {
-    setHasPoxStacking(false);
-    if (!addr) return;
-    let cancelled = false;
-    getStackingStatus(addr)
-      .then((s) => { if (!cancelled) setHasPoxStacking(s.isStacking); })
-      .catch(() => { /* swallow — defaults to false */ });
-    return () => { cancelled = true; };
-  }, [addr]);
+  // Pooled / solo stacking signal — read from PoX, sourced from the same
+  // portfolio snapshot to avoid a second round-trip on this page.
+  const { data: stackingStatus } = useStackingStatusSnap(addr);
+  const hasPoxStacking = stackingStatus?.isStacking ?? false;
 
   const isStacking = hasLiquidStacking || hasPoxStacking;
   const hasDca = (plans?.length ?? 0) > 0;

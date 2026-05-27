@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ExternalLink, Lock, Unlock, Layers, Info } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
-import { getStackingStatus, StackingStatus } from "@/lib/stacks";
+import { StackingStatus } from "@/lib/stacks";
+import { useStackingStatusSnap } from "@/hooks/usePortfolioSnapshot";
 import { formatUSD } from "@/lib/utils";
 
 function formatSTXAmount(n: number): string {
@@ -210,29 +210,12 @@ function SkeletonLoader() {
 
 export default function StackingTracker() {
   const { stxAddress, isConnected } = useWalletStore();
-  const [status, setStatus] = useState<StackingStatus | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // Reset synchronously on disconnect or wallet switch so the previous
-    // wallet's status can't flash to the next user.
-    setStatus(null);
-    if (!isConnected || !stxAddress) {
-      setLoading(false);
-      return;
-    }
-    let cancelled = false;
-    setLoading(true);
-    getStackingStatus(stxAddress)
-      .then((result) => {
-        if (!cancelled) setStatus(result);
-      })
-      .catch(console.error)
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [stxAddress, isConnected]);
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data, isLoading } = useStackingStatusSnap(addr);
+  const status: StackingStatus | null = data ?? null;
+  // Show skeleton only when we're loading AND have no cached data yet —
+  // SWR keeps the previous snapshot during background refresh.
+  const loading = isLoading && !status;
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

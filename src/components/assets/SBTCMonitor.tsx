@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -13,7 +12,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
-import { getSBTCData, SBTCData, SBTCBridgeTx } from "@/lib/stacks";
+import { SBTCData, SBTCBridgeTx } from "@/lib/stacks";
+import { useSBTCDataSnap } from "@/hooks/usePortfolioSnapshot";
 import { formatUSD } from "@/lib/utils";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -214,27 +214,10 @@ function SkeletonLoader() {
 
 export default function SBTCMonitor() {
   const { stxAddress, isConnected } = useWalletStore();
-  const [data, setData] = useState<SBTCData | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setData(null);
-    if (!isConnected || !stxAddress) {
-      setLoading(false);
-      return;
-    }
-    let cancelled = false;
-    setLoading(true);
-    getSBTCData(stxAddress)
-      .then((result) => {
-        if (!cancelled) setData(result);
-      })
-      .catch(console.error)
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [stxAddress, isConnected]);
+  const addr = isConnected && stxAddress ? stxAddress : undefined;
+  const { data: snap, isLoading } = useSBTCDataSnap(addr);
+  const data: SBTCData | null = snap ?? null;
+  const loading = isLoading && !data;
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">

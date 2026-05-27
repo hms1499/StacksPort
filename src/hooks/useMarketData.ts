@@ -99,6 +99,29 @@ export function usePortfolioHistorySnap(
   );
 }
 
+// Per-token CoinGecko price history. Used by the TokenDetailDrawer chart;
+// caller is responsible for passing null geckoId when no chart should render.
+async function fetchTokenPriceHistory(
+  geckoId: string,
+  days: number
+): Promise<{ t: number; price: number }[]> {
+  const interval = days === 1 ? "" : "&interval=daily";
+  const res = await fetch(
+    `/api/coingecko/coins/${geckoId}/market_chart?vs_currency=usd&days=${days}${interval}`
+  );
+  if (!res.ok) throw new Error(`token price history ${res.status}`);
+  const data = (await res.json()) as { prices?: [number, number][] };
+  return (data.prices ?? []).map(([t, price]) => ({ t, price }));
+}
+
+export function useTokenPriceHistory(geckoId: string | null, days: number) {
+  return useSWR<{ t: number; price: number }[]>(
+    geckoId ? ["token-price-history", geckoId, days] : null,
+    () => fetchTokenPriceHistory(geckoId!, days),
+    { refreshInterval: SLOW_REFRESH, dedupingInterval: 60_000 }
+  );
+}
+
 export function useSTXPriceHistory(days: number, enabled = true) {
   return useSWR<{ date: string; value: number }[]>(
     enabled ? ["stx-price-history", days] : null,

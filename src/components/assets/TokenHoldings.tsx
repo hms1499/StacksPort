@@ -10,6 +10,7 @@ import ReceiveModal from "@/components/wallet/ReceiveModal";
 import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import Sparkline from "@/components/dashboard/Sparkline";
+import TokenDetailDrawer from "@/components/assets/TokenDetailDrawer";
 
 /** Convert a human-readable balance to its raw on-chain integer string.
  * Avoids `balance * 10**decimals` which loses precision at high decimals +
@@ -125,16 +126,26 @@ interface TokenRowProps {
   totalUsd: number;
   onSend: (t: TokenWithValue) => void;
   onReceive: () => void;
+  onSelect: (t: TokenWithValue) => void;
 }
 
-const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: TokenRowProps) {
+const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive, onSelect }: TokenRowProps) {
   const pct = totalUsd > 0 ? (t.valueUsd / totalUsd) * 100 : 0;
   const isPositive = (t.change24h ?? 0) >= 0;
   const isFlagged = !!t.warning;
 
   return (
     <div
-      className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center"
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(t)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect(t);
+        }
+      }}
+      className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-3.5 transition-colors group items-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#408A71]/50"
       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = isFlagged ? 'var(--bg-elevated)' : 'transparent')}
       style={isFlagged ? { backgroundColor: 'var(--bg-elevated)' } : undefined}
@@ -195,14 +206,20 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive }: Toke
 
         <div className="hidden md:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            onClick={() => onSend(t)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSend(t);
+            }}
             title="Send"
             className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
           >
             <ArrowUpRight size={11} className="text-red-500" />
           </button>
           <button
-            onClick={onReceive}
+            onClick={(e) => {
+              e.stopPropagation();
+              onReceive();
+            }}
             title="Receive"
             className="p-1.5 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
           >
@@ -225,6 +242,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
   const [sendToken, setSendToken] = useState<SendTokenInfo | null>(null);
   const [receiveOpen, setReceiveOpen] = useState(false);
   const [showFlagged, setShowFlagged] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<TokenWithValue | null>(null);
 
   const allTokens = useMemo(() => stx ? [stx, ...tokens] : tokens, [stx, tokens]);
   const trustedTokens = useMemo(() => allTokens.filter((t) => !t.warning), [allTokens]);
@@ -243,6 +261,23 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
     }), []);
 
   const onReceive = useCallback(() => setReceiveOpen(true), []);
+
+  const onSelect = useCallback((t: TokenWithValue) => setSelectedToken(t), []);
+  const onCloseDrawer = useCallback(() => setSelectedToken(null), []);
+
+  // The drawer reuses the existing send/receive flows. When the user triggers
+  // them from inside the drawer, close it first so the modal owns the screen.
+  const onSendFromDrawer = useCallback(
+    (t: TokenWithValue) => {
+      setSelectedToken(null);
+      onSend(t);
+    },
+    [onSend]
+  );
+  const onReceiveFromDrawer = useCallback(() => {
+    setSelectedToken(null);
+    setReceiveOpen(true);
+  }, []);
 
   const handleExport = useCallback(() => {
     const headers = ["Symbol", "Name", "Balance", "Price (USD)", "Value (USD)", "24h Change (%)"];
@@ -335,7 +370,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
           ) : (
             <>
               {/* Trusted tokens */}
-              {trustedTokens.map((t) => <TokenRow key={t.contractId || "stx"} t={t} totalUsd={totalUsd} onSend={onSend} onReceive={onReceive} />)}
+              {trustedTokens.map((t) => <TokenRow key={t.contractId || "stx"} t={t} totalUsd={totalUsd} onSend={onSend} onReceive={onReceive} onSelect={onSelect} />)}
 
               {/* Flagged tokens — collapsible */}
               {flaggedTokens.length > 0 && (
@@ -353,7 +388,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
                     </span>
                     {showFlagged ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
                   </button>
-                  {showFlagged && flaggedTokens.map((t) => <TokenRow key={t.contractId} t={t} totalUsd={totalUsd} onSend={onSend} onReceive={onReceive} />)}
+                  {showFlagged && flaggedTokens.map((t) => <TokenRow key={t.contractId} t={t} totalUsd={totalUsd} onSend={onSend} onReceive={onReceive} onSelect={onSelect} />)}
                 </>
               )}
             </>
@@ -363,7 +398,13 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
 
       {sendToken && <SendModal token={sendToken} onClose={() => setSendToken(null)} />}
       {receiveOpen && <ReceiveModal onClose={() => setReceiveOpen(false)} />}
-
+      <TokenDetailDrawer
+        token={selectedToken}
+        totalUsd={totalUsd}
+        onClose={onCloseDrawer}
+        onSend={onSendFromDrawer}
+        onReceive={onReceiveFromDrawer}
+      />
     </>
   );
 }

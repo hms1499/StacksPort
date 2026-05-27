@@ -49,11 +49,6 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
     return () => window.removeEventListener("keydown", onKey);
   }, [token, onClose]);
 
-  // Reset the "copied!" state whenever a different token is opened.
-  useEffect(() => {
-    setCopied(false);
-  }, [token?.contractId]);
-
   if (!token) return null;
 
   const pct = totalUsd > 0 ? (token.valueUsd / totalUsd) * 100 : 0;

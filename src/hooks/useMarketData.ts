@@ -61,6 +61,44 @@ export function usePortfolioHistory(
   );
 }
 
+// Real recorded net-worth history (from /api/portfolio/history).
+// Starts empty for new users — see firstSeenAt for the "Tracking since" copy.
+export type PortfolioHistoryRange = "24h" | "7d" | "30d" | "all";
+
+export interface PortfolioHistoryPoint {
+  t: number;
+  totalUsd: number;
+  stxUsd: number;
+  sbtcUsd: number;
+}
+
+export interface PortfolioHistoryResult {
+  points: PortfolioHistoryPoint[];
+  firstSeenAt: number | null;
+}
+
+async function fetchHistory(
+  address: string,
+  range: PortfolioHistoryRange
+): Promise<PortfolioHistoryResult> {
+  const res = await fetch(
+    `/api/portfolio/history?address=${address}&range=${range}`
+  );
+  if (!res.ok) throw new Error(`history ${res.status}`);
+  return res.json();
+}
+
+export function usePortfolioHistorySnap(
+  address: string | undefined,
+  range: PortfolioHistoryRange
+) {
+  return useSWR<PortfolioHistoryResult>(
+    address ? ["portfolio-history-snap", address, range] : null,
+    () => fetchHistory(address!, range),
+    { refreshInterval: FAST_REFRESH, dedupingInterval: 30_000 }
+  );
+}
+
 export function useSTXPriceHistory(days: number, enabled = true) {
   return useSWR<{ date: string; value: number }[]>(
     enabled ? ["stx-price-history", days] : null,

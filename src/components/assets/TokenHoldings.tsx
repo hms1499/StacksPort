@@ -10,7 +10,7 @@ import ReceiveModal from "@/components/wallet/ReceiveModal";
 import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import Sparkline from "@/components/dashboard/Sparkline";
-import TokenDetailDrawer from "@/components/assets/TokenDetailDrawer";
+import TokenDetailDrawer from "@/components/assets/drawer";
 
 /** Convert a human-readable balance to its raw on-chain integer string.
  * Avoids `balance * 10**decimals` which loses precision at high decimals +

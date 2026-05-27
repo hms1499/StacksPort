@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, ArrowUpRight, ArrowDownLeft, Repeat, Bell, Copy, Check, TrendingUp, TrendingDown } from "lucide-react";
 import { getGeckoIdForContract, type TokenWithValue } from "@/lib/stacks";
@@ -12,6 +12,7 @@ import TokenMarketStats24h from "./MarketStats";
 import TokenTransactions from "./Transactions";
 import InlineQuickSend from "./QuickSend";
 import InlineQuickSwap from "./QuickSwap";
+import AlertPopover from "./AlertPopover";
 
 interface Props {
   token: TokenWithValue | null;
@@ -56,6 +57,9 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
     return () => window.removeEventListener("keydown", onKey);
   }, [token, onClose]);
 
+  const [alertOpen, setAlertOpen] = useState(false);
+  const alertBtnRef = useRef<HTMLButtonElement>(null);
+
   if (!token) return null;
 
   const pct = totalUsd > 0 ? (token.valueUsd / totalUsd) * 100 : 0;
@@ -83,8 +87,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
   };
 
   const onAlert = () => {
-    router.push(`/notifications?token=${encodeURIComponent(token.symbol)}`);
-    onClose();
+    setAlertOpen((o) => !o);
   };
 
   return (
@@ -104,7 +107,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
 
       {/* Sheet */}
       <div
-        className="w-full sm:max-w-md ml-auto h-full overflow-y-auto shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+        className="relative w-full sm:max-w-md ml-auto h-full overflow-y-auto shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
         style={{ backgroundColor: "var(--bg-card)" }}
       >
         {/* Header */}
@@ -228,7 +231,12 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
             <ActionButton icon={<Repeat size={16} />} label="Swap" onClick={onSwap} />
             <ActionButton icon={<ArrowUpRight size={16} />} label="Send" onClick={() => onSend(token)} />
             <ActionButton icon={<ArrowDownLeft size={16} />} label="Receive" onClick={onReceive} />
-            <ActionButton icon={<Bell size={16} />} label="Alert" onClick={onAlert} />
+            <ActionButton
+              ref={alertBtnRef}
+              icon={<Bell size={16} />}
+              label="Alert"
+              onClick={onAlert}
+            />
           </div>
         </div>
 
@@ -275,6 +283,14 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
             )}
           </dl>
         </div>
+
+        <AlertPopover
+          token={token}
+          currentPrice={token.priceUsd}
+          open={alertOpen}
+          onClose={() => setAlertOpen(false)}
+          anchorRef={alertBtnRef}
+        />
       </div>
     </div>
   );

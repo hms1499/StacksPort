@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, ArrowUpRight, ArrowDownLeft, Repeat, Bell, Copy, Check, TrendingUp, TrendingDown } from "lucide-react";
 import { getGeckoIdForContract, type TokenWithValue } from "@/lib/stacks";
@@ -281,26 +281,34 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
 }
 
 
-function ActionButton({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
+const ActionButton = forwardRef<
+  HTMLButtonElement,
+  {
+    icon: React.ReactNode;
+    label: string;
+    onClick: () => void;
+    disabled?: boolean;
+    title?: string;
+  }
+>(function ActionButton({ icon, label, onClick, disabled, title }, ref) {
   return (
     <button
+      ref={ref}
       type="button"
       onClick={onClick}
-      className="flex flex-col items-center gap-1 py-2.5 rounded-xl transition-colors"
+      disabled={disabled}
+      title={title}
+      className="flex flex-col items-center gap-1 py-2.5 rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       style={{ backgroundColor: "var(--bg-elevated)", color: "var(--text-primary)" }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)")}
+      onMouseEnter={(e) => {
+        if (!(e.currentTarget as HTMLButtonElement).disabled) {
+          (e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)";
+        }
+      }}
       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-elevated)")}
     >
       {icon}
       <span className="text-[11px] font-semibold">{label}</span>
     </button>
   );
-}
+});

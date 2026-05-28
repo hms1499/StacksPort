@@ -10,7 +10,8 @@ export type TelemetryEvent =
   | "dashboard_edit_mode_on"
   | "dashboard_edit_mode_off"
   | "dashboard_layout_mutated"
-  | "dashboard_layout_reset";
+  | "dashboard_layout_reset"
+  | "dashboard_widget_error";
 
 export function track(event: TelemetryEvent): void {
   if (typeof window === "undefined") return;

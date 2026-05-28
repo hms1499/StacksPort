@@ -112,6 +112,20 @@ test.describe("Dashboard grid controls (desktop)", () => {
     expect(await refreshButtons.count()).toBeGreaterThan(1);
   });
 
+  test("one-time Customize hint shows then stays dismissed", async ({ page }) => {
+    // Fresh context = empty localStorage, so the hint should appear.
+    const hint = page.getByRole("status").filter({ hasText: "Make it yours" });
+    await expect(hint).toBeVisible();
+
+    await page.getByRole("button", { name: "Got it" }).click();
+    await expect(hint).toHaveCount(0);
+
+    // Persisted: a reload doesn't bring it back.
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Customize" })).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "Make it yours" })).toHaveCount(0);
+  });
+
   test("Widgets menu hides and restores a widget", async ({ page }) => {
     await page.getByRole("button", { name: "Customize" }).click();
     await page.getByRole("button", { name: "Widgets" }).click();

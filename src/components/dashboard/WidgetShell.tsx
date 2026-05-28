@@ -1,7 +1,7 @@
 "use client";
 
-import { GripVertical } from "lucide-react";
-import { KeyboardEvent, ReactNode } from "react";
+import { GripVertical, RefreshCw } from "lucide-react";
+import { KeyboardEvent, ReactNode, useState } from "react";
 
 export type KeyboardMoveHandler = (
   id: string,
@@ -22,8 +22,12 @@ type Props = {
   widgetLabel?: string;
   /** Invoked when arrow keys (move) or shift+arrow (resize) are pressed while the handle is focused. */
   onKeyboardMove?: KeyboardMoveHandler;
+  /** When set, a hover-reveal refresh button revalidates the widget's data source. */
+  onRefresh?: () => Promise<unknown> | void;
   children: ReactNode;
 };
+
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * Wraps a widget in a fixed-height container that fills the grid cell.
@@ -43,9 +47,24 @@ export default function WidgetShell({
   widgetId,
   widgetLabel,
   onKeyboardMove,
+  onRefresh,
   children,
 }: Props) {
   const showHandle = !noDrag && isEditing;
+  const showRefresh = !!onRefresh && !isEditing && !noDrag;
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    if (refreshing || !onRefresh) return;
+    setRefreshing(true);
+    try {
+      // Floor the spin at 400ms so a cache-hit revalidation still reads as a
+      // deliberate refresh rather than an imperceptible flicker.
+      await Promise.all([onRefresh(), delay(400)]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (!onKeyboardMove || !widgetId) return;
@@ -79,6 +98,18 @@ export default function WidgetShell({
           onKeyDown={handleKeyDown}
         >
           <GripVertical size={14} />
+        </button>
+      )}
+      {showRefresh && (
+        <button
+          type="button"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="absolute top-2 right-2 z-10 p-1.5 rounded-md text-fg-muted hover:text-brand hover:bg-sunken opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] focus-visible:outline-offset-1 transition-opacity disabled:cursor-default"
+          aria-label={`Refresh ${label}`}
+          title="Refresh"
+        >
+          <RefreshCw size={13} className={refreshing ? "animate-spin" : ""} />
         </button>
       )}
       <div className="flex-1 min-h-0 overflow-auto [&>*]:h-full">

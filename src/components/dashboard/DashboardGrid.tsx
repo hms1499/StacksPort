@@ -7,6 +7,7 @@ import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
 import WidgetShell, { type KeyboardMoveHandler } from "@/components/dashboard/WidgetShell";
+import WidgetErrorBoundary from "@/components/dashboard/WidgetErrorBoundary";
 import { WIDGETS } from "@/components/dashboard/widget-registry";
 import { track } from "@/lib/telemetry";
 
@@ -142,7 +143,9 @@ export default function DashboardGrid() {
             const W = w.component;
             return (
               <div key={w.id}>
-                <W />
+                <WidgetErrorBoundary widgetId={w.id} widgetLabel={w.label}>
+                  <W />
+                </WidgetErrorBoundary>
               </div>
             );
           })}
@@ -214,7 +217,9 @@ export default function DashboardGrid() {
                     widgetLabel={w.label}
                     onKeyboardMove={moveWidget}
                   >
-                    <W />
+                    <WidgetErrorBoundary widgetId={w.id} widgetLabel={w.label}>
+                      <W />
+                    </WidgetErrorBoundary>
                   </WidgetShell>
                 </div>
               );

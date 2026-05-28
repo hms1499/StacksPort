@@ -448,6 +448,26 @@ export default function BubbleCanvas({
     hoveredRef.current = null;
   }
 
+  // While paused the rAF loop below doesn't run, so focus/dim/held changes
+  // wouldn't repaint. Redraw a single static frame whenever those inputs change
+  // (and on entering paused state).
+  useEffect(() => {
+    if (!paused) return;
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    drawBubbles(
+      ctx,
+      bubblesRef.current,
+      timeframe,
+      dpr,
+      imagesRef.current as Record<string, HTMLImageElement | null>,
+      hoveredRef.current,
+      focusedRef.current,
+      heldRef.current
+    );
+  }, [paused, focusedId, heldIds, timeframe]);
+
   // Continuous subtle motion: per-bubble sinusoidal offsets and redraw
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -455,20 +475,7 @@ export default function BubbleCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    if (paused) {
-      const dpr = window.devicePixelRatio || 1;
-      drawBubbles(
-        ctx,
-        bubblesRef.current,
-        timeframe,
-        dpr,
-        imagesRef.current as Record<string, HTMLImageElement | null>,
-        hoveredRef.current,
-        focusedRef.current,
-        heldRef.current
-      );
-      return;
-    }
+    if (paused) return;
 
     function tick(now: number) {
       const dpr = window.devicePixelRatio || 1;

@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSWRConfig } from "swr";
-import { Check, Pencil, RotateCcw } from "lucide-react";
+import { Check, Eye, EyeOff, Pencil, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
+import { useHiddenWidgets } from "@/hooks/useHiddenWidgets";
 import WidgetShell, { type KeyboardMoveHandler } from "@/components/dashboard/WidgetShell";
 import WidgetErrorBoundary from "@/components/dashboard/WidgetErrorBoundary";
 import { WIDGETS } from "@/components/dashboard/widget-registry";
@@ -45,8 +46,10 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
   const visible = useDashboardVisibility();
+  const { hidden, toggle: toggleHidden, showAll } = useHiddenWidgets();
   const isMobile = useIsMobile();
   const { mutate } = useSWRConfig();
+  const [widgetsMenuOpen, setWidgetsMenuOpen] = useState(false);
 
   // Revalidate the snapshot behind a widget. Widgets sharing a snapshot key
   // dedupe to one fetch, so this refreshes every card on that source — the
@@ -77,6 +80,7 @@ export default function DashboardGrid() {
   }, []);
 
   const toggleEdit = () => {
+    setWidgetsMenuOpen(false);
     setIsEditing((v) => {
       const next = !v;
       track(next ? "dashboard_edit_mode_on" : "dashboard_edit_mode_off");
@@ -85,7 +89,18 @@ export default function DashboardGrid() {
   };
 
   const handleLayoutChange = (current: Layout[], all: Layouts) => {
-    onLayoutChange(current, all);
+    // RGL only emits layout entries for rendered widgets, so a hidden widget's
+    // saved position would be dropped on any change. Re-inject the entries we
+    // already have for ids RGL omitted, keeping the persisted layout complete
+    // so re-showing a widget restores its position instead of auto-placing it.
+    const merged: Layouts = {};
+    (Object.keys(all) as (keyof Layouts)[]).forEach((bp) => {
+      const incoming = all[bp] ?? [];
+      const ids = new Set(incoming.map((l) => l.i));
+      const preserved = (layouts[bp] ?? []).filter((l) => !ids.has(l.i));
+      merged[bp] = [...incoming, ...preserved];
+    });
+    onLayoutChange(current, merged);
     // Only fire on user-initiated changes (i.e. while editing) and only the
     // first time per session — we want a unique-user counter, not drag spam.
     if (isEditing && !mutatedRef.current) {
@@ -142,7 +157,10 @@ export default function DashboardGrid() {
     }
   };
 
-  const visibleWidgets = WIDGETS.filter((w) => visible.has(w.id));
+  // Capability-eligible widgets (for the show/hide menu) vs what actually
+  // renders (eligible minus the user's manually hidden set).
+  const eligibleWidgets = WIDGETS.filter((w) => visible.has(w.id));
+  const visibleWidgets = eligibleWidgets.filter((w) => !hidden.has(w.id));
 
   return (
     <div className="w-full">
@@ -173,7 +191,85 @@ export default function DashboardGrid() {
                 ? "Drag the handle or use arrow keys to reorder · drag the corner or shift + arrow to resize"
                 : null}
             </span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 relative">
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setWidgetsMenuOpen((v) => !v)}
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+                  title="Show or hide widgets"
+                  aria-expanded={widgetsMenuOpen}
+                  aria-haspopup="menu"
+                >
+                  <SlidersHorizontal size={12} />
+                  Widgets
+                  {hidden.size > 0 && (
+                    <span
+                      className="ml-0.5 px-1 rounded text-[10px] font-bold tabular-nums"
+                      style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                    >
+                      {hidden.size}
+                    </span>
+                  )}
+                </button>
+              )}
+              {isEditing && widgetsMenuOpen && (
+                <>
+                  <button
+                    type="button"
+                    aria-hidden
+                    tabIndex={-1}
+                    className="fixed inset-0 z-20 cursor-default"
+                    onClick={() => setWidgetsMenuOpen(false)}
+                  />
+                  <div
+                    role="menu"
+                    aria-label="Show or hide widgets"
+                    className="absolute top-full right-0 mt-1 z-30 w-60 max-h-80 overflow-y-auto rounded-xl p-1.5 shadow-lg"
+                    style={{
+                      backgroundColor: "var(--bg-card)",
+                      border: "1px solid var(--border-subtle)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between px-2 py-1">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-fg-muted">
+                        Widgets
+                      </span>
+                      {hidden.size > 0 && (
+                        <button
+                          type="button"
+                          onClick={showAll}
+                          className="text-[11px] font-semibold text-brand hover:underline"
+                        >
+                          Show all
+                        </button>
+                      )}
+                    </div>
+                    {eligibleWidgets.map((w) => {
+                      const isHidden = hidden.has(w.id);
+                      return (
+                        <button
+                          key={w.id}
+                          type="button"
+                          role="menuitemcheckbox"
+                          aria-checked={!isHidden}
+                          onClick={() => toggleHidden(w.id)}
+                          className="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-xs text-left hover:bg-sunken transition-colors"
+                        >
+                          <span className={isHidden ? "text-fg-muted" : "text-fg"}>
+                            {w.label}
+                          </span>
+                          {isHidden ? (
+                            <EyeOff size={13} className="text-fg-muted shrink-0" />
+                          ) : (
+                            <Eye size={13} className="text-brand shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
               {isEditing && (
                 <button
                   type="button"

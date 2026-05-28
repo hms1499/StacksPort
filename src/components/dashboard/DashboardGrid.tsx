@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSWRConfig } from "swr";
-import { Check, Eye, EyeOff, Pencil, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Check, Eye, EyeOff, Pencil, RotateCcw, SlidersHorizontal, X } from "lucide-react";
 import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
 import { useDashboardVisibility } from "@/hooks/useDashboardVisibility";
@@ -23,6 +23,8 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 // unusable on a single-column touch layout (drag handle relies on hover, and
 // there's nothing meaningful to resize horizontally).
 const MOBILE_MAX_WIDTH = 639;
+
+const CUSTOMIZE_HINT_KEY = "dashboard:customize-hinted";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -50,6 +52,30 @@ export default function DashboardGrid() {
   const isMobile = useIsMobile();
   const { mutate } = useSWRConfig();
   const [widgetsMenuOpen, setWidgetsMenuOpen] = useState(false);
+
+  // One-time discovery hint for the Customize button. Initial false keeps SSR
+  // and first client render in sync; the effect flips it on only if the user
+  // hasn't seen (or used) it before.
+  const [showHint, setShowHint] = useState(false);
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem(CUSTOMIZE_HINT_KEY)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR-safe: read storage post-mount
+        setShowHint(true);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const dismissHint = () => {
+    setShowHint(false);
+    try {
+      localStorage.setItem(CUSTOMIZE_HINT_KEY, "1");
+    } catch {
+      // ignore
+    }
+  };
 
   // Revalidate the snapshot behind a widget. Widgets sharing a snapshot key
   // dedupe to one fetch, so this refreshes every card on that source — the
@@ -81,6 +107,7 @@ export default function DashboardGrid() {
 
   const toggleEdit = () => {
     setWidgetsMenuOpen(false);
+    dismissHint();
     setIsEditing((v) => {
       const next = !v;
       track(next ? "dashboard_edit_mode_on" : "dashboard_edit_mode_off");
@@ -288,13 +315,47 @@ export default function DashboardGrid() {
                   isEditing
                     ? "text-[var(--accent)] hover:bg-muted/50"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
+                } ${showHint && !isEditing ? "ring-2 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-base)]" : ""}`}
                 title={isEditing ? "Finish editing" : "Customize layout"}
                 aria-pressed={isEditing}
               >
                 {isEditing ? <Check size={12} /> : <Pencil size={12} />}
                 {isEditing ? "Done" : "Customize"}
               </button>
+
+              {showHint && !isEditing && (
+                <div
+                  role="status"
+                  className="absolute top-full right-0 mt-2 z-30 w-56 rounded-xl p-3 shadow-lg text-left"
+                  style={{
+                    backgroundColor: "var(--bg-card)",
+                    border: "1px solid var(--accent)",
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-xs font-semibold text-fg">Make it yours</p>
+                    <button
+                      type="button"
+                      onClick={dismissHint}
+                      aria-label="Dismiss tip"
+                      className="text-fg-muted hover:text-fg -mr-1 -mt-0.5"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[11px] leading-relaxed text-fg-muted">
+                    Use Customize to drag, resize, and hide widgets. Your layout
+                    is saved on this device.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={dismissHint}
+                    className="mt-2 text-[11px] font-semibold text-brand hover:underline"
+                  >
+                    Got it
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

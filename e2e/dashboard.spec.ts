@@ -61,3 +61,54 @@ test.describe("Dashboard Page (Connected)", () => {
     expect(scrollHeight).toBeGreaterThan(0);
   });
 });
+
+// The draggable grid + its edit/refresh affordances only render above the
+// mobile breakpoint (< 640px falls back to a plain stack with no WidgetShell).
+test.describe("Dashboard grid controls (desktop)", () => {
+  test.beforeEach(async ({ page, viewport }) => {
+    test.skip((viewport?.width ?? 0) < 700, "grid controls are desktop-only");
+    await mockWalletConnected(page);
+    await mockAPIs(page);
+    await page.goto("/dashboard");
+  });
+
+  test("Customize toggles edit mode and exposes reset + drag handles", async ({ page }) => {
+    const customize = page.getByRole("button", { name: "Customize" });
+    await expect(customize).toBeVisible();
+
+    await customize.click();
+
+    // Edit mode: Done + Reset layout appear, and widgets gain drag handles.
+    await expect(page.getByRole("button", { name: "Done" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reset layout" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /^Reorder / }).first()
+    ).toBeVisible();
+
+    // Toggling back returns to view mode.
+    await page.getByRole("button", { name: "Done" }).click();
+    await expect(page.getByRole("button", { name: "Customize" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Done" })).toHaveCount(0);
+  });
+
+  test("widget refresh button revalidates without crashing the card", async ({ page }) => {
+    const trending = page.locator(".react-grid-item").filter({ hasText: "Trending" }).first();
+    await expect(trending).toBeVisible();
+    await trending.hover();
+
+    const refresh = trending.getByRole("button", { name: /^Refresh / });
+    await expect(refresh).toBeVisible();
+    await refresh.click();
+
+    // The card survives the revalidation round-trip.
+    await expect(trending.getByText(/Trending/i).first()).toBeVisible();
+  });
+
+  test("refresh wiring spans multiple widgets", async ({ page }) => {
+    // Both market- and portfolio-backed widgets get a refresh control, so more
+    // than one is present; action-only widgets omit theirs (so it's not all).
+    await page.waitForLoadState("networkidle");
+    const refreshButtons = page.getByRole("button", { name: /^Refresh / });
+    expect(await refreshButtons.count()).toBeGreaterThan(1);
+  });
+});

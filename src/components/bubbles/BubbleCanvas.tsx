@@ -252,7 +252,8 @@ function packCircles(
   tokens: BubbleToken[],
   radii: number[],
   width: number,
-  height: number
+  height: number,
+  prev?: Map<string, { x: number; y: number }>
 ): LayoutBubble[] {
   const cx = width / 2;
   const cy = height / 2;
@@ -264,15 +265,21 @@ function packCircles(
   const scaleFactor = totalBubbleArea > 0 ? Math.min(1, Math.sqrt((canvasArea * maxFill) / totalBubbleArea)) : 1;
   const scaledRadii = radii.map((r) => r * scaleFactor);
 
-  const nodes: SimulationNode[] = tokens.map((t, i) => ({
-    id: t.id,
-    token: t,
-    radius: scaledRadii[i],
-    x: cx + (Math.random() - 0.5) * width * 0.45,
-    y: cy + (Math.random() - 0.5) * height * 0.45,
-    vx: 0,
-    vy: 0,
-  }));
+  // Seed from previous positions when available so a re-pack (eg. metric/size
+  // change) nudges bubbles from where they were instead of reshuffling from
+  // scratch — preserves the user's spatial memory.
+  const nodes: SimulationNode[] = tokens.map((t, i) => {
+    const p = prev?.get(t.id);
+    return {
+      id: t.id,
+      token: t,
+      radius: scaledRadii[i],
+      x: p ? p.x : cx + (Math.random() - 0.5) * width * 0.45,
+      y: p ? p.y : cy + (Math.random() - 0.5) * height * 0.45,
+      vx: 0,
+      vy: 0,
+    };
+  });
 
   const simulation = forceSimulation(nodes)
     .force("collide", forceCollide((d: SimulationNode) => d.radius + 12).strength(1))
@@ -377,6 +384,10 @@ export default function BubbleCanvas({
   const animRef = useRef<number | null>(null);
   const seedsRef = useRef<Record<string, number>>({});
   const imagesRef = useRef<Record<string, HTMLImageElement | null | 'loading'>>({});
+  // Signature of the inputs that affect bubble *positions* (size + token set +
+  // radii). When unchanged, a layout() call only needs to redraw (eg. switching
+  // timeframe while sized by market cap) — no re-pack, so bubbles don't move.
+  const sigRef = useRef<string>("");
 
   const layout = useCallback(() => {
     const canvas = canvasRef.current;
@@ -391,10 +402,28 @@ export default function BubbleCanvas({
     canvas.style.height = `${height}px`;
 
     const radii = computeRadii(tokens, timeframe, metric, density);
-    bubblesRef.current = packCircles(tokens, radii, width, height);
+    const ctx = canvas.getContext("2d");
+
+    const sig =
+      `${Math.round(width)}x${Math.round(height)}|` +
+      tokens.map((t, i) => `${t.id}:${Math.round(radii[i])}`).join(",");
+
+    // Position-affecting inputs unchanged → just redraw (canvas was cleared by
+    // resetting its width above). Avoids re-packing on pure recolor changes.
+    if (
+      sig === sigRef.current &&
+      bubblesRef.current.length === tokens.length &&
+      ctx
+    ) {
+      drawBubbles(ctx, bubblesRef.current, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current, focusedRef.current, heldRef.current);
+      return;
+    }
+    sigRef.current = sig;
+
+    const prev = new Map(bubblesRef.current.map((b) => [b.token.id, { x: b.x, y: b.y }]));
+    bubblesRef.current = packCircles(tokens, radii, width, height, prev);
     displayRef.current = bubblesRef.current;
 
-    const ctx = canvas.getContext("2d");
     // ensure deterministic seeds for subtle per-bubble motion
     for (const b of bubblesRef.current) {
       if (!seedsRef.current[b.token.id]) seedsRef.current[b.token.id] = Math.random() * Math.PI * 2;

@@ -111,4 +111,20 @@ test.describe("Dashboard grid controls (desktop)", () => {
     const refreshButtons = page.getByRole("button", { name: /^Refresh / });
     expect(await refreshButtons.count()).toBeGreaterThan(1);
   });
+
+  test("Widgets menu hides and restores a widget", async ({ page }) => {
+    await page.getByRole("button", { name: "Customize" }).click();
+    await page.getByRole("button", { name: "Widgets" }).click();
+
+    const newsCard = page.locator(".react-grid-item").filter({ hasText: "Crypto News" });
+    await expect(newsCard).toHaveCount(1);
+
+    // Hiding removes it from the grid.
+    await page.getByRole("menuitemcheckbox", { name: /Crypto news/ }).click();
+    await expect(newsCard).toHaveCount(0);
+
+    // Show all brings every hidden widget back.
+    await page.getByRole("button", { name: "Show all" }).click();
+    await expect(newsCard).toHaveCount(1);
+  });
 });

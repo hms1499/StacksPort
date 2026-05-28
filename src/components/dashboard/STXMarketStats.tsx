@@ -1,9 +1,10 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useSTXMarketStats, useSTXMarketHistory } from "@/hooks/useMarketData";
 import { useFlashOnChange } from "@/hooks/useFlashOnChange";
+import PriceSparkline from "@/components/dashboard/PriceSparkline";
 
 function formatLargeNumber(value: number): string {
   if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
@@ -11,47 +12,17 @@ function formatLargeNumber(value: number): string {
   return `$${value.toLocaleString()}`;
 }
 
-const Sparkline = memo(function Sparkline({ prices, isPositive }: { prices: number[]; isPositive: boolean }) {
-  if (prices.length < 2) return <div className="w-full h-12" />;
-
-  const w = 200;
-  const h = 48;
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const range = max - min || 1;
-
-  const pts = prices.map((p, i) => {
-    const x = (i / (prices.length - 1)) * w;
-    const y = h - ((p - min) / range) * (h - 6) - 3;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-
-  const strokeColor = isPositive ? "#22c55e" : "#ef4444";
-  const fillColor = isPositive ? "#22c55e" : "#ef4444";
-  const last = pts[pts.length - 1].split(",");
-  const first = pts[0].split(",");
-  const fillPath = `M ${pts.join(" L ")} L ${last[0]},${h} L ${first[0]},${h} Z`;
-
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-12" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id={`sparkGrad-${strokeColor.slice(1)}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={fillColor} stopOpacity={0.15} />
-          <stop offset="100%" stopColor={fillColor} stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <path d={fillPath} fill={`url(#sparkGrad-${strokeColor.slice(1)})`} />
-      <polyline
-        points={pts.join(" ")}
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-});
+const Sparkline = ({ prices, isPositive }: { prices: number[]; isPositive: boolean }) => (
+  <PriceSparkline
+    prices={prices}
+    isPositive={isPositive}
+    fill
+    width={200}
+    height={48}
+    padY={6}
+    className="w-full h-12"
+  />
+);
 
 function SkeletonCard() {
   return (

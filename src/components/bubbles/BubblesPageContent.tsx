@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import { useVisibleBubbles } from "@/hooks/useVisibleBubbles";
+import { useBubbleShortcuts } from "@/hooks/useBubbleShortcuts";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useHoldings } from "@/hooks/useHoldings";
 import type { BubbleToken } from "@/hooks/useBubblesData";
@@ -207,62 +208,9 @@ export default function BubblesPageContent() {
     return () => mql.removeEventListener("change", update);
   }, []);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      const isTyping =
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.isContentEditable);
-
-      if (e.key === "Escape") {
-        if (isTyping) {
-          (target as HTMLInputElement).blur();
-          return;
-        }
-        if (showHelp) {
-          setShowHelp(false);
-          return;
-        }
-        if (selected) {
-          setSelected(null);
-          return;
-        }
-        if (search) setSearch("");
-        return;
-      }
-
-      if (isTyping || e.metaKey || e.ctrlKey || e.altKey) return;
-
-      if (e.key === "/") {
-        e.preventDefault();
-        searchRef.current?.focus();
-        return;
-      }
-      if (e.key === "?") {
-        setShowHelp((v) => !v);
-        return;
-      }
-      if (e.key === "1") setMetric("change");
-      else if (e.key === "2") setMetric("marketCap");
-      else if (e.key === "3") setMetric("volume");
-      else if (e.key === "q") setTimeframe("1h");
-      else if (e.key === "w") setTimeframe("24h");
-      else if (e.key === "e") setTimeframe("7d");
-      else if (e.key === "r") setTimeframe("30d");
-      else if (e.key === "t") setTimeframe("1y");
-      else if (e.key === "a") setScope("all");
-      else if (e.key === "s") setScope("stacks");
-      else if (e.key === "d") setScope("watchlist");
-      else if (e.key === "g") mutate();
-      else if (e.key === "p") setPaused((v) => !v);
-      else if (e.key === "l") setView(view === "list" ? "bubbles" : "list");
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [
-    selected,
+  useBubbleShortcuts({
+    searchRef,
+    hasSelected: !!selected,
     search,
     showHelp,
     view,
@@ -270,8 +218,12 @@ export default function BubblesPageContent() {
     setTimeframe,
     setScope,
     setView,
-    mutate,
-  ]);
+    setSearch,
+    setShowHelp,
+    setPaused,
+    clearSelected: handleCloseTooltip,
+    refresh: mutate,
+  });
 
   return (
     <div className="flex flex-col h-full">

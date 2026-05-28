@@ -5,6 +5,7 @@ import { forceSimulation, forceCollide, forceCenter, forceManyBody } from "d3-fo
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
 import type { Metric } from "./MetricToggle";
+import { changeForTimeframe } from "@/lib/bubbles";
 
 const MIN_RADIUS = 22;
 const MAX_RADIUS = 110;
@@ -61,18 +62,10 @@ interface SimulationNode {
   vy: number;
 }
 
-function getChange(token: BubbleToken, tf: Timeframe): number {
-  if (tf === "1h") return token.change1h;
-  if (tf === "7d") return token.change7d;
-  if (tf === "30d") return token.change30d;
-  if (tf === "1y") return token.change1y;
-  return token.change24h;
-}
-
 function getMetricValue(token: BubbleToken, metric: Metric, timeframe: Timeframe): number {
   if (metric === "marketCap") return token.marketCap;
   if (metric === "volume") return token.volume24h;
-  return Math.abs(getChange(token, timeframe));
+  return Math.abs(changeForTimeframe(token, timeframe));
 }
 
 function computeRadii(
@@ -127,7 +120,7 @@ function drawBubbles(
   }
 
   for (const b of bubbles) {
-    const change = getChange(b.token, timeframe);
+    const change = changeForTimeframe(b.token, timeframe);
     const isPositive = change >= 0;
     const color = isPositive ? POSITIVE_COLOR : NEGATIVE_COLOR;
     const glowRgb = isPositive ? "52,211,153" : "248,113,113";

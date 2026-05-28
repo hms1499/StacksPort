@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
+import { changeForTimeframe } from "@/lib/bubbles";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useHoldings } from "@/hooks/useHoldings";
 import type { BubbleToken } from "@/hooks/useBubblesData";
@@ -180,16 +181,7 @@ export default function BubblesPageContent() {
     if (filters.excludeStables) {
       filtered = filtered.filter((t) => !STABLECOIN_IDS.has(t.id));
     }
-    const getC = (t: typeof filtered[number]) =>
-      timeframe === "1h"
-        ? t.change1h
-        : timeframe === "7d"
-        ? t.change7d
-        : timeframe === "30d"
-        ? t.change30d
-        : timeframe === "1y"
-        ? t.change1y
-        : t.change24h;
+    const getC = (t: typeof filtered[number]) => changeForTimeframe(t, timeframe);
     const sorted = [...filtered];
     if (filters.sortBy === "volume") sorted.sort((a, b) => b.volume24h - a.volume24h);
     else if (filters.sortBy === "gainers") sorted.sort((a, b) => getC(b) - getC(a));
@@ -203,19 +195,7 @@ export default function BubblesPageContent() {
     }
     if (filters.moversThreshold > 0) {
       const th = filters.moversThreshold;
-      filtered = filtered.filter((t) => {
-        const c =
-          timeframe === "1h"
-            ? t.change1h
-            : timeframe === "7d"
-            ? t.change7d
-            : timeframe === "30d"
-            ? t.change30d
-            : timeframe === "1y"
-            ? t.change1y
-            : t.change24h;
-        return Math.abs(c) >= th;
-      });
+      filtered = filtered.filter((t) => Math.abs(changeForTimeframe(t, timeframe)) >= th);
     }
     const q = search.trim().toLowerCase();
     if (q) {

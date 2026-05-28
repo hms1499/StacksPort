@@ -281,7 +281,10 @@ function packCircles(
     .velocityDecay(0.4)
     .stop();
 
-  const TICKS = 2000;
+  // d3-force converges well within a few hundred ticks for this node count;
+  // the relaxation pass below is the real overlap guarantee, so 2000 was
+  // wasted main-thread work.
+  const TICKS = 500;
   for (let i = 0; i < TICKS; i++) simulation.tick();
 
   // Post-processing: iterative relaxation to remove any remaining overlaps
@@ -421,9 +424,18 @@ export default function BubbleCanvas({
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const observer = new ResizeObserver(() => layout());
+    // layout() runs a synchronous d3-force pack + O(n²) relaxation, so debounce
+    // the observer — otherwise dragging a window edge re-packs on every frame.
+    let t: ReturnType<typeof setTimeout> | null = null;
+    const observer = new ResizeObserver(() => {
+      if (t) clearTimeout(t);
+      t = setTimeout(() => layout(), 150);
+    });
     observer.observe(container);
-    return () => observer.disconnect();
+    return () => {
+      if (t) clearTimeout(t);
+      observer.disconnect();
+    };
   }, [layout]);
 
   function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {

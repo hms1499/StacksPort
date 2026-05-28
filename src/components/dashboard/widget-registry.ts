@@ -43,6 +43,12 @@ export type WidgetEntry = {
   md: Cell;
   /** If omitted, the widget is always visible. All listed tags must be present. */
   requires?: RequiresTag[];
+  /**
+   * Which shared snapshot backs this widget's data. Drives the hover refresh
+   * button — revalidating the snapshot refreshes every widget that reads it.
+   * Omit for store-backed or action-only widgets that have nothing to refetch.
+   */
+  refresh?: "market" | "portfolio";
 };
 
 export const WIDGETS: WidgetEntry[] = [
@@ -50,6 +56,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "balance",
     label: "Balance",
     component: dynamic(() => import("@/components/dashboard/BalanceCard")),
+    refresh: "portfolio",
     lg: { x: 0, y: 0, w: 12, h: 6, minW: 6, minH: 4 },
     md: { x: 0, y: 0, w: 8, h: 6, minW: 4, minH: 4 },
   },
@@ -65,6 +72,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "stx-stats",
     label: "STX market stats",
     component: dynamic(() => import("@/components/dashboard/STXMarketStats")),
+    refresh: "market",
     lg: { x: 0, y: 8, w: 12, h: 3, minW: 6, minH: 2 },
     md: { x: 0, y: 8, w: 8, h: 3, minW: 4, minH: 2 },
   },
@@ -72,6 +80,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "pox-cycle",
     label: "PoX cycle",
     component: dynamic(() => import("@/components/dashboard/PoxCycleCard")),
+    refresh: "market",
     lg: { x: 0, y: 11, w: 12, h: 4, minW: 6, minH: 3 },
     md: { x: 0, y: 11, w: 8, h: 4, minW: 4, minH: 3 },
   },
@@ -88,6 +97,7 @@ export const WIDGETS: WidgetEntry[] = [
     label: "DCA performance",
     component: dynamic(() => import("@/components/dashboard/DCAPerformanceCard")),
     requires: ["wallet", "dcaExecuted"],
+    refresh: "portfolio",
     lg: { x: 6, y: 15, w: 6, h: 4, minW: 3, minH: 3 },
     md: { x: 4, y: 15, w: 4, h: 4, minW: 3, minH: 3 },
   },
@@ -96,6 +106,7 @@ export const WIDGETS: WidgetEntry[] = [
     label: "DCA summary",
     component: dynamic(() => import("@/components/dashboard/DCASummaryCard")),
     requires: ["wallet"],
+    refresh: "portfolio",
     lg: { x: 0, y: 19, w: 4, h: 5, minW: 3, minH: 3 },
     md: { x: 0, y: 19, w: 4, h: 5, minW: 3, minH: 3 },
   },
@@ -103,6 +114,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "greed",
     label: "Fear and greed index",
     component: dynamic(() => import("@/components/dashboard/GreedIndexCard")),
+    refresh: "market",
     lg: { x: 4, y: 19, w: 4, h: 5, minW: 3, minH: 3 },
     md: { x: 4, y: 19, w: 4, h: 5, minW: 3, minH: 3 },
   },
@@ -110,6 +122,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "trending",
     label: "Trending tokens",
     component: dynamic(() => import("@/components/dashboard/TrendingTokens")),
+    refresh: "market",
     lg: { x: 8, y: 19, w: 4, h: 5, minW: 3, minH: 4 },
     md: { x: 0, y: 24, w: 8, h: 5, minW: 4, minH: 4 },
   },
@@ -117,6 +130,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "news",
     label: "Crypto news",
     component: dynamic(() => import("@/components/dashboard/CryptoNews")),
+    refresh: "market",
     lg: { x: 0, y: 24, w: 8, h: 6, minW: 4, minH: 2 },
     md: { x: 0, y: 29, w: 8, h: 6, minW: 4, minH: 2 },
   },
@@ -124,6 +138,7 @@ export const WIDGETS: WidgetEntry[] = [
     id: "activity",
     label: "Recent activity",
     component: dynamic(() => import("@/components/dashboard/RecentActivity")),
+    refresh: "portfolio",
     lg: { x: 8, y: 24, w: 4, h: 6, minW: 3, minH: 2 },
     md: { x: 0, y: 35, w: 8, h: 6, minW: 4, minH: 2 },
   },

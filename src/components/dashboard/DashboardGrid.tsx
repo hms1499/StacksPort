@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useSWRConfig } from "swr";
 import { Check, Pencil, RotateCcw } from "lucide-react";
 import { Responsive, WidthProvider, type Layout, type Layouts } from "react-grid-layout";
 import { useDashboardLayout } from "@/hooks/useDashboardLayout";
@@ -45,6 +46,20 @@ export default function DashboardGrid() {
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
   const visible = useDashboardVisibility();
   const isMobile = useIsMobile();
+  const { mutate } = useSWRConfig();
+
+  // Revalidate the snapshot behind a widget. Widgets sharing a snapshot key
+  // dedupe to one fetch, so this refreshes every card on that source — the
+  // honest behaviour given the snapshot architecture.
+  const refreshGroup = (group: "market" | "portfolio") => {
+    if (group === "market") return mutate("market-snapshot");
+    return mutate(
+      (key) =>
+        Array.isArray(key) &&
+        typeof key[0] === "string" &&
+        key[0].startsWith("portfolio"),
+    );
+  };
   // Edit mode is session-only: explicit opt-in each visit avoids users
   // leaving themselves in a draggable state forever and accidentally moving
   // widgets while reading.
@@ -216,6 +231,7 @@ export default function DashboardGrid() {
                     widgetId={w.id}
                     widgetLabel={w.label}
                     onKeyboardMove={moveWidget}
+                    onRefresh={w.refresh ? () => refreshGroup(w.refresh!) : undefined}
                   >
                     <WidgetErrorBoundary widgetId={w.id} widgetLabel={w.label}>
                       <W />

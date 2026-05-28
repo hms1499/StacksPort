@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
-import { changeForTimeframe } from "@/lib/bubbles";
+import { useVisibleBubbles } from "@/hooks/useVisibleBubbles";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useHoldings } from "@/hooks/useHoldings";
 import type { BubbleToken } from "@/hooks/useBubblesData";
@@ -33,23 +33,6 @@ import PauseButton from "./PauseButton";
 import WatchlistBar from "./WatchlistBar";
 import ViewToggle, { type View } from "./ViewToggle";
 import BubbleList from "./BubbleList";
-
-const STABLECOIN_IDS = new Set([
-  "tether",
-  "usd-coin",
-  "dai",
-  "first-digital-usd",
-  "true-usd",
-  "paxos-standard",
-  "frax",
-  "ethena-usde",
-  "usdd",
-  "binance-usd",
-  "gemini-dollar",
-  "liquity-usd",
-  "blackrock-usd-institutional-digital-liquidity-fund",
-  "hermetica-usdh",
-]);
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
 const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
@@ -170,43 +153,14 @@ export default function BubblesPageContent() {
     [tokens]
   );
 
-  const visibleTokens = useMemo(() => {
-    if (!tokens) return tokens;
-    let filtered = tokens;
-    if (scope === "stacks") filtered = filtered.filter((t) => t.isStacks);
-    else if (scope === "watchlist") filtered = filtered.filter((t) => watchlistIds.has(t.id));
-    if (filters.minMarketCap > 0) {
-      filtered = filtered.filter((t) => t.marketCap >= filters.minMarketCap);
-    }
-    if (filters.excludeStables) {
-      filtered = filtered.filter((t) => !STABLECOIN_IDS.has(t.id));
-    }
-    const getC = (t: typeof filtered[number]) => changeForTimeframe(t, timeframe);
-    const sorted = [...filtered];
-    if (filters.sortBy === "volume") sorted.sort((a, b) => b.volume24h - a.volume24h);
-    else if (filters.sortBy === "gainers") sorted.sort((a, b) => getC(b) - getC(a));
-    else if (filters.sortBy === "losers") sorted.sort((a, b) => getC(a) - getC(b));
-    else if (filters.sortBy === "name")
-      sorted.sort((a, b) => a.symbol.localeCompare(b.symbol));
-    else sorted.sort((a, b) => b.marketCap - a.marketCap);
-    filtered = sorted;
-    if (filters.topN > 0) {
-      filtered = filtered.slice(0, filters.topN);
-    }
-    if (filters.moversThreshold > 0) {
-      const th = filters.moversThreshold;
-      filtered = filtered.filter((t) => Math.abs(changeForTimeframe(t, timeframe)) >= th);
-    }
-    const q = search.trim().toLowerCase();
-    if (q) {
-      filtered = filtered.filter(
-        (t) =>
-          t.symbol.toLowerCase().includes(q) ||
-          t.name.toLowerCase().includes(q)
-      );
-    }
-    return filtered;
-  }, [tokens, scope, watchlistIds, search, filters, timeframe]);
+  const visibleTokens = useVisibleBubbles({
+    tokens,
+    scope,
+    watchlistIds,
+    filters,
+    timeframe,
+    search,
+  });
 
   const handleBubbleClick = useCallback(
     (token: BubbleToken, x: number, y: number) => {

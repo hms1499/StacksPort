@@ -19,11 +19,8 @@ type Period = "1D" | "1W" | "1M" | "1Y";
 const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30, "1Y": 365 };
 
 const ChartPlaceholder = () => (
-  <div
-    className="h-full min-h-[110px] rounded-xl flex items-center justify-center"
-    style={{ backgroundColor: "var(--border-subtle)" }}
-  >
-    <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading chart…</span>
+  <div className="h-full min-h-[110px] rounded-xl flex items-center justify-center bg-sunken">
+    <span className="text-xs text-fg-muted">Loading chart…</span>
   </div>
 );
 
@@ -141,10 +138,7 @@ function BalanceCard() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
-          >
+          <span className="text-xs font-bold tracking-[0.1em] uppercase text-fg-muted">
             Portfolio Value
           </span>
           {isConnected && (
@@ -152,10 +146,7 @@ function BalanceCard() {
               href={`https://explorer.hiro.so/address/${stxAddress}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors"
-              style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--accent)')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--text-muted)')}
+              className="transition-colors text-fg-muted hover:text-brand"
             >
               <ExternalLink size={12} />
             </a>
@@ -163,20 +154,16 @@ function BalanceCard() {
         </div>
 
         {/* Period selector */}
-        <div
-          className="flex gap-0.5 p-0.5 rounded-lg"
-          style={{ backgroundColor: 'var(--border-subtle)' }}
-        >
+        <div className="flex gap-0.5 p-0.5 rounded-lg bg-sunken">
           {(["1D", "1W", "1M", "1Y"] as Period[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className="px-2.5 py-1 rounded-md text-xs font-bold transition-all duration-150"
-              style={
+              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all duration-150 ${
                 period === p
-                  ? { backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }
-                  : { color: 'var(--text-muted)' }
-              }
+                  ? "bg-surface text-fg shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
+                  : "text-fg-muted"
+              }`}
             >
               {p}
             </button>
@@ -207,20 +194,14 @@ function BalanceCard() {
                 />
                 <ChevronDown
                   size={18}
-                  className="self-center transition-transform duration-200"
-                  style={{
-                    color: 'var(--text-muted)',
-                    transform: breakdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  }}
+                  className="self-center transition-transform duration-200 text-fg-muted"
+                  style={{ transform: breakdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
                 />
               </button>
               <span
-                className="flex items-center gap-1 text-sm font-semibold font-data px-2 py-0.5 rounded-lg"
-                style={
-                  isPositive
-                    ? { color: 'var(--positive)', backgroundColor: isDark ? 'rgba(0, 229, 160, 0.1)' : 'rgba(0, 194, 122, 0.1)' }
-                    : { color: 'var(--negative)', backgroundColor: isDark ? 'rgba(255, 91, 110, 0.1)' : 'rgba(240, 74, 110, 0.1)' }
-                }
+                className={`flex items-center gap-1 text-sm font-semibold font-data px-2 py-0.5 rounded-lg ${
+                  isPositive ? "text-pos bg-pos-soft" : "text-neg bg-neg-soft"
+                }`}
               >
                 {isPositive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
                 {periodChangeUSD !== null && (
@@ -229,22 +210,19 @@ function BalanceCard() {
                     {formatUSD(Math.abs(periodChangeUSD))}
                   </span>
                 )}
-                <span style={{ opacity: 0.85 }}>
+                <span className="opacity-[0.85]">
                   ({formatPercent(periodChange ?? portfolio.stxChange24h)})
                 </span>
               </span>
             </div>
-            <div
-              className="flex items-center gap-2 text-xs mt-1.5 font-data flex-wrap"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <div className="flex items-center gap-2 text-xs mt-1.5 font-data flex-wrap text-fg-muted">
               <span>{formatSTX(portfolio.stxBalance)} STX</span>
-              <span style={{ color: 'var(--border-default)' }}>·</span>
-              <span style={{ color: 'var(--text-secondary)' }}>${portfolio.stxPrice.toFixed(4)}/STX</span>
+              <span className="text-edge">·</span>
+              <span className="text-fg-secondary">${portfolio.stxPrice.toFixed(4)}/STX</span>
               {portfolio.otherUSD > 0 && (
                 <>
-                  <span style={{ color: 'var(--border-default)' }}>·</span>
-                  <Link href="/assets" className="transition-colors hover:underline" style={{ color: 'var(--accent)' }}>
+                  <span className="text-edge">·</span>
+                  <Link href="/assets" className="transition-colors hover:underline text-brand">
                     +{formatUSD(portfolio.otherUSD)} other
                   </Link>
                 </>
@@ -271,46 +249,27 @@ function BalanceCard() {
                 value={demoValue}
                 formatFn={formatUSD}
                 duration={1200}
-                className="text-4xl font-bold font-data"
-                style={{ color: 'var(--text-primary)', opacity: 0.55 }}
+                className="text-4xl font-bold font-data text-fg opacity-[0.55]"
               />
-              <span
-                className="flex items-center gap-1 text-xs font-bold tracking-wider uppercase px-2 py-0.5 rounded-md"
-                style={{
-                  color: 'var(--accent)',
-                  backgroundColor: isDark ? 'rgba(0, 229, 160, 0.12)' : 'rgba(0, 194, 122, 0.12)',
-                  letterSpacing: '0.1em',
-                }}
-              >
+              <span className="flex items-center gap-1 text-xs font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-md text-brand bg-brand-soft">
                 <span className="relative flex w-1.5 h-1.5">
-                  <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping" style={{ backgroundColor: 'var(--accent)' }} />
-                  <span className="relative inline-flex w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
+                  <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-brand" />
+                  <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-brand" />
                 </span>
                 Demo
               </span>
-              <span
-                className="text-sm font-semibold font-data px-2 py-0.5 rounded-lg"
-                style={{
-                  color: 'var(--positive)',
-                  backgroundColor: isDark ? 'rgba(0, 229, 160, 0.1)' : 'rgba(0, 194, 122, 0.1)',
-                  opacity: 0.7,
-                }}
-              >
+              <span className="text-sm font-semibold font-data px-2 py-0.5 rounded-lg text-pos bg-pos-soft opacity-[0.7]">
                 +$234 (+1.9%)
               </span>
             </div>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-xs text-fg-muted">
               Sample portfolio · Connect to see your real holdings
             </p>
             <button
               onClick={handleConnect}
               disabled={connecting}
-              className="flex items-center gap-2 self-start px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: 'var(--accent)',
-                color: '#060C18',
-                boxShadow: connecting ? 'none' : '0 0 14px var(--accent-glow)',
-              }}
+              className="flex items-center gap-2 self-start px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-brand text-[#060C18]"
+              style={{ boxShadow: connecting ? 'none' : '0 0 14px var(--accent-glow)' }}
             >
               {connecting
                 ? <Loader2 size={14} className="animate-spin" />

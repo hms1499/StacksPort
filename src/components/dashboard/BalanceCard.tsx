@@ -2,18 +2,11 @@
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap, ChevronDown } from "lucide-react";
 import PortfolioBreakdown from "@/components/dashboard/PortfolioBreakdown";
 import { connect as stacksConnect } from "@stacks/connect";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { usePortfolio, usePortfolioHistory, useSTXPriceHistory, useUserDCAPlans } from "@/hooks/useMarketData";
@@ -24,6 +17,22 @@ import AnimatedCounter from "@/components/motion/AnimatedCounter";
 type Period = "1D" | "1W" | "1M" | "1Y";
 
 const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30, "1Y": 365 };
+
+const ChartPlaceholder = () => (
+  <div
+    className="h-full min-h-[110px] rounded-xl flex items-center justify-center"
+    style={{ backgroundColor: "var(--border-subtle)" }}
+  >
+    <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading chart…</span>
+  </div>
+);
+
+// Recharts is heavy; defer it to its own chunk so it doesn't bloat the eager
+// dashboard render path. ssr:false because the chart is purely decorative.
+const BalanceCardChart = dynamic(() => import("./BalanceCardChart"), {
+  ssr: false,
+  loading: ChartPlaceholder,
+});
 
 function BalanceCard() {
   const { stxAddress, isConnected, connect } = useWalletStore();
@@ -315,55 +324,11 @@ function BalanceCard() {
 
       {/* ── Chart ── */}
       <div className="flex-1 min-h-[110px] mt-2">
-      {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="balanceGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor={isDark ? "#00E5A0" : "#00C27A"} stopOpacity={0.25} />
-                <stop offset="100%" stopColor={isDark ? "#00E5A0" : "#00C27A"} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 10, fill: isDark ? '#2A4060' : '#8AA0BE', fontFamily: 'var(--font-mono)' }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis hide domain={["auto", "auto"]} />
-            <Tooltip
-              contentStyle={{
-                background: isDark ? 'var(--bg-elevated)' : '#fff',
-                border: `1px solid ${isDark ? 'var(--border-default)' : '#E2EAF4'}`,
-                borderRadius: '12px',
-                fontSize: 12,
-                fontFamily: 'var(--font-mono)',
-                color: isDark ? '#DDE8F8' : '#0A1628',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-              }}
-              formatter={(v: unknown) => [
-                isConnected ? formatUSD(Number(v)) : `$${Number(v).toFixed(4)}`,
-                isConnected ? "Portfolio" : "STX Price",
-              ]}
-            />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke={isDark ? "#00E5A0" : "#00C27A"}
-              strokeWidth={1.5}
-              fill="url(#balanceGrad)"
-              dot={false}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      ) : (
-        <div
-          className="h-full min-h-[110px] rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: 'var(--border-subtle)' }}
-        >
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Loading chart…</span>
-        </div>
-      )}
+        {chartData.length > 0 ? (
+          <BalanceCardChart chartData={chartData} isConnected={isConnected} isDark={isDark} />
+        ) : (
+          <ChartPlaceholder />
+        )}
       </div>
     </div>
   );

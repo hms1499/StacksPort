@@ -370,6 +370,9 @@ export default function BubbleCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const bubblesRef = useRef<LayoutBubble[]>([]);
+  // Last positions actually drawn (drift-animated). Hit-testing uses these so
+  // clicks/hover match where a bubble visually is, not its static pack position.
+  const displayRef = useRef<LayoutBubble[]>([]);
   const hoveredRef = useRef<string | null>(null);
   const animRef = useRef<number | null>(null);
   const seedsRef = useRef<Record<string, number>>({});
@@ -389,6 +392,7 @@ export default function BubbleCanvas({
 
     const radii = computeRadii(tokens, timeframe, metric, density);
     bubblesRef.current = packCircles(tokens, radii, width, height);
+    displayRef.current = bubblesRef.current;
 
     const ctx = canvas.getContext("2d");
     // ensure deterministic seeds for subtle per-bubble motion
@@ -445,7 +449,7 @@ export default function BubbleCanvas({
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
     let found: string | null = null;
-    for (const b of bubblesRef.current) {
+    for (const b of displayRef.current) {
       const dx = mx - b.x;
       const dy = my - b.y;
       if (Math.sqrt(dx * dx + dy * dy) <= b.radius) {
@@ -468,6 +472,8 @@ export default function BubbleCanvas({
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
     const dpr = window.devicePixelRatio || 1;
+    // Paused = no drift, so display positions are the static pack positions.
+    displayRef.current = bubblesRef.current;
     drawBubbles(
       ctx,
       bubblesRef.current,
@@ -515,6 +521,7 @@ export default function BubbleCanvas({
         return { ...b, x, y } as LayoutBubble;
       });
 
+      displayRef.current = moved;
       drawBubbles(ctx as CanvasRenderingContext2D, moved, timeframe, dpr, imagesRef.current as Record<string, HTMLImageElement | null>, hoveredRef.current, focusedRef.current, heldRef.current);
       animRef.current = requestAnimationFrame(tick);
     }
@@ -528,7 +535,7 @@ export default function BubbleCanvas({
   }, [timeframe, tokens.length, paused]);
 
   function hitTest(mx: number, my: number): LayoutBubble | null {
-    for (const b of bubblesRef.current) {
+    for (const b of displayRef.current) {
       const dx = mx - b.x;
       const dy = my - b.y;
       if (Math.sqrt(dx * dx + dy * dy) <= b.radius) return b;

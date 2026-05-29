@@ -4,9 +4,8 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
-import { TrendingDown, TrendingUp, ExternalLink, Loader2, Zap, ChevronDown } from "lucide-react";
+import { TrendingDown, TrendingUp, ExternalLink, ChevronDown } from "lucide-react";
 import PortfolioBreakdown from "@/components/dashboard/PortfolioBreakdown";
-import { connect as stacksConnect } from "@stacks/connect";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { usePortfolio, usePortfolioHistory, useSTXPriceHistory, useUserDCAPlans } from "@/hooks/useMarketData";
@@ -32,10 +31,9 @@ const BalanceCardChart = dynamic(() => import("./BalanceCardChart"), {
 });
 
 function BalanceCard() {
-  const { stxAddress, isConnected, connect } = useWalletStore();
+  const { stxAddress, isConnected } = useWalletStore();
   const isDark = useThemeStore((s) => s.theme === "dark");
   const [period, setPeriod] = useState<Period>("1W");
-  const [connecting, setConnecting] = useState(false);
   const [breakdownOpen, setBreakdownOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -94,24 +92,6 @@ function BalanceCard() {
     const last = chartData[chartData.length - 1].value;
     return last - first;
   }, [chartData, isConnected]);
-
-  async function handleConnect() {
-    setConnecting(true);
-    try {
-      const result = await stacksConnect();
-      const stxEntry = result.addresses.find(
-        (a) => a.symbol === "STX" || a.address.startsWith("SP") || a.address.startsWith("ST")
-      );
-      const btcEntry = result.addresses.find(
-        (a) => a.symbol === "BTC" || (!a.address.startsWith("SP") && !a.address.startsWith("ST"))
-      );
-      connect(stxEntry?.address ?? result.addresses[0]?.address ?? "", btcEntry?.address ?? "");
-    } catch {
-      // user cancelled
-    } finally {
-      setConnecting(false);
-    }
-  }
 
   const isPositive = (periodChange ?? portfolio?.stxChange24h ?? 0) >= 0;
   const totalFlash = useFlashOnChange(portfolio?.totalUSD);
@@ -262,21 +242,10 @@ function BalanceCard() {
                 +$234 (+1.9%)
               </span>
             </div>
-            <p className="text-xs text-fg-muted">
-              Sample portfolio · Connect to see your real holdings
+            <p className="max-w-md text-xs leading-relaxed text-fg-muted">
+              Preview only · Connect from the banner or topbar to load real balances,
+              DCA plans, alerts, and activity.
             </p>
-            <button
-              onClick={handleConnect}
-              disabled={connecting}
-              className="flex items-center gap-2 self-start px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-brand text-[#060C18]"
-              style={{ boxShadow: connecting ? 'none' : '0 0 14px var(--accent-glow)' }}
-            >
-              {connecting
-                ? <Loader2 size={14} className="animate-spin" />
-                : <Zap size={14} fill="currentColor" />
-              }
-              {connecting ? "Connecting…" : "Connect Wallet"}
-            </button>
           </div>
         )}
       </div>

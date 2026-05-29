@@ -4,9 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Layout, Layouts } from "react-grid-layout";
 import { KNOWN_WIDGET_IDS, WIDGETS } from "@/components/dashboard/widget-registry";
 
-// v5: dropped `sm` breakpoint (mobile renders as plain stack outside RGL) and
-// added minW/minH on `md` so resize stops short of unusable widget sizes.
-const STORAGE_KEY = "dashboard-layout-v5";
+// v6: compacts the Home first fold so market context appears immediately after
+// the portfolio preview. Bumping the key intentionally refreshes saved layouts.
+const STORAGE_KEY = "dashboard-layout-v6";
 
 // Re-export so existing consumers (hooks, components) don't need to learn
 // about widget-registry.ts unless they want richer entry metadata.

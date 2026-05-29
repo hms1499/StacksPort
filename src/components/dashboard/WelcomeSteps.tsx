@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useWalletStore } from "@/store/walletStore";
 import { usePriceAlertStore } from "@/store/priceAlertStore";
 import { useTransactions, useUserDCAPlans } from "@/hooks/useMarketData";
-import { Wallet, ArrowLeftRight, Repeat2, Bell, CheckCircle2, X, Sparkles } from "lucide-react";
+import { ArrowLeftRight, Repeat2, Bell, CheckCircle2, X, Sparkles, ArrowRight } from "lucide-react";
 
 interface Step {
   id: string;
@@ -17,7 +17,7 @@ interface Step {
   done: boolean;
 }
 
-const STORAGE_KEY = "stacksport_welcome_dismissed";
+const STORAGE_KEY = "stacksport_welcome_v2_dismissed";
 
 export default function WelcomeSteps() {
   const { isConnected, stxAddress } = useWalletStore();
@@ -45,14 +45,6 @@ export default function WelcomeSteps() {
   const hasAlerts = alerts.length > 0;
 
   const steps: Step[] = [
-    {
-      id: "wallet",
-      label: "Connect Wallet",
-      description: "Link your Stacks wallet",
-      icon: <Wallet size={16} />,
-      href: "/dashboard",
-      done: isConnected,
-    },
     {
       id: "swap",
       label: "Make a Swap",
@@ -82,6 +74,7 @@ export default function WelcomeSteps() {
   const completedCount = steps.filter((s) => s.done).length;
   const progress = (completedCount / steps.length) * 100;
   const allDone = completedCount === steps.length;
+  const nextStep = steps.find((s) => !s.done) ?? null;
 
   // Fire a one-shot celebration the first time the user reaches 4/4.
   // NOTE: must be declared BEFORE any early return — hooks rules.
@@ -154,34 +147,49 @@ export default function WelcomeSteps() {
           className="overflow-hidden"
         >
           <div className="relative rounded-2xl p-5 overflow-hidden" style={{ background: 'linear-gradient(to right, var(--accent-glow), color-mix(in srgb, var(--accent-dim) 5%, transparent))', border: '1px solid var(--accent-glow)' }}>
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2.5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
+              <div className="flex items-start gap-3">
                 <motion.div
                   ref={iconRef}
-                  className="w-8 h-8 rounded-lg bg-[#408A71] flex items-center justify-center relative"
+                  className="w-9 h-9 rounded-lg bg-[#408A71] flex items-center justify-center relative shrink-0"
                   animate={celebrating ? { scale: [1, 1.18, 1], rotate: [0, 8, -8, 0] } : { scale: 1, rotate: 0 }}
                   transition={celebrating ? { duration: 0.6, repeat: 2 } : { duration: 0.2 }}
                 >
                   <Sparkles size={16} className="text-white" />
                 </motion.div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    {allDone ? "You're all set!" : "Getting Started"}
+                    {allDone ? "You're all set!" : nextStep ? `Next: ${nextStep.label}` : "Getting Started"}
                   </h3>
-                  <p className="text-xs" style={{ color: allDone ? 'var(--accent)' : 'var(--text-muted)' }}>
+                  <p className="text-xs leading-relaxed mt-0.5" style={{ color: allDone ? 'var(--accent)' : 'var(--text-muted)' }}>
                     {allDone
-                      ? "Every step done — happy stacking."
-                      : `${completedCount}/${steps.length} completed`}
+                      ? "Every setup action is done."
+                      : nextStep
+                        ? `${nextStep.description} · ${completedCount}/${steps.length} completed`
+                        : `${completedCount}/${steps.length} completed`}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={handleDismiss}
-                className="p-1 transition-colors"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                <X size={16} />
-              </button>
+              <div className="flex items-center gap-2 sm:shrink-0">
+                {nextStep && (
+                  <Link
+                    href={nextStep.href}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors"
+                    style={{ backgroundColor: 'var(--accent)', color: '#060C18' }}
+                  >
+                    Continue
+                    <ArrowRight size={15} />
+                  </Link>
+                )}
+                <button
+                  onClick={handleDismiss}
+                  aria-label="Dismiss getting started"
+                  className="p-2 transition-colors rounded-xl"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
             {/* Progress bar */}
@@ -195,7 +203,7 @@ export default function WelcomeSteps() {
             </div>
 
             {/* Steps */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               {steps.map((step) => (
                 <Link
                   key={step.id}
@@ -203,7 +211,9 @@ export default function WelcomeSteps() {
                   className="flex items-start gap-2.5 p-3 rounded-xl transition-all"
                   style={step.done
                     ? { backgroundColor: 'var(--accent-glow)' }
-                    : { backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }
+                    : step.id === nextStep?.id
+                      ? { backgroundColor: 'var(--bg-card)', border: '1px solid var(--accent)' }
+                      : { backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }
                   }
                 >
                   <div
@@ -238,9 +248,16 @@ export default function WelcomeSteps() {
                     >
                       {step.label}
                     </p>
-                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                      {step.description}
-                    </p>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                      <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                        {step.description}
+                      </p>
+                      {!step.done && step.id === nextStep?.id && (
+                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>
+                          Recommended
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </Link>
               ))}

@@ -27,7 +27,7 @@ const ChartPlaceholder = ({ label = "Loading chart…" }: { label?: string }) =>
 // dashboard render path. ssr:false because the chart is purely decorative.
 const BalanceCardChart = dynamic(() => import("./BalanceCardChart"), {
   ssr: false,
-  loading: ChartPlaceholder,
+  loading: () => <ChartPlaceholder />,
 });
 
 function BalanceCard() {

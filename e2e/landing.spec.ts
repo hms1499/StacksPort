@@ -13,6 +13,15 @@ test.describe("Landing Page (Guest)", () => {
     await expect(page.getByRole("button", { name: /Launch App/i })).toBeVisible();
   });
 
+  test("mobile first viewport shows hero value prop", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await expect(page.locator("h1")).toBeInViewport();
+    await expect(page.getByRole("button", { name: /Launch App/i })).toBeInViewport();
+    await expect(page.getByText("Live on Stacks Mainnet")).toBeInViewport();
+  });
+
   test("renders Live on Stacks Mainnet badge", async ({ page }) => {
     await expect(page.getByText("Live on Stacks Mainnet")).toBeVisible();
   });
@@ -28,8 +37,6 @@ test.describe("Landing Page (Guest)", () => {
   });
 
   test("renders trust badges", async ({ page }) => {
-    // Trust badges are in the hero section (hidden on small viewports via lg:block parent)
-    const badges = page.locator("text=Non-custodial, text=Audited contracts, text=Stacks mainnet");
     // At least the hero copy section is visible
     await expect(page.getByText(/Non-custodial|Audited contracts|Stacks mainnet/).first()).toBeVisible();
   });

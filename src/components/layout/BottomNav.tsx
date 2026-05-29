@@ -55,6 +55,8 @@ export default function BottomNav() {
               onClick={() => setMoreOpen(false)}
             />
             <motion.div
+              data-testid="bottom-nav-more-menu"
+              aria-label="More navigation"
               className="fixed left-3 right-3 bottom-20 z-50 md:hidden rounded-2xl p-2 shadow-xl"
               style={{
                 backgroundColor: 'var(--bg-card)',

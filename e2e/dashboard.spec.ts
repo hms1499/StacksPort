@@ -8,9 +8,8 @@ test.describe("Dashboard Page (Connected)", () => {
     await page.goto("/dashboard");
   });
 
-  test("renders page with Dashboard title in topbar", async ({ page }) => {
-    // Use h1 to avoid matching hidden sidebar "Dashboard" label on mobile
-    await expect(page.locator("h1").filter({ hasText: "Dashboard" })).toBeVisible();
+  test("renders page with Home title in topbar", async ({ page }) => {
+    await expect(page.locator("h1").filter({ hasText: "Home" })).toBeVisible();
   });
 
   test("renders wallet banner", async ({ page }) => {
@@ -27,9 +26,19 @@ test.describe("Dashboard Page (Connected)", () => {
   });
 
   test("renders quick actions when connected", async ({ page }) => {
-    // Scope to main to avoid sidebar nav items (Swap, DCA Vault) hidden on mobile
-    const quickActions = page.locator("main").getByText(/Send|Receive|Swap|DCA/i).first();
-    await expect(quickActions).toBeVisible();
+    const main = page.locator("main");
+    await expect(main.getByText("Swap", { exact: true }).first()).toBeVisible();
+    await expect(main.getByText("DCA", { exact: true }).first()).toBeVisible();
+    await expect(main.getByText("Receive", { exact: true }).first()).toBeVisible();
+    await expect(main.getByText("Send", { exact: true }).first()).toBeVisible();
+    await expect(main.getByText("Alert", { exact: true }).first()).toBeVisible();
+  });
+
+  test("connected onboarding recommends next action", async ({ page }) => {
+    const welcome = page.getByTestId("welcome-steps");
+    await expect(welcome).toContainText("Next: Make a Swap", { timeout: 10000 });
+    await expect(welcome.getByRole("link", { name: /Continue/i })).toHaveAttribute("href", "/trade");
+    await expect(welcome).toContainText("Recommended");
   });
 
   test("renders market stats section", async ({ page }) => {

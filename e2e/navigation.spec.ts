@@ -38,10 +38,12 @@ test.describe("Navigation - Desktop Sidebar", () => {
     await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");
     // Wait for link to be stable before clicking
-    const tradeLink = page.locator('a[href="/trade"]').first();
+    const tradeLink = page.locator('aside a[href="/trade"]').first();
     await expect(tradeLink).toBeVisible({ timeout: 10000 });
-    await tradeLink.click();
-    await expect(page).toHaveURL(/\/trade/);
+    await Promise.all([
+      page.waitForURL(/\/trade/, { timeout: 10000 }),
+      tradeLink.click(),
+    ]);
   });
 
   test("active link has indicator on dashboard", async ({ page }) => {
@@ -88,8 +90,22 @@ test.describe("Navigation - Mobile Bottom Nav", () => {
     await expect(bottomNav.locator('a[href="/assets"]')).toBeVisible();
     await expect(bottomNav.locator('a[href="/trade"]')).toBeVisible();
     await expect(bottomNav.locator('a[href="/dca"]')).toBeVisible();
-    await expect(bottomNav.locator('a[href="/notifications"]')).toBeVisible();
-    await expect(bottomNav.locator('a[href="/ai"]')).toBeVisible();
+    await expect(bottomNav.getByRole("button", { name: "More" })).toBeVisible();
+    await expect(bottomNav.locator('a[href="/notifications"]')).toHaveCount(0);
+    await expect(bottomNav.locator('a[href="/ai"]')).toHaveCount(0);
+  });
+
+  test("bottom nav More menu exposes secondary destinations", async ({ page }) => {
+    await page.goto("/dashboard");
+    await page.waitForLoadState("networkidle");
+
+    await page.locator("nav.fixed").last().getByRole("button", { name: "More" }).click();
+
+    const moreMenu = page.getByTestId("bottom-nav-more-menu");
+    await expect(moreMenu.getByRole("link", { name: "Bubbles" })).toBeVisible();
+    await expect(moreMenu.getByRole("link", { name: "Alerts" })).toBeVisible();
+    await expect(moreMenu.getByRole("link", { name: "AI" })).toBeVisible();
+    await expect(moreMenu.getByRole("link", { name: "Apps" })).toBeVisible();
   });
 
   test("bottom nav navigation works", async ({ page }) => {
@@ -115,5 +131,27 @@ test.describe("Navigation - Route Guards", () => {
     await mockAPIs(page);
     await page.goto("/");
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+  });
+});
+
+test.describe("Command Palette", () => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    if (testInfo.project.name.includes("mobile")) {
+      testInfo.skip();
+    }
+    await mockWalletConnected(page);
+    await mockAPIs(page);
+  });
+
+  test("does not expose missing premium route", async ({ page }) => {
+    await page.goto("/dashboard");
+    await page.waitForLoadState("networkidle");
+
+    await page.getByRole("button", { name: /Search/i }).click();
+
+    await expect(page.getByText("Home", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Premium", { exact: true })).toHaveCount(0);
+    await page.getByPlaceholder("Type a command or search...").fill("premium");
+    await expect(page.getByText("No results found.")).toBeVisible();
   });
 });

@@ -3,6 +3,7 @@ import {
   TOKEN_REGISTRY,
   STACKS_GECKO_IDS,
   CONTRACT_TO_GECKO_ID,
+  CONTRACT_NAME_TO_GECKO,
   GECKO_ID_TO_DECIMALS,
   GECKO_ID_TO_SWAP_ID,
   isStacksGeckoId,
@@ -54,6 +55,18 @@ describe("derived maps preserve legacy behavior", () => {
 
   it("swap-id map matches the legacy COINGECKO_TO_SWAP_ID", () => {
     expect(GECKO_ID_TO_SWAP_ID).toEqual({ blockstack: "stx", "sbtc-2": "sbtc" });
+  });
+
+  it("contract-name valuation map matches the legacy CONTRACT_NAME_TO_GECKO", () => {
+    expect(CONTRACT_NAME_TO_GECKO).toEqual({
+      "welshcorgicoin-token": { geckoId: "welsh-corgi-coin", decimals: 6 },
+      "age000-governance-token": { geckoId: "alexgo", decimals: 8 },
+      "velar-token": { geckoId: "velar", decimals: 6 },
+      // sBTC is valued via the BTC feed (1:1 peg), not its own sbtc-2 page.
+      "sbtc-token": { geckoId: "bitcoin", decimals: 8 },
+      "ststx-token": { geckoId: "stacking-dao", decimals: 6 },
+      usdcx: { geckoId: null, decimals: 6, fixedUsdPrice: 1 },
+    });
   });
 });
 

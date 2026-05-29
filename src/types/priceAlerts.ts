@@ -36,8 +36,8 @@ export interface PriceAlertStoreState {
 // gecko ids stay correct in one place (the legacy hardcoded list had dead ids
 // for WELSH and stSTX).
 export const PRICE_ALERT_TOKENS: { symbol: string; geckoId: string; name: string }[] =
-  TOKEN_REGISTRY.filter((t) => t.alert).map(({ symbol, geckoId, name }) => ({
-    symbol,
-    geckoId,
-    name,
+  TOKEN_REGISTRY.filter((t) => t.alert && t.geckoId).map((t) => ({
+    symbol: t.symbol,
+    geckoId: t.geckoId!,
+    name: t.name,
   }));

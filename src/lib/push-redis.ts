@@ -3,7 +3,20 @@ import { Redis } from '@upstash/redis';
 
 const KEY = 'push:subs';
 
-const redis = Redis.fromEnv();
+let redis: Redis | null | undefined;
+
+function getRedis(): Redis | null {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return null;
+  }
+  if (redis !== undefined) return redis;
+  try {
+    redis = Redis.fromEnv();
+  } catch {
+    redis = null;
+  }
+  return redis;
+}
 
 export interface PushAlertEntry {
   id: string;
@@ -36,7 +49,9 @@ function normalizeAddr(addr: string): string {
 }
 
 export async function getSub(addr: string): Promise<SubEntry | null> {
-  const raw = await redis.hget<SubEntry | string>(KEY, normalizeAddr(addr));
+  const client = getRedis();
+  if (!client) return null;
+  const raw = await client.hget<SubEntry | string>(KEY, normalizeAddr(addr));
   if (raw === null || raw === undefined) return null;
   // Upstash REST may return parsed object or stringified JSON depending on how it was written.
   if (typeof raw === 'string') {
@@ -46,9 +61,13 @@ export async function getSub(addr: string): Promise<SubEntry | null> {
 }
 
 export async function putSub(addr: string, entry: SubEntry): Promise<void> {
-  await redis.hset(KEY, { [normalizeAddr(addr)]: JSON.stringify(entry) });
+  const client = getRedis();
+  if (!client) return;
+  await client.hset(KEY, { [normalizeAddr(addr)]: JSON.stringify(entry) });
 }
 
 export async function deleteSub(addr: string): Promise<void> {
-  await redis.hdel(KEY, normalizeAddr(addr));
+  const client = getRedis();
+  if (!client) return;
+  await client.hdel(KEY, normalizeAddr(addr));
 }

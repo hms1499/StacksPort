@@ -17,9 +17,9 @@ type Period = "1D" | "1W" | "1M" | "1Y";
 
 const periodDays: Record<Period, number> = { "1D": 1, "1W": 7, "1M": 30, "1Y": 365 };
 
-const ChartPlaceholder = () => (
+const ChartPlaceholder = ({ label = "Loading chart…" }: { label?: string }) => (
   <div className="h-full min-h-[110px] rounded-xl flex items-center justify-center bg-sunken">
-    <span className="text-xs text-fg-muted">Loading chart…</span>
+    <span className="text-xs text-fg-muted">{label}</span>
   </div>
 );
 
@@ -75,7 +75,10 @@ function BalanceCard() {
     return totalStx * portfolio.stxPrice;
   }, [dcaPlans, portfolio]);
 
-  const chartData = isConnected ? portfolioHistory ?? [] : priceHistory ?? [];
+  const chartData = useMemo(
+    () => (isConnected ? portfolioHistory ?? [] : priceHistory ?? []),
+    [isConnected, portfolioHistory, priceHistory]
+  );
   const loading = portfolioLoading && !portfolio;
 
   const periodChange = useMemo(() => {
@@ -222,6 +225,36 @@ function BalanceCard() {
               )}
             </AnimatePresence>
           </>
+        ) : isConnected ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <p className="text-4xl font-bold font-data text-fg opacity-[0.72]">
+                {formatUSD(0)}
+              </p>
+              <span className="text-xs font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-md text-fg-muted bg-sunken">
+                No data
+              </span>
+            </div>
+            <p className="max-w-md text-xs leading-relaxed text-fg-muted">
+              Portfolio data is not available yet. Check your assets or receive
+              STX to start tracking real balances here.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/assets"
+                className="inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold transition-colors bg-brand text-[#060C18]"
+              >
+                View Assets
+              </Link>
+              <Link
+                href="/trade"
+                className="inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold transition-colors text-fg"
+                style={{ border: "1px solid var(--border-subtle)" }}
+              >
+                Swap
+              </Link>
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col gap-3">
             <div className="flex items-baseline gap-3 flex-wrap">
@@ -255,7 +288,9 @@ function BalanceCard() {
         {chartData.length > 0 ? (
           <BalanceCardChart chartData={chartData} isConnected={isConnected} isDark={isDark} />
         ) : (
-          <ChartPlaceholder />
+          <ChartPlaceholder
+            label={isConnected ? "Portfolio history will appear after balances load." : "Loading chart…"}
+          />
         )}
       </div>
     </div>

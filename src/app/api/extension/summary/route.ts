@@ -12,11 +12,11 @@ const CONTRACT_NAME_TO_GECKO: Record<
   string,
   { geckoId: string | null; decimals: number; fixedUsdPrice?: number }
 > = {
-  "welshcorgicoin-token": { geckoId: "welshcorgicoin", decimals: 6 },
+  "welshcorgicoin-token": { geckoId: "welsh-corgi-coin", decimals: 6 },
   "age000-governance-token": { geckoId: "alexgo", decimals: 8 },
   "velar-token": { geckoId: "velar", decimals: 6 },
   "sbtc-token": { geckoId: "bitcoin", decimals: 8 },
-  "ststx-token": { geckoId: "staked-stx", decimals: 6 },
+  "ststx-token": { geckoId: "stacking-dao", decimals: 6 },
   usdcx: { geckoId: null, decimals: 6, fixedUsdPrice: 1 },
 };
 

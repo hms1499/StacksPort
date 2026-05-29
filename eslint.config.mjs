@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated test artifacts (also in .gitignore) — never lint these.
+    "playwright-report/**",
+    "test-results/**",
   ]),
   {
     rules: {

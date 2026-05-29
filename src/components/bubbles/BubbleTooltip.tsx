@@ -9,6 +9,7 @@ import { useHoldings } from "@/hooks/useHoldings";
 import type { Timeframe } from "./TimeframeToggle";
 import Sparkline from "./Sparkline";
 import BubbleAlertForm from "./BubbleAlertForm";
+import { GECKO_ID_TO_SWAP_ID } from "@/lib/token-registry";
 
 function fmtUsd(v: number): string {
   if (v >= 1_000_000_000_000) return `$${(v / 1_000_000_000_000).toFixed(2)}T`;
@@ -30,15 +31,8 @@ function fmtAmount(v: number): string {
   return v.toFixed(6).replace(/\.?0+$/, "");
 }
 
-// Maps CoinGecko coin id → SwapWidget token id when the token is tradeable on Bitflow.
-const COINGECKO_TO_SWAP_ID: Record<string, string> = {
-  blockstack: "stx",
-  "sbtc-2": "sbtc",
-};
-
-
 function getSwapHref(coingeckoId: string): string {
-  const swapId = COINGECKO_TO_SWAP_ID[coingeckoId];
+  const swapId = GECKO_ID_TO_SWAP_ID[coingeckoId];
   if (!swapId) return "/trade";
   // Intent: acquire this token, so it's the destination.
   const fromId = swapId === "stx" ? "sbtc" : "stx";
@@ -291,7 +285,7 @@ export default function BubbleTooltip({
         </div>
 
         <div className="flex gap-2">
-          {token.isStacks && COINGECKO_TO_SWAP_ID[token.id] ? (
+          {token.isStacks && GECKO_ID_TO_SWAP_ID[token.id] ? (
             <Link
               href={getSwapHref(token.id)}
               className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"

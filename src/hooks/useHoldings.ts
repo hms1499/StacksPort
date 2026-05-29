@@ -2,14 +2,9 @@
 
 import useSWR from "swr";
 import { useWalletStore } from "@/store/walletStore";
+import { CONTRACT_TO_GECKO_ID, GECKO_ID_TO_DECIMALS } from "@/lib/token-registry";
 
 const HIRO_API = "https://api.hiro.so";
-
-// Maps Stacks contract id (lowercase, principal.name) → CoinGecko coin id.
-// Extend as we add more Stacks tokens with reliable price feeds.
-const CONTRACT_TO_COINGECKO: Record<string, string> = {
-  "sm3vdxk3wzzsa84xxfkafaf15nnzx32ctsg82jfq4.sbtc-token": "sbtc-2",
-};
 
 const STX_DECIMALS = 6;
 
@@ -39,12 +34,11 @@ async function fetchHoldings(address: string): Promise<Record<string, Holding>> 
     // key shape: "SP....contract::asset"
     const contractId = key.split("::")[0]?.toLowerCase();
     if (!contractId) continue;
-    const coingeckoId = CONTRACT_TO_COINGECKO[contractId];
+    const coingeckoId = CONTRACT_TO_GECKO_ID[contractId];
     if (!coingeckoId) continue;
     const raw = Number(val.balance ?? 0);
     if (raw <= 0) continue;
-    // sBTC uses 8 decimals. Future tokens may differ — keep table next to mapping.
-    const decimals = coingeckoId === "sbtc-2" ? 8 : 6;
+    const decimals = GECKO_ID_TO_DECIMALS[coingeckoId] ?? 6;
     out[coingeckoId] = { amount: raw / 10 ** decimals };
   }
 

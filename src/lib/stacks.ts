@@ -982,6 +982,14 @@ export async function getTokensWithValues(address: string): Promise<{
 }
 
 export async function getSTXPrice(): Promise<{ usd: number; usd_24h_change: number }> {
+  // Server-side E2E seam (client reads go through the mocked /api/coingecko
+  // proxy; process.env.E2E is undefined in the browser so this is stripped
+  // there). Shares one mock price with the market-snapshot fixture.
+  if (process.env.E2E === "1") {
+    const { E2E_STX_PRICE } = await import("@/lib/server/e2e-fixtures");
+    return { ...E2E_STX_PRICE };
+  }
+
   try {
     const res = await fetch(
       `${COINGECKO_API}/simple/price?ids=blockstack&vs_currencies=usd&include_24hr_change=true`,

@@ -63,6 +63,15 @@ async function safe<T>(p: Promise<T>): Promise<T | null> {
 }
 
 export async function getMarketSnapshot(): Promise<MarketSnapshot> {
+  // E2E runs short-circuit to a deterministic fixture. This must live on the
+  // server (not a Playwright route mock) because this function is invoked
+  // during RSC render — see e2e-fixtures.ts for the full rationale. Dynamic
+  // import keeps the fixture out of the production hot path.
+  if (process.env.E2E === "1") {
+    const { e2eMarketSnapshot } = await import("./e2e-fixtures");
+    return e2eMarketSnapshot();
+  }
+
   const [trending, stxStats, stxHistory7d, pox, fearGreed, news, swapPrices] =
     await Promise.all([
       safe(getTrendingTokens()),

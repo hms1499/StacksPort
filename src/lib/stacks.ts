@@ -1,3 +1,5 @@
+import { CONTRACT_NAME_TO_GECKO } from "./token-registry";
+
 const HIRO_API_BASE = "https://api.hiro.so";
 // Client uses the in-app proxy (avoids CORS + adds CDN cache); server hits CoinGecko
 // directly since relative URLs don't resolve outside the browser.
@@ -15,19 +17,6 @@ export interface TrendingToken {
   image: string;
   sparkline: number[];
 }
-
-// Map contract name (between "." and "::") → CoinGecko ID + decimals
-// For tokens not on CoinGecko (stablecoins pegged to USD), use geckoId: null and fixedUsdPrice
-const CONTRACT_NAME_TO_GECKO: Record<string, { geckoId: string | null; decimals: number; fixedUsdPrice?: number }> = {
-  "welshcorgicoin-token": { geckoId: "welsh-corgi-coin", decimals: 6 },
-  "age000-governance-token": { geckoId: "alexgo", decimals: 8 },
-  "velar-token": { geckoId: "velar", decimals: 6 },
-  "sbtc-token": { geckoId: "bitcoin", decimals: 8 },
-  "ststx-token": { geckoId: "stacking-dao", decimals: 6 },
-  // USDCx — bridged USDC on Stacks (SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE.usdcx)
-  // Pegged 1:1 to USDC, use fixed price instead of CoinGecko lookup
-  "usdcx": { geckoId: null, decimals: 6, fixedUsdPrice: 1 },
-};
 
 // CoinGecko id resolver for a TokenWithValue. Returns null for tokens not in
 // the known map or pegged stablecoins (no real price chart to show).

@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, Bell } from "lucide-react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useHoldings } from "@/hooks/useHoldings";
 import type { Timeframe } from "./TimeframeToggle";
 import Sparkline from "./Sparkline";
+import BubbleAlertForm from "./BubbleAlertForm";
 
 function fmtUsd(v: number): string {
   if (v >= 1_000_000_000_000) return `$${(v / 1_000_000_000_000).toFixed(2)}T`;
@@ -73,6 +74,7 @@ export default function BubbleTooltip({
   const ref = useRef<HTMLDivElement>(null);
   const [imgError, setImgError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const { has: isStarred, toggle: toggleStar } = useWatchlist();
   const starred = isStarred(token.id);
   const { holdings } = useHoldings();
@@ -80,6 +82,7 @@ export default function BubbleTooltip({
 
   useEffect(() => {
     setImgError(false);
+    setShowAlert(false);
   }, [token.id]);
 
   useEffect(() => {
@@ -203,6 +206,21 @@ export default function BubbleTooltip({
           </div>
           <button
             type="button"
+            onClick={() => setShowAlert((v) => !v)}
+            aria-label="Set price alert"
+            aria-pressed={showAlert}
+            className="p-1.5 rounded-md transition-colors hover:bg-white/5"
+            title="Set price alert"
+          >
+            <Bell
+              size={16}
+              strokeWidth={2}
+              fill={showAlert ? "#408A71" : "transparent"}
+              color={showAlert ? "#408A71" : "var(--text-muted)"}
+            />
+          </button>
+          <button
+            type="button"
             onClick={() => toggleStar(token.id)}
             aria-label={starred ? "Remove from watchlist" : "Add to watchlist"}
             aria-pressed={starred}
@@ -255,6 +273,14 @@ export default function BubbleTooltip({
           </div>
         )}
 
+        {showAlert ? (
+          <BubbleAlertForm
+            symbol={token.symbol}
+            geckoId={token.id}
+            currentPrice={token.price}
+          />
+        ) : (
+          <>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs mb-3">
           <Stat label="MCap" value={fmtUsd(token.marketCap)} />
           <Stat label="Vol 24h" value={fmtUsd(token.volume24h)} />
@@ -295,6 +321,8 @@ export default function BubbleTooltip({
             </a>
           )}
         </div>
+          </>
+        )}
       </div>
       </div>
     </>

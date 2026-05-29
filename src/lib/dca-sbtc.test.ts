@@ -34,14 +34,14 @@ describe("aggregateSBTCPlanPerformance", () => {
     expect(r.targetTokenContract).toBeNull();
   });
 
-  it("ignores non-success events from totals but counts them", () => {
+  it("counts only successful events and ignores non-success from totals", () => {
     const events = [
       ev({ blockTime: 1_700_000_100 }),
       ev({ status: "pending", sbtcIn: undefined, tokenOut: undefined, blockTime: 0 }),
       ev({ status: "failed", sbtcIn: undefined, tokenOut: undefined, blockTime: 1_700_000_200 }),
     ];
     const r = aggregateSBTCPlanPerformance(7, events);
-    expect(r.executionCount).toBe(3);
+    expect(r.executionCount).toBe(1);
     expect(r.totalSbtcIn).toBe(100_000);
     expect(r.totalTokenOut).toBe(50);
     expect(r.successfulEvents).toHaveLength(1);

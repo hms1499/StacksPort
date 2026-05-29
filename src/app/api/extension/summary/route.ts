@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CONTRACT_NAME_TO_GECKO } from "@/lib/token-registry";
 
 const COINGECKO = "https://api.coingecko.com/api/v3";
 const HIRO = "https://api.hiro.so";
@@ -6,18 +7,6 @@ const HIRO = "https://api.hiro.so";
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
-};
-
-const CONTRACT_NAME_TO_GECKO: Record<
-  string,
-  { geckoId: string | null; decimals: number; fixedUsdPrice?: number }
-> = {
-  "welshcorgicoin-token": { geckoId: "welsh-corgi-coin", decimals: 6 },
-  "age000-governance-token": { geckoId: "alexgo", decimals: 8 },
-  "velar-token": { geckoId: "velar", decimals: 6 },
-  "sbtc-token": { geckoId: "bitcoin", decimals: 8 },
-  "ststx-token": { geckoId: "stacking-dao", decimals: 6 },
-  usdcx: { geckoId: null, decimals: 6, fixedUsdPrice: 1 },
 };
 
 export async function OPTIONS() {

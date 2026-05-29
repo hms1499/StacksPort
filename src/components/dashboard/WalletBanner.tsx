@@ -49,11 +49,11 @@ export default function WalletBanner() {
 
   return (
     <div className="bg-gradient-to-r from-[#408A71] to-[#285A48] rounded-2xl p-5 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+      <div className="flex items-center gap-4 flex-1 min-w-0">
+        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
           <Wallet size={22} className="text-white" />
         </div>
-        <div className="min-w-0">
+        <div className="flex-1 min-w-0">
           <p className="text-white font-semibold">Connect your wallet</p>
           <div className="relative h-5 mt-0.5 overflow-hidden">
             <AnimatePresence mode="wait" initial={false}>
@@ -74,7 +74,7 @@ export default function WalletBanner() {
       <button
         onClick={handleConnect}
         disabled={connecting}
-        className="flex items-center gap-2 bg-white text-[#285A48] px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#B0E4CC]/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        className="shrink-0 flex items-center gap-2 bg-white text-[#285A48] px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#B0E4CC]/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {connecting ? (
           <>

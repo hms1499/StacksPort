@@ -1,3 +1,5 @@
+import { TOKEN_REGISTRY } from '@/lib/token-registry';
+
 export type PriceAlertCondition = 'above' | 'below';
 
 export interface PriceAlert {
@@ -30,12 +32,12 @@ export interface PriceAlertStoreState {
   resetAlert: (id: string) => void;
 }
 
-// Tokens available for price alerts
-export const PRICE_ALERT_TOKENS: { symbol: string; geckoId: string; name: string }[] = [
-  { symbol: 'STX',    geckoId: 'blockstack',       name: 'Stacks' },
-  { symbol: 'BTC',    geckoId: 'bitcoin',           name: 'Bitcoin' },
-  { symbol: 'WELSH',  geckoId: 'welshcorgicoin',    name: 'Welsh Corgi' },
-  { symbol: 'ALEX',   geckoId: 'alexgo',            name: 'ALEX' },
-  { symbol: 'VELAR',  geckoId: 'velar',             name: 'Velar' },
-  { symbol: 'stSTX',  geckoId: 'staked-stx',        name: 'Staked STX' },
-];
+// Tokens available for price alerts — derived from the canonical registry so
+// gecko ids stay correct in one place (the legacy hardcoded list had dead ids
+// for WELSH and stSTX).
+export const PRICE_ALERT_TOKENS: { symbol: string; geckoId: string; name: string }[] =
+  TOKEN_REGISTRY.filter((t) => t.alert).map(({ symbol, geckoId, name }) => ({
+    symbol,
+    geckoId,
+    name,
+  }));

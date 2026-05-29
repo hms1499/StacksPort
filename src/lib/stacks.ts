@@ -19,11 +19,11 @@ export interface TrendingToken {
 // Map contract name (between "." and "::") → CoinGecko ID + decimals
 // For tokens not on CoinGecko (stablecoins pegged to USD), use geckoId: null and fixedUsdPrice
 const CONTRACT_NAME_TO_GECKO: Record<string, { geckoId: string | null; decimals: number; fixedUsdPrice?: number }> = {
-  "welshcorgicoin-token": { geckoId: "welshcorgicoin", decimals: 6 },
+  "welshcorgicoin-token": { geckoId: "welsh-corgi-coin", decimals: 6 },
   "age000-governance-token": { geckoId: "alexgo", decimals: 8 },
   "velar-token": { geckoId: "velar", decimals: 6 },
   "sbtc-token": { geckoId: "bitcoin", decimals: 8 },
-  "ststx-token": { geckoId: "staked-stx", decimals: 6 },
+  "ststx-token": { geckoId: "stacking-dao", decimals: 6 },
   // USDCx — bridged USDC on Stacks (SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE.usdcx)
   // Pegged 1:1 to USDC, use fixed price instead of CoinGecko lookup
   "usdcx": { geckoId: null, decimals: 6, fixedUsdPrice: 1 },

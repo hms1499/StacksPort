@@ -25,12 +25,9 @@ import FilterMenu, {
   hasAnyFilterParam,
   type BubbleFilters,
 } from "./FilterMenu";
-import ShareButton from "./ShareButton";
-import RefreshButton from "./RefreshButton";
 import UpdatedAt from "./UpdatedAt";
 import ActiveFilterChips from "./ActiveFilterChips";
-import SnapshotButton from "./SnapshotButton";
-import PauseButton from "./PauseButton";
+import ToolbarMenu from "./ToolbarMenu";
 import WatchlistBar from "./WatchlistBar";
 import ViewToggle, { type View } from "./ViewToggle";
 import BubbleList from "./BubbleList";
@@ -273,34 +270,14 @@ export default function BubblesPageContent() {
           <MetricToggle value={metric} onChange={setMetric} />
           <TimeframeToggle value={timeframe} onChange={setTimeframe} />
           <FilterMenu value={filters} onChange={setFilters} />
-          <RefreshButton
-            onClick={() => mutate()}
+          <ToolbarMenu
+            onRefresh={() => mutate()}
             isRefreshing={isValidating}
+            bubbleView={view === "bubbles"}
+            paused={paused}
+            onTogglePause={() => setPaused((v) => !v)}
+            onShowHelp={() => setShowHelp(true)}
           />
-          {view === "bubbles" && (
-            <>
-              <PauseButton
-                paused={paused}
-                onToggle={() => setPaused((v) => !v)}
-              />
-              <SnapshotButton />
-            </>
-          )}
-          <ShareButton />
-          <button
-            type="button"
-            onClick={() => setShowHelp(true)}
-            aria-label="Keyboard shortcuts"
-            title="Keyboard shortcuts (?)"
-            className="hidden sm:flex h-7 w-7 rounded-lg items-center justify-center text-xs font-mono hover:opacity-80"
-            style={{
-              backgroundColor: "var(--bg-card)",
-              border: "1px solid var(--border-subtle)",
-              color: "var(--text-muted)",
-            }}
-          >
-            ?
-          </button>
         </div>
 
         {tokens && tokens.length > 0 && (

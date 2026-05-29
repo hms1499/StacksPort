@@ -11,7 +11,6 @@ import {
   Repeat2,
   Bell,
   Sparkles,
-  Crown,
   Moon,
   Sun,
   Command,
@@ -77,7 +76,6 @@ export default function CommandPalette() {
     { id: "dca",           label: "DCA Vault",      description: "Automated investing plans", icon: <Repeat2 size={18} />,      action: () => navigate("/dca", "dca"),                  keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
     { id: "notifications", label: "Notifications",  description: "Alerts & price targets",    icon: <Bell size={18} />,         action: () => navigate("/notifications", "notifications"), keywords: ["notifications", "alerts", "price", "targets"] },
     { id: "ai",            label: "Stacks AI",      description: "AI-powered insights",       icon: <Sparkles size={18} />,     action: () => navigate("/ai", "ai"),                    keywords: ["ai", "insights", "analysis", "intelligence"] },
-    { id: "premium",       label: "Premium",        description: "Coming soon",               icon: <Crown size={18} />,        action: () => navigate("/premium", "premium"),          keywords: ["premium", "pro", "upgrade"] },
     {
       id: "theme",
       label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`,

@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
+import { STACKS_GECKO_IDS, isStacksGeckoId } from "@/lib/token-registry";
 
 const COINGECKO = "https://api.coingecko.com/api/v3";
-
-const STACKS_TOKEN_IDS = [
-  "blockstack",
-  "sbtc-2",
-  "alexgo",
-  "velar",
-  "hermetica-usdh",
-  "welsh-corgi-coin",
-];
 
 export interface BubbleToken {
   id: string;
@@ -47,7 +39,7 @@ function mapCoin(
     change1y: (coin.price_change_percentage_1y_in_currency as number) ?? 0,
     sparkline7d:
       ((coin.sparkline_in_7d as { price?: number[] } | undefined)?.price ?? []) as number[],
-    isStacks: forceStacks || STACKS_TOKEN_IDS.includes(coin.id as string),
+    isStacks: forceStacks || isStacksGeckoId(coin.id as string),
   };
 }
 
@@ -68,7 +60,7 @@ export async function GET() {
     const tokens: BubbleToken[] = topCoins.map((c) => mapCoin(c));
 
     const presentIds = new Set(tokens.map((t) => t.id));
-    const missingStacks = STACKS_TOKEN_IDS.filter(
+    const missingStacks = STACKS_GECKO_IDS.filter(
       (id) => !presentIds.has(id)
     );
 

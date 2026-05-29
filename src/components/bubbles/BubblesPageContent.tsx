@@ -28,6 +28,7 @@ import FilterMenu, {
 import UpdatedAt from "./UpdatedAt";
 import ActiveFilterChips from "./ActiveFilterChips";
 import ToolbarMenu from "./ToolbarMenu";
+import EdgeFadeScroller from "./EdgeFadeScroller";
 import WatchlistBar from "./WatchlistBar";
 import ViewToggle, { type View } from "./ViewToggle";
 import BubbleList from "./BubbleList";
@@ -249,7 +250,7 @@ export default function BubblesPageContent() {
             )}
             <UpdatedAt timestamp={updatedAt} />
           </h1>
-          <div className="flex-1 sm:flex-initial overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <EdgeFadeScroller className="overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:contents">
             <ScopeToggle
               value={scope}
               onChange={setScope}
@@ -257,27 +258,33 @@ export default function BubblesPageContent() {
               watchlistCount={watchlistCount}
               holdingsCount={holdingsCount}
             />
-          </div>
+          </EdgeFadeScroller>
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:flex-wrap sm:justify-end *:shrink-0">
-          <SearchInput
-            ref={searchRef}
-            value={search}
-            onChange={setSearch}
-            placeholder={isMobile ? "Search…" : "Search…  ( / )"}
-          />
-          <ViewToggle value={view} onChange={setView} />
-          <MetricToggle value={metric} onChange={setMetric} />
-          <TimeframeToggle value={timeframe} onChange={setTimeframe} />
-          <FilterMenu value={filters} onChange={setFilters} />
-          <ToolbarMenu
-            onRefresh={() => mutate()}
-            isRefreshing={isValidating}
-            bubbleView={view === "bubbles"}
-            paused={paused}
-            onTogglePause={() => setPaused((v) => !v)}
-            onShowHelp={() => setShowHelp(true)}
-          />
+        <div className="flex items-center gap-2 min-w-0 sm:flex-wrap sm:justify-end">
+          <EdgeFadeScroller className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:contents *:shrink-0">
+            <SearchInput
+              ref={searchRef}
+              value={search}
+              onChange={setSearch}
+              placeholder={isMobile ? "Search…" : "Search…  ( / )"}
+            />
+            <ViewToggle value={view} onChange={setView} />
+            <MetricToggle value={metric} onChange={setMetric} />
+            <TimeframeToggle value={timeframe} onChange={setTimeframe} />
+          </EdgeFadeScroller>
+          {/* Pop-over triggers stay outside the scroller: an overflow-x:auto
+              container also clips dropdowns vertically. */}
+          <div className="flex items-center gap-2 shrink-0 sm:contents">
+            <FilterMenu value={filters} onChange={setFilters} />
+            <ToolbarMenu
+              onRefresh={() => mutate()}
+              isRefreshing={isValidating}
+              bubbleView={view === "bubbles"}
+              paused={paused}
+              onTogglePause={() => setPaused((v) => !v)}
+              onShowHelp={() => setShowHelp(true)}
+            />
+          </div>
         </div>
 
         {tokens && tokens.length > 0 && (

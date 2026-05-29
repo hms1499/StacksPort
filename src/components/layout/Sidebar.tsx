@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { sidebarSpring } from "@/lib/animations";
 
 const navItems = [
-  { href: "/dashboard",     label: "Dashboard",  icon: LayoutDashboard },
+  { href: "/dashboard",     label: "Home",       icon: LayoutDashboard },
   { href: "/bubbles",       label: "Bubbles",    icon: Circle },
   { href: "/assets",        label: "My Assets",  icon: Wallet },
   { href: "/trade",         label: "Swap",       icon: ArrowLeftRight },

@@ -17,7 +17,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="Dashboard" />
+      <Topbar title="Home" />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <DashboardGridClient marketSnapshot={marketSnapshot} />
         <DashboardFooter />

@@ -326,7 +326,7 @@ export default function Home() {
       {/* ══════════════════════════════════════
           HERO
       ══════════════════════════════════════ */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden px-5 md:px-8 pt-16">
+      <section ref={heroRef} className="relative min-h-[100svh] lg:min-h-screen flex items-start lg:items-center overflow-hidden px-5 md:px-8 pt-28 pb-16 lg:pt-16 lg:pb-0">
         {/* Ambient glow background */}
         <div
           ref={ambientGlowRef}
@@ -348,13 +348,13 @@ export default function Home() {
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center py-24 md:py-32">
+        <div className="relative max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-0 lg:py-32">
 
           {/* ── Left: copy ── */}
           <div>
             <div ref={heroBadgeRef}>
               <span
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold tracking-widest uppercase mb-6 md:mb-8"
                 style={{
                   backgroundColor: 'rgba(0,229,160,0.08)',
                   color: '#00E5A0',
@@ -372,7 +372,7 @@ export default function Home() {
 
             <h1
               ref={heroH1Ref}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-none mb-6"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-none mb-5 md:mb-6"
               style={{ letterSpacing: '-0.04em' }}
             >
               Smart Portfolio<br />
@@ -390,7 +390,7 @@ export default function Home() {
 
             <p
               ref={heroSubRef}
-              className="text-lg leading-relaxed mb-10 max-w-lg"
+              className="text-base md:text-lg leading-relaxed mb-8 md:mb-10 max-w-lg"
               style={{ color: 'rgba(221,232,248,0.55)' }}
             >
               Automate DCA plans, execute instant swaps, and track your portfolio
@@ -399,7 +399,7 @@ export default function Home() {
 
             <div
               ref={heroButtonsRef}
-              className="flex flex-col sm:flex-row gap-3 mb-10"
+              className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-10"
             >
               <button
                 onClick={handleConnect}

@@ -1,15 +1,16 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { Star, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type Scope = "all" | "stacks" | "watchlist";
+export type Scope = "all" | "stacks" | "watchlist" | "holdings";
 
 interface ScopeToggleProps {
   value: Scope;
   onChange: (s: Scope) => void;
   stacksCount: number;
   watchlistCount: number;
+  holdingsCount: number;
 }
 
 function Pill({
@@ -54,6 +55,7 @@ export default function ScopeToggle({
   onChange,
   stacksCount,
   watchlistCount,
+  holdingsCount,
 }: ScopeToggleProps) {
   return (
     <div className="flex gap-1 rounded-lg p-0.5" style={{ backgroundColor: "var(--bg-card)" }}>
@@ -72,6 +74,10 @@ export default function ScopeToggle({
           color={value === "watchlist" ? "#fbbf24" : "currentColor"}
         />
         <Count active={value === "watchlist"} n={watchlistCount} />
+      </Pill>
+      <Pill active={value === "holdings"} onClick={() => onChange("holdings")}>
+        <Wallet size={11} strokeWidth={2.5} />
+        <Count active={value === "holdings"} n={holdingsCount} />
       </Pill>
     </div>
   );

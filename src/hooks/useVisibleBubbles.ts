@@ -28,6 +28,7 @@ type Args = {
   tokens: BubbleToken[] | undefined;
   scope: Scope;
   watchlistIds: Set<string>;
+  heldIds: Set<string>;
   filters: BubbleFilters;
   timeframe: Timeframe;
   search: string;
@@ -42,6 +43,7 @@ export function useVisibleBubbles({
   tokens,
   scope,
   watchlistIds,
+  heldIds,
   filters,
   timeframe,
   search,
@@ -52,6 +54,8 @@ export function useVisibleBubbles({
     if (scope === "stacks") filtered = filtered.filter((t) => t.isStacks);
     else if (scope === "watchlist")
       filtered = filtered.filter((t) => watchlistIds.has(t.id));
+    else if (scope === "holdings")
+      filtered = filtered.filter((t) => heldIds.has(t.id));
     if (filters.minMarketCap > 0) {
       filtered = filtered.filter((t) => t.marketCap >= filters.minMarketCap);
     }
@@ -82,5 +86,5 @@ export function useVisibleBubbles({
       );
     }
     return filtered;
-  }, [tokens, scope, watchlistIds, search, filters, timeframe]);
+  }, [tokens, scope, watchlistIds, heldIds, search, filters, timeframe]);
 }

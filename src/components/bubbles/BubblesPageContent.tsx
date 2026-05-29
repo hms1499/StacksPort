@@ -36,7 +36,7 @@ import ViewToggle, { type View } from "./ViewToggle";
 import BubbleList from "./BubbleList";
 
 const VALID_TF: Timeframe[] = ["1h", "24h", "7d", "30d", "1y"];
-const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist"];
+const VALID_SCOPE: Scope[] = ["all", "stacks", "watchlist", "holdings"];
 const VALID_METRIC: Metric[] = ["change", "marketCap", "volume"];
 const VALID_VIEW: View[] = ["bubbles", "list"];
 
@@ -98,7 +98,7 @@ export default function BubblesPageContent() {
     if (tokens && !isValidating) setUpdatedAt(Date.now());
   }, [tokens, isValidating]);
   const { ids: watchlistIds, size: watchlistCount } = useWatchlist();
-  const { holdings } = useHoldings();
+  const { holdings, isConnected } = useHoldings();
   const heldIds = useMemo(() => new Set(Object.keys(holdings)), [holdings]);
   const [search, setSearch] = useState(qParam);
   const [filters, setFilters] = useState<BubbleFilters>(() => {
@@ -153,11 +153,16 @@ export default function BubblesPageContent() {
     () => tokens?.filter((t) => t.isStacks).length ?? 0,
     [tokens]
   );
+  const holdingsCount = useMemo(
+    () => tokens?.filter((t) => heldIds.has(t.id)).length ?? 0,
+    [tokens, heldIds]
+  );
 
   const visibleTokens = useVisibleBubbles({
     tokens,
     scope,
     watchlistIds,
+    heldIds,
     filters,
     timeframe,
     search,
@@ -253,6 +258,7 @@ export default function BubblesPageContent() {
               onChange={setScope}
               stacksCount={stacksCount}
               watchlistCount={watchlistCount}
+              holdingsCount={holdingsCount}
             />
           </div>
         </div>
@@ -375,13 +381,23 @@ export default function BubblesPageContent() {
         {visibleTokens && visibleTokens.length === 0 && tokens && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
             <div className="text-3xl opacity-60">
-              {search.trim() ? "🔎" : scope === "watchlist" ? "⭐" : "📭"}
+              {search.trim()
+                ? "🔎"
+                : scope === "watchlist"
+                ? "⭐"
+                : scope === "holdings"
+                ? "👛"
+                : "📭"}
             </div>
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
               {search.trim()
                 ? `No tokens match "${search}".`
                 : scope === "watchlist"
                 ? "Your watchlist is empty. Tap the ⭐ on any bubble to add it."
+                : scope === "holdings"
+                ? isConnected
+                  ? "None of your holdings are among the tracked tokens."
+                  : "Connect your wallet to see your holdings as bubbles."
                 : "No Stacks ecosystem tokens available."}
             </p>
             {search.trim() && (
@@ -398,7 +414,8 @@ export default function BubblesPageContent() {
                 Clear search
               </button>
             )}
-            {!search.trim() && scope === "watchlist" && (
+            {!search.trim() &&
+              (scope === "watchlist" || scope === "holdings") && (
               <button
                 type="button"
                 onClick={() => setScope("all")}

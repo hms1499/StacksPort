@@ -26,7 +26,7 @@ type Options = {
 /**
  * Global keyboard shortcuts for the bubbles view. Escape cascades
  * (blur input → close help → close tooltip → clear search); single keys map to
- * metric (1-3), timeframe (q/w/e/r/t), scope (a/s/d), refresh (g), pause (p),
+ * metric (1-3), timeframe (q/w/e/r/t), scope (a/s/d/h), refresh (g), pause (p),
  * view toggle (l), search focus (/), and help (?). No-ops while typing.
  */
 export function useBubbleShortcuts({
@@ -93,6 +93,7 @@ export function useBubbleShortcuts({
       else if (e.key === "a") setScope("all");
       else if (e.key === "s") setScope("stacks");
       else if (e.key === "d") setScope("watchlist");
+      else if (e.key === "h") setScope("holdings");
       else if (e.key === "g") refresh();
       else if (e.key === "p") setPaused((v) => !v);
       else if (e.key === "l") setView(view === "list" ? "bubbles" : "list");

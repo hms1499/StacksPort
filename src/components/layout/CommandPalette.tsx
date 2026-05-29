@@ -71,7 +71,7 @@ export default function CommandPalette() {
   );
 
   const commands: CommandItem[] = [
-    { id: "dashboard",     label: "Dashboard",      description: "Portfolio overview",        icon: <Home size={18} />,         action: () => navigate("/dashboard", "dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
+    { id: "dashboard",     label: "Home",           description: "Portfolio overview",        icon: <Home size={18} />,         action: () => navigate("/dashboard", "dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
     { id: "assets",        label: "My Assets",      description: "Holdings & P&L tracker",    icon: <Wallet size={18} />,       action: () => navigate("/assets", "assets"),            keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
     { id: "swap",          label: "Swap Tokens",    description: "Trade on Bitflow DEX",      icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade", "swap"),             keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
     { id: "dca",           label: "DCA Vault",      description: "Automated investing plans", icon: <Repeat2 size={18} />,      action: () => navigate("/dca", "dca"),                  keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },

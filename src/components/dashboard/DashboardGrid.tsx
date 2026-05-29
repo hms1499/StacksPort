@@ -12,6 +12,7 @@ import WidgetShell, { type KeyboardMoveHandler } from "@/components/dashboard/Wi
 import WidgetErrorBoundary from "@/components/dashboard/WidgetErrorBoundary";
 import { WIDGETS } from "@/components/dashboard/widget-registry";
 import { track } from "@/lib/telemetry";
+import { useWalletStore } from "@/store/walletStore";
 
 const BREAKPOINTS = { lg: 900, md: 640 } as const;
 const COLS = { lg: 12, md: 8 } as const;
@@ -50,6 +51,7 @@ export default function DashboardGrid() {
   const visible = useDashboardVisibility();
   const { hidden, toggle: toggleHidden, showAll } = useHiddenWidgets();
   const isMobile = useIsMobile();
+  const isConnected = useWalletStore((s) => s.isConnected);
   const { mutate } = useSWRConfig();
   const [widgetsMenuOpen, setWidgetsMenuOpen] = useState(false);
 
@@ -93,6 +95,8 @@ export default function DashboardGrid() {
   // leaving themselves in a draggable state forever and accidentally moving
   // widgets while reading.
   const [isEditing, setIsEditing] = useState(false);
+  const canCustomize = isConnected;
+  const editingEnabled = canCustomize && isEditing;
 
   // One-shot telemetry guards. Each session counts at most once for the
   // "did the user actually mutate anything" metric — that's the signal we
@@ -106,6 +110,7 @@ export default function DashboardGrid() {
   }, []);
 
   const toggleEdit = () => {
+    if (!canCustomize) return;
     setWidgetsMenuOpen(false);
     dismissHint();
     setIsEditing((v) => {
@@ -130,7 +135,7 @@ export default function DashboardGrid() {
     onLayoutChange(current, merged);
     // Only fire on user-initiated changes (i.e. while editing) and only the
     // first time per session — we want a unique-user counter, not drag spam.
-    if (isEditing && !mutatedRef.current) {
+    if (editingEnabled && !mutatedRef.current) {
       mutatedRef.current = true;
       track("dashboard_layout_mutated");
     }
@@ -160,7 +165,7 @@ export default function DashboardGrid() {
   }, []);
 
   const moveWidget: KeyboardMoveHandler = (id, dx, dy, dw, dh) => {
-    if (!isEditing) return;
+    if (!editingEnabled) return;
     const bp = currentBp;
     const cols = COLS[bp];
     const current = layouts[bp] ?? [];
@@ -214,153 +219,157 @@ export default function DashboardGrid() {
         <>
           <div className="flex items-center justify-between mb-2 min-h-[28px]">
             <span className="text-xs text-muted-foreground/70">
-              {isEditing
+              {editingEnabled
                 ? "Drag the handle or use arrow keys to reorder · drag the corner or shift + arrow to resize"
                 : null}
             </span>
             <div className="flex items-center gap-1 relative">
-              {isEditing && (
-                <button
-                  type="button"
-                  onClick={() => setWidgetsMenuOpen((v) => !v)}
-                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-                  title="Show or hide widgets"
-                  aria-expanded={widgetsMenuOpen}
-                  aria-haspopup="menu"
-                >
-                  <SlidersHorizontal size={12} />
-                  Widgets
-                  {hidden.size > 0 && (
-                    <span
-                      className="ml-0.5 px-1 rounded text-[10px] font-bold tabular-nums"
-                      style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
-                    >
-                      {hidden.size}
-                    </span>
-                  )}
-                </button>
-              )}
-              {isEditing && widgetsMenuOpen && (
+              {canCustomize && (
                 <>
-                  <button
-                    type="button"
-                    aria-hidden
-                    tabIndex={-1}
-                    className="fixed inset-0 z-20 cursor-default"
-                    onClick={() => setWidgetsMenuOpen(false)}
-                  />
-                  <div
-                    role="menu"
-                    aria-label="Show or hide widgets"
-                    className="absolute top-full right-0 mt-1 z-30 w-60 max-h-80 overflow-y-auto rounded-xl p-1.5 shadow-lg"
-                    style={{
-                      backgroundColor: "var(--bg-card)",
-                      border: "1px solid var(--border-subtle)",
-                    }}
-                  >
-                    <div className="flex items-center justify-between px-2 py-1">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-fg-muted">
-                        Widgets
-                      </span>
-                      {hidden.size > 0 && (
-                        <button
-                          type="button"
-                          onClick={showAll}
-                          className="text-[11px] font-semibold text-brand hover:underline"
-                        >
-                          Show all
-                        </button>
-                      )}
-                    </div>
-                    {eligibleWidgets.map((w) => {
-                      const isHidden = hidden.has(w.id);
-                      return (
-                        <button
-                          key={w.id}
-                          type="button"
-                          role="menuitemcheckbox"
-                          aria-checked={!isHidden}
-                          onClick={() => toggleHidden(w.id)}
-                          className="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-xs text-left hover:bg-sunken transition-colors"
-                        >
-                          <span className={isHidden ? "text-fg-muted" : "text-fg"}>
-                            {w.label}
-                          </span>
-                          {isHidden ? (
-                            <EyeOff size={13} className="text-fg-muted shrink-0" />
-                          ) : (
-                            <Eye size={13} className="text-brand shrink-0" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              {isEditing && (
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-                  title="Reset to default layout"
-                >
-                  <RotateCcw size={12} />
-                  Reset layout
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={toggleEdit}
-                className={`inline-flex items-center gap-1.5 text-xs transition-colors px-2 py-1 rounded-md ${
-                  isEditing
-                    ? "text-[var(--accent)] hover:bg-muted/50"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                } ${showHint && !isEditing ? "ring-2 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-base)]" : ""}`}
-                title={isEditing ? "Finish editing" : "Customize layout"}
-                aria-pressed={isEditing}
-              >
-                {isEditing ? <Check size={12} /> : <Pencil size={12} />}
-                {isEditing ? "Done" : "Customize"}
-              </button>
-
-              {showHint && !isEditing && (
-                <div
-                  role="status"
-                  className="absolute top-full right-0 mt-2 z-30 w-56 rounded-xl p-3 shadow-lg text-left"
-                  style={{
-                    backgroundColor: "var(--bg-card)",
-                    border: "1px solid var(--accent)",
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs font-semibold text-fg">Make it yours</p>
+                  {isEditing && (
                     <button
                       type="button"
-                      onClick={dismissHint}
-                      aria-label="Dismiss tip"
-                      className="text-fg-muted hover:text-fg -mr-1 -mt-0.5"
+                      onClick={() => setWidgetsMenuOpen((v) => !v)}
+                      className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+                      title="Show or hide widgets"
+                      aria-expanded={widgetsMenuOpen}
+                      aria-haspopup="menu"
                     >
-                      <X size={13} />
+                      <SlidersHorizontal size={12} />
+                      Widgets
+                      {hidden.size > 0 && (
+                        <span
+                          className="ml-0.5 px-1 rounded text-[10px] font-bold tabular-nums"
+                          style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                        >
+                          {hidden.size}
+                        </span>
+                      )}
                     </button>
-                  </div>
-                  <p className="mt-1 text-[11px] leading-relaxed text-fg-muted">
-                    Use Customize to drag, resize, and hide widgets. Your layout
-                    is saved on this device.
-                  </p>
+                  )}
+                  {isEditing && widgetsMenuOpen && (
+                    <>
+                      <button
+                        type="button"
+                        aria-hidden
+                        tabIndex={-1}
+                        className="fixed inset-0 z-20 cursor-default"
+                        onClick={() => setWidgetsMenuOpen(false)}
+                      />
+                      <div
+                        role="menu"
+                        aria-label="Show or hide widgets"
+                        className="absolute top-full right-0 mt-1 z-30 w-60 max-h-80 overflow-y-auto rounded-xl p-1.5 shadow-lg"
+                        style={{
+                          backgroundColor: "var(--bg-card)",
+                          border: "1px solid var(--border-subtle)",
+                        }}
+                      >
+                        <div className="flex items-center justify-between px-2 py-1">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-fg-muted">
+                            Widgets
+                          </span>
+                          {hidden.size > 0 && (
+                            <button
+                              type="button"
+                              onClick={showAll}
+                              className="text-[11px] font-semibold text-brand hover:underline"
+                            >
+                              Show all
+                            </button>
+                          )}
+                        </div>
+                        {eligibleWidgets.map((w) => {
+                          const isHidden = hidden.has(w.id);
+                          return (
+                            <button
+                              key={w.id}
+                              type="button"
+                              role="menuitemcheckbox"
+                              aria-checked={!isHidden}
+                              onClick={() => toggleHidden(w.id)}
+                              className="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-xs text-left hover:bg-sunken transition-colors"
+                            >
+                              <span className={isHidden ? "text-fg-muted" : "text-fg"}>
+                                {w.label}
+                              </span>
+                              {isHidden ? (
+                                <EyeOff size={13} className="text-fg-muted shrink-0" />
+                              ) : (
+                                <Eye size={13} className="text-brand shrink-0" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+                      title="Reset to default layout"
+                    >
+                      <RotateCcw size={12} />
+                      Reset layout
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={dismissHint}
-                    className="mt-2 text-[11px] font-semibold text-brand hover:underline"
+                    onClick={toggleEdit}
+                    className={`inline-flex items-center gap-1.5 text-xs transition-colors px-2 py-1 rounded-md ${
+                      isEditing
+                        ? "text-[var(--accent)] hover:bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    } ${showHint && !isEditing ? "ring-2 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-base)]" : ""}`}
+                    title={isEditing ? "Finish editing" : "Customize layout"}
+                    aria-pressed={isEditing}
                   >
-                    Got it
+                    {isEditing ? <Check size={12} /> : <Pencil size={12} />}
+                    {isEditing ? "Done" : "Customize"}
                   </button>
-                </div>
+
+                  {showHint && !isEditing && (
+                    <div
+                      role="status"
+                      className="absolute top-full right-0 mt-2 z-30 w-56 rounded-xl p-3 shadow-lg text-left"
+                      style={{
+                        backgroundColor: "var(--bg-card)",
+                        border: "1px solid var(--accent)",
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-xs font-semibold text-fg">Make it yours</p>
+                        <button
+                          type="button"
+                          onClick={dismissHint}
+                          aria-label="Dismiss tip"
+                          className="text-fg-muted hover:text-fg -mr-1 -mt-0.5"
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                      <p className="mt-1 text-[11px] leading-relaxed text-fg-muted">
+                        Use Customize to drag, resize, and hide widgets. Your layout
+                        is saved on this device.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={dismissHint}
+                        className="mt-2 text-[11px] font-semibold text-brand hover:underline"
+                      >
+                        Got it
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
 
           <ResponsiveGridLayout
-            className={`layout ${hydrated ? "" : "opacity-0"} ${isEditing ? "is-editing" : ""}`}
+            className={`layout ${hydrated ? "" : "opacity-0"} ${editingEnabled ? "is-editing" : ""}`}
             layouts={layouts}
             breakpoints={BREAKPOINTS}
             cols={COLS}
@@ -376,15 +385,15 @@ export default function DashboardGrid() {
             compactType={null}
             preventCollision
             useCSSTransforms
-            isDraggable={isEditing}
-            isResizable={isEditing}
+            isDraggable={editingEnabled}
+            isResizable={editingEnabled}
           >
             {visibleWidgets.map((w) => {
               const W = w.component;
               return (
                 <div key={w.id} className="group">
                   <WidgetShell
-                    isEditing={isEditing}
+                    isEditing={editingEnabled}
                     widgetId={w.id}
                     widgetLabel={w.label}
                     onKeyboardMove={moveWidget}

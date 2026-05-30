@@ -2,7 +2,7 @@
 // Pure deterministic detectors: portfolio + market facts → structured signals
 // with REAL numbers. The LLM phrasing layer only references these numbers; it
 // never computes them, so a hallucinating model can't misstate balances/PnL.
-import type { DCAPlan } from "@/lib/dca";
+import { microToSTX, type DCAPlan } from "@/lib/dca";
 import type { PnLData, SBTCData } from "@/lib/stacks";
 
 // Structurally identical to market-snapshot's `FearGreed`, declared locally on
@@ -45,6 +45,10 @@ function round1(n: number): number {
   return Math.round(n * 10) / 10;
 }
 
+function round4(n: number): number {
+  return Math.round(n * 1e4) / 1e4;
+}
+
 export function detectSignals(input: SignalInput): PortfolioSignal[] {
   const signals: PortfolioSignal[] = [];
   const activePlans = (input.dcaPlans ?? []).filter((p) => p.active);
@@ -57,7 +61,9 @@ export function detectSignals(input: SignalInput): PortfolioSignal[] {
       signals.push({
         kind: "dca-balance-empty",
         severity: "high",
-        facts: { planId: p.id, balance: p.bal, amtPerSwap: p.amt },
+        // STX-denominated (source token is STX, 6 decimals — same conversion
+        // PlanCard uses) so the alert reads "0.5 STX", not raw micro-units.
+        facts: { planId: p.id, balanceStx: round4(microToSTX(p.bal)), amtPerSwapStx: round4(microToSTX(p.amt)) },
       });
     } else if (swapsLeft <= 3) {
       signals.push({

@@ -11,7 +11,7 @@ describe("templateAlerts", () => {
   it("maps each kind to the right type/priority and references its numbers", () => {
     const signals: PortfolioSignal[] = [
       { kind: "dca-runway-low", severity: "medium", facts: { planId: 3, swapsLeft: 2, daysLeft: 1.5 } },
-      { kind: "dca-balance-empty", severity: "high", facts: { planId: 4, balance: 500000, amtPerSwap: 1000000 } },
+      { kind: "dca-balance-empty", severity: "high", facts: { planId: 4, balanceStx: 0.5, amtPerSwapStx: 1 } },
       { kind: "dca-dip-buy", severity: "low", facts: { fearGreedValue: 18, classification: "Extreme Fear", planCount: 2 } },
       { kind: "pnl-gain", severity: "low", facts: { symbol: "ALEX", unrealizedPct: 32, unrealizedPnL: 40, currentValue: 160 } },
       { kind: "pnl-loss", severity: "high", facts: { symbol: "WELSH", unrealizedPct: -45, unrealizedPnL: -90 } },
@@ -26,6 +26,7 @@ describe("templateAlerts", () => {
     expect(runway.title).toContain("3");        // planId
     expect(runway.description).toContain("1.5"); // daysLeft
 
+    expect(out[1].description).toContain("0.5 STX"); // balance-empty: STX units, not micro
     expect(out[2].type).toBe("opportunity");     // dip-buy
     expect(out[3].type).toBe("opportunity");     // pnl-gain
     expect(out[3].description).toContain("ALEX");
@@ -49,7 +50,7 @@ describe("generatePersonalAlerts (no API key)", () => {
 
   it("falls back to templated alerts when no API key is set", async () => {
     const out = await generatePersonalAlerts(
-      [{ kind: "dca-balance-empty", severity: "high", facts: { planId: 4, balance: 1, amtPerSwap: 2 } }],
+      [{ kind: "dca-balance-empty", severity: "high", facts: { planId: 4, balanceStx: 0.5, amtPerSwapStx: 1 } }],
       { fearGreed: null, stxChange24h: null }
     );
     expect(out).toHaveLength(1);

@@ -39,6 +39,9 @@ describe("detectSignals", () => {
     const sig = s.find((x) => x.kind === "dca-balance-empty");
     expect(sig!.severity).toBe("high");
     expect(sig!.facts.planId).toBe(3);
+    // facts are STX-denominated, not raw micro-units (500000 µSTX → 0.5 STX)
+    expect(sig!.facts.balanceStx).toBe(0.5);
+    expect(sig!.facts.amtPerSwapStx).toBe(2);
   });
 
   it("ignores inactive plans", () => {

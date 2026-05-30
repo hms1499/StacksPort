@@ -28,7 +28,7 @@ function template(sig: PortfolioSignal): PersonalAlert {
         description: `About ${f.daysLeft} days (${f.swapsLeft} swaps) of balance left. Top it up to keep the schedule going.` };
     case "dca-balance-empty":
       return { type, priority, title: `DCA plan #${f.planId} can't fund next swap`,
-        description: `Balance ${f.balance} is below the ${f.amtPerSwap} per-swap amount. Add funds to resume.` };
+        description: `Balance ${f.balanceStx} STX is below the ${f.amtPerSwapStx} STX per-swap amount. Add funds to resume.` };
     case "dca-dip-buy":
       return { type, priority, title: `Buying the dip`,
         description: `Fear & Greed is ${f.fearGreedValue} (${f.classification}) and your ${f.planCount} active DCA plan(s) are accumulating into weakness.` };

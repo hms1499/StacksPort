@@ -66,6 +66,15 @@ export default function AIPageContent() {
           </button>
         </div>
 
+        {/* Personalized "Your Position" — independent of the global insights
+            fetch, so it still renders while/if the shared market endpoint is
+            loading or failing. */}
+        {isConnected && stxAddress && (
+          <div className="mb-4">
+            <YourPositionCard address={stxAddress} />
+          </div>
+        )}
+
         {/* Error state */}
         {error && !data && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -99,11 +108,6 @@ export default function AIPageContent() {
         {/* Data */}
         {data && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {isConnected && stxAddress && (
-              <div className="lg:col-span-2">
-                <YourPositionCard address={stxAddress} />
-              </div>
-            )}
             <div className="lg:col-span-2">
               <NewsDigestCard summary={data.newsDigest.summary} items={data.newsDigest.items} />
             </div>

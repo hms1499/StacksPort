@@ -7,6 +7,8 @@ import {
   blocksToInterval,
   utcIsoDateFromUnix,
   computeLumpSum,
+  aggregatePlanPerformance,
+  type PlanExecutionEvent,
 } from "./dca";
 
 describe("microToToken", () => {
@@ -118,5 +120,68 @@ describe("computeLumpSum", () => {
     expect(
       computeLumpSum({ totalStxIn: 0, totalSbtcOut: 0.01 }, "2024-01-01", 2, 50000)
     ).toBeNull();
+  });
+});
+
+function ev(partial: Partial<PlanExecutionEvent>): PlanExecutionEvent {
+  return {
+    txId: "0xabc",
+    blockHeight: 1,
+    blockTime: 1_700_000_000,
+    status: "success",
+    netSwapped: 10_000_000,   // 10 STX in micro-STX
+    protocolFee: 100_000,     // 0.1 STX
+    sbtcReceived: 20_000,     // sats
+    ...partial,
+  };
+}
+
+describe("aggregatePlanPerformance", () => {
+  it("returns zeros and null timestamps when there are no events", () => {
+    const r = aggregatePlanPerformance(1, []);
+    expect(r).toEqual({
+      planId: 1,
+      executionCount: 0,
+      totalStxIn: 0,
+      totalSbtcOut: 0,
+      avgStxPerSbtc: 0,
+      totalFeeStx: 0,
+      firstExecutionAt: null,
+      lastExecutionAt: null,
+      successfulEvents: [],
+    });
+  });
+
+  it("ignores non-success events and events missing sbtc/netSwapped", () => {
+    const events = [
+      ev({ status: "failed", blockTime: 50 }),
+      ev({ status: "success", sbtcReceived: 0, blockTime: 60 }),
+      ev({ status: "success", netSwapped: undefined, blockTime: 70 }),
+      ev({ status: "success", blockTime: 100, netSwapped: 5_000_000, sbtcReceived: 10_000, protocolFee: 50_000 }),
+    ];
+    const r = aggregatePlanPerformance(7, events);
+    expect(r.executionCount).toBe(1);
+    expect(r.successfulEvents).toHaveLength(1);
+    expect(r.successfulEvents[0].blockTime).toBe(100);
+  });
+
+  it("sums, sorts ascending by blockTime, and converts units", () => {
+    const events = [
+      ev({ blockTime: 200, netSwapped: 10_000_000, sbtcReceived: 20_000, protocolFee: 100_000 }),
+      ev({ blockTime: 100, netSwapped: 5_000_000, sbtcReceived: 10_000, protocolFee: 50_000 }),
+    ];
+    const r = aggregatePlanPerformance(3, events);
+    expect(r.executionCount).toBe(2);
+    // 15_000_000 micro-STX -> 15 STX
+    expect(r.totalStxIn).toBeCloseTo(15, 9);
+    // 30_000 sats -> 0.0003 sBTC
+    expect(r.totalSbtcOut).toBeCloseTo(0.0003, 9);
+    // 150_000 micro-STX fee -> 0.15 STX
+    expect(r.totalFeeStx).toBeCloseTo(0.15, 9);
+    // 15 / 0.0003 = 50000
+    expect(r.avgStxPerSbtc).toBeCloseTo(50000, 3);
+    expect(r.firstExecutionAt).toBe(100);
+    expect(r.lastExecutionAt).toBe(200);
+    expect(r.successfulEvents.map((e) => e.blockTime)).toEqual([100, 200]);
   });
 });

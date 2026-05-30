@@ -1,36 +1,40 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { Zap, AlertTriangle, Info } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { AlertItem } from "@/lib/ai";
 
-const typeConfig = {
+// Theme-agnostic colors: rgba tints + CSS vars work on both light and dark,
+// unlike the hardcoded *-50/*-100 light-mode utilities this replaced (which
+// rendered as near-white blocks in dark mode).
+const AMBER = "#F59E0B";
+const BLUE = "#3B82F6";
+
+const typeConfig: Record<
+  AlertItem["type"],
+  { icon: typeof Zap; rowStyle: CSSProperties; iconStyle: CSSProperties }
+> = {
   opportunity: {
     icon: Zap,
-    border: "",
-    iconColor: "",
-    bg: "",
-    inlineStyle: { borderLeftColor: 'var(--accent)', backgroundColor: 'var(--accent-dim)' },
-    iconStyle: { color: 'var(--accent)' },
+    rowStyle: { borderLeftColor: "var(--accent)", backgroundColor: "var(--accent-dim)" },
+    iconStyle: { color: "var(--accent)" },
   },
   warning: {
     icon: AlertTriangle,
-    border: "border-l-amber-500",
-    iconColor: "text-amber-500",
-    bg: "bg-amber-50",
+    rowStyle: { borderLeftColor: AMBER, backgroundColor: "rgba(245,158,11,0.10)" },
+    iconStyle: { color: AMBER },
   },
   info: {
     icon: Info,
-    border: "border-l-blue-500",
-    iconColor: "text-blue-500",
-    bg: "bg-blue-50",
+    rowStyle: { borderLeftColor: BLUE, backgroundColor: "rgba(59,130,246,0.10)" },
+    iconStyle: { color: BLUE },
   },
 };
 
-const priorityBadge = {
-  high:   "bg-red-100 text-red-700",
-  medium: "bg-yellow-100 text-yellow-700",
-  low: "text-[color:var(--text-muted)] bg-[var(--bg-elevated)]",
+const priorityBadge: Record<AlertItem["priority"], CSSProperties> = {
+  high:   { backgroundColor: "rgba(248,113,113,0.15)", color: "#F87171" },
+  medium: { backgroundColor: "rgba(251,191,36,0.15)", color: "#FBBF24" },
+  low:    { backgroundColor: "var(--bg-elevated)", color: "var(--text-muted)" },
 };
 
 export default function SmartAlertsCard({ items }: { items: AlertItem[] }) {
@@ -45,24 +49,18 @@ export default function SmartAlertsCard({ items }: { items: AlertItem[] }) {
           return (
             <div
               key={i}
-              className={cn(
-                "flex gap-3 p-3 rounded-xl border-l-4",
-                config.border,
-                config.bg
-              )}
-              style={'inlineStyle' in config ? config.inlineStyle as React.CSSProperties : undefined}
+              className="flex gap-3 p-3 rounded-xl border-l-4"
+              style={config.rowStyle}
             >
-              <Icon size={18} className={cn("shrink-0 mt-0.5", config.iconColor)} style={'iconStyle' in config ? config.iconStyle as React.CSSProperties : undefined} />
+              <Icon size={18} className="shrink-0 mt-0.5" style={config.iconStyle} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                     {alert.title}
                   </span>
                   <span
-                    className={cn(
-                      "text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full",
-                      priorityBadge[alert.priority]
-                    )}
+                    className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full"
+                    style={priorityBadge[alert.priority]}
                   >
                     {alert.priority}
                   </span>

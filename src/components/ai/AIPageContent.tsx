@@ -71,7 +71,7 @@ export default function AIPageContent() {
               Failed to load insights
             </p>
             <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-              Please check your API key configuration and try again
+              Market intelligence is temporarily unavailable. Please try again in a moment.
             </p>
             <button
               onClick={() => mutate()}

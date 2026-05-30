@@ -247,6 +247,12 @@ Important:
 - Return ONLY valid JSON, no markdown fences`;
 }
 
+// Primary model is env-configurable; the fallback covers a model being
+// deprecated/overloaded on Groq's side without a redeploy.
+const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+const GROQ_FALLBACK_MODEL = process.env.GROQ_FALLBACK_MODEL || "llama-3.1-8b-instant";
+const GROQ_TIMEOUT_MS = 20_000;
+
 async function generateInsights(
   market: MarketData,
   fearGreed: FearGreed,
@@ -257,23 +263,35 @@ async function generateInsights(
   if (!apiKey) throw new Error("GROQ_API_KEY not configured");
 
   const groq = new Groq({ apiKey });
+  const prompt = buildPrompt(market, fearGreed, news, lunarcrushCoins);
 
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [
+  const callModel = (model: string) =>
+    groq.chat.completions.create(
       {
-        role: "system",
-        content: "You are a crypto market analyst. Respond with valid JSON only, no markdown fences.",
+        model,
+        messages: [
+          {
+            role: "system",
+            content: "You are a crypto market analyst. Respond with valid JSON only, no markdown fences.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 2048,
+        response_format: { type: "json_object" },
       },
-      {
-        role: "user",
-        content: buildPrompt(market, fearGreed, news, lunarcrushCoins),
-      },
-    ],
-    temperature: 0.3,
-    max_tokens: 2048,
-    response_format: { type: "json_object" },
-  });
+      // Bound the call so a hung/overloaded Groq fails the run fast instead of
+      // holding the function open to the platform timeout.
+      { timeout: GROQ_TIMEOUT_MS, maxRetries: 1 }
+    );
+
+  let completion;
+  try {
+    completion = await callModel(GROQ_MODEL);
+  } catch (err) {
+    console.warn(`[AI Insights] primary model ${GROQ_MODEL} failed, falling back to ${GROQ_FALLBACK_MODEL}:`, err);
+    completion = await callModel(GROQ_FALLBACK_MODEL);
+  }
 
   const text = completion.choices[0]?.message?.content ?? "{}";
   const parsed = parseInsights(JSON.parse(text));

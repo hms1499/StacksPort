@@ -1,26 +1,11 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import type { AIInsightsResponse } from "@/lib/ai";
-
-// ─── Cache ───────────────────────────────────────────────────────────────────
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-let cached: { data: AIInsightsResponse; timestamp: number } | null = null;
-
-// ─── Rate Limit ──────────────────────────────────────────────────────────────
-const rateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 10;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = (rateLimitMap.get(ip) ?? []).filter(
-    (t) => now - t < RATE_LIMIT_WINDOW_MS
-  );
-  if (timestamps.length >= RATE_LIMIT_MAX) return true;
-  timestamps.push(now);
-  rateLimitMap.set(ip, timestamps);
-  return false;
-}
+import {
+  getCachedInsights,
+  setCachedInsights,
+  isRateLimited,
+} from "@/lib/server/ai-insights-cache";
 
 // ─── Data Fetchers ───────────────────────────────────────────────────────────
 const COINGECKO = "https://api.coingecko.com/api/v3";
@@ -305,13 +290,14 @@ async function generateInsights(
 
 export async function GET(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json({ error: "Rate limited" }, { status: 429 });
   }
 
-  // Return cache if fresh
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-    return NextResponse.json(cached.data, {
+  // Redis is the single shared cache (source of truth across all instances).
+  const fresh = await getCachedInsights();
+  if (fresh) {
+    return NextResponse.json(fresh, {
       headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
     });
   }
@@ -326,7 +312,7 @@ export async function GET(request: Request) {
 
     const insights = await generateInsights(market, fearGreed, news, lunarcrushCoins);
 
-    cached = { data: insights, timestamp: Date.now() };
+    await setCachedInsights(insights);
 
     return NextResponse.json(insights, {
       headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },

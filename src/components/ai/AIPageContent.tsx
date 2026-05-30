@@ -9,6 +9,8 @@ import SentimentCard from "./SentimentCard";
 import KOLSignalsCard from "./KOLSignalsCard";
 import SmartAlertsCard from "./SmartAlertsCard";
 import NewsDigestCard from "./NewsDigestCard";
+import YourPositionCard from "./YourPositionCard";
+import { useWalletStore } from "@/store/walletStore";
 
 function timeAgo(iso: string): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -33,6 +35,7 @@ function Skeleton({ className }: { className?: string }) {
 
 export default function AIPageContent() {
   const { data, error, isLoading, isValidating, mutate } = useAIInsights();
+  const { isConnected, stxAddress } = useWalletStore();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -96,6 +99,11 @@ export default function AIPageContent() {
         {/* Data */}
         {data && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {isConnected && stxAddress && (
+              <div className="lg:col-span-2">
+                <YourPositionCard address={stxAddress} />
+              </div>
+            )}
             <div className="lg:col-span-2">
               <NewsDigestCard summary={data.newsDigest.summary} items={data.newsDigest.items} />
             </div>

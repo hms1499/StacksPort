@@ -1,5 +1,5 @@
 // src/lib/server/personal-alerts.test.ts
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { templateAlerts } from "./personal-alerts";
 import type { PortfolioSignal } from "./portfolio-signals";
 
@@ -31,5 +31,26 @@ describe("templateAlerts", () => {
     expect(out[3].description).toContain("ALEX");
     expect(out[4].type).toBe("warning");         // pnl-loss
     expect(out[5].type).toBe("warning");         // depeg
+  });
+});
+
+import { generatePersonalAlerts } from "./personal-alerts";
+
+describe("generatePersonalAlerts (no API key)", () => {
+  const prev = process.env.GROQ_API_KEY;
+  beforeEach(() => { delete process.env.GROQ_API_KEY; });
+  afterEach(() => { if (prev) process.env.GROQ_API_KEY = prev; });
+
+  it("returns [] for no signals without calling Groq", async () => {
+    expect(await generatePersonalAlerts([], { fearGreed: null, stxChange24h: null })).toEqual([]);
+  });
+
+  it("falls back to templated alerts when no API key is set", async () => {
+    const out = await generatePersonalAlerts(
+      [{ kind: "dca-balance-empty", severity: "high", facts: { planId: 4, balance: 1, amtPerSwap: 2 } }],
+      { fearGreed: null, stxChange24h: null }
+    );
+    expect(out).toHaveLength(1);
+    expect(out[0].type).toBe("warning");
   });
 });

@@ -7,6 +7,7 @@ import {
   isRateLimited,
 } from "@/lib/server/ai-insights-cache";
 import { parseInsights } from "@/lib/server/ai-insights-schema";
+import { getMarketSnapshot, type MarketSnapshot } from "@/lib/server/market-snapshot";
 
 // ─── Data Fetchers ───────────────────────────────────────────────────────────
 const COINGECKO = "https://api.coingecko.com/api/v3";
@@ -19,7 +20,6 @@ interface MarketData {
   btcPrice: number;
   btcChange24h: number;
   priceHistory7d: number[];
-  priceHistory30d: number[];
 }
 
 interface FearGreed {
@@ -34,106 +34,49 @@ interface NewsItem {
   imageUrl?: string;
 }
 
-async function fetchMarketData(): Promise<MarketData> {
-  const [statsRes, btcRes, hist7dRes, hist30dRes] = await Promise.allSettled([
-    fetch(
-      `${COINGECKO}/coins/blockstack?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`,
-      { signal: AbortSignal.timeout(10_000) }
-    ),
-    fetch(
+interface Btc {
+  price: number;
+  change24h: number;
+}
+
+// BTC price isn't in the market snapshot, so fetch it standalone. It's a cheap
+// simple/price call (one CoinGecko endpoint vs the four this route used to make
+// — the STX stats / 7d history / fear&greed / news now come from the shared,
+// 60s-cached market snapshot instead of being re-fetched here).
+async function fetchBtc(): Promise<Btc> {
+  try {
+    const res = await fetch(
       `${COINGECKO}/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true`,
       { signal: AbortSignal.timeout(10_000) }
-    ),
-    fetch(
-      `${COINGECKO}/coins/blockstack/market_chart?vs_currency=usd&days=7&interval=daily`,
-      { signal: AbortSignal.timeout(10_000) }
-    ),
-    fetch(
-      `${COINGECKO}/coins/blockstack/market_chart?vs_currency=usd&days=30&interval=daily`,
-      { signal: AbortSignal.timeout(10_000) }
-    ),
-  ]);
-
-  let stxPrice = 0, stxChange24h = 0, stxMarketCap = 0, stxVolume24h = 0;
-  if (statsRes.status === "fulfilled" && statsRes.value.ok) {
-    const d = await statsRes.value.json();
-    stxPrice = d.market_data?.current_price?.usd ?? 0;
-    stxChange24h = d.market_data?.price_change_percentage_24h ?? 0;
-    stxMarketCap = d.market_data?.market_cap?.usd ?? 0;
-    stxVolume24h = d.market_data?.total_volume?.usd ?? 0;
-  }
-
-  let btcPrice = 0, btcChange24h = 0;
-  if (btcRes.status === "fulfilled" && btcRes.value.ok) {
-    const d = await btcRes.value.json();
-    btcPrice = d.bitcoin?.usd ?? 0;
-    btcChange24h = d.bitcoin?.usd_24h_change ?? 0;
-  }
-
-  let priceHistory7d: number[] = [];
-  if (hist7dRes.status === "fulfilled" && hist7dRes.value.ok) {
-    const d = await hist7dRes.value.json();
-    priceHistory7d = (d.prices as [number, number][]).map(([, v]) => v);
-  }
-
-  let priceHistory30d: number[] = [];
-  if (hist30dRes.status === "fulfilled" && hist30dRes.value.ok) {
-    const d = await hist30dRes.value.json();
-    priceHistory30d = (d.prices as [number, number][]).map(([, v]) => v);
-  }
-
-  return { stxPrice, stxChange24h, stxMarketCap, stxVolume24h, btcPrice, btcChange24h, priceHistory7d, priceHistory30d };
-}
-
-async function fetchFearGreed(): Promise<FearGreed> {
-  try {
-    const res = await fetch("https://api.alternative.me/fng/?limit=1", {
-      signal: AbortSignal.timeout(10_000),
-    });
-    const json = await res.json();
-    const d = json.data?.[0];
-    return { value: Number(d?.value ?? 50), classification: d?.value_classification ?? "Neutral" };
+    );
+    if (!res.ok) return { price: 0, change24h: 0 };
+    const d = await res.json();
+    return { price: d.bitcoin?.usd ?? 0, change24h: d.bitcoin?.usd_24h_change ?? 0 };
   } catch {
-    return { value: 50, classification: "Neutral" };
+    return { price: 0, change24h: 0 };
   }
 }
 
-async function fetchNews(): Promise<NewsItem[]> {
-  const feeds = [
-    { url: "https://cointelegraph.com/rss", source: "CoinTelegraph" },
-    { url: "https://www.coindesk.com/arc/outboundfeeds/rss/", source: "CoinDesk" },
-  ];
+function toMarketData(snapshot: MarketSnapshot, btc: Btc): MarketData {
+  const stats = snapshot.stxStats;
+  return {
+    stxPrice: stats?.price ?? 0,
+    stxChange24h: stats?.change24h ?? 0,
+    stxMarketCap: stats?.marketCap ?? 0,
+    stxVolume24h: stats?.volume24h ?? 0,
+    btcPrice: btc.price,
+    btcChange24h: btc.change24h,
+    priceHistory7d: snapshot.stxHistory7d?.prices ?? [],
+  };
+}
 
-  const results = await Promise.allSettled(
-    feeds.map((f) =>
-      fetch(f.url, {
-        headers: { "User-Agent": "Mozilla/5.0" },
-        signal: AbortSignal.timeout(10_000),
-      })
-        .then((r) => r.text())
-        .then((text) => {
-          const items = [...text.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
-          return items.slice(0, 6).map((m) => {
-            const body = m[1];
-            const title = body.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1]?.trim() ?? "";
-            const link = body.match(/<link>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/i)?.[1]?.trim() ?? "";
-            const imageUrl =
-              body.match(/<enclosure[^>]+url="([^"]+)"[^>]+type="image/i)?.[1] ??
-              body.match(/<media:content[^>]+url="([^"]+)"/i)?.[1] ??
-              body.match(/<media:thumbnail[^>]+url="([^"]+)"/i)?.[1] ??
-              body.match(/<description>[^<]*<!\[CDATA\[[^<]*<img[^>]+src="([^"]+)"/i)?.[1] ??
-              undefined;
-            return { title, url: link, source: f.source, imageUrl };
-          }).filter((item) => item.title);
-        })
-    )
-  );
-
-  const items: NewsItem[] = [];
-  for (const r of results) {
-    if (r.status === "fulfilled") items.push(...r.value);
-  }
-  return items.slice(0, 10);
+function toNewsItems(snapshot: MarketSnapshot): NewsItem[] {
+  return (snapshot.news ?? []).slice(0, 10).map((n) => ({
+    title: n.title,
+    source: n.source,
+    url: n.url,
+    imageUrl: n.imageUrl,
+  }));
 }
 
 // ─── LunarCrush ──────────────────────────────────────────────────────────────
@@ -180,10 +123,6 @@ function buildPrompt(market: MarketData, fearGreed: FearGreed, news: NewsItem[],
     ? ((market.priceHistory7d[market.priceHistory7d.length - 1] - market.priceHistory7d[0]) / market.priceHistory7d[0] * 100).toFixed(2)
     : "N/A";
 
-  const price30dChange = market.priceHistory30d.length >= 2
-    ? ((market.priceHistory30d[market.priceHistory30d.length - 1] - market.priceHistory30d[0]) / market.priceHistory30d[0] * 100).toFixed(2)
-    : "N/A";
-
   const lunarSection = lunarcrushCoins.length > 0
     ? `\n## Top Social Signals (LunarCrush)\n${lunarcrushCoins
         .map((c, i) =>
@@ -198,7 +137,6 @@ function buildPrompt(market: MarketData, fearGreed: FearGreed, news: NewsItem[],
 - STX Price: $${market.stxPrice.toFixed(4)}
 - STX 24h Change: ${market.stxChange24h.toFixed(2)}%
 - STX 7d Change: ${price7dChange}%
-- STX 30d Change: ${price30dChange}%
 - STX Market Cap: $${(market.stxMarketCap / 1e6).toFixed(1)}M
 - STX 24h Volume: $${(market.stxVolume24h / 1e6).toFixed(1)}M
 - BTC Price: $${market.btcPrice.toFixed(0)}
@@ -319,12 +257,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [market, fearGreed, news, lunarcrushCoins] = await Promise.all([
-      fetchMarketData(),
-      fetchFearGreed(),
-      fetchNews(),
+    const [snapshot, btc, lunarcrushCoins] = await Promise.all([
+      getMarketSnapshot(),
+      fetchBtc(),
       fetchLunarCrushSignals(),
     ]);
+
+    const market = toMarketData(snapshot, btc);
+    const fearGreed = snapshot.fearGreed ?? { value: 50, classification: "Neutral" };
+    const news = toNewsItems(snapshot);
 
     const insights = await generateInsights(market, fearGreed, news, lunarcrushCoins);
 

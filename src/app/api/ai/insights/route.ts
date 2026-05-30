@@ -6,6 +6,7 @@ import {
   setCachedInsights,
   isRateLimited,
 } from "@/lib/server/ai-insights-cache";
+import { parseInsights } from "@/lib/server/ai-insights-schema";
 
 // ─── Data Fetchers ───────────────────────────────────────────────────────────
 const COINGECKO = "https://api.coingecko.com/api/v3";
@@ -275,14 +276,11 @@ async function generateInsights(
   });
 
   const text = completion.choices[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(text);
+  const parsed = parseInsights(JSON.parse(text));
 
   return {
     generatedAt: new Date().toISOString(),
-    sentiment: parsed.sentiment,
-    kolSignals: parsed.kolSignals ?? { summary: "", coins: [] },
-    alerts: parsed.alerts,
-    newsDigest: parsed.newsDigest,
+    ...parsed,
   };
 }
 

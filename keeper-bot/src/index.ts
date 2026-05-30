@@ -8,6 +8,9 @@ import { acquireLock, releaseLock } from "./lock.js";
 import { recordBroadcast, markRun } from "./failure-tracker.js";
 import { reconcileRecentBatches } from "./reconcile.js";
 import { log } from "./logger.js";
+import { readAllConfigs, readAllDefers, writeDefers } from "./smart-dca-store.js";
+import { fetchSatsPerStxSignal } from "./smart-dca-signal.js";
+import { decideBatch } from "./smart-dca.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
 const MAX_BATCH_SIZE = 50;
@@ -77,9 +80,50 @@ async function runOnce(): Promise<number> {
     return 0;
   }
 
+  // ── Smart DCA: gate due vault-0 plans on the dip condition ──────────────
+  // Fail-open: any error here leaves `executablePlans` = all due plans.
+  let executablePlans = plans;
+  try {
+    const configs = await readAllConfigs();
+    if (configs.size > 0) {
+      const maxDays = Math.max(
+        7,
+        ...[...configs.values()].map((c) => c.windowDays)
+      );
+      const [defers, signal] = await Promise.all([
+        readAllDefers(),
+        fetchSatsPerStxSignal(maxDays),
+      ]);
+      const { toExecute, deferWrites } = decideBatch({
+        plans,
+        configs,
+        deferByPlan: defers,
+        signal,
+      });
+      await writeDefers(deferWrites).catch((err) =>
+        log.warn("smart-dca writeDefers failed (non-fatal)", { err: String(err) })
+      );
+      const skipped = plans.length - toExecute.length;
+      log.info("Smart DCA gating applied", {
+        configured: configs.size,
+        skipped,
+        signal: signal ? signal.current.toFixed(2) : "fail-open",
+      });
+      executablePlans = toExecute;
+    }
+  } catch (err) {
+    log.warn("smart-dca gating failed (non-fatal, failing open)", { err: String(err) });
+  }
+
+  if (executablePlans.length === 0) {
+    log.info("Nothing to execute after Smart DCA gating, exiting");
+    await markRun({ finishedAt: Date.now(), planCount: 0, chunkCount: 0, exitCode: 0 }).catch(() => {});
+    return 0;
+  }
+
   // Chunk into batches of ≤50 (Clarity list limit)
-  const chunks = chunkArray(plans, MAX_BATCH_SIZE);
-  log.info("Executing batches", { totalPlans: plans.length, chunks: chunks.length });
+  const chunks = chunkArray(executablePlans, MAX_BATCH_SIZE);
+  log.info("Executing batches", { totalPlans: executablePlans.length, chunks: chunks.length });
 
   // Đọc push subscriptions một lần trước khi execute để tránh gọi Redis nhiều lần.
   // Nếu Redis không available thì push notification sẽ bị skip nhưng execution vẫn tiếp tục.
@@ -131,11 +175,11 @@ async function runOnce(): Promise<number> {
     }
   }
 
-  log.info("Run complete", { totalPlans: plans.length, chunks: chunks.length });
+  log.info("Run complete", { totalPlans: executablePlans.length, chunks: chunks.length });
   const exitCode = anyFailed ? 1 : 0;
   await markRun({
     finishedAt: Date.now(),
-    planCount: plans.length,
+    planCount: executablePlans.length,
     chunkCount: chunks.length,
     exitCode,
   }).catch((err) => log.warn("markRun failed (non-fatal)", { err: String(err) }));

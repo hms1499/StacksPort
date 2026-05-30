@@ -82,6 +82,7 @@ function close(a: number, b: number, eps = 1e-6): boolean {
     "configless vault-1 plan passes; gated vault-0 plans skipped"
   );
   assert(r.deferWrites.get(1) === 1 && r.deferWrites.get(2) === 1, "defer incremented for skipped");
+  assert(r.reasons.get(1) === "below-threshold", "decideBatch surfaces per-plan reason");
 
   const r2 = decideBatch({ plans, configs, deferByPlan, signal: null });
   assert(r2.toExecute.length === 3, "null signal → fail-open, all execute");

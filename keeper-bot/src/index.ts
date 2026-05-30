@@ -83,6 +83,7 @@ async function runOnce(): Promise<number> {
   // ── Smart DCA: gate due vault-0 plans on the dip condition ──────────────
   // Fail-open: any error here leaves `executablePlans` = all due plans.
   let executablePlans = plans;
+  let dipPlanIds: Set<number> | undefined;
   try {
     const configs = await readAllConfigs();
     if (configs.size > 0) {
@@ -94,7 +95,7 @@ async function runOnce(): Promise<number> {
         readAllDefers(),
         fetchSatsPerStxSignal(maxDays),
       ]);
-      const { toExecute, deferWrites } = decideBatch({
+      const { toExecute, deferWrites, reasons } = decideBatch({
         plans,
         configs,
         deferByPlan: defers,
@@ -102,6 +103,9 @@ async function runOnce(): Promise<number> {
       });
       await writeDefers(deferWrites).catch((err) =>
         log.warn("smart-dca writeDefers failed (non-fatal)", { err: String(err) })
+      );
+      dipPlanIds = new Set(
+        [...reasons].filter(([, r]) => r === "dip-hit").map(([id]) => id)
       );
       const skipped = plans.length - toExecute.length;
       log.info("Smart DCA gating applied", {
@@ -159,7 +163,7 @@ async function runOnce(): Promise<number> {
       );
 
       // Gửi Web Push đến wallet owners của các plans vừa được execute
-      sendDcaExecutionNotifications(chunk, result.txid, allSubs).catch((err) => {
+      sendDcaExecutionNotifications(chunk, result.txid, allSubs, dipPlanIds).catch((err) => {
         log.warn("dca-push failed (non-fatal)", { err: String(err) });
       });
 

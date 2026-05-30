@@ -90,10 +90,12 @@ export function decideBatch(args: {
 }): {
   toExecute: BatchPlan[];
   deferWrites: Map<number, number>; // planId → new defer value to persist
+  reasons: Map<number, string>;     // planId → decision.reason (gated plans only)
 } {
   const { plans, configs, deferByPlan, signal } = args;
   const toExecute: BatchPlan[] = [];
   const deferWrites = new Map<number, number>();
+  const reasons = new Map<number, string>();
 
   for (const plan of plans) {
     const cfg = plan.vaultType === 0 ? configs.get(plan.planId) : undefined;
@@ -112,8 +114,9 @@ export function decideBatch(args: {
     });
 
     deferWrites.set(plan.planId, decision.nextDefer);
+    reasons.set(plan.planId, decision.reason);
     if (decision.action === "execute") toExecute.push(plan);
   }
 
-  return { toExecute, deferWrites };
+  return { toExecute, deferWrites, reasons };
 }

@@ -21,6 +21,7 @@ export async function sendDcaExecutionNotifications(
   executedPlans: BatchPlan[],
   txid: string,
   allSubs: Record<string, SubEntry>,
+  dipPlanIds?: Set<number>,
 ): Promise<void> {
   if (executedPlans.length === 0) return;
 
@@ -55,9 +56,14 @@ export async function sendDcaExecutionNotifications(
       ? `Plan #${planIds[0]}`
       : `${planIds.length} plans (${planIds.map((id) => `#${id}`).join(', ')})`;
 
+    const boughtDip = !!dipPlanIds && planIds.some((id) => dipPlanIds.has(id));
+    const body = boughtDip
+      ? `${planLabel} executed on a dip ✓ Tap to view details.`
+      : `${planLabel} executed successfully. Tap to view details.`;
+
     const payload = JSON.stringify({
       title: 'StacksPort — DCA Executed ✓',
-      body: `${planLabel} executed successfully. Tap to view details.`,
+      body,
       txid,
       url: `${HIRO_EXPLORER}/txid/${txid}?chain=mainnet`,
       planIds,

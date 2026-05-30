@@ -18,12 +18,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "invalid address" }, { status: 400 });
   }
 
+  // Serve from cache before charging the rate limit — a cache hit costs no
+  // Groq/snapshot work, so refreshing into a warm cache shouldn't burn quota.
+  const cached = await getCachedPortfolioInsights(address);
+  if (cached) return NextResponse.json(cached);
+
+  // Only the expensive miss path (snapshots + Groq) is rate-limited.
   if (await isPortfolioRateLimited(address)) {
     return NextResponse.json({ error: "Rate limited" }, { status: 429 });
   }
-
-  const cached = await getCachedPortfolioInsights(address);
-  if (cached) return NextResponse.json(cached);
 
   try {
     const [portfolio, market] = await Promise.all([

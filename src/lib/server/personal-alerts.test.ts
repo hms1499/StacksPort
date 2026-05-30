@@ -30,6 +30,8 @@ describe("templateAlerts", () => {
     expect(out[3].type).toBe("opportunity");     // pnl-gain
     expect(out[3].description).toContain("ALEX");
     expect(out[4].type).toBe("warning");         // pnl-loss
+    expect(out[4].title).toBe("WELSH down 45%"); // magnitude, not "down -45%"
+    expect(out[4].description).toContain("-$90"); // not "$-90"
     expect(out[5].type).toBe("warning");         // depeg
   });
 });

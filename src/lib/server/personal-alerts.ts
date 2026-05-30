@@ -36,8 +36,10 @@ function template(sig: PortfolioSignal): PersonalAlert {
       return { type, priority, title: `${f.symbol} up ${f.unrealizedPct}%`,
         description: `${f.symbol}: unrealized +$${f.unrealizedPnL} on a $${f.currentValue} position. Consider whether to take some profit.` };
     case "pnl-loss":
-      return { type, priority, title: `${f.symbol} down ${f.unrealizedPct}%`,
-        description: `Unrealized $${f.unrealizedPnL}. Review your thesis or DCA level.` };
+      // unrealizedPct / unrealizedPnL are negative; show the magnitude so the
+      // copy reads "down 45%" / "-$90" instead of "down -45%" / "$-90".
+      return { type, priority, title: `${f.symbol} down ${Math.abs(Number(f.unrealizedPct))}%`,
+        description: `Unrealized -$${Math.abs(Number(f.unrealizedPnL))}. Review your thesis or DCA level.` };
     case "sbtc-depeg":
       return { type, priority, title: `sBTC off peg`,
         description: `sBTC is ${f.deviationPct}% from BTC (≈$${f.pegPrice}). Be cautious with sBTC swaps right now.` };

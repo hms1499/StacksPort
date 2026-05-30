@@ -17,9 +17,11 @@ const valid = {
   alerts: {
     items: [{ title: "Dip", description: "Buy zone", type: "opportunity", priority: "high" }],
   },
+  // The model only returns a summary + per-item insight strings now; the
+  // factual headline/url/source come from our own data, not the LLM.
   newsDigest: {
     summary: "Quiet week.",
-    items: [{ headline: "H", insight: "I", source: "CoinDesk", url: "https://x.com" }],
+    insights: ["Relevant to Stacks.", "Bitcoin tailwind."],
   },
 };
 
@@ -29,7 +31,15 @@ describe("parseInsights", () => {
     expect(out.sentiment.score).toBe(42);
     expect(out.kolSignals.coins).toHaveLength(1);
     expect(out.alerts.items[0].type).toBe("opportunity");
-    expect(out.newsDigest.items[0].url).toBe("https://x.com");
+    expect(out.newsDigest.insights).toEqual(["Relevant to Stacks.", "Bitcoin tailwind."]);
+  });
+
+  it("drops non-string news insights instead of failing the parse", () => {
+    const out = parseInsights({
+      ...valid,
+      newsDigest: { summary: "s", insights: ["ok", 123, null, "fine"] },
+    });
+    expect(out.newsDigest.insights).toEqual(["ok", "fine"]);
   });
 
   it("defaults kolSignals to empty when absent", () => {

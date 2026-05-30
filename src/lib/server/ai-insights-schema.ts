@@ -7,7 +7,6 @@
 // numeric strings, clamps the score, drops individual signals/coins with a bad
 // enum, and defaults an absent kolSignals block.
 import { z } from "zod";
-import type { AIInsightsResponse } from "@/lib/ai";
 
 const sentimentType = z.enum(["bullish", "bearish", "neutral"]);
 
@@ -58,25 +57,20 @@ const alertSchema = z.object({
   priority: z.enum(["high", "medium", "low"]),
 });
 
-const newsItemSchema = z.object({
-  headline: z.string(),
-  insight: z.string(),
-  source: z.string(),
-  url: z.string(),
-  imageUrl: z.string().optional(),
-});
-
 const insightsSchema = z.object({
   sentiment: sentimentSchema,
   kolSignals: kolSignalsSchema,
   alerts: z.object({ items: lenientArray(alertSchema) }),
+  // The model returns only an overview + one insight string per news item (by
+  // index). The factual headline/url/source/image are assembled by the route
+  // from our own data so the LLM can't alter or hallucinate them.
   newsDigest: z.object({
     summary: z.string(),
-    items: lenientArray(newsItemSchema),
+    insights: lenientArray(z.string()),
   }),
 });
 
-export type ParsedInsights = Omit<AIInsightsResponse, "generatedAt">;
+export type ParsedInsights = z.infer<typeof insightsSchema>;
 
 /** Validates raw LLM JSON. Throws (ZodError) when structurally broken. */
 export function parseInsights(raw: unknown): ParsedInsights {

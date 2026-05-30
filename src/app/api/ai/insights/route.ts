@@ -171,7 +171,7 @@ Respond with a JSON object matching this exact structure (no markdown, just raw 
   },
   "newsDigest": {
     "summary": "2-3 sentence overview of the most important news",
-    "items": [${news.slice(0, 5).map(n => `{"headline": "${n.title.replace(/"/g, '\\"')}", "insight": "1 sentence relevance to Stacks/STX", "source": "${n.source}", "url": "${n.url}"${n.imageUrl ? `, "imageUrl": "${n.imageUrl}"` : ""}}`).join(", ")}]
+    "insights": ["1 sentence on item 1's relevance to Stacks/STX", "... item 2", "... up to item ${Math.min(news.length, 5)}"]
   }
 }
 
@@ -180,7 +180,7 @@ Important:
 - Provide 3-5 signals in sentiment
 - Provide 2-4 actionable alerts
 - Keep insights concise and actionable
-- For news items, update the "insight" field with your analysis of relevance to Stacks
+- newsDigest.insights must be an array of plain strings, one per news item above in the SAME ORDER, for the first ${Math.min(news.length, 5)} items. Do NOT repeat the headline or URL — only the relevance sentence.
 - For kolSignals, include all coins from the LunarCrush data provided; if no LunarCrush data, return empty coins array
 - Return ONLY valid JSON, no markdown fences`;
 }
@@ -234,9 +234,23 @@ async function generateInsights(
   const text = completion.choices[0]?.message?.content ?? "{}";
   const parsed = parseInsights(JSON.parse(text));
 
+  // Assemble the news digest from our own factual data (headline/url/source/
+  // image) zipped with the model's per-item insight by index — the LLM never
+  // supplies the links, so it can't alter or hallucinate them.
+  const newsItems = news.slice(0, 5).map((n, i) => ({
+    headline: n.title,
+    insight: parsed.newsDigest.insights[i] ?? "",
+    source: n.source,
+    url: n.url,
+    imageUrl: n.imageUrl,
+  }));
+
   return {
     generatedAt: new Date().toISOString(),
-    ...parsed,
+    sentiment: parsed.sentiment,
+    kolSignals: parsed.kolSignals,
+    alerts: parsed.alerts,
+    newsDigest: { summary: parsed.newsDigest.summary, items: newsItems },
   };
 }
 

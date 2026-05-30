@@ -6,6 +6,7 @@ import {
   stxToMicro,
   blocksToInterval,
   utcIsoDateFromUnix,
+  computeLumpSum,
 } from "./dca";
 
 describe("microToToken", () => {
@@ -87,5 +88,35 @@ describe("utcIsoDateFromUnix", () => {
   it("zero-pads single-digit month and day", () => {
     // 1704067200 = 2024-01-01T00:00:00Z
     expect(utcIsoDateFromUnix(1704067200)).toBe("2024-01-01");
+  });
+});
+
+describe("computeLumpSum", () => {
+  const perf = { totalStxIn: 100, totalSbtcOut: 0.01 };
+
+  it("computes the lump-sum counterfactual and delta", () => {
+    const r = computeLumpSum(perf, "2024-01-01", 2, 50000);
+    expect(r).not.toBeNull();
+    // usdAvailable = 100 * 2 = 200; lumpSumSbtc = 200 / 50000 = 0.004
+    expect(r!.lumpSumSbtc).toBeCloseTo(0.004, 9);
+    // deltaSbtc = 0.01 - 0.004 = 0.006
+    expect(r!.deltaSbtc).toBeCloseTo(0.006, 9);
+    // deltaPct = (0.006 / 0.004) * 100 = 150
+    expect(r!.deltaPct).toBeCloseTo(150, 6);
+    expect(r!.referenceDate).toBe("2024-01-01");
+    expect(r!.stxUsdAtRef).toBe(2);
+    expect(r!.btcUsdAtRef).toBe(50000);
+  });
+
+  it("returns null when stxUsdAtRef <= 0", () => {
+    expect(computeLumpSum(perf, "2024-01-01", 0, 50000)).toBeNull();
+  });
+  it("returns null when btcUsdAtRef <= 0", () => {
+    expect(computeLumpSum(perf, "2024-01-01", 2, 0)).toBeNull();
+  });
+  it("returns null when totalStxIn <= 0", () => {
+    expect(
+      computeLumpSum({ totalStxIn: 0, totalSbtcOut: 0.01 }, "2024-01-01", 2, 50000)
+    ).toBeNull();
   });
 });

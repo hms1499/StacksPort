@@ -60,6 +60,29 @@ describe("detectSignals", () => {
     expect(dip!.severity).toBe("low");
   });
 
+  it("does not fire dca-dip-buy when no active plan can fund a swap", () => {
+    // active but balance-empty (bal < amt) → can't buy the dip
+    const s = detectSignals({
+      ...empty,
+      dcaPlans: [plan({ amt: 2_000_000, bal: 500_000 })],
+      fearGreed: { value: 15, classification: "Extreme Fear" },
+    });
+    expect(s.some((x) => x.kind === "dca-dip-buy")).toBe(false);
+    expect(s.some((x) => x.kind === "dca-balance-empty")).toBe(true);
+  });
+
+  it("counts only fundable plans in dca-dip-buy planCount", () => {
+    const s = detectSignals({
+      ...empty,
+      dcaPlans: [
+        plan({ id: 1, amt: 1_000_000, bal: 10_000_000 }), // fundable
+        plan({ id: 2, amt: 2_000_000, bal: 500_000 }),    // balance-empty
+      ],
+      fearGreed: { value: 15, classification: "Extreme Fear" },
+    });
+    expect(s.find((x) => x.kind === "dca-dip-buy")!.facts.planCount).toBe(1);
+  });
+
   it("flags pnl-gain / pnl-loss with thresholds and severity", () => {
     const pnl = (pct: number): PnLData => ({
       entries: [{ contractId: "c", symbol: "ALEX", name: "Alex", currentBalance: 1, currentPrice: 1,
@@ -104,7 +127,10 @@ describe("detectSignals", () => {
   it("orders higher severity before lower", () => {
     const out = detectSignals({
       ...empty,
-      dcaPlans: [plan({ amt: 1_000_000, bal: 100_000 })], // balance-empty → high
+      dcaPlans: [
+        plan({ id: 1, amt: 2_000_000, bal: 500_000 }),     // balance-empty → high
+        plan({ id: 2, amt: 1_000_000, bal: 10_000_000 }),  // fundable → enables dip-buy
+      ],
       fearGreed: { value: 10, classification: "Extreme Fear" }, // dip-buy → low
     });
     expect(out[0].severity).toBe("high");

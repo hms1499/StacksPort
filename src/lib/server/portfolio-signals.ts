@@ -68,15 +68,18 @@ export function detectSignals(input: SignalInput): PortfolioSignal[] {
     }
   }
 
-  // Dip-buy: market in fear AND user is actively accumulating
-  if (input.fearGreed && input.fearGreed.value <= 25 && activePlans.length > 0) {
+  // Dip-buy: market in fear AND the user has a plan that can actually execute
+  // the next swap. A plan with bal < amt can't buy the dip — counting it here
+  // would contradict the dca-balance-empty warning fired for the same plan.
+  const fundablePlans = activePlans.filter((p) => p.amt > 0 && p.bal >= p.amt);
+  if (input.fearGreed && input.fearGreed.value <= 25 && fundablePlans.length > 0) {
     signals.push({
       kind: "dca-dip-buy",
       severity: "low",
       facts: {
         fearGreedValue: input.fearGreed.value,
         classification: input.fearGreed.classification,
-        planCount: activePlans.length,
+        planCount: fundablePlans.length,
       },
     });
   }

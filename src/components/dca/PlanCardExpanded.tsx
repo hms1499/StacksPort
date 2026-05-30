@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3, Zap, History } from "lucide-react";
+import { BarChart3, Zap, History, BrainCircuit } from "lucide-react";
 import { type DCAPlan } from "@/lib/dca";
+import { useWalletStore } from "@/store/walletStore";
 import OverviewTab from "./PlanCardTabs/OverviewTab";
 import ExecuteTab from "./PlanCardTabs/ExecuteTab";
 import HistoryTab from "./PlanCardTabs/HistoryTab";
+import { SmartDcaPanel } from "./SmartDcaPanel";
 
-type InnerTab = "overview" | "execute" | "history";
+type InnerTab = "overview" | "execute" | "history" | "smart";
 
 interface PlanCardExpandedProps {
   plan: DCAPlan;
@@ -18,9 +20,10 @@ interface PlanCardExpandedProps {
 }
 
 const TABS: Array<{ key: InnerTab; label: string; icon: typeof BarChart3 }> = [
-  { key: "overview", label: "Overview", icon: BarChart3 },
-  { key: "execute",  label: "Execute",  icon: Zap },
-  { key: "history",  label: "History",  icon: History },
+  { key: "overview", label: "Overview",   icon: BarChart3 },
+  { key: "execute",  label: "Execute",    icon: Zap },
+  { key: "history",  label: "History",    icon: History },
+  { key: "smart",    label: "Smart DCA",  icon: BrainCircuit },
 ];
 
 export default function PlanCardExpanded({
@@ -31,6 +34,10 @@ export default function PlanCardExpanded({
   defaultTab = "overview",
 }: PlanCardExpandedProps) {
   const [active, setActive] = useState<InnerTab>(defaultTab);
+  const stxAddress = useWalletStore((s) => s.stxAddress);
+  // STX→sBTC plans have sbtc-token as their target (vault type 0).
+  // sBTC→USDCx plans target usdcx (vault type 1).
+  const vaultType: 0 | 1 = plan.token.includes("sbtc-token") ? 0 : 1;
 
   // Sync when parent changes defaultTab on an already-expanded card (e.g.
   // user clicks the "Execute" shortcut on a card that's already open).
@@ -85,6 +92,13 @@ export default function PlanCardExpanded({
           <ExecuteTab plan={plan} currentBlock={currentBlock} onRefresh={onRefresh} />
         )}
         {active === "history" && <HistoryTab planId={plan.id} />}
+        {active === "smart" && (
+          <SmartDcaPanel
+            planId={plan.id}
+            address={stxAddress ?? ""}
+            vaultType={vaultType}
+          />
+        )}
       </div>
     </div>
   );

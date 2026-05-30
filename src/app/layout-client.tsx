@@ -9,12 +9,19 @@ import ThemeProvider from '@/components/ThemeProvider';
 import { useAlertsHydration } from '@/hooks/useAlertsHydration';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useDcaExecutionWatcher } from '@/hooks/useDcaExecutionWatcher';
+import { useSmartDcaHydration } from '@/hooks/useSmartDca';
 import { AnimatePresence } from 'framer-motion';
 import { useWalletStore } from '@/store/walletStore';
 import { usePriceAlertStore } from '@/store/priceAlertStore';
 
 function PriceAlertHydrator() {
   useAlertsHydration();
+  return null;
+}
+
+function SmartDcaHydrator() {
+  const stxAddress = useWalletStore((s) => s.stxAddress);
+  useSmartDcaHydration(stxAddress);
   return null;
 }
 
@@ -70,6 +77,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
       {/* Background services */}
       <PriceAlertHydrator />
+      <SmartDcaHydrator />
       <WalletAddressSync />
       <PushSyncer />
       <DcaExecutionWatcher />

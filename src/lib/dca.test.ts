@@ -8,6 +8,7 @@ import {
   utcIsoDateFromUnix,
   computeLumpSum,
   aggregatePlanPerformance,
+  batchedMap,
   type PlanExecutionEvent,
 } from "./dca";
 
@@ -183,5 +184,53 @@ describe("aggregatePlanPerformance", () => {
     expect(r.firstExecutionAt).toBe(100);
     expect(r.lastExecutionAt).toBe(200);
     expect(r.successfulEvents.map((e) => e.blockTime)).toEqual([100, 200]);
+  });
+});
+
+describe("batchedMap", () => {
+  it("preserves input order in the output", async () => {
+    const out = await batchedMap([1, 2, 3, 4, 5], async (x) => x * 2, 2);
+    expect(out).toEqual([2, 4, 6, 8, 10]);
+  });
+
+  it("returns an empty array for empty input", async () => {
+    const out = await batchedMap([], async (x: number) => x);
+    expect(out).toEqual([]);
+  });
+
+  it("caps concurrency at the given limit", async () => {
+    let active = 0;
+    let maxActive = 0;
+    const fn = async (x: number) => {
+      active++;
+      maxActive = Math.max(maxActive, active);
+      await new Promise((r) => setTimeout(r, 5));
+      active--;
+      return x;
+    };
+    await batchedMap([1, 2, 3, 4, 5], fn, 2);
+    expect(maxActive).toBe(2);
+  });
+
+  it("defaults concurrency to 3", async () => {
+    let active = 0;
+    let maxActive = 0;
+    const fn = async (x: number) => {
+      active++;
+      maxActive = Math.max(maxActive, active);
+      await new Promise((r) => setTimeout(r, 5));
+      active--;
+      return x;
+    };
+    await batchedMap([1, 2, 3, 4], fn);
+    expect(maxActive).toBe(3);
+  });
+
+  it("propagates a rejection from the mapper", async () => {
+    const fn = async (x: number) => {
+      if (x === 3) throw new Error("boom");
+      return x;
+    };
+    await expect(batchedMap([1, 2, 3, 4], fn, 2)).rejects.toThrow("boom");
   });
 });

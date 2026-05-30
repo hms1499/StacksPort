@@ -7,6 +7,7 @@ import {
   type SmartDcaConfig,
 } from "./smart-dca.js";
 import type { BatchPlan } from "./batch-executor.js";
+import { parseConfig, parseDefer } from "./smart-dca-store.js";
 
 let failures = 0;
 function assert(cond: boolean, msg: string): void {
@@ -84,6 +85,20 @@ function close(a: number, b: number, eps = 1e-6): boolean {
 
   const r2 = decideBatch({ plans, configs, deferByPlan, signal: null });
   assert(r2.toExecute.length === 3, "null signal → fail-open, all execute");
+}
+
+// parseConfig / parseDefer
+{
+  const good = JSON.stringify({
+    owner: "SP1", thresholdBps: 500, windowDays: 7, maxDeferIntervals: 2, createdAt: 9,
+  });
+  const c = parseConfig(good);
+  assert(c !== null && c.owner === "SP1" && c.thresholdBps === 500, "parseConfig good JSON string");
+  assert(parseConfig("{not json") === null, "parseConfig malformed → null");
+  assert(parseConfig({ owner: "SP1" }) === null, "parseConfig missing fields → null");
+  assert(parseDefer("3") === 3, "parseDefer string → 3");
+  assert(parseDefer(undefined) === 0, "parseDefer undefined → 0");
+  assert(parseDefer(-1) === 0, "parseDefer negative → 0");
 }
 
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURES`);

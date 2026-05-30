@@ -10,6 +10,7 @@
 // every instance.
 import { Redis } from "@upstash/redis";
 import type { AIInsightsResponse } from "@/lib/ai";
+import type { PortfolioInsightsResponse } from "@/lib/ai-portfolio";
 
 const CACHE_KEY = "ai-insights:v1:cache";
 const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes — Redis owns expiry
@@ -69,6 +70,59 @@ export async function isRateLimited(ip: string): Promise<boolean> {
       // First hit in this window — start the expiry clock.
       await r.expire(key, RATE_LIMIT_WINDOW_SECONDS);
     }
+    return count > RATE_LIMIT_MAX;
+  } catch {
+    return false;
+  }
+}
+
+const PORTFOLIO_CACHE_PREFIX = "ai-portfolio:v1:";
+const PORTFOLIO_CACHE_TTL_SECONDS = 12 * 60; // 12 minutes
+
+export async function getCachedPortfolioInsights(
+  address: string
+): Promise<PortfolioInsightsResponse | null> {
+  const r = getRedis();
+  if (!r) return null;
+  try {
+    return (await r.get<PortfolioInsightsResponse>(PORTFOLIO_CACHE_PREFIX + address)) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function setCachedPortfolioInsights(
+  address: string,
+  data: PortfolioInsightsResponse
+): Promise<void> {
+  const r = getRedis();
+  if (!r) return;
+  try {
+    await r.set(PORTFOLIO_CACHE_PREFIX + address, data, { ex: PORTFOLIO_CACHE_TTL_SECONDS });
+  } catch {
+    // best-effort
+  }
+}
+
+/** Bust a wallet's cached alerts (called after a tx confirms). */
+export async function deleteCachedPortfolioInsights(address: string): Promise<void> {
+  const r = getRedis();
+  if (!r) return;
+  try {
+    await r.del(PORTFOLIO_CACHE_PREFIX + address);
+  } catch {
+    // best-effort
+  }
+}
+
+/** Fixed-window rate limit keyed by wallet address. Fails open without Redis. */
+export async function isPortfolioRateLimited(address: string): Promise<boolean> {
+  const r = getRedis();
+  if (!r) return false;
+  const key = `ai-portfolio:rl:${address}`;
+  try {
+    const count = await r.incr(key);
+    if (count === 1) await r.expire(key, RATE_LIMIT_WINDOW_SECONDS);
     return count > RATE_LIMIT_MAX;
   } catch {
     return false;

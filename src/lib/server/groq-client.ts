@@ -75,7 +75,11 @@ export async function completeJSON(opts: CompleteJSONOptions): Promise<unknown> 
           max_tokens: opts.maxTokens,
           response_format: { type: "json_object" },
         },
-        { timeout: GROQ_TIMEOUT_MS, maxRetries: 1 }
+        // maxRetries: 0 — the fallback model IS our retry strategy. Retrying the
+        // SAME (overloaded) model rarely helps and compounds worst-case latency:
+        // with maxRetries:1 a cache-miss could wait primary×2 + fallback×2 ≈ 80s
+        // before degrading. One shot per model caps it at ≈40s.
+        { timeout: GROQ_TIMEOUT_MS, maxRetries: 0 }
       );
       return completion.choices[0]?.message?.content ?? "{}";
     },

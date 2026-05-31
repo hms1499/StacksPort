@@ -3,9 +3,9 @@
 // the deterministic fallback (and the source of truth for type/priority
 // mapping); generatePersonalAlerts() (Task 5) asks Groq to phrase them and
 // falls back here on any failure.
-import Groq from "groq-sdk";
 import type { PersonalAlert } from "@/lib/ai-portfolio";
 import { parsePersonalAlerts } from "./personal-alerts-schema";
+import { completeJSON } from "./groq-client";
 import type { PortfolioSignal, SignalKind } from "./portfolio-signals";
 import type { FearGreedLite } from "./portfolio-signals";
 
@@ -50,10 +50,6 @@ export function templateAlerts(signals: PortfolioSignal[]): PersonalAlert[] {
   return signals.map(template);
 }
 
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
-const GROQ_FALLBACK_MODEL = process.env.GROQ_FALLBACK_MODEL || "llama-3.1-8b-instant";
-const GROQ_TIMEOUT_MS = 20_000;
-
 export interface MarketContext {
   fearGreed: FearGreedLite | null;
   stxChange24h: number | null;
@@ -89,36 +85,18 @@ export async function generatePersonalAlerts(
   market: MarketContext
 ): Promise<PersonalAlert[]> {
   if (signals.length === 0) return [];
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) return templateAlerts(signals);
-
-  const groq = new Groq({ apiKey });
-  const prompt = buildPrompt(signals, market);
-  const callModel = (model: string) =>
-    groq.chat.completions.create(
-      {
-        model,
-        messages: [
-          { role: "system", content: "You are a crypto portfolio analyst. Respond with valid JSON only." },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.3,
-        max_tokens: 1024,
-        response_format: { type: "json_object" },
-      },
-      { timeout: GROQ_TIMEOUT_MS, maxRetries: 1 }
-    );
+  // No API key → skip the (throwing) Groq call and use the deterministic copy.
+  if (!process.env.GROQ_API_KEY) return templateAlerts(signals);
 
   try {
-    let completion;
-    try {
-      completion = await callModel(GROQ_MODEL);
-    } catch (err) {
-      console.warn(`[Portfolio Alerts] primary ${GROQ_MODEL} failed, falling back to ${GROQ_FALLBACK_MODEL}:`, err);
-      completion = await callModel(GROQ_FALLBACK_MODEL);
-    }
-    const text = completion.choices[0]?.message?.content ?? "{}";
-    const { alerts } = parsePersonalAlerts(JSON.parse(text));
+    const { alerts } = parsePersonalAlerts(
+      await completeJSON({
+        system: "You are a crypto portfolio analyst. Respond with valid JSON only.",
+        prompt: buildPrompt(signals, market),
+        maxTokens: 1024,
+        label: "Portfolio Alerts",
+      })
+    );
     // If the model returned nothing usable, fall back rather than show an empty section.
     return alerts.length > 0 ? alerts : templateAlerts(signals);
   } catch (err) {

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import Groq from "groq-sdk";
 import type { AIInsightsResponse } from "@/lib/ai";
 import {
   getCachedInsights,
@@ -7,6 +6,7 @@ import {
   isRateLimited,
 } from "@/lib/server/ai-insights-cache";
 import { parseInsights } from "@/lib/server/ai-insights-schema";
+import { completeJSON } from "@/lib/server/groq-client";
 import { getMarketSnapshot, type MarketSnapshot } from "@/lib/server/market-snapshot";
 
 // ─── Data Fetchers ───────────────────────────────────────────────────────────
@@ -185,54 +185,20 @@ Important:
 - Return ONLY valid JSON, no markdown fences`;
 }
 
-// Primary model is env-configurable; the fallback covers a model being
-// deprecated/overloaded on Groq's side without a redeploy.
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
-const GROQ_FALLBACK_MODEL = process.env.GROQ_FALLBACK_MODEL || "llama-3.1-8b-instant";
-const GROQ_TIMEOUT_MS = 20_000;
-
 async function generateInsights(
   market: MarketData,
   fearGreed: FearGreed,
   news: NewsItem[],
   lunarcrushCoins: LunarCrushCoin[]
 ): Promise<AIInsightsResponse> {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) throw new Error("GROQ_API_KEY not configured");
-
-  const groq = new Groq({ apiKey });
-  const prompt = buildPrompt(market, fearGreed, news, lunarcrushCoins);
-
-  const callModel = (model: string) =>
-    groq.chat.completions.create(
-      {
-        model,
-        messages: [
-          {
-            role: "system",
-            content: "You are a crypto market analyst. Respond with valid JSON only, no markdown fences.",
-          },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.3,
-        max_tokens: 2048,
-        response_format: { type: "json_object" },
-      },
-      // Bound the call so a hung/overloaded Groq fails the run fast instead of
-      // holding the function open to the platform timeout.
-      { timeout: GROQ_TIMEOUT_MS, maxRetries: 1 }
-    );
-
-  let completion;
-  try {
-    completion = await callModel(GROQ_MODEL);
-  } catch (err) {
-    console.warn(`[AI Insights] primary model ${GROQ_MODEL} failed, falling back to ${GROQ_FALLBACK_MODEL}:`, err);
-    completion = await callModel(GROQ_FALLBACK_MODEL);
-  }
-
-  const text = completion.choices[0]?.message?.content ?? "{}";
-  const parsed = parseInsights(JSON.parse(text));
+  const parsed = parseInsights(
+    await completeJSON({
+      system: "You are a crypto market analyst. Respond with valid JSON only, no markdown fences.",
+      prompt: buildPrompt(market, fearGreed, news, lunarcrushCoins),
+      maxTokens: 2048,
+      label: "AI Insights",
+    })
+  );
 
   // Assemble the news digest from our own factual data (headline/url/source/
   // image) zipped with the model's per-item insight by index — the LLM never

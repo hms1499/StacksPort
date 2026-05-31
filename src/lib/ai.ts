@@ -21,12 +21,18 @@ export interface KOLSignalsData {
   coins: KOLSignalCoin[];
 }
 
-export interface AlertItem {
+// Canonical actionable-alert shape. Shared by the global insights feed
+// (AlertItem) and the personalized portfolio alerts (PersonalAlert, re-aliased
+// in ai-portfolio.ts) so the shape — and any future type/priority value — is
+// defined in exactly one place.
+export interface Alert {
   title: string;
   description: string;
   type: "opportunity" | "warning" | "info";
   priority: "high" | "medium" | "low";
 }
+
+export type AlertItem = Alert;
 
 export interface NewsDigestItem {
   headline: string;

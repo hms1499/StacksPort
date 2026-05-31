@@ -1,13 +1,10 @@
 // src/lib/ai-portfolio.ts
 // Client-safe types + fetcher for the personalized "Your Position" alerts.
 // Mirrors src/lib/ai.ts (the global insights equivalent).
+import type { Alert } from "@/lib/ai";
 
-export interface PersonalAlert {
-  title: string;
-  description: string;
-  type: "opportunity" | "warning" | "info";
-  priority: "high" | "medium" | "low";
-}
+// Personalized alerts share the canonical Alert shape with the global feed.
+export type PersonalAlert = Alert;
 
 export interface PortfolioInsightsResponse {
   generatedAt: string;

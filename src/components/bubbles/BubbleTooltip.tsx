@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star, Bell } from "lucide-react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { TokenImage } from "@/components/ui";
 import { useHoldings } from "@/hooks/useHoldings";
 import type { Timeframe } from "./TimeframeToggle";
 import Sparkline from "./Sparkline";
@@ -66,7 +67,6 @@ export default function BubbleTooltip({
   onClose,
 }: BubbleTooltipProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [imgError, setImgError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const { has: isStarred, toggle: toggleStar } = useWatchlist();
@@ -75,7 +75,6 @@ export default function BubbleTooltip({
   const held = holdings[token.id];
 
   useEffect(() => {
-    setImgError(false);
     setShowAlert(false);
   }, [token.id]);
 
@@ -166,22 +165,13 @@ export default function BubbleTooltip({
         )}
       <div className="p-3.5">
         <div className="flex items-center gap-2.5 mb-3">
-          {!imgError && token.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={token.image}
-              alt={token.symbol}
-              className="w-8 h-8 rounded-full"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
-              style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
-            >
-              {token.symbol.slice(0, 2)}
-            </div>
-          )}
+          <TokenImage
+            src={token.image}
+            symbol={token.symbol}
+            size={32}
+            fallbackClassName="bg-[var(--border-subtle)]"
+            fallbackTextClassName="text-[var(--text-muted)]"
+          />
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate flex items-center gap-1.5" style={{ color: "var(--text-primary)" }}>
               {token.name}

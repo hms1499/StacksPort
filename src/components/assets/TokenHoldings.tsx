@@ -10,6 +10,7 @@ import ReceiveModal from "@/components/wallet/ReceiveModal";
 import EmptyState from "@/components/motion/EmptyState";
 import ConnectWalletCTA from "@/components/wallet/ConnectWalletCTA";
 import Sparkline from "@/components/dashboard/Sparkline";
+import { TokenImage } from "@/components/ui";
 import TokenDetailDrawer from "@/components/assets/drawer";
 
 /** Convert a human-readable balance to its raw on-chain integer string.
@@ -41,8 +42,6 @@ function formatPrice(n: number): string {
 }
 
 function TokenAvatar({ symbol, imageUri, warning }: { symbol: string; imageUri?: string; warning?: TokenWithValue["warning"] }) {
-  const [err, setErr] = useState(false);
-
   const ring =
     warning === "suspicious"
       ? "ring-2 ring-red-300"
@@ -50,19 +49,7 @@ function TokenAvatar({ symbol, imageUri, warning }: { symbol: string; imageUri?:
       ? "ring-2 ring-yellow-300"
       : "";
 
-  if (imageUri && !err) {
-    return (
-      <div className={`w-9 h-9 rounded-full overflow-hidden bg-gray-50 shrink-0 ${ring}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUri} alt={symbol} className="w-full h-full object-cover" onError={() => setErr(true)} />
-      </div>
-    );
-  }
-  return (
-    <div className={`w-9 h-9 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center shrink-0 ${ring}`}>
-      <span className="text-xs font-bold text-[#285A48]">{symbol.slice(0, 3)}</span>
-    </div>
-  );
+  return <TokenImage src={imageUri} symbol={symbol} size={36} className={ring} />;
 }
 
 // Warning badge shown next to token name

@@ -6,6 +6,7 @@ import { useTrendingTokens } from "@/hooks/useMarketData";
 import { useFlashOnChange } from "@/hooks/useFlashOnChange";
 import PriceSparkline from "@/components/dashboard/PriceSparkline";
 import type { TrendingToken } from "@/lib/stacks";
+import { TokenImage } from "@/components/ui";
 
 const COINGECKO_STACKS_URL = "https://www.coingecko.com/en/categories/stacks-ecosystem";
 
@@ -44,16 +45,13 @@ const TokenRow = memo(function TokenRow({ token }: { token: TrendingToken }) {
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
       {/* Avatar */}
-      <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-        {token.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={token.image} alt={token.symbol} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-xs font-bold text-gray-500">{token.symbol.slice(0, 3)}</span>
-          </div>
-        )}
-      </div>
+      <TokenImage
+        src={token.image}
+        symbol={token.symbol}
+        size={44}
+        fallbackClassName="bg-[var(--bg-elevated)]"
+        fallbackTextClassName="text-gray-500"
+      />
 
       {/* Name + symbol */}
       <div className="flex-1 min-w-0">

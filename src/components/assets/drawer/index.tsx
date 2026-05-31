@@ -14,6 +14,7 @@ import InlineQuickSend from "./QuickSend";
 import InlineQuickSwap from "./QuickSwap";
 import AlertPopover from "./AlertPopover";
 import { PRICE_ALERT_TOKENS } from "@/types/priceAlerts";
+import { TokenImage } from "@/components/ui";
 
 interface Props {
   token: TokenWithValue | null;
@@ -119,18 +120,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
           style={{ borderBottom: "1px solid var(--border-subtle)" }}
         >
           <div className="flex items-center gap-3 min-w-0">
-            {token.imageUri ? (
-              <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-gray-50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={token.imageUri} alt={token.symbol} className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-[#285A48]">
-                  {token.symbol.slice(0, 3)}
-                </span>
-              </div>
-            )}
+            <TokenImage src={token.imageUri} symbol={token.symbol} size={40} />
             <div className="min-w-0">
               <h2
                 id="token-drawer-title"

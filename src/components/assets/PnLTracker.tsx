@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { TrendingUp, TrendingDown, BarChart3, Info, Download } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { usePnLData } from "@/hooks/useMarketData";
 import { type PnLData, type PnLEntry } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 import { downloadCSV, csvDate } from "@/lib/export";
+import { TokenImage } from "@/components/ui";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -63,20 +64,7 @@ function SummaryCard({
 // ─── Token Avatar ─────────────────────────────────────────────────────────────
 
 function TokenAvatar({ symbol, imageUri }: { symbol: string; imageUri?: string }) {
-  const [err, setErr] = useState(false);
-  if (imageUri && !err) {
-    return (
-      <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-50 flex-shrink-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUri} alt={symbol} className="w-full h-full object-cover" onError={() => setErr(true)} />
-      </div>
-    );
-  }
-  return (
-    <div className="w-8 h-8 rounded-full bg-[#B0E4CC]/20 flex items-center justify-center flex-shrink-0">
-      <span className="text-xs font-bold text-[#285A48]">{symbol.slice(0, 3)}</span>
-    </div>
-  );
+  return <TokenImage src={imageUri} symbol={symbol} size={32} />;
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────

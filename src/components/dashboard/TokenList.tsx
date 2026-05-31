@@ -7,6 +7,7 @@ import { getFungibleTokens, getTokenMetadata } from "@/lib/stacks";
 import { formatSTX } from "@/lib/utils";
 import SendModal, { SendTokenInfo } from "@/components/wallet/SendModal";
 import ReceiveModal from "@/components/wallet/ReceiveModal";
+import { TokenImage } from "@/components/ui";
 
 interface FungibleToken {
   symbol: string;
@@ -184,26 +185,14 @@ function TokenAvatar({
   fallbackColor: string;
   fallbackTextColor: string;
 }) {
-  const [imgError, setImgError] = useState(false);
-
-  if (imageUri && !imgError) {
-    return (
-      <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-gray-50">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUri}
-          alt={symbol}
-          className="w-full h-full object-cover"
-          onError={() => setImgError(true)}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className={`w-10 h-10 rounded-full ${fallbackColor} flex items-center justify-center flex-shrink-0`}>
-      <span className={`text-xs font-bold ${fallbackTextColor}`}>{symbol.slice(0, 3)}</span>
-    </div>
+    <TokenImage
+      src={imageUri}
+      symbol={symbol}
+      size={40}
+      fallbackClassName={fallbackColor}
+      fallbackTextClassName={fallbackTextColor}
+    />
   );
 }
 

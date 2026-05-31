@@ -44,6 +44,7 @@ import {
 import { useSwapPrices } from "@/hooks/useMarketData";
 import SwapPairChart from "./SwapPairChart";
 import { trackTx } from "@/lib/tx-tracker";
+import { TokenImage } from "@/components/ui";
 
 // ─── Simple Token Selector ────────────────────────────────────────────────────
 
@@ -132,15 +133,7 @@ function SimpleTokenSelector({
       >
         {selected ? (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={selected.icon}
-              alt={selected.symbol}
-              className="w-6 h-6 rounded-full"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
+            <TokenImage src={selected.icon} symbol={selected.symbol} size={24} fallback="none" />
             <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
               {selected.symbol}
             </span>
@@ -191,15 +184,7 @@ function SimpleTokenSelector({
                         : 'transparent',
                   }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={t.icon}
-                    alt={t.symbol}
-                    className="w-6 h-6 rounded-full shrink-0"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
-                  />
+                  <TokenImage src={t.icon} symbol={t.symbol} size={24} fallback="none" />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                       {t.symbol}

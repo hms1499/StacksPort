@@ -20,6 +20,7 @@ import {
 } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import { TokenImage } from "@/components/ui";
 import { trackTx } from "@/lib/tx-tracker";
 import { formatAmount } from "@/lib/utils";
 
@@ -58,8 +59,7 @@ async function fetchBalance(address: string, contractId: string): Promise<number
 function TokenBadge({ symbol, img }: { symbol: string; img: string }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={img} alt={symbol} className="w-5 h-5 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+      <TokenImage src={img} symbol={symbol} size={20} fallback="none" />
       <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{symbol}</span>
     </span>
   );
@@ -309,8 +309,7 @@ export default function MigrationWidget() {
       <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={fromImg} alt={fromSymbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            <TokenImage src={fromImg} symbol={fromSymbol} size={24} fallback="none" />
             <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{fromSymbol}</span>
           </div>
           {isConnected && (
@@ -402,8 +401,7 @@ export default function MigrationWidget() {
       <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={toImg} alt={toSymbol} className="w-6 h-6 rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            <TokenImage src={toImg} symbol={toSymbol} size={24} fallback="none" />
             <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{toSymbol}</span>
           </div>
           {isConnected && (

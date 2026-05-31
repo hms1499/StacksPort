@@ -4,14 +4,8 @@ import { CONTRACT_NAME_TO_GECKO } from "@/lib/token-registry";
 const COINGECKO = "https://api.coingecko.com/api/v3";
 const HIRO = "https://api.hiro.so";
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-};
-
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
-}
+// CORS (incl. OPTIONS preflight) is applied centrally in src/middleware.ts,
+// scoped to the chrome-extension origin.
 
 export async function GET(req: NextRequest) {
   const address = req.nextUrl.searchParams.get("address");
@@ -19,10 +13,7 @@ export async function GET(req: NextRequest) {
   const STACKS_ADDRESS_RE = /^S[MP][A-Z0-9]{1,40}$/;
 
   if (address && !STACKS_ADDRESS_RE.test(address)) {
-    return NextResponse.json(
-      { error: "Invalid address" },
-      { status: 400, headers: CORS }
-    );
+    return NextResponse.json({ error: "Invalid address" }, { status: 400 });
   }
 
   try {
@@ -97,12 +88,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ prices, portfolio }, { headers: CORS });
+    return NextResponse.json({ prices, portfolio });
   } catch (err) {
     console.error("[extension/summary]", err);
-    return NextResponse.json(
-      { error: "Failed to fetch data" },
-      { status: 500, headers: CORS }
-    );
+    return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
   }
 }

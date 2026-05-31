@@ -26,14 +26,8 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        // Allow extension background service worker to call API routes
-        source: "/api/(.*)",
-        headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          { key: "Access-Control-Allow-Methods", value: "GET, OPTIONS" },
-        ],
-      },
+      // API CORS is handled in src/middleware.ts, scoped to the extension
+      // origin — never a blanket `*` (which exposed the proxy to any website).
     ];
   },
   webpack: (config, { isServer }) => {

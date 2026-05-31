@@ -1,7 +1,10 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
 import { Newspaper, ExternalLink, Clock } from "lucide-react";
 import { useNews, type NewsItem } from "@/hooks/useMarketData";
+import { shouldBypassOptimizer } from "@/components/ui/TokenImage";
 
 function timeAgo(dateStr: string): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
@@ -17,6 +20,32 @@ const SOURCE_COLORS: Record<string, string> = {
   CoinDesk: "bg-blue-50 text-blue-500",
 };
 
+// Article thumbnail — next/image with a Newspaper icon fallback for a missing
+// or broken image. Tracks the failed src so a new image recovers on re-render.
+function NewsThumb({ imageUrl }: { imageUrl?: string }) {
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const show = imageUrl && failedSrc !== imageUrl;
+  return (
+    <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+      {show ? (
+        <Image
+          src={imageUrl}
+          alt=""
+          fill
+          sizes="48px"
+          className="object-cover"
+          unoptimized={shouldBypassOptimizer(imageUrl)}
+          onError={() => setFailedSrc(imageUrl)}
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <Newspaper size={18} style={{ color: 'var(--text-muted)' }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function NewsRow({ item }: { item: NewsItem }) {
   return (
     <a
@@ -28,23 +57,7 @@ function NewsRow({ item }: { item: NewsItem }) {
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
     >
       {/* Thumbnail or fallback */}
-      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-        {item.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.imageUrl}
-            alt=""
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Newspaper size={18} style={{ color: 'var(--text-muted)' }} />
-          </div>
-        )}
-      </div>
+      <NewsThumb imageUrl={item.imageUrl} />
 
       {/* Content */}
       <div className="flex-1 min-w-0">

@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { TokenImage } from "@/components/ui";
 
 interface ExploreProtocolCardProps {
   name: string;
@@ -78,16 +79,7 @@ export default function ExploreProtocolCard({
       }}
     >
       <div className="flex items-center gap-3">
-        <img
-          src={logoUrl}
-          alt={name}
-          width={32}
-          height={32}
-          className="w-8 h-8 rounded-lg object-cover shrink-0"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
-        />
+        <TokenImage src={logoUrl} symbol={name} size={32} rounded="lg" fallback="none" />
         <div className="flex-1 min-w-0">
           <p
             className="font-semibold text-sm truncate"

@@ -4,6 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 
 type Fallback = "initials" | "none";
+type Rounding = "full" | "lg" | "xl";
+
+const ROUNDING: Record<Rounding, string> = {
+  full: "rounded-full",
+  lg: "rounded-lg",
+  xl: "rounded-xl",
+};
 
 /**
  * The Next.js image optimizer 400s on SVG (without `dangerouslyAllowSVG`, which
@@ -22,6 +29,8 @@ type TokenImageProps = {
   symbol: string;
   /** Rendered square size in px. */
   size?: number;
+  /** Corner rounding — circular avatars (default) or squared logos/thumbnails. */
+  rounded?: Rounding;
   /** Extra classes merged onto the wrapper (e.g. a ring). */
   className?: string;
   /** What to show when there is no logo / it fails to load. */
@@ -45,6 +54,7 @@ export function TokenImage({
   src,
   symbol,
   size = 36,
+  rounded = "full",
   className = "",
   fallback = "initials",
   fallbackClassName = "bg-[#B0E4CC]/20",
@@ -55,12 +65,13 @@ export function TokenImage({
   // without remounting.
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const box = { width: size, height: size };
+  const round = ROUNDING[rounded];
 
   if (src && failedSrc !== src) {
     const unoptimized = shouldBypassOptimizer(src);
     return (
       <div
-        className={`relative rounded-full overflow-hidden shrink-0 bg-gray-50 ${className}`}
+        className={`relative ${round} overflow-hidden shrink-0 bg-gray-50 ${className}`}
         style={box}
       >
         <Image
@@ -80,7 +91,7 @@ export function TokenImage({
 
   return (
     <div
-      className={`rounded-full flex items-center justify-center shrink-0 ${fallbackClassName} ${className}`}
+      className={`${round} flex items-center justify-center shrink-0 ${fallbackClassName} ${className}`}
       style={box}
     >
       <span className={`text-xs font-bold ${fallbackTextClassName}`}>

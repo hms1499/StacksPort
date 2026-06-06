@@ -8,8 +8,8 @@ test.describe("Landing Page (Guest)", () => {
   });
 
   test("renders hero section with title and CTA", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText("Smart Portfolio");
-    await expect(page.locator("h1")).toContainText("for Stacks");
+    await expect(page.locator("h1")).toContainText("Automate your");
+    await expect(page.locator("h1")).toContainText("Bitcoin strategy");
     await expect(page.getByRole("button", { name: /Connect wallet/i }).first()).toBeVisible();
   });
 
@@ -28,7 +28,7 @@ test.describe("Landing Page (Guest)", () => {
 
   test("renders subtitle description", async ({ page }) => {
     await expect(
-      page.getByText(/Automate DCA plans, execute instant swaps/)
+      page.getByText(/Turn STX into sBTC on a schedule you control/)
     ).toBeVisible();
   });
 
@@ -84,10 +84,13 @@ test.describe("Landing Page (Guest)", () => {
   });
 
   test("renders verifiable protocol trust details", async ({ page }) => {
+    const trustSection = page.locator("#security");
     await expect(
-      page.getByRole("heading", { name: "Built for transparent automation" })
+      trustSection.getByRole("heading", { name: "Built for transparent automation" })
     ).toBeVisible();
-    await expect(page.getByText("0.3% protocol fee", { exact: false })).toBeVisible();
+    await expect(
+      trustSection.getByText("0.3% protocol fee", { exact: false })
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "STX to sBTC vault on Stacks Explorer" })
     ).toHaveAttribute("href", /dca-vault-v2\?chain=mainnet$/);
@@ -97,9 +100,9 @@ test.describe("Landing Page (Guest)", () => {
   });
 
   test("renders CTA section with Connect wallet button", async ({ page }) => {
-    await expect(page.getByText("Start investing")).toBeVisible();
+    await expect(page.getByText("Put your sBTC plan", { exact: false })).toBeVisible();
     // There are 2 Connect Wallet buttons (navbar + CTA), check the CTA one
-    const ctaSection = page.locator("section").filter({ hasText: "Start investing" });
+    const ctaSection = page.locator("section").filter({ hasText: "Put your sBTC plan" });
     await expect(ctaSection.getByRole("button", { name: /Connect wallet/i })).toBeVisible();
   });
 

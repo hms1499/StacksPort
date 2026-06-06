@@ -178,7 +178,7 @@ export default function Hero({
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-none mb-5 md:mb-6"
             style={{ letterSpacing: '-0.04em' }}
           >
-            Smart Portfolio<br />
+            Automate your<br />
             <span
               style={{
                 backgroundImage: 'linear-gradient(135deg, #00E5A0 0%, #38BDF8 100%)',
@@ -187,7 +187,7 @@ export default function Hero({
                 backgroundClip: 'text',
               }}
             >
-              for Stacks
+              Bitcoin strategy
             </span>
           </h1>
 
@@ -196,8 +196,9 @@ export default function Hero({
             className="text-base md:text-lg leading-relaxed mb-8 md:mb-10 max-w-lg"
             style={{ color: 'rgba(221,232,248,0.55)' }}
           >
-            Automate DCA plans, execute instant swaps, and track your portfolio
-            — all non-custodial, all on-chain.
+            Turn STX into sBTC on a schedule you control. Every DCA execution
+            is non-custodial, enforced on-chain, and can be paused or cancelled
+            from your wallet.
           </p>
 
           <div

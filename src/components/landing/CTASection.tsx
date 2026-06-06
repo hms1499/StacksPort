@@ -80,7 +80,7 @@ export default function CTASection({
           className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
           style={{ letterSpacing: '-0.04em' }}
         >
-          Start investing{' '}
+          Put your sBTC plan{' '}
           <span
             style={{
               backgroundImage: 'linear-gradient(135deg, #00E5A0 0%, #38BDF8 100%)',
@@ -89,7 +89,7 @@ export default function CTASection({
               backgroundClip: 'text',
             }}
           >
-            on autopilot
+            on a schedule
           </span>
         </h2>
         <p
@@ -97,7 +97,8 @@ export default function CTASection({
           className="text-lg mb-10"
           style={{ color: 'rgba(221,232,248,0.45)' }}
         >
-          Connect once, automate forever. Your first DCA plan takes less than two minutes.
+          Choose an amount and interval, review the 0.3% protocol fee, then
+          approve the plan from your Stacks wallet.
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <button

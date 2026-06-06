@@ -206,7 +206,8 @@ export default function Hero({
             <button
               onClick={onConnect}
               disabled={connecting}
-              className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50"
+              aria-busy={connecting}
+              className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-50"
               style={{
                 backgroundColor: '#00E5A0',
                 color: '#060C18',
@@ -221,7 +222,7 @@ export default function Hero({
                 (e.currentTarget as HTMLElement).style.backgroundColor = '#00E5A0';
               }}
             >
-              {connecting ? 'Connecting…' : 'Launch App'}
+              {connecting ? 'Connecting...' : 'Connect wallet'}
               <ArrowRight size={16} />
             </button>
             <a

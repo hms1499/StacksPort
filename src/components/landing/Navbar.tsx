@@ -6,9 +6,10 @@ import { Zap, Menu, X } from 'lucide-react';
 
 interface NavbarProps {
   onConnectClick: () => void;
+  connecting: boolean;
 }
 
-export default function Navbar({ onConnectClick }: NavbarProps) {
+export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -74,7 +75,9 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
         <div className="flex items-center gap-3">
           <button
             onClick={onConnectClick}
-            className="hidden md:flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200"
+            disabled={connecting}
+            aria-busy={connecting}
+            className="hidden md:flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-60"
             style={{
               backgroundColor: '#00E5A0',
               color: '#060C18',
@@ -89,7 +92,7 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
               (e.currentTarget as HTMLElement).style.boxShadow = '0 0 18px rgba(0, 229, 160, 0.30)';
             }}
           >
-            Connect Wallet
+            {connecting ? 'Connecting...' : 'Connect wallet'}
           </button>
 
           <button
@@ -125,10 +128,12 @@ export default function Navbar({ onConnectClick }: NavbarProps) {
           ))}
           <button
             onClick={() => { onConnectClick(); setMobileOpen(false); }}
-            className="w-full mt-2 py-2.5 rounded-xl text-sm font-bold"
+            disabled={connecting}
+            aria-busy={connecting}
+            className="w-full mt-2 py-2.5 rounded-xl text-sm font-bold disabled:cursor-wait disabled:opacity-60"
             style={{ backgroundColor: '#00E5A0', color: '#060C18' }}
           >
-            Connect Wallet
+            {connecting ? 'Connecting...' : 'Connect wallet'}
           </button>
         </div>
       )}

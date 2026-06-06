@@ -102,7 +102,8 @@ export default function CTASection({
           ref={ctaBtnRef}
           onClick={onConnect}
           disabled={connecting}
-          className="inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold transition-all duration-300 disabled:opacity-50"
+          aria-busy={connecting}
+          className="inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold transition-all duration-300 disabled:cursor-wait disabled:opacity-50"
           style={{
             backgroundColor: '#00E5A0',
             color: '#060C18',
@@ -117,7 +118,7 @@ export default function CTASection({
             (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(0,229,160,0.35)';
           }}
         >
-          {connecting ? 'Connecting...' : 'Connect Wallet'}
+          {connecting ? 'Connecting...' : 'Connect wallet'}
           <ArrowRight size={18} />
         </button>
       </div>

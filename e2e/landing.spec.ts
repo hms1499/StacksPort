@@ -10,7 +10,7 @@ test.describe("Landing Page (Guest)", () => {
   test("renders hero section with title and CTA", async ({ page }) => {
     await expect(page.locator("h1")).toContainText("Smart Portfolio");
     await expect(page.locator("h1")).toContainText("for Stacks");
-    await expect(page.getByRole("button", { name: /Launch App/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Connect wallet/i }).first()).toBeVisible();
   });
 
   test("mobile first viewport shows hero value prop", async ({ page }) => {
@@ -18,7 +18,7 @@ test.describe("Landing Page (Guest)", () => {
     await page.goto("/");
 
     await expect(page.locator("h1")).toBeInViewport();
-    await expect(page.getByRole("button", { name: /Launch App/i })).toBeInViewport();
+    await expect(page.getByRole("button", { name: /Connect wallet/i }).first()).toBeInViewport();
     await expect(page.getByText("Live on Stacks Mainnet")).toBeInViewport();
   });
 
@@ -94,11 +94,11 @@ test.describe("Landing Page (Guest)", () => {
     ).toHaveAttribute("href", /dca-vault-sbtc-v2\?chain=mainnet$/);
   });
 
-  test("renders CTA section with Connect Wallet button", async ({ page }) => {
+  test("renders CTA section with Connect wallet button", async ({ page }) => {
     await expect(page.getByText("Start investing")).toBeVisible();
     // There are 2 Connect Wallet buttons (navbar + CTA), check the CTA one
     const ctaSection = page.locator("section").filter({ hasText: "Start investing" });
-    await expect(ctaSection.getByRole("button", { name: /Connect Wallet/i })).toBeVisible();
+    await expect(ctaSection.getByRole("button", { name: /Connect wallet/i })).toBeVisible();
   });
 
   test("renders navbar", async ({ page }) => {

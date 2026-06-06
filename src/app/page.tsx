@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWalletStore } from '@/store/walletStore';
-import { connect as stacksConnect } from '@stacks/connect';
+import { connectWallet } from '@/lib/wallet';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import Hero from '@/components/landing/Hero';
@@ -19,16 +19,10 @@ export default function Home() {
   const [connecting, setConnecting] = useState(false);
 
   async function handleConnect() {
+    if (connecting) return;
     setConnecting(true);
     try {
-      const result = await stacksConnect();
-      const stxEntry = result.addresses.find(
-        (a) => a.symbol === 'STX' || a.address.startsWith('SP') || a.address.startsWith('ST')
-      );
-      const btcEntry = result.addresses.find(
-        (a) => a.symbol === 'BTC' || (!a.address.startsWith('SP') && !a.address.startsWith('ST'))
-      );
-      connect(stxEntry?.address ?? result.addresses[0]?.address ?? '', btcEntry?.address ?? '');
+      await connectWallet(connect);
     } catch {
       // user cancelled
     } finally {
@@ -45,7 +39,7 @@ export default function Home() {
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: '#060C18', color: '#DDE8F8' }}
     >
-      <Navbar onConnectClick={handleConnect} />
+      <Navbar onConnectClick={handleConnect} connecting={connecting} />
 
       <Hero onConnect={handleConnect} connecting={connecting} />
 

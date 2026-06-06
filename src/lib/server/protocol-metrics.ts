@@ -85,7 +85,9 @@ export function buildProtocolMetrics({
   updatedAt?: number;
 }): ProtocolMetricsResponse {
   const vaultsAvailable = stxVault !== null && sbtcVault !== null;
-  const pricesAvailable = prices.stxUsd !== null && prices.btcUsd !== null;
+  const stxUsd = prices.stxUsd;
+  const btcUsd = prices.btcUsd;
+  const pricesAvailable = stxUsd !== null && btcUsd !== null;
 
   const plansCreated = vaultsAvailable
     ? stxVault.plans + sbtcVault.plans
@@ -94,8 +96,8 @@ export function buildProtocolMetrics({
     ? stxVault.executed + sbtcVault.executed
     : null;
   const volumeUsd = vaultsAvailable && pricesAvailable
-    ? (stxVault.volume / 1_000_000) * prices.stxUsd
-      + (sbtcVault.volume / 100_000_000) * prices.btcUsd
+    ? (stxVault.volume / 1_000_000) * stxUsd
+      + (sbtcVault.volume / 100_000_000) * btcUsd
     : null;
   const avgSwapsPerPlan =
     plansCreated !== null && swapsExecuted !== null

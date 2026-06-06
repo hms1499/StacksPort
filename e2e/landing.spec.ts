@@ -210,6 +210,37 @@ test.describe("Landing Page (Guest)", () => {
     const structuredData = await jsonLd.textContent();
     expect(structuredData).toContain("SoftwareApplication");
     expect(structuredData).toContain("Non-custodial STX to sBTC DCA");
+
+    // The OG image comes solely from the file-based convention — no duplicate tag.
+    await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
+
+    // Viewport must not block pinch-zoom (accessibility / WCAG 1.4.4).
+    const viewport = await page
+      .locator('meta[name="viewport"]')
+      .getAttribute("content");
+    expect(viewport).not.toContain("maximum-scale");
+  });
+
+  test("serves unique titles per indexable route", async ({ page }) => {
+    test.setTimeout(60_000);
+    const titleOf = async (path: string) => {
+      const html = await (await page.request.get(path)).text();
+      return /<title>(.*?)<\/title>/.exec(html)?.[1] ?? "";
+    };
+
+    const home = await titleOf("/");
+    const dashboard = await titleOf("/dashboard");
+    const trade = await titleOf("/trade");
+    const bubbles = await titleOf("/bubbles");
+
+    expect(home).toContain("Non-Custodial sBTC DCA on Stacks");
+    expect(dashboard).toContain("Dashboard");
+    expect(trade).toContain("Swap STX, sBTC");
+    expect(bubbles).toContain("Stacks Market Bubbles");
+
+    // No two indexable routes share the same title (no thin/duplicate metadata).
+    const titles = [home, dashboard, trade, bubbles];
+    expect(new Set(titles).size).toBe(titles.length);
   });
 
   test("publishes robots sitemap and manifest endpoints", async ({ page }) => {
@@ -229,6 +260,29 @@ test.describe("Landing Page (Guest)", () => {
     );
 
     expect(manifest.ok()).toBe(true);
-    expect((await manifest.json()).name).toBe("StacksPort");
+    const manifestJson = await manifest.json();
+    expect(manifestJson.name).toBe("StacksPort");
+
+    // PWA installability: 192 + 512 icons present, at least one maskable.
+    const iconSizes = manifestJson.icons.map(
+      (icon: { sizes: string }) => icon.sizes
+    );
+    expect(iconSizes).toContain("192x192");
+    expect(iconSizes).toContain("512x512");
+    expect(
+      manifestJson.icons.some(
+        (icon: { purpose?: string }) => icon.purpose === "maskable"
+      )
+    ).toBe(true);
+
+    // Generated icon endpoints resolve as PNGs.
+    const icon192 = await page.request.get("/icon-192");
+    const icon512 = await page.request.get("/icon-512");
+    expect(icon192.ok()).toBe(true);
+    expect(icon192.headers()["content-type"]).toContain("image/png");
+    expect(icon512.ok()).toBe(true);
+
+    // Wallet-gated /assets is intentionally excluded from the sitemap.
+    expect(await sitemap.text()).not.toContain("/assets</loc>");
   });
 });

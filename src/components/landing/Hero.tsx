@@ -210,36 +210,14 @@ export default function Hero({
               onClick={onConnect}
               disabled={connecting}
               aria-busy={connecting}
-              className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-50"
-              style={{
-                backgroundColor: '#00E5A0',
-                color: '#060C18',
-                boxShadow: '0 0 28px rgba(0,229,160,0.35)',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(0,229,160,0.55)';
-                (e.currentTarget as HTMLElement).style.backgroundColor = '#00FFB3';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 28px rgba(0,229,160,0.35)';
-                (e.currentTarget as HTMLElement).style.backgroundColor = '#00E5A0';
-              }}
+              className="landing-primary-cta flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-50"
             >
               {connecting ? 'Connecting...' : 'Connect wallet'}
               <ArrowRight size={16} />
             </button>
             <Link
               href="/dashboard"
-              className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200"
-              style={{ border: '1px solid rgba(28,49,80,1)', color: 'rgba(221,232,248,0.5)' }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,229,160,0.3)';
-                (e.currentTarget as HTMLElement).style.color = '#DDE8F8';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(28,49,80,1)';
-                (e.currentTarget as HTMLElement).style.color = 'rgba(221,232,248,0.5)';
-              }}
+              className="landing-secondary-cta flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200"
             >
               Explore dashboard
             </Link>

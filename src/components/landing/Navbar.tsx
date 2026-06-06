@@ -74,10 +74,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
               href={href}
               target={external ? '_blank' : undefined}
               rel={external ? 'noopener noreferrer' : undefined}
-              className="text-sm font-medium transition-colors duration-200"
-              style={{ color: 'rgba(221, 232, 248, 0.55)' }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#DDE8F8')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'rgba(221, 232, 248, 0.55)')}
+              className="landing-nav-link text-sm font-medium transition-colors duration-200"
             >
               {label}
             </a>
@@ -88,8 +85,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
-            className="hidden text-sm font-semibold transition-colors duration-200 md:block"
-            style={{ color: 'rgba(221, 232, 248, 0.65)' }}
+            className="landing-nav-link hidden text-sm font-semibold transition-colors duration-200 md:block"
           >
             Explore dashboard
           </Link>
@@ -97,20 +93,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
             onClick={onConnectClick}
             disabled={connecting}
             aria-busy={connecting}
-            className="hidden md:flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-60"
-            style={{
-              backgroundColor: '#00E5A0',
-              color: '#060C18',
-              boxShadow: '0 0 18px rgba(0, 229, 160, 0.30)',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = '#00FFB3';
-              (e.currentTarget as HTMLElement).style.boxShadow = '0 0 28px rgba(0, 229, 160, 0.50)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = '#00E5A0';
-              (e.currentTarget as HTMLElement).style.boxShadow = '0 0 18px rgba(0, 229, 160, 0.30)';
-            }}
+            className="landing-primary-cta hidden md:flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-60"
           >
             {connecting ? 'Connecting...' : 'Connect wallet'}
           </button>
@@ -160,8 +143,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
             onClick={() => { onConnectClick(); setMobileOpen(false); }}
             disabled={connecting}
             aria-busy={connecting}
-            className="w-full mt-2 py-2.5 rounded-xl text-sm font-bold disabled:cursor-wait disabled:opacity-60"
-            style={{ backgroundColor: '#00E5A0', color: '#060C18' }}
+            className="landing-primary-cta w-full mt-2 py-2.5 rounded-xl text-sm font-bold disabled:cursor-wait disabled:opacity-60"
           >
             {connecting ? 'Connecting...' : 'Connect wallet'}
           </button>

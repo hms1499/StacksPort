@@ -79,11 +79,7 @@ export default function TrustSection() {
           {TRUST_POINTS.map(({ icon: Icon, title, description }) => (
             <article
               key={title}
-              className="rounded-2xl p-5"
-              style={{
-                backgroundColor: "#0E1E30",
-                border: "1px solid rgba(28,49,80,0.8)",
-              }}
+              className="landing-card rounded-2xl p-5"
             >
               <div
                 className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl"

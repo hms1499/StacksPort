@@ -94,8 +94,7 @@ export default function HowItWorks() {
             <div
               key={n}
               ref={(el) => { stepCardRefs.current[i] = el; }}
-              className="flex gap-6 rounded-2xl p-6"
-              style={{ backgroundColor: '#0E1E30', border: '1px solid rgba(28,49,80,0.8)' }}
+              className="landing-card flex gap-6 rounded-2xl p-6"
             >
               <span
                 className="text-4xl font-bold shrink-0 leading-none pt-0.5"

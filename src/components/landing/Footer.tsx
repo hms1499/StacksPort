@@ -43,16 +43,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="p-2 rounded-lg transition-colors"
-                  style={{ color: 'rgba(221, 232, 248, 0.35)' }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = '#00E5A0';
-                    (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0, 229, 160, 0.08)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = 'rgba(221, 232, 248, 0.35)';
-                    (e.currentTarget as HTMLElement).style.backgroundColor = '';
-                  }}
+                  className="landing-social-link p-2 rounded-lg transition-colors"
                 >
                   <Icon size={17} />
                 </a>
@@ -75,10 +66,7 @@ export default function Footer() {
                   <li key={label}>
                     <a
                       href={href}
-                      className="text-sm transition-colors"
-                      style={{ color: 'rgba(221, 232, 248, 0.45)' }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#00E5A0')}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'rgba(221, 232, 248, 0.45)')}
+                      className="landing-footer-link text-sm transition-colors"
                     >
                       {label}
                     </a>

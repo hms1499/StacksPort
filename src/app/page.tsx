@@ -8,26 +8,20 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  // og:image and twitter:image are emitted automatically from the
+  // app/opengraph-image.tsx file convention — declaring them here too would
+  // produce duplicate image tags.
   openGraph: {
     type: "website",
     url: "/",
     siteName: SITE_NAME,
     title: "StacksPort - Non-Custodial sBTC DCA on Stacks",
     description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "StacksPort product overview",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "StacksPort - Non-Custodial sBTC DCA on Stacks",
     description: SITE_DESCRIPTION,
-    images: ["/opengraph-image"],
   },
 };
 

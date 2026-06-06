@@ -37,8 +37,12 @@ test.describe("Landing Page (Guest)", () => {
   });
 
   test("renders trust badges", async ({ page }) => {
-    // At least the hero copy section is visible
-    await expect(page.getByText(/Non-custodial|Audited contracts|Stacks mainnet/).first()).toBeVisible();
+    await expect(page.getByText("Non-custodial", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open-source contracts" })).toHaveAttribute(
+      "href",
+      /github\.com\/hms1499\/StacksPort\/tree\/main\/contracts/
+    );
+    await expect(page.getByText("Audited contracts")).toHaveCount(0);
   });
 
   test("renders hero feature highlights", async ({ page }) => {
@@ -49,6 +53,11 @@ test.describe("Landing Page (Guest)", () => {
     await expect(
       page.getByText(/Non-custodial|Audited contracts|Stacks mainnet/).first()
     ).toBeVisible();
+  });
+
+  test("labels hero product values as preview data", async ({ page }) => {
+    await expect(page.getByText("Portfolio Preview")).toBeVisible();
+    await expect(page.getByText("Preview executions")).toBeVisible();
   });
 
   test("renders 6 feature cards", async ({ page }) => {
@@ -84,6 +93,9 @@ test.describe("Landing Page (Guest)", () => {
   });
 
   test("renders footer", async ({ page }) => {
-    await expect(page.locator("footer")).toBeVisible();
+    const footer = page.locator("footer");
+    await expect(footer).toBeVisible();
+    await expect(footer.locator('a[href="#"]')).toHaveCount(0);
+    await expect(footer.getByRole("link", { name: "Twitter" })).toHaveCount(0);
   });
 });

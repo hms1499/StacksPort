@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { Zap, XIcon } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 function GitHubSVG({ size = 17 }: { size?: number }) {
   return (
@@ -37,7 +36,6 @@ export default function Footer() {
             <div className="flex items-center gap-2">
               {[
                 { href: 'https://github.com/hms1499/StacksPort', icon: GitHubSVG, label: 'GitHub' },
-                { href: 'https://twitter.com', icon: XIcon, label: 'Twitter' },
               ].map(({ href, icon: Icon, label }) => (
                 <a
                   key={label}
@@ -84,31 +82,6 @@ export default function Footer() {
                     >
                       {label}
                     </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: 'rgba(221, 232, 248, 0.25)', letterSpacing: '0.1em' }}>
-                Legal
-              </p>
-              <ul className="space-y-2.5">
-                {[
-                  { label: 'Privacy', href: '#' },
-                  { label: 'Terms', href: '#' },
-                  { label: 'Security', href: '#' },
-                ].map(({ label, href }) => (
-                  <li key={label}>
-                    <Link
-                      href={href}
-                      className="text-sm transition-colors"
-                      style={{ color: 'rgba(221, 232, 248, 0.45)' }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#00E5A0')}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'rgba(221, 232, 248, 0.45)')}
-                    >
-                      {label}
-                    </Link>
                   </li>
                 ))}
               </ul>

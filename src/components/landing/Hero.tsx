@@ -246,10 +246,26 @@ export default function Hero({
             className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs"
             style={{ color: 'rgba(221,232,248,0.3)' }}
           >
-            {['Non-custodial', 'Audited contracts', 'Stacks mainnet'].map((t) => (
-              <span key={t} className="flex items-center gap-1.5">
+            {[
+              { label: 'Non-custodial' },
+              {
+                label: 'Open-source contracts',
+                href: 'https://github.com/hms1499/StacksPort/tree/main/contracts',
+              },
+              { label: 'Stacks mainnet' },
+            ].map(({ label, href }) => (
+              <span key={label} className="flex items-center gap-1.5">
                 <CheckCircle2 size={12} style={{ color: '#00E5A0' }} />
-                {t}
+                {href ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 hover:text-[#DDE8F8] transition-colors"
+                  >
+                    {label}
+                  </a>
+                ) : label}
               </span>
             ))}
           </div>
@@ -271,7 +287,7 @@ export default function Hero({
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: 'rgba(221,232,248,0.25)', letterSpacing: '0.1em', fontFamily: 'var(--font-mono)' }}
             >
-              Portfolio Value
+              Portfolio Preview
             </p>
             <div className="flex items-baseline gap-3 mb-1">
               <p
@@ -374,7 +390,7 @@ export default function Hero({
             >
               1,247
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(221,232,248,0.3)' }}>Executions</p>
+            <p className="text-xs mt-0.5" style={{ color: 'rgba(221,232,248,0.3)' }}>Preview executions</p>
           </div>
         </div>
       </div>

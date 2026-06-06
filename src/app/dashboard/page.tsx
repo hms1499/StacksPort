@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Topbar from "@/components/layout/Topbar";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import DashboardFooter from "@/components/dashboard/DashboardFooter";
 import DashboardGridClient from "@/components/dashboard/DashboardGridClient";
 import { getMarketSnapshot } from "@/lib/server/market-snapshot";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "Track Stacks market data, your portfolio value, and DCA performance in one non-custodial dashboard.",
+  alternates: { canonical: "/dashboard" },
+};
 
 // Revalidate the server render at the same cadence as the underlying runtime
 // cache. The /api/market/snapshot route caches at 60s; matching it here avoids

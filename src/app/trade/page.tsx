@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Topbar from "@/components/layout/Topbar";
 import SwapWidget from "@/components/trade/SwapWidget";
 import MigrationWidget from "@/components/trade/MigrationWidget";
@@ -7,6 +8,13 @@ import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 import RecentSwaps from "@/components/trade/RecentSwaps";
 import { ArrowLeftRight, Zap, Shield, RefreshCw, History } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Swap STX, sBTC & USDCx",
+  description:
+    "Swap Stacks assets on-chain through Bitflow with live routing and execution alerts. Non-custodial, no sign-up.",
+  alternates: { canonical: "/trade" },
+};
 
 export default function TradePage() {
   return (

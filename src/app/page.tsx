@@ -10,6 +10,7 @@ import Hero from '@/components/landing/Hero';
 import FeaturesSection from '@/components/landing/FeaturesSection';
 import HowItWorks from '@/components/landing/HowItWorks';
 import CTASection from '@/components/landing/CTASection';
+import TrustSection from '@/components/landing/TrustSection';
 import SocialProofStrip from '@/components/dashboard/SocialProofStrip';
 
 export default function Home() {
@@ -58,6 +59,8 @@ export default function Home() {
       <FeaturesSection />
 
       <HowItWorks />
+
+      <TrustSection />
 
       <CTASection onConnect={handleConnect} connecting={connecting} />
 

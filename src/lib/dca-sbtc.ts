@@ -10,10 +10,15 @@ import {
 } from "@stacks/transactions";
 import { openContractCall } from "@stacks/connect";
 import { fetchTxOutputTransfer, batchedMap } from "./dca";
+import {
+  DCA_SBTC_CONTRACT_ADDRESS,
+  DCA_SBTC_CONTRACT_NAME,
+} from "./dca-contracts";
 
-export const DCA_SBTC_CONTRACT_ADDRESS =
-  "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
-export const DCA_SBTC_CONTRACT_NAME = "dca-vault-sbtc-v2";
+export {
+  DCA_SBTC_CONTRACT_ADDRESS,
+  DCA_SBTC_CONTRACT_NAME,
+} from "./dca-contracts";
 export const DEFAULT_SBTC_SWAP_ROUTER =
   "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-usdcx-swap-router";
 

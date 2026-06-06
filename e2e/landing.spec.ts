@@ -81,6 +81,19 @@ test.describe("Landing Page (Guest)", () => {
     await expect(page.getByRole("heading", { name: "Let the bot execute" })).toBeVisible();
   });
 
+  test("renders verifiable protocol trust details", async ({ page }) => {
+    await expect(
+      page.getByRole("heading", { name: "Built for transparent automation" })
+    ).toBeVisible();
+    await expect(page.getByText("0.3% protocol fee", { exact: false })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "STX to sBTC vault on Stacks Explorer" })
+    ).toHaveAttribute("href", /dca-vault-v2\?chain=mainnet$/);
+    await expect(
+      page.getByRole("link", { name: "sBTC to USDCx vault on Stacks Explorer" })
+    ).toHaveAttribute("href", /dca-vault-sbtc-v2\?chain=mainnet$/);
+  });
+
   test("renders CTA section with Connect Wallet button", async ({ page }) => {
     await expect(page.getByText("Start investing")).toBeVisible();
     // There are 2 Connect Wallet buttons (navbar + CTA), check the CTA one

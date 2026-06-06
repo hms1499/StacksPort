@@ -124,6 +124,15 @@ test.describe("Navigation - Mobile Bottom Nav", () => {
 });
 
 test.describe("Navigation - Route Guards", () => {
+  test("disconnected user can explore the dashboard", async ({ page }) => {
+    await mockWalletDisconnected(page);
+    await mockAPIs(page);
+    await page.goto("/dashboard");
+
+    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page.getByText("Connect your wallet")).toBeVisible();
+  });
+
   test("connected user on landing page redirects to dashboard", async ({
     page,
   }) => {

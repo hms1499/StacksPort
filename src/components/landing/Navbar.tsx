@@ -73,6 +73,13 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
 
         {/* CTA + Mobile trigger */}
         <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="hidden text-sm font-semibold transition-colors duration-200 md:block"
+            style={{ color: 'rgba(221, 232, 248, 0.65)' }}
+          >
+            Explore dashboard
+          </Link>
           <button
             onClick={onConnectClick}
             disabled={connecting}
@@ -126,6 +133,14 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
               {label}
             </a>
           ))}
+          <Link
+            href="/dashboard"
+            className="block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+            style={{ color: 'rgba(221, 232, 248, 0.6)' }}
+            onClick={() => setMobileOpen(false)}
+          >
+            Explore dashboard
+          </Link>
           <button
             onClick={() => { onConnectClick(); setMobileOpen(false); }}
             disabled={connecting}

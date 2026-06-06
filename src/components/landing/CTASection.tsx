@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
@@ -98,29 +99,38 @@ export default function CTASection({
         >
           Connect once, automate forever. Your first DCA plan takes less than two minutes.
         </p>
-        <button
-          ref={ctaBtnRef}
-          onClick={onConnect}
-          disabled={connecting}
-          aria-busy={connecting}
-          className="inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold transition-all duration-300 disabled:cursor-wait disabled:opacity-50"
-          style={{
-            backgroundColor: '#00E5A0',
-            color: '#060C18',
-            boxShadow: '0 0 40px rgba(0,229,160,0.35)',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = '#00FFB3';
-            (e.currentTarget as HTMLElement).style.boxShadow = '0 0 60px rgba(0,229,160,0.55)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = '#00E5A0';
-            (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(0,229,160,0.35)';
-          }}
-        >
-          {connecting ? 'Connecting...' : 'Connect wallet'}
-          <ArrowRight size={18} />
-        </button>
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <button
+            ref={ctaBtnRef}
+            onClick={onConnect}
+            disabled={connecting}
+            aria-busy={connecting}
+            className="inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold transition-all duration-300 disabled:cursor-wait disabled:opacity-50"
+            style={{
+              backgroundColor: '#00E5A0',
+              color: '#060C18',
+              boxShadow: '0 0 40px rgba(0,229,160,0.35)',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.backgroundColor = '#00FFB3';
+              (e.currentTarget as HTMLElement).style.boxShadow = '0 0 60px rgba(0,229,160,0.55)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.backgroundColor = '#00E5A0';
+              (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(0,229,160,0.35)';
+            }}
+          >
+            {connecting ? 'Connecting...' : 'Connect wallet'}
+            <ArrowRight size={18} />
+          </button>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold transition-colors hover:text-white"
+            style={{ color: 'rgba(221,232,248,0.55)' }}
+          >
+            Explore dashboard
+          </Link>
+        </div>
       </div>
     </section>
   );

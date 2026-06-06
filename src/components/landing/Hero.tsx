@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { ArrowRight, CheckCircle2, ArrowLeftRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
@@ -225,8 +226,8 @@ export default function Hero({
               {connecting ? 'Connecting...' : 'Connect wallet'}
               <ArrowRight size={16} />
             </button>
-            <a
-              href="#features"
+            <Link
+              href="/dashboard"
               className="flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200"
               style={{ border: '1px solid rgba(28,49,80,1)', color: 'rgba(221,232,248,0.5)' }}
               onMouseEnter={(e) => {
@@ -238,8 +239,8 @@ export default function Hero({
                 (e.currentTarget as HTMLElement).style.color = 'rgba(221,232,248,0.5)';
               }}
             >
-              See Features
-            </a>
+              Explore dashboard
+            </Link>
           </div>
 
           <div

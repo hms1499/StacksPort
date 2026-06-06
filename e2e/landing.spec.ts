@@ -32,8 +32,10 @@ test.describe("Landing Page (Guest)", () => {
     ).toBeVisible();
   });
 
-  test("renders See Features link", async ({ page }) => {
-    await expect(page.getByRole("link", { name: /See Features/i })).toBeVisible();
+  test("renders read-only dashboard link", async ({ page }) => {
+    await expect(
+      page.getByRole("link", { name: "Explore dashboard" }).first()
+    ).toHaveAttribute("href", "/dashboard");
   });
 
   test("renders trust badges", async ({ page }) => {

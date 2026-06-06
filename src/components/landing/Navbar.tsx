@@ -14,14 +14,27 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const scroller = document.querySelector('main');
+    if (!scroller) return;
+    const onScroll = () => setScrolled(scroller.scrollTop > 20);
+    onScroll();
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    return () => scroller.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileOpen]);
 
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      data-scrolled={scrolled}
       style={{
         backgroundColor: scrolled ? 'rgba(6, 12, 24, 0.90)' : 'transparent',
         borderBottom: scrolled ? '1px solid rgba(28, 49, 80, 0.6)' : '1px solid transparent',
@@ -104,6 +117,8 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileOpen}
             className="md:hidden p-2 rounded-xl transition-colors"
             style={{ color: 'rgba(221, 232, 248, 0.7)' }}
           >

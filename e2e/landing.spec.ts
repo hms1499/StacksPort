@@ -144,6 +144,34 @@ test.describe("Landing Page (Guest)", () => {
     await expect(page.locator("nav").first()).toBeVisible();
   });
 
+  test("updates navbar state from the app scroll container", async ({ page }) => {
+    const navbar = page.locator("nav").first();
+    await expect(navbar).toHaveAttribute("data-scrolled", "false");
+
+    await page.locator("main").evaluate((element) => {
+      element.scrollTop = 200;
+      element.dispatchEvent(new Event("scroll"));
+    });
+
+    await expect(navbar).toHaveAttribute("data-scrolled", "true");
+  });
+
+  test("closes the mobile navigation menu with Escape", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload();
+
+    const trigger = page.getByRole("button", { name: "Open navigation menu" });
+    await trigger.click();
+    await expect(
+      page.getByRole("button", { name: "Close navigation menu" })
+    ).toHaveAttribute("aria-expanded", "true");
+
+    await page.keyboard.press("Escape");
+    await expect(
+      page.getByRole("button", { name: "Open navigation menu" })
+    ).toHaveAttribute("aria-expanded", "false");
+  });
+
   test("renders footer", async ({ page }) => {
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();

@@ -7,7 +7,7 @@ import { connectWallet } from '@/lib/wallet';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import Hero from '@/components/landing/Hero';
-import FeaturesSection from '@/components/landing/FeaturesSection';
+import ProductWalkthrough from '@/components/landing/ProductWalkthrough';
 import HowItWorks from '@/components/landing/HowItWorks';
 import CTASection from '@/components/landing/CTASection';
 import TrustSection from '@/components/landing/TrustSection';
@@ -50,7 +50,7 @@ export default function Home() {
         </div>
       </section>
 
-      <FeaturesSection />
+      <ProductWalkthrough />
 
       <HowItWorks />
 

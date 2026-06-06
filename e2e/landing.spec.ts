@@ -62,18 +62,16 @@ test.describe("Landing Page (Guest)", () => {
     await expect(page.getByText("Preview executions")).toBeVisible();
   });
 
-  test("renders 6 feature cards", async ({ page }) => {
-    const features = [
-      "DCA Automation",
-      "Instant Swaps",
-      "Portfolio Analytics",
-      "Smart Alerts",
-      "Non-Custodial",
-      "AI Insights",
+  test("renders the product walkthrough", async ({ page }) => {
+    const sections = [
+      "Build an STX to sBTC schedule",
+      "Track cost basis and plan runway",
+      "Swap directly and stay informed",
     ];
-    for (const feature of features) {
-      await expect(page.getByRole("heading", { name: feature })).toBeVisible();
+    for (const section of sections) {
+      await expect(page.getByRole("heading", { name: section })).toBeVisible();
     }
+    await expect(page.getByText("Preview portfolio", { exact: false })).toBeVisible();
   });
 
   test("renders how-it-works section with 3 steps", async ({ page }) => {

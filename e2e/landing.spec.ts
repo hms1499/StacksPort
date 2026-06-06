@@ -194,4 +194,41 @@ test.describe("Landing Page (Guest)", () => {
     await expect(footer.locator('a[href="#"]')).toHaveCount(0);
     await expect(footer.getByRole("link", { name: "Twitter" })).toHaveCount(0);
   });
+
+  test("publishes product metadata and structured data", async ({ page }) => {
+    await expect(page).toHaveTitle(/Non-Custodial sBTC DCA on Stacks/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "https://stack-sport.vercel.app"
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      /Non-Custodial sBTC DCA on Stacks/
+    );
+
+    const jsonLd = page.locator('script[type="application/ld+json"]');
+    const structuredData = await jsonLd.textContent();
+    expect(structuredData).toContain("SoftwareApplication");
+    expect(structuredData).toContain("Non-custodial STX to sBTC DCA");
+  });
+
+  test("publishes robots sitemap and manifest endpoints", async ({ page }) => {
+    test.setTimeout(60_000);
+    const robots = await page.request.get("/robots.txt");
+    const sitemap = await page.request.get("/sitemap.xml");
+    const manifest = await page.request.get("/manifest.webmanifest");
+
+    expect(robots.ok()).toBe(true);
+    expect(await robots.text()).toContain(
+      "Sitemap: https://stack-sport.vercel.app/sitemap.xml"
+    );
+
+    expect(sitemap.ok()).toBe(true);
+    expect(await sitemap.text()).toContain(
+      "<loc>https://stack-sport.vercel.app</loc>"
+    );
+
+    expect(manifest.ok()).toBe(true);
+    expect((await manifest.json()).name).toBe("StacksPort");
+  });
 });

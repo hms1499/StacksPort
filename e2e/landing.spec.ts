@@ -4,6 +4,20 @@ import { mockWalletDisconnected } from "./fixtures/test-utils";
 test.describe("Landing Page (Guest)", () => {
   test.beforeEach(async ({ page }) => {
     await mockWalletDisconnected(page);
+    await page.route("**/api/metrics", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          plansCreated: 12,
+          volumeUsd: 42000,
+          swapsExecuted: 38,
+          avgSwapsPerPlan: 3.2,
+          sources: { stxVault: "ok", sbtcVault: "ok", prices: "ok" },
+          updatedAt: Date.now(),
+        }),
+      })
+    );
     await page.goto("/");
   });
 
@@ -60,6 +74,28 @@ test.describe("Landing Page (Guest)", () => {
   test("labels hero product values as preview data", async ({ page }) => {
     await expect(page.getByText("Portfolio Preview")).toBeVisible();
     await expect(page.getByText("Preview executions")).toBeVisible();
+  });
+
+  test("renders authoritative live protocol metrics", async ({ page }) => {
+    await expect(page.getByText("DCA Plans Created")).toBeVisible();
+    await expect(page.getByText("Volume Executed")).toBeVisible();
+    await expect(page.getByText("Swaps Executed")).toBeVisible();
+    await expect(
+      page.getByText("On-chain totals from both DCA vaults", { exact: false })
+    ).toBeVisible();
+  });
+
+  test("does not turn an unavailable metrics response into zeroes", async ({ page }) => {
+    await page.unroute("**/api/metrics");
+    await page.route("**/api/metrics", (route) =>
+      route.fulfill({ status: 503, body: "unavailable" })
+    );
+    await page.reload();
+
+    await expect(
+      page.getByText("Live on-chain metrics are temporarily unavailable.")
+    ).toBeVisible();
+    await expect(page.getByText("DCA Plans Created")).toHaveCount(0);
   });
 
   test("renders the product walkthrough", async ({ page }) => {

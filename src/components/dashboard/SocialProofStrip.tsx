@@ -2,23 +2,9 @@
 
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { Repeat, TrendingUp, Activity, BarChart3, Info } from "lucide-react";
+import { Repeat, TrendingUp, Activity, BarChart3, Info, WifiOff } from "lucide-react";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
-
-interface MetricsResponse {
-  plansCreated: number;
-  volumeUsd: number;
-  swapsExecuted: number;
-  avgSwapsPerPlan: number;
-  updatedAt?: number;
-}
-
-const FALLBACK: MetricsResponse = {
-  plansCreated: 0,
-  volumeUsd: 0,
-  swapsExecuted: 0,
-  avgSwapsPerPlan: 0,
-};
+import type { ProtocolMetricsResponse } from "@/lib/server/protocol-metrics";
 
 function formatRelativeTime(ts: number, now: number): string {
   const seconds = Math.max(0, Math.round((now - ts) / 1000));
@@ -30,7 +16,11 @@ function formatRelativeTime(ts: number, now: number): string {
   return `${hours}h ago`;
 }
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Protocol metrics unavailable");
+  return response.json();
+};
 
 function formatCompactUSD(v: number): string {
   if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(2)}M`;
@@ -62,11 +52,10 @@ const METRICS: Array<{
 ];
 
 export default function SocialProofStrip() {
-  const { data } = useSWR<MetricsResponse>("/api/metrics", fetcher, {
+  const { data, error, isLoading } = useSWR<ProtocolMetricsResponse>("/api/metrics", fetcher, {
     refreshInterval: 60_000,
     revalidateOnFocus: false,
   });
-  const metrics = data ?? FALLBACK;
 
   // Re-render every 30s so the relative timestamp stays fresh.
   const [now, setNow] = useState(() => Date.now());
@@ -74,7 +63,53 @@ export default function SocialProofStrip() {
     const id = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(id);
   }, []);
-  const updatedLabel = metrics.updatedAt ? formatRelativeTime(metrics.updatedAt, now) : null;
+  const updatedLabel = data?.updatedAt ? formatRelativeTime(data.updatedAt, now) : null;
+  const availableMetrics = data
+    ? METRICS.filter(({ key }) => data[key] !== null)
+    : [];
+
+  if (isLoading && !data) {
+    return (
+      <div
+        className="rounded-2xl px-4 py-4"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-subtle)",
+        }}
+        aria-label="Loading live protocol metrics"
+      >
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[0, 1, 2, 3].map((item) => (
+            <div key={item} className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg skeleton" />
+              <div className="flex-1">
+                <div className="h-4 w-16 rounded skeleton" />
+                <div className="mt-2 h-2.5 w-24 rounded skeleton" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data || availableMetrics.length === 0) {
+    return (
+      <div
+        className="flex items-center justify-center gap-3 rounded-2xl px-4 py-5 text-center"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-subtle)",
+        }}
+        role="status"
+      >
+        <WifiOff size={15} style={{ color: "var(--text-muted)" }} />
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+          Live on-chain metrics are temporarily unavailable.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -106,16 +141,11 @@ export default function SocialProofStrip() {
               </span>
             )}
           </div>
-          <span
-            className="ml-1"
-            title="Sums on-chain stats from both DCA vaults (STX→sBTC and sBTC→USDCx) via get-stats. Volume is converted to USD at current CoinGecko prices. Refreshes every 60s."
-          >
-            <Info size={11} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
-          </span>
+          <Info size={11} className="ml-1" style={{ color: 'var(--text-muted)' }} aria-hidden="true" />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-2 flex-1 min-w-0">
-          {METRICS.map(({ key, label, icon: Icon, color, format }) => (
+          {availableMetrics.map(({ key, label, icon: Icon, color, format }) => (
             <div key={key} className="flex items-center gap-2 min-w-0">
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
@@ -125,7 +155,7 @@ export default function SocialProofStrip() {
               </div>
               <div className="min-w-0">
                 <AnimatedCounter
-                  value={metrics[key]}
+                  value={data[key] as number}
                   formatFn={format}
                   duration={1400}
                   className="text-sm font-bold font-data block leading-tight"
@@ -142,6 +172,13 @@ export default function SocialProofStrip() {
           ))}
         </div>
       </div>
+      <p
+        className="mt-3 text-[10px] leading-relaxed"
+        style={{ color: "var(--text-muted)" }}
+      >
+        On-chain totals from both DCA vaults. USD volume uses current market
+        prices and is hidden when a required source is unavailable.
+      </p>
     </div>
   );
 }

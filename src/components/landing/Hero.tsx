@@ -29,6 +29,7 @@ export default function Hero({
 
   useEffect(() => {
     if (!heroRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const mainEl = heroRef.current.closest('main') as HTMLElement | null;
     if (mainEl) ScrollTrigger.defaults({ scroller: mainEl });
 

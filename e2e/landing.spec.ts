@@ -172,6 +172,22 @@ test.describe("Landing Page (Guest)", () => {
     ).toHaveAttribute("aria-expanded", "false");
   });
 
+  test("keeps landing content visible with reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.reload();
+
+    const headline = page.locator("h1");
+    await expect(headline).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Build an STX to sBTC schedule" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Built for transparent automation" })
+    ).toBeVisible();
+
+    await expect(headline).toHaveCSS("opacity", "1");
+  });
+
   test("renders footer", async ({ page }) => {
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();

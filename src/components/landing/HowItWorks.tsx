@@ -28,6 +28,7 @@ export default function HowItWorks() {
 
   useEffect(() => {
     if (!howRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const mainEl = howRef.current.closest('main') as HTMLElement | null;
     if (mainEl) ScrollTrigger.defaults({ scroller: mainEl });
 

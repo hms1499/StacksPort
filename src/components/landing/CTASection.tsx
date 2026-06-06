@@ -20,6 +20,7 @@ export default function CTASection({
 
   useEffect(() => {
     if (!ctaRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const mainEl = ctaRef.current.closest('main') as HTMLElement | null;
     if (mainEl) ScrollTrigger.defaults({ scroller: mainEl });
 

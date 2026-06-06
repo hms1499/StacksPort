@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="landing-page min-h-screen flex flex-col"
       style={{ backgroundColor: '#060C18', color: '#DDE8F8' }}
     >
       <Navbar onConnectClick={handleConnect} connecting={connecting} />

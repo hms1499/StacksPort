@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 
+// Routes with standalone value for a signed-out visitor. `/assets` is omitted
+// on purpose: it only renders meaningful content (holdings, PnL, stacking) once
+// a wallet is connected, so a guest crawl sees a thin connect-prompt — not worth
+// advertising for indexing. It still ships unique metadata for direct shares.
 const PUBLIC_ROUTES = [
   "",
   "/dashboard",
   "/trade",
   "/dca",
-  "/assets",
   "/bubbles",
   "/apps",
 ] as const;

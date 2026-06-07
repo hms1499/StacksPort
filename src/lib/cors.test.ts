@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isAllowedOrigin } from "./middleware";
+import { isAllowedOrigin } from "./cors";
 
 describe("isAllowedOrigin", () => {
   it("allows chrome extension origins (the StacksPort extension)", () => {

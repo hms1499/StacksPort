@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { Newspaper, ExternalLink, Clock } from "lucide-react";
@@ -103,6 +104,7 @@ function SkeletonRow() {
 }
 
 export default function CryptoNews() {
+  const t = useTranslations("dashboard.widgets");
   const { data: news, isLoading } = useNews();
 
   return (
@@ -112,7 +114,7 @@ export default function CryptoNews() {
     >
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Crypto News</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("cryptoNews")}</h2>
           <span className="text-[10px] font-semibold bg-red-50 text-red-500 px-1.5 py-0.5 rounded-md">
             24h
           </span>

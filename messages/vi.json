@@ -149,6 +149,40 @@
       "continue": "Tiếp tục",
       "dismiss": "Bỏ qua hướng dẫn",
       "recommended": "Khuyến nghị"
+    },
+    "widgets": {
+      "cryptoNews": "Tin tức Crypto",
+      "trending": "Xu hướng",
+      "greedIndex": "Chỉ số Tham lam",
+      "myAssets": "Tài sản của tôi",
+      "send": "Gửi",
+      "receive": "Nhận"
+    },
+    "recent": {
+      "title": "Hoạt động gần đây",
+      "connectTitle": "Kết nối để xem lịch sử",
+      "connectDesc": "Các giao dịch hoán đổi, chuyển khoản và DCA của bạn sẽ hiển thị tại đây theo thời gian thực.",
+      "emptyTitle": "Khởi đầu mới",
+      "emptyDesc": "Giao dịch hoán đổi, chuyển khoản hoặc DCA đầu tiên của bạn sẽ xuất hiện ở đây."
+    },
+    "alertsPanel": {
+      "title": "Cảnh báo giá",
+      "fired": "{count} đã kích hoạt",
+      "above": "trên",
+      "below": "dưới",
+      "watching": "Đang theo dõi",
+      "paused": "Tạm dừng",
+      "rearm": "Bật lại cảnh báo",
+      "more": "+{count} nữa"
+    },
+    "grid": {
+      "showHide": "Hiện hoặc ẩn tiện ích",
+      "resetLayout": "Đặt lại bố cục mặc định",
+      "finishEditing": "Hoàn tất chỉnh sửa",
+      "customizeLayout": "Tùy chỉnh bố cục",
+      "done": "Xong",
+      "customize": "Tùy chỉnh",
+      "dismissTip": "Bỏ qua gợi ý"
     }
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { memo } from "react";
 import { Info, ChevronRight } from "lucide-react";
 import { useTrendingTokens } from "@/hooks/useMarketData";
@@ -109,6 +110,7 @@ function SkeletonRow() {
 }
 
 export default function TrendingTokens() {
+  const t = useTranslations("dashboard.widgets");
   const { data: tokens, isLoading } = useTrendingTokens();
 
   return (
@@ -119,7 +121,7 @@ export default function TrendingTokens() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Trending</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("trending")}</h2>
           <Info size={13} style={{ color: 'var(--text-muted)' }} />
         </div>
         <a

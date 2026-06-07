@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSWRConfig } from "swr";
@@ -47,6 +48,7 @@ const WelcomeSteps = dynamic(() => import("@/components/dashboard/WelcomeSteps")
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 export default function DashboardGrid() {
+  const t = useTranslations("dashboard.grid");
   const { layouts, onLayoutChange, reset, hydrated } = useDashboardLayout();
   const visible = useDashboardVisibility();
   const { hidden, toggle: toggleHidden, showAll } = useHiddenWidgets();
@@ -231,7 +233,7 @@ export default function DashboardGrid() {
                       type="button"
                       onClick={() => setWidgetsMenuOpen((v) => !v)}
                       className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-                      title="Show or hide widgets"
+                      title={t("showHide")}
                       aria-expanded={widgetsMenuOpen}
                       aria-haspopup="menu"
                     >
@@ -258,7 +260,7 @@ export default function DashboardGrid() {
                       />
                       <div
                         role="menu"
-                        aria-label="Show or hide widgets"
+                        aria-label={t("showHide")}
                         className="absolute top-full right-0 mt-1 z-30 w-60 max-h-80 overflow-y-auto rounded-xl p-1.5 shadow-lg"
                         style={{
                           backgroundColor: "var(--bg-card)",
@@ -309,7 +311,7 @@ export default function DashboardGrid() {
                       type="button"
                       onClick={handleReset}
                       className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-                      title="Reset to default layout"
+                      title={t("resetLayout")}
                     >
                       <RotateCcw size={12} />
                       Reset layout
@@ -323,11 +325,11 @@ export default function DashboardGrid() {
                         ? "text-[var(--accent)] hover:bg-muted/50"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     } ${showHint && !isEditing ? "ring-2 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-base)]" : ""}`}
-                    title={isEditing ? "Finish editing" : "Customize layout"}
+                    title={isEditing ? t("finishEditing") : t("customizeLayout")}
                     aria-pressed={isEditing}
                   >
                     {isEditing ? <Check size={12} /> : <Pencil size={12} />}
-                    {isEditing ? "Done" : "Customize"}
+                    {isEditing ? t("done") : t("customize")}
                   </button>
 
                   {showHint && !isEditing && (
@@ -344,7 +346,7 @@ export default function DashboardGrid() {
                         <button
                           type="button"
                           onClick={dismissHint}
-                          aria-label="Dismiss tip"
+                          aria-label={t("dismissTip")}
                           className="text-fg-muted hover:text-fg -mr-1 -mt-0.5"
                         >
                           <X size={13} />

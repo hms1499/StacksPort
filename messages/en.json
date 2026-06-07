@@ -149,6 +149,40 @@
       "continue": "Continue",
       "dismiss": "Dismiss getting started",
       "recommended": "Recommended"
+    },
+    "widgets": {
+      "cryptoNews": "Crypto News",
+      "trending": "Trending",
+      "greedIndex": "Greed Index",
+      "myAssets": "My Assets",
+      "send": "Send",
+      "receive": "Receive"
+    },
+    "recent": {
+      "title": "Recent Activity",
+      "connectTitle": "Connect to see your history",
+      "connectDesc": "Your swaps, transfers, and DCA executions will show up here in real time.",
+      "emptyTitle": "A clean slate",
+      "emptyDesc": "Your first swap, transfer, or DCA execution will appear here."
+    },
+    "alertsPanel": {
+      "title": "Price Alerts",
+      "fired": "{count} fired",
+      "above": "above",
+      "below": "below",
+      "watching": "Watching",
+      "paused": "Paused",
+      "rearm": "Re-arm alert",
+      "more": "+{count} more"
+    },
+    "grid": {
+      "showHide": "Show or hide widgets",
+      "resetLayout": "Reset to default layout",
+      "finishEditing": "Finish editing",
+      "customizeLayout": "Customize layout",
+      "done": "Done",
+      "customize": "Customize",
+      "dismissTip": "Dismiss tip"
     }
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { ArrowUpRight, ArrowDownLeft, Coins } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
@@ -21,6 +22,7 @@ interface FungibleToken {
 const STX_IMAGE = "https://assets.coingecko.com/coins/images/2069/small/Stacks_logo_full.png";
 
 function TokenList() {
+  const t = useTranslations("dashboard.widgets");
   const { stxAddress, isConnected } = useWalletStore();
   const [tokens, setTokens] = useState<FungibleToken[]>([]);
   const [loading, setLoading] = useState(false);
@@ -84,7 +86,7 @@ function TokenList() {
   if (!isConnected) {
     return (
       <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-        <h2 className="font-semibold text-gray-700 mb-4">My Assets</h2>
+        <h2 className="font-semibold text-gray-700 mb-4">{t("myAssets")}</h2>
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <Coins size={32} className="text-gray-200 mb-3" />
           <p className="text-sm text-gray-400">Connect your wallet to view assets</p>
@@ -97,7 +99,7 @@ function TokenList() {
     <>
       <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-700">My Assets</h2>
+          <h2 className="font-semibold text-gray-700">{t("myAssets")}</h2>
           <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
             {tokens.length + 1} tokens
           </span>
@@ -215,6 +217,7 @@ const TokenRow = React.memo(function TokenRow({
   onSend: () => void;
   onReceive: () => void;
 }) {
+  const t = useTranslations("dashboard.widgets");
   return (
     <div className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-gray-50 transition-colors group">
       <TokenAvatar
@@ -233,14 +236,14 @@ const TokenRow = React.memo(function TokenRow({
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={onSend}
-          title="Send"
+          title={t("send")}
           className="p-1.5 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
         >
           <ArrowUpRight size={12} className="text-green-600" />
         </button>
         <button
           onClick={onReceive}
-          title="Receive"
+          title={t("receive")}
           className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors"
         >
           <ArrowDownLeft size={12} className="text-blue-600" />

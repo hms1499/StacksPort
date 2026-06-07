@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { Link } from "@/i18n/navigation";
 import { ArrowUpRight, ArrowDownLeft, Code2, Layers, Clock, ExternalLink, Sparkles, Wallet } from "lucide-react";
@@ -206,6 +207,7 @@ function SkeletonRow() {
 }
 
 function RecentActivity() {
+  const tr = useTranslations("dashboard.recent");
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: txData, isLoading } = useTransactions(addr);
@@ -233,7 +235,7 @@ function RecentActivity() {
       style={{ ['--card-accent' as string]: '#FB923C' }}
     >
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Activity</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{tr("title")}</h2>
         {isConnected && stxAddress && (
           <a
             href={`https://explorer.hiro.so/address/${stxAddress}`}
@@ -251,8 +253,8 @@ function RecentActivity() {
         {!isConnected ? (
           <EmptyState
             icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
-            title="Connect to see your history"
-            description="Your swaps, transfers, and DCA executions will show up here in real time."
+            title={tr("connectTitle")}
+            description={tr("connectDesc")}
             action={<ConnectWalletCTA />}
           />
         ) : isLoading ? (
@@ -263,8 +265,8 @@ function RecentActivity() {
           <EmptyState
             accentColor="#F7931A"
             icon={<Sparkles size={28} style={{ color: '#F7931A' }} />}
-            title="A clean slate"
-            description="Your first swap, transfer, or DCA execution will appear here."
+            title={tr("emptyTitle")}
+            description={tr("emptyDesc")}
             action={
               <Link
                 href="/trade"

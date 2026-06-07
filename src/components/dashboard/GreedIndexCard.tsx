@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { memo } from "react";
 import { Info, ExternalLink } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
@@ -100,6 +101,7 @@ const SemiGauge = memo(function SemiGauge({ value, isDark }: { value: number; is
 });
 
 export default function GreedIndexCard() {
+  const t = useTranslations("dashboard.widgets");
   const isDark = useThemeStore((s) => s.theme === "dark");
   const { data, isLoading } = useFearGreed();
 
@@ -110,7 +112,7 @@ export default function GreedIndexCard() {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
-          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Greed Index</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("greedIndex")}</h2>
           <Info size={13} style={{ color: 'var(--text-muted)' }} />
         </div>
         <a

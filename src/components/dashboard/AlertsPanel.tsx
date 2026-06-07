@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { memo, useMemo } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -18,6 +19,7 @@ const MAX_VISIBLE = 5;
 function AlertsPanel() {
   const alerts = usePriceAlertStore((s) => s.alerts);
   const resetAlert = usePriceAlertStore((s) => s.resetAlert);
+  const t = useTranslations("dashboard.alertsPanel");
 
   const { triggered, active, total } = useMemo(() => {
     const triggered = alerts
@@ -45,7 +47,7 @@ function AlertsPanel() {
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: "var(--text-muted)", letterSpacing: "0.1em" }}
           >
-            Price Alerts
+            {t("title")}
           </h3>
           {triggered.length > 0 && (
             <span
@@ -55,7 +57,7 @@ function AlertsPanel() {
                 backgroundColor: "rgba(0, 229, 160, 0.12)",
               }}
             >
-              {triggered.length} fired
+              {t("fired", { count: triggered.length })}
             </span>
           )}
         </div>
@@ -129,7 +131,7 @@ function AlertsPanel() {
                     className="font-normal"
                     style={{ color: "var(--text-muted)" }}
                   >
-                    {up ? "above" : "below"}
+                    {up ? t("above") : t("below")}
                   </span>{" "}
                   ${alert.targetPrice.toLocaleString()}
                 </p>
@@ -140,8 +142,8 @@ function AlertsPanel() {
                   {isTriggered
                     ? `Fired ${formatRelative(alert.triggeredAt!)}`
                     : alert.isActive
-                    ? "Watching"
-                    : "Paused"}
+                    ? t("watching")
+                    : t("paused")}
                 </p>
               </div>
 
@@ -153,7 +155,7 @@ function AlertsPanel() {
                     backgroundColor: "var(--accent)",
                     color: "#060C18",
                   }}
-                  title="Re-arm alert"
+                  title={t("rearm")}
                 >
                   <RotateCcw size={11} />
                   Reset
@@ -170,7 +172,7 @@ function AlertsPanel() {
           className="block text-center text-xs mt-3 transition-colors hover:underline"
           style={{ color: "var(--text-muted)" }}
         >
-          +{hiddenCount} more {hiddenCount === 1 ? "alert" : "alerts"}
+          {t("more", { count: hiddenCount })}
         </Link>
       )}
     </div>

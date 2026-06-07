@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Repeat2, Activity, Coins, BarChart3, ArrowUpRight } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";

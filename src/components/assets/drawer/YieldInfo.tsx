@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ExternalLink, Lock, Bitcoin, ArrowUpRight } from "lucide-react";
 import { useSBTCDataSnap } from "@/hooks/usePortfolioSnapshot";
 import { useWalletStore } from "@/store/walletStore";

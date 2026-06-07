@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from "@/i18n/navigation";
 import { useWalletStore } from '@/store/walletStore';
 import { connectWallet } from '@/lib/wallet';
 import Navbar from '@/components/landing/Navbar';

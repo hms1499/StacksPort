@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Repeat2, ChevronRight, Zap, PauseCircle } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useUserDCAPlans } from "@/hooks/useMarketData";

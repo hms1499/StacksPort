@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Bell, BellRing, Settings } from 'lucide-react';
 import Topbar from '@/components/layout/Topbar';
 import NotificationsContent from './NotificationsContent';

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut, Compass } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import { shortenAddress, cn } from "@/lib/utils";

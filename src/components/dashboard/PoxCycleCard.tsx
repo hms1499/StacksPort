@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Bitcoin, Clock, Layers, Info, ArrowUpRight } from "lucide-react";
 import { usePoxCycle, usePortfolio } from "@/hooks/useMarketData";

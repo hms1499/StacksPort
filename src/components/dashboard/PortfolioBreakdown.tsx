@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Wallet, Bitcoin, Coins, Repeat2, Lock, ArrowUpRight } from "lucide-react";
 import { formatUSD } from "@/lib/utils";

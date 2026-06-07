@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useWalletStore } from "@/store/walletStore";
 import { usePriceAlertStore } from "@/store/priceAlertStore";
 import { useTransactions, useUserDCAPlans } from "@/hooks/useMarketData";

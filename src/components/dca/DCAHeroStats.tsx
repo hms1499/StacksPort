@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { BarChart3, ArrowUpRight } from "lucide-react";
 import { getDCAStats, microToSTX, type DCAStats } from "@/lib/dca";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";

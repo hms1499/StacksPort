@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Check, Copy } from "lucide-react";
 import { DCA_CONTRACT_ADDRESS, DCA_CONTRACT_NAME } from "@/lib/dca";
 import { shortenAddress } from "@/lib/utils";

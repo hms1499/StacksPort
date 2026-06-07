@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { Link } from "@/i18n/navigation";
 import { ArrowRight, CheckCircle2, ArrowLeftRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 

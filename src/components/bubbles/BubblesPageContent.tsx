@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
 import { useVisibleBubbles } from "@/hooks/useVisibleBubbles";
 import { useBubbleShortcuts } from "@/hooks/useBubbleShortcuts";

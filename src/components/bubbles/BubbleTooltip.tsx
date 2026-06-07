@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Star, Bell } from "lucide-react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import { useWatchlist } from "@/hooks/useWatchlist";

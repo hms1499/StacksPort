@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from "@/i18n/navigation";
 import { Bell, ArrowRight, Trash2 } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
 import NotificationIcon from './NotificationIcon';

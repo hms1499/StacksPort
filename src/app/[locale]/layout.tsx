@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Syne, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import LayoutClient from "./layout-client";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import "../globals.css";
+import LayoutClient from "../layout-client";
+import { routing } from "@/i18n/routing";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const syne = Syne({
@@ -36,7 +40,8 @@ export const metadata: Metadata = {
   ],
   manifest: "/manifest.webmanifest",
   other: {
-    "talentapp:project_verification": "8e7d88c649059a8b9ca547b2c4611ac999a2d7e09ca60083f58af1e1aaa10cb6937fcce415886641448b653b69b94b767b5e4fff6dfb9c6e2403420da36c4cc1",
+    "talentapp:project_verification":
+      "8e7d88c649059a8b9ca547b2c4611ac999a2d7e09ca60083f58af1e1aaa10cb6937fcce415886641448b653b69b94b767b5e4fff6dfb9c6e2403420da36c4cc1",
   },
 };
 
@@ -45,18 +50,32 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  setRequestLocale(locale);
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${syne.variable} ${jetBrainsMono.variable} ${syne.className} antialiased`}
         suppressHydrationWarning
       >
-        <LayoutClient>{children}</LayoutClient>
+        <NextIntlClientProvider>
+          <LayoutClient>{children}</LayoutClient>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

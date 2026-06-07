@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   alternates: {
     canonical: "/",
+    languages: {
+      en: "/",
+      vi: "/vi",
+    },
   },
   // og:image and twitter:image are emitted automatically from the
   // app/opengraph-image.tsx file convention — declaring them here too would

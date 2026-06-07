@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
+import { routing } from "@/i18n/routing";
 
 // Routes with standalone value for a signed-out visitor. `/assets` is omitted
 // on purpose: it only renders meaningful content (holdings, PnL, stacking) once
@@ -14,13 +15,22 @@ const PUBLIC_ROUTES = [
   "/apps",
 ] as const;
 
+// as-needed prefix: the default locale stays unprefixed (/dashboard),
+// other locales get a prefix (/vi/dashboard).
+function localizedPath(locale: string, path: string): string {
+  if (locale === routing.defaultLocale) return path;
+  return `/${locale}${path}`;
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  return PUBLIC_ROUTES.map((path, index) => ({
-    url: `${SITE_URL}${path}`,
-    lastModified: now,
-    changeFrequency: index === 0 ? "weekly" : "daily",
-    priority: index === 0 ? 1 : 0.8,
-  }));
+  return routing.locales.flatMap((locale) =>
+    PUBLIC_ROUTES.map((path, index) => ({
+      url: `${SITE_URL}${localizedPath(locale, path)}`,
+      lastModified: now,
+      changeFrequency: (index === 0 ? "weekly" : "daily") as "weekly" | "daily",
+      priority: index === 0 ? 1 : 0.8,
+    })),
+  );
 }

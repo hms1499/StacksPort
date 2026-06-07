@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
-import { usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -19,19 +19,21 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sidebarSpring } from "@/lib/animations";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 const navItems = [
-  { href: "/dashboard",     label: "Home",       icon: LayoutDashboard },
-  { href: "/bubbles",       label: "Bubbles",    icon: Circle },
-  { href: "/assets",        label: "My Assets",  icon: Wallet },
-  { href: "/trade",         label: "Swap",       icon: ArrowLeftRight },
-  { href: "/dca",           label: "DCA Vault",  icon: Repeat2 },
-  { href: "/notifications", label: "Alerts",     icon: Bell },
-  { href: "/ai",            label: "Stacks AI",  icon: Sparkles },
-  { href: "/apps",          label: "Connected Apps", icon: Globe },
-];
+  { href: "/dashboard",     key: "home",          icon: LayoutDashboard },
+  { href: "/bubbles",       key: "bubbles",       icon: Circle },
+  { href: "/assets",        key: "assets",        icon: Wallet },
+  { href: "/trade",         key: "swap",          icon: ArrowLeftRight },
+  { href: "/dca",           key: "dcaVault",      icon: Repeat2 },
+  { href: "/notifications", key: "alerts",        icon: Bell },
+  { href: "/ai",            key: "stacksAi",      icon: Sparkles },
+  { href: "/apps",          key: "connectedApps", icon: Globe },
+] as const;
 
 export default function Sidebar() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -79,14 +81,14 @@ export default function Sidebar() {
 
       {/* ── Nav ── */}
       <nav className="flex-1 px-2 py-4 space-y-0.5">
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, key, icon: Icon }) => {
           const active = pathname === href;
 
           return (
             <Link
               key={href}
               href={href}
-              title={collapsed ? label : undefined}
+              title={collapsed ? t(key) : undefined}
               className={cn(
                 "relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium",
                 "transition-[background-color,color] duration-200",
@@ -105,17 +107,22 @@ export default function Sidebar() {
                 />
               )}
               <Icon size={17} className="shrink-0 transition-colors duration-200" />
-              {!collapsed && <span>{label}</span>}
+              {!collapsed && <span>{t(key)}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* ── Collapse toggle ── */}
+      {/* ── Footer: language + collapse toggle ── */}
       <div
-        className="px-2 py-4"
+        className="px-2 py-4 space-y-2"
         style={{ borderTop: '1px solid var(--border-subtle)' }}
       >
+        {!collapsed && (
+          <div className="px-1">
+            <LanguageSwitcher />
+          </div>
+        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
@@ -128,7 +135,7 @@ export default function Sidebar() {
             ? <PanelLeftOpen size={17} className="shrink-0" />
             : <PanelLeftClose size={17} className="shrink-0" />
           }
-          {!collapsed && <span>Collapse</span>}
+          {!collapsed && <span>{t("collapse")}</span>}
         </button>
       </div>
     </motion.aside>

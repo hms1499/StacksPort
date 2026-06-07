@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
-import { usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import {
   LayoutDashboard,
   Wallet,
@@ -18,20 +18,21 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 
 const primaryNavItems = [
-  { href: "/dashboard",     label: "Home",    icon: LayoutDashboard },
-  { href: "/assets",        label: "Assets",  icon: Wallet },
-  { href: "/trade",         label: "Swap",   icon: ArrowLeftRight },
-  { href: "/dca",           label: "DCA",    icon: Repeat2 },
-];
+  { href: "/dashboard",     key: "home",        icon: LayoutDashboard },
+  { href: "/assets",        key: "assetsShort", icon: Wallet },
+  { href: "/trade",         key: "swap",        icon: ArrowLeftRight },
+  { href: "/dca",           key: "dcaShort",    icon: Repeat2 },
+] as const;
 
 const moreNavItems = [
-  { href: "/bubbles",       label: "Bubbles", icon: Circle },
-  { href: "/notifications", label: "Alerts", icon: Bell },
-  { href: "/ai",            label: "AI",     icon: Sparkles },
-  { href: "/apps",          label: "Apps",   icon: Globe },
-];
+  { href: "/bubbles",       key: "bubbles",   icon: Circle },
+  { href: "/notifications", key: "alerts",    icon: Bell },
+  { href: "/ai",            key: "aiShort",   icon: Sparkles },
+  { href: "/apps",          key: "appsShort", icon: Globe },
+] as const;
 
 export default function BottomNav() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreActive = moreNavItems.some((item) => pathname === item.href);
@@ -67,7 +68,7 @@ export default function BottomNav() {
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
               transition={{ duration: 0.16, ease: "easeOut" }}
             >
-              {moreNavItems.map(({ href, label, icon: Icon }) => {
+              {moreNavItems.map(({ href, key, icon: Icon }) => {
                 const active = pathname === href;
                 return (
                   <Link
@@ -81,7 +82,7 @@ export default function BottomNav() {
                     }}
                   >
                     <Icon size={18} />
-                    <span>{label}</span>
+                    <span>{t(key)}</span>
                   </Link>
                 );
               })}
@@ -99,7 +100,7 @@ export default function BottomNav() {
           WebkitBackdropFilter: 'blur(16px)',
         }}
       >
-        {primaryNavItems.map(({ href, label, icon: Icon }) => {
+        {primaryNavItems.map(({ href, key, icon: Icon }) => {
           const active = pathname === href;
 
           return (
@@ -124,7 +125,7 @@ export default function BottomNav() {
                 )}
               </div>
               <span className="text-[10px] font-semibold tracking-wide">
-                {label}
+                {t(key)}
               </span>
             </Link>
           );
@@ -151,7 +152,7 @@ export default function BottomNav() {
               />
             )}
           </div>
-          <span className="text-[10px] font-semibold tracking-wide">More</span>
+          <span className="text-[10px] font-semibold tracking-wide">{t("more")}</span>
         </button>
       </nav>
     </>

@@ -58,10 +58,26 @@ function handleApiCors(req: NextRequest): NextResponse {
 
 const intlMiddleware = createMiddleware(routing);
 
+// Extensionless metadata routes (file-based conventions). These must NOT be
+// locale-rewritten — they serve fixed image/icon responses. The dotted variants
+// (/sitemap.xml, /robots.txt, /manifest.webmanifest) are already excluded by the
+// matcher's `.*\..*` rule below.
+const METADATA_PATHS = new Set([
+  "/icon",
+  "/icon-192",
+  "/icon-512",
+  "/opengraph-image",
+]);
+
 export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
   // API routes: keep the existing extension CORS handling, no locale rewriting.
-  if (req.nextUrl.pathname.startsWith("/api")) {
+  if (pathname.startsWith("/api")) {
     return handleApiCors(req);
+  }
+  // Metadata routes: serve as-is, no locale prefix.
+  if (METADATA_PATHS.has(pathname)) {
+    return NextResponse.next();
   }
   // Page routes: resolve locale (URL prefix → cookie → Accept-Language → default).
   return intlMiddleware(req);

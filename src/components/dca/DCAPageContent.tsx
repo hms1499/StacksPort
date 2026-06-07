@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 import { useWalletStore } from "@/store/walletStore";
 import Topbar from "@/components/layout/Topbar";
@@ -23,6 +24,7 @@ import MyOutPlans from "@/components/dca-out/MyOutPlans";
 export default function DCAPageContent() {
   const { isConnected, stxAddress } = useWalletStore();
   const [tab, setTab] = useState<DCATab>("in");
+  const t = useTranslations("dca");
   const [refreshKey, setRefreshKey] = useState(0);
   const [outRefreshKey, setOutRefreshKey] = useState(0);
 
@@ -50,7 +52,7 @@ export default function DCAPageContent() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="DCA Vault" />
+      <Topbar title={t("title")} />
       <AnimatedPage className="max-w-6xl mx-auto w-full px-4 py-6">
         <StaggerChildren className="flex flex-col gap-6">
           <MotionCard disableHover>
@@ -68,15 +70,15 @@ export default function DCAPageContent() {
               <div className="glass-card rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
                 <EmptyState
                   icon={<Wallet size={28} style={{ color: "var(--accent)" }} />}
-                  title="Connect your wallet to get started"
-                  description="Connect a Leather or Xverse wallet to create and manage your DCA plans."
+                  title={t("connectTitle")}
+                  description={t("connectDesc")}
                   action={<ConnectWalletCTA />}
                 />
               </div>
             ) : tab === "in" ? (
               <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
                 <div className="order-2 lg:order-1 lg:sticky lg:top-6">
-                  <MobileCollapsibleForm title="Create DCA In plan" openOnEvent="dca:fill-form">
+                  <MobileCollapsibleForm title={t("createInTitle")} openOnEvent="dca:fill-form">
                     <CreatePlanForm onCreated={handleRefresh} existingPlanCount={userPlans.length} />
                   </MobileCollapsibleForm>
                 </div>
@@ -87,7 +89,7 @@ export default function DCAPageContent() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
                 <div className="order-2 lg:order-1 lg:sticky lg:top-6">
-                  <MobileCollapsibleForm title="Create DCA Out plan" openOnEvent="dca-out:fill-form">
+                  <MobileCollapsibleForm title={t("createOutTitle")} openOnEvent="dca-out:fill-form">
                     <CreateOutPlanForm onCreated={handleOutRefresh} />
                   </MobileCollapsibleForm>
                 </div>

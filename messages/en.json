@@ -213,5 +213,24 @@
       "errExpired": "Quote expired — refreshing price, please try again.",
       "errFailed": "Swap failed"
     }
+  },
+  "dca": {
+    "title": "DCA Vault",
+    "connectTitle": "Connect your wallet to get started",
+    "connectDesc": "Connect a Leather or Xverse wallet to create and manage your DCA plans.",
+    "createInTitle": "Create DCA In plan",
+    "createOutTitle": "Create DCA Out plan",
+    "hero": {
+      "modeAria": "DCA mode",
+      "expand": "Expand hero",
+      "collapse": "Collapse hero",
+      "vault": "DCA Vault",
+      "activeCount": "{count} active",
+      "next": "Next {label}",
+      "tabIn": "DCA In",
+      "tabOut": "DCA Out",
+      "subtitleIn": "Automatically buy sBTC on a schedule with STX · Powered by Bitflow",
+      "subtitleOut": "Automatically sell sBTC for USDCx on a schedule · Powered by Bitflow"
+    }
   }
 }

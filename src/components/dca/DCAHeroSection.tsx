@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDownToLine, ArrowUpFromLine, ChevronDown, ChevronUp } from "lucide-react";
 import DCAHeroStats from "./DCAHeroStats";
@@ -14,9 +15,9 @@ interface DCAHeroSectionProps {
   userNextSwapLabel: string | null;
 }
 
-const TABS: Array<{ key: DCATab; label: string; icon: typeof ArrowDownToLine }> = [
-  { key: "in",  label: "DCA In",  icon: ArrowDownToLine },
-  { key: "out", label: "DCA Out", icon: ArrowUpFromLine },
+const TABS: Array<{ key: DCATab; labelKey: string; icon: typeof ArrowDownToLine }> = [
+  { key: "in",  labelKey: "tabIn",  icon: ArrowDownToLine },
+  { key: "out", labelKey: "tabOut", icon: ArrowUpFromLine },
 ];
 
 const STORAGE_KEY = "dca:hero-collapsed";
@@ -31,6 +32,7 @@ export default function DCAHeroSection({
   // Collapsed state is hydrated from localStorage in an effect (not the lazy
   // initializer) to avoid SSR/client markup mismatch.
   const [collapsed, setCollapsed] = useState(false);
+  const t = useTranslations("dca.hero");
   const hydrated = useRef(false);
   useEffect(() => {
     if (!hydrated.current) {
@@ -58,9 +60,9 @@ export default function DCAHeroSection({
       className="inline-flex gap-1 p-1 rounded-2xl self-start"
       style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
       role="tablist"
-      aria-label="DCA mode"
+      aria-label={t("modeAria")}
     >
-      {TABS.map(({ key, label, icon: Icon }) => {
+      {TABS.map(({ key, labelKey, icon: Icon }) => {
         const active = tab === key;
         return (
           <button
@@ -76,7 +78,7 @@ export default function DCAHeroSection({
             }
           >
             <Icon size={14} />
-            <span>{label}</span>
+            <span>{t(labelKey)}</span>
           </button>
         );
       })}
@@ -88,7 +90,7 @@ export default function DCAHeroSection({
       type="button"
       onClick={() => setCollapsed((c) => !c)}
       aria-expanded={!collapsed}
-      aria-label={collapsed ? "Expand hero" : "Collapse hero"}
+      aria-label={collapsed ? t("expand") : t("collapse")}
       className="p-2 rounded-xl transition-colors hover:bg-[var(--bg-elevated)]"
       style={{ color: "var(--text-muted)" }}
     >
@@ -107,19 +109,19 @@ export default function DCAHeroSection({
         <div className="flex items-center gap-3 flex-wrap">
           {tabsRow}
           <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            DCA Vault
+            {t("vault")}
           </span>
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>
             ·
           </span>
           <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
-            {userActivePlans} active
+            {t("activeCount", { count: userActivePlans })}
           </span>
           {userNextSwapLabel && (
             <>
               <span className="text-xs" style={{ color: "var(--text-muted)" }}>·</span>
               <span className="text-xs font-medium font-data" style={{ color: "var(--text-secondary)" }}>
-                Next {userNextSwapLabel}
+                {t("next", { label: userNextSwapLabel })}
               </span>
             </>
           )}
@@ -147,12 +149,10 @@ export default function DCAHeroSection({
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
-              DCA Vault
+              {t("vault")}
             </h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-              {tab === "in"
-                ? "Automatically buy sBTC on a schedule with STX · Powered by Bitflow"
-                : "Automatically sell sBTC for USDCx on a schedule · Powered by Bitflow"}
+              {tab === "in" ? t("subtitleIn") : t("subtitleOut")}
             </p>
           </div>
         </div>

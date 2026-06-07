@@ -213,5 +213,24 @@
       "errExpired": "Báo giá đã hết hạn — đang làm mới giá, vui lòng thử lại.",
       "errFailed": "Hoán đổi thất bại"
     }
+  },
+  "dca": {
+    "title": "Kho DCA",
+    "connectTitle": "Kết nối ví để bắt đầu",
+    "connectDesc": "Kết nối ví Leather hoặc Xverse để tạo và quản lý các kế hoạch DCA của bạn.",
+    "createInTitle": "Tạo kế hoạch DCA In",
+    "createOutTitle": "Tạo kế hoạch DCA Out",
+    "hero": {
+      "modeAria": "Chế độ DCA",
+      "expand": "Mở rộng",
+      "collapse": "Thu gọn",
+      "vault": "Kho DCA",
+      "activeCount": "{count} đang chạy",
+      "next": "Tiếp theo {label}",
+      "tabIn": "DCA In",
+      "tabOut": "DCA Out",
+      "subtitleIn": "Tự động mua sBTC theo lịch bằng STX · Cung cấp bởi Bitflow",
+      "subtitleOut": "Tự động bán sBTC lấy USDCx theo lịch · Cung cấp bởi Bitflow"
+    }
   }
 }

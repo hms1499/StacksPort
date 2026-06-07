@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Repeat2, ChevronRight, Zap, PauseCircle } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
@@ -8,6 +9,7 @@ import { blocksToInterval, microToSTX } from "@/lib/dca";
 
 export default function DCASummaryCard() {
   const { isConnected, stxAddress } = useWalletStore();
+  const t = useTranslations("dashboard.dcaSummary");
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: plans, isLoading } = useUserDCAPlans(addr);
 
@@ -32,7 +34,7 @@ export default function DCASummaryCard() {
             <Repeat2 size={14} style={{ color: "#060C18" }} />
           </div>
           <h2 className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
-            DCA Plans
+            {t("title")}
           </h2>
         </div>
         <Link
@@ -40,7 +42,7 @@ export default function DCASummaryCard() {
           className="flex items-center gap-0.5 text-xs font-medium transition-colors"
           style={{ color: "var(--accent)" }}
         >
-          Manage <ChevronRight size={13} />
+          {t("manage")} <ChevronRight size={13} />
         </Link>
       </div>
 
@@ -69,10 +71,10 @@ export default function DCASummaryCard() {
             </div>
           </div>
           <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            Stack sats on autopilot
+            {t("emptyTitle")}
           </p>
           <p className="text-xs max-w-55" style={{ color: "var(--text-muted)" }}>
-            Set a recurring buy and let the keeper bot do the rest — no babysitting required.
+            {t("emptyDesc")}
           </p>
           <Link
             href="/dca"
@@ -84,7 +86,7 @@ export default function DCASummaryCard() {
             }}
           >
             <Zap size={12} fill="currentColor" />
-            Create your first plan
+            {t("createFirst")}
           </Link>
         </div>
       ) : (
@@ -92,25 +94,25 @@ export default function DCASummaryCard() {
           {/* Stats row */}
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Active</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t("active")}</p>
               <p className="text-lg font-bold font-data" style={{ color: "var(--text-primary)" }}>
                 {activePlans.length}
                 {pausedPlans.length > 0 && (
                   <span className="text-xs font-normal ml-1" style={{ color: "var(--text-muted)" }}>
-                    +{pausedPlans.length} paused
+                    +{t("pausedCount", { count: pausedPlans.length })}
                   </span>
                 )}
               </p>
             </div>
             <div>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Balance</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t("balance")}</p>
               <p className="text-lg font-bold font-data" style={{ color: "var(--text-primary)" }}>
                 {totalBalanceSTX.toFixed(2)}
                 <span className="text-xs font-normal ml-0.5" style={{ color: "var(--text-muted)" }}>STX</span>
               </p>
             </div>
             <div>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Swaps done</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t("swapsDone")}</p>
               <p className="text-lg font-bold font-data" style={{ color: "var(--text-primary)" }}>
                 {totalSwapsDone}
               </p>
@@ -135,7 +137,7 @@ export default function DCASummaryCard() {
                     <PauseCircle size={13} style={{ color: "var(--text-muted)" }} />
                   )}
                   <span className="text-xs font-medium" style={{ color: "var(--text-primary)" }}>
-                    Plan #{plan.id}
+                    {t("planLabel", { id: plan.id })}
                   </span>
                   <span
                     className="text-[10px] px-1.5 py-0.5 rounded-md"
@@ -149,17 +151,17 @@ export default function DCASummaryCard() {
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-medium font-data" style={{ color: "var(--text-secondary)" }}>
-                    {microToSTX(plan.amt).toFixed(2)} STX/swap
+                    {t("perSwap", { amount: microToSTX(plan.amt).toFixed(2) })}
                   </p>
                   <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                    {microToSTX(plan.bal).toFixed(2)} left
+                    {t("left", { amount: microToSTX(plan.bal).toFixed(2) })}
                   </p>
                 </div>
               </Link>
             ))}
             {(plans ?? []).length > 3 && (
               <p className="text-xs text-center pt-1" style={{ color: "var(--text-muted)" }}>
-                +{(plans ?? []).length - 3} more plans
+                {t("morePlans", { count: (plans ?? []).length - 3 })}
               </p>
             )}
           </div>

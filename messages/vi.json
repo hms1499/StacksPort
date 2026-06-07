@@ -43,12 +43,112 @@
       "themeLight": "Chuyển sang chế độ sáng",
       "themeDark": "Chuyển sang chế độ tối",
       "themeDesc": "Đổi giao diện",
-      "home": { "label": "Trang chủ", "desc": "Tổng quan danh mục" },
-      "assets": { "label": "Tài sản của tôi", "desc": "Số dư & theo dõi lãi/lỗ" },
-      "swap": { "label": "Hoán đổi token", "desc": "Giao dịch trên Bitflow DEX" },
-      "dca": { "label": "Kho DCA", "desc": "Kế hoạch đầu tư tự động" },
-      "notifications": { "label": "Thông báo", "desc": "Cảnh báo & mục tiêu giá" },
-      "ai": { "label": "Stacks AI", "desc": "Phân tích bằng AI" }
+      "home": {
+        "label": "Trang chủ",
+        "desc": "Tổng quan danh mục"
+      },
+      "assets": {
+        "label": "Tài sản của tôi",
+        "desc": "Số dư & theo dõi lãi/lỗ"
+      },
+      "swap": {
+        "label": "Hoán đổi token",
+        "desc": "Giao dịch trên Bitflow DEX"
+      },
+      "dca": {
+        "label": "Kho DCA",
+        "desc": "Kế hoạch đầu tư tự động"
+      },
+      "notifications": {
+        "label": "Thông báo",
+        "desc": "Cảnh báo & mục tiêu giá"
+      },
+      "ai": {
+        "label": "Stacks AI",
+        "desc": "Phân tích bằng AI"
+      }
+    }
+  },
+  "dashboard": {
+    "balance": {
+      "title": "Giá trị danh mục",
+      "hideBreakdown": "Ẩn chi tiết",
+      "showBreakdown": "Xem chi tiết danh mục",
+      "other": "khác",
+      "noData": "Chưa có dữ liệu",
+      "noDataDesc": "Chưa có dữ liệu danh mục. Kiểm tra tài sản hoặc nhận STX để bắt đầu theo dõi số dư thực tại đây.",
+      "viewAssets": "Xem tài sản",
+      "swap": "Hoán đổi",
+      "demo": "Demo",
+      "previewOnly": "Chỉ xem trước · Kết nối từ banner hoặc thanh trên cùng để tải số dư thực, kế hoạch DCA, cảnh báo và hoạt động.",
+      "historyPending": "Lịch sử danh mục sẽ hiển thị sau khi tải số dư.",
+      "loadingChart": "Đang tải biểu đồ…"
+    },
+    "banner": {
+      "title": "Kết nối ví của bạn",
+      "connect": "Kết nối",
+      "connecting": "Đang kết nối...",
+      "prop0": "Xem danh mục Stacks của bạn theo thời gian thực",
+      "prop1": "Tự động DCA STX → sBTC — phi tập trung",
+      "prop2": "Theo dõi phần thưởng stacking qua các chu kỳ PoX",
+      "prop3": "Hoán đổi qua Bitflow chỉ với một cú nhấp",
+      "prop4": "Nhận cảnh báo khi giá vượt mục tiêu của bạn"
+    },
+    "quickActions": {
+      "swap": "Hoán đổi",
+      "dca": "DCA",
+      "receive": "Nhận",
+      "send": "Gửi",
+      "alert": "Cảnh báo",
+      "batch": "Hàng loạt"
+    },
+    "footer": {
+      "poweredBy": "Cung cấp bởi",
+      "contract": "hợp đồng",
+      "copyContract": "Sao chép địa chỉ hợp đồng"
+    },
+    "dcaSummary": {
+      "title": "Kế hoạch DCA",
+      "manage": "Quản lý",
+      "emptyTitle": "Tích sats tự động",
+      "emptyDesc": "Đặt lệnh mua định kỳ và để keeper bot lo phần còn lại — không cần trông coi.",
+      "createFirst": "Tạo kế hoạch đầu tiên",
+      "active": "Đang chạy",
+      "balance": "Số dư",
+      "swapsDone": "Đã hoán đổi",
+      "pausedCount": "{count} tạm dừng",
+      "planLabel": "Kế hoạch #{id}",
+      "perSwap": "{amount} STX/lần",
+      "left": "còn {amount}",
+      "morePlans": "+{count} kế hoạch khác"
+    },
+    "social": {
+      "unavailable": "Số liệu on-chain tạm thời không khả dụng.",
+      "liveOnStacks": "Trực tiếp trên Stacks",
+      "updated": "cập nhật {time}",
+      "disclaimer": "Tổng số on-chain từ cả hai kho DCA. Khối lượng USD dùng giá thị trường hiện tại và bị ẩn khi nguồn dữ liệu không khả dụng.",
+      "metric": {
+        "plansCreated": "Kế hoạch DCA đã tạo",
+        "volumeExecuted": "Khối lượng đã thực hiện",
+        "swapsExecuted": "Lượt hoán đổi đã thực hiện",
+        "avgSwapsPerPlan": "TB lượt hoán đổi / kế hoạch"
+      }
+    },
+    "welcome": {
+      "swapLabel": "Thực hiện hoán đổi",
+      "swapDesc": "Giao dịch token trên Bitflow DEX",
+      "dcaLabel": "Tạo kế hoạch DCA",
+      "dcaDesc": "Thiết lập đầu tư tự động",
+      "alertLabel": "Đặt cảnh báo giá",
+      "alertDesc": "Nhận thông báo khi đạt mục tiêu",
+      "allSet": "Bạn đã sẵn sàng!",
+      "next": "Tiếp theo: {step}",
+      "gettingStarted": "Bắt đầu",
+      "allDoneDesc": "Mọi thao tác thiết lập đã hoàn tất.",
+      "completed": "{done}/{total} hoàn thành",
+      "continue": "Tiếp tục",
+      "dismiss": "Bỏ qua hướng dẫn",
+      "recommended": "Khuyến nghị"
     }
   }
 }

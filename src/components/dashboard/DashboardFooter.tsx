@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Check, Copy } from "lucide-react";
@@ -10,6 +11,7 @@ const VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "v0.1";
 
 export default function DashboardFooter() {
   const [copied, setCopied] = useState(false);
+  const t = useTranslations("dashboard.footer");
 
   function handleCopy() {
     navigator.clipboard.writeText(`${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}`);
@@ -22,7 +24,7 @@ export default function DashboardFooter() {
       className="mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px]"
       style={{ color: 'var(--text-muted)' }}
     >
-      <span>Powered by</span>
+      <span>{t("poweredBy")}</span>
       <Link
         href="https://www.stacks.co"
         target="_blank"
@@ -41,12 +43,12 @@ export default function DashboardFooter() {
         className="font-data transition-colors hover:text-[var(--accent)]"
         title={`${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}`}
       >
-        contract {shortenAddress(DCA_CONTRACT_ADDRESS)}
+        {t("contract")} {shortenAddress(DCA_CONTRACT_ADDRESS)}
       </Link>
       <button
         type="button"
         onClick={handleCopy}
-        aria-label="Copy contract address"
+        aria-label={t("copyContract")}
         className="inline-flex items-center transition-colors hover:text-[var(--accent)]"
       >
         {copied ? <Check size={11} /> : <Copy size={11} />}

@@ -1,20 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Wallet, ArrowRight, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { connect as stacksConnect } from "@stacks/connect";
 import { useWalletStore } from "@/store/walletStore";
 
-const VALUE_PROPS = [
-  "View your Stacks portfolio in real-time",
-  "Automate STX → sBTC DCA — non-custodial",
-  "Track stacking rewards across PoX cycles",
-  "Swap via Bitflow with one click",
-  "Get alerts when prices move past your targets",
-];
+const VALUE_PROP_KEYS = ["prop0", "prop1", "prop2", "prop3", "prop4"] as const;
 
 export default function WalletBanner() {
+  const t = useTranslations("dashboard.banner");
   const { isConnected, connect } = useWalletStore();
   const [connecting, setConnecting] = useState(false);
   const [propIdx, setPropIdx] = useState(0);
@@ -22,7 +18,7 @@ export default function WalletBanner() {
   useEffect(() => {
     if (isConnected) return;
     const id = setInterval(() => {
-      setPropIdx((i) => (i + 1) % VALUE_PROPS.length);
+      setPropIdx((i) => (i + 1) % VALUE_PROP_KEYS.length);
     }, 3800);
     return () => clearInterval(id);
   }, [isConnected]);
@@ -54,7 +50,7 @@ export default function WalletBanner() {
           <Wallet size={22} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white font-semibold">Connect your wallet</p>
+          <p className="text-white font-semibold">{t("title")}</p>
           <div className="relative h-5 mt-0.5 overflow-hidden">
             <AnimatePresence mode="wait" initial={false}>
               <motion.p
@@ -65,7 +61,7 @@ export default function WalletBanner() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="text-white/70 text-sm absolute inset-0 truncate"
               >
-                {VALUE_PROPS[propIdx]}
+                {t(VALUE_PROP_KEYS[propIdx])}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -79,11 +75,11 @@ export default function WalletBanner() {
         {connecting ? (
           <>
             <Loader2 size={14} className="animate-spin" />
-            Connecting...
+            {t("connecting")}
           </>
         ) : (
           <>
-            Connect
+            {t("connect")}
             <ArrowRight size={15} />
           </>
         )}

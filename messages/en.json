@@ -43,12 +43,112 @@
       "themeLight": "Switch to Light Mode",
       "themeDark": "Switch to Dark Mode",
       "themeDesc": "Toggle theme",
-      "home": { "label": "Home", "desc": "Portfolio overview" },
-      "assets": { "label": "My Assets", "desc": "Holdings & P&L tracker" },
-      "swap": { "label": "Swap Tokens", "desc": "Trade on Bitflow DEX" },
-      "dca": { "label": "DCA Vault", "desc": "Automated investing plans" },
-      "notifications": { "label": "Notifications", "desc": "Alerts & price targets" },
-      "ai": { "label": "Stacks AI", "desc": "AI-powered insights" }
+      "home": {
+        "label": "Home",
+        "desc": "Portfolio overview"
+      },
+      "assets": {
+        "label": "My Assets",
+        "desc": "Holdings & P&L tracker"
+      },
+      "swap": {
+        "label": "Swap Tokens",
+        "desc": "Trade on Bitflow DEX"
+      },
+      "dca": {
+        "label": "DCA Vault",
+        "desc": "Automated investing plans"
+      },
+      "notifications": {
+        "label": "Notifications",
+        "desc": "Alerts & price targets"
+      },
+      "ai": {
+        "label": "Stacks AI",
+        "desc": "AI-powered insights"
+      }
+    }
+  },
+  "dashboard": {
+    "balance": {
+      "title": "Portfolio Value",
+      "hideBreakdown": "Hide breakdown",
+      "showBreakdown": "Show portfolio breakdown",
+      "other": "other",
+      "noData": "No data",
+      "noDataDesc": "Portfolio data is not available yet. Check your assets or receive STX to start tracking real balances here.",
+      "viewAssets": "View Assets",
+      "swap": "Swap",
+      "demo": "Demo",
+      "previewOnly": "Preview only · Connect from the banner or topbar to load real balances, DCA plans, alerts, and activity.",
+      "historyPending": "Portfolio history will appear after balances load.",
+      "loadingChart": "Loading chart…"
+    },
+    "banner": {
+      "title": "Connect your wallet",
+      "connect": "Connect",
+      "connecting": "Connecting...",
+      "prop0": "View your Stacks portfolio in real-time",
+      "prop1": "Automate STX → sBTC DCA — non-custodial",
+      "prop2": "Track stacking rewards across PoX cycles",
+      "prop3": "Swap via Bitflow with one click",
+      "prop4": "Get alerts when prices move past your targets"
+    },
+    "quickActions": {
+      "swap": "Swap",
+      "dca": "DCA",
+      "receive": "Receive",
+      "send": "Send",
+      "alert": "Alert",
+      "batch": "Batch"
+    },
+    "footer": {
+      "poweredBy": "Powered by",
+      "contract": "contract",
+      "copyContract": "Copy contract address"
+    },
+    "dcaSummary": {
+      "title": "DCA Plans",
+      "manage": "Manage",
+      "emptyTitle": "Stack sats on autopilot",
+      "emptyDesc": "Set a recurring buy and let the keeper bot do the rest — no babysitting required.",
+      "createFirst": "Create your first plan",
+      "active": "Active",
+      "balance": "Balance",
+      "swapsDone": "Swaps done",
+      "pausedCount": "{count} paused",
+      "planLabel": "Plan #{id}",
+      "perSwap": "{amount} STX/swap",
+      "left": "{amount} left",
+      "morePlans": "+{count} more plans"
+    },
+    "social": {
+      "unavailable": "Live on-chain metrics are temporarily unavailable.",
+      "liveOnStacks": "Live on Stacks",
+      "updated": "updated {time}",
+      "disclaimer": "On-chain totals from both DCA vaults. USD volume uses current market prices and is hidden when a required source is unavailable.",
+      "metric": {
+        "plansCreated": "DCA Plans Created",
+        "volumeExecuted": "Volume Executed",
+        "swapsExecuted": "Swaps Executed",
+        "avgSwapsPerPlan": "Avg Swaps / Plan"
+      }
+    },
+    "welcome": {
+      "swapLabel": "Make a Swap",
+      "swapDesc": "Trade tokens on Bitflow DEX",
+      "dcaLabel": "Create DCA Plan",
+      "dcaDesc": "Set up automated investing",
+      "alertLabel": "Set Price Alert",
+      "alertDesc": "Get notified on targets",
+      "allSet": "You're all set!",
+      "next": "Next: {step}",
+      "gettingStarted": "Getting Started",
+      "allDoneDesc": "Every setup action is done.",
+      "completed": "{done}/{total} completed",
+      "continue": "Continue",
+      "dismiss": "Dismiss getting started",
+      "recommended": "Recommended"
     }
   }
 }

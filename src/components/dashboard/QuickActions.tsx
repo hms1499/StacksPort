@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import {
@@ -48,6 +49,7 @@ function idleStyle(e: React.MouseEvent<HTMLElement>, active: boolean) {
 }
 
 export default function QuickActions() {
+  const t = useTranslations("dashboard.quickActions");
   const { stxAddress, isConnected } = useWalletStore();
   const { data: balanceData } = useFungibleTokens(
     isConnected && stxAddress ? stxAddress : undefined
@@ -82,7 +84,7 @@ export default function QuickActions() {
             <span className={ICON_CLASS} style={{ backgroundColor: "rgba(6,12,24,0.12)" }}>
               <ArrowLeftRight size={15} />
             </span>
-            <span>Swap</span>
+            <span>{t("swap")}</span>
           </motion.div>
         </Link>
 
@@ -98,7 +100,7 @@ export default function QuickActions() {
             <span className={ICON_CLASS} style={{ backgroundColor: "var(--accent-dim)", color: "var(--accent)" }}>
               <Repeat2 size={15} />
             </span>
-            <span>DCA</span>
+            <span>{t("dca")}</span>
           </motion.div>
         </Link>
 
@@ -114,7 +116,7 @@ export default function QuickActions() {
           <span className={ICON_CLASS} style={{ backgroundColor: "rgba(0,194,122,0.12)", color: "var(--positive)" }}>
             <ArrowDownLeft size={15} />
           </span>
-          <span>Receive</span>
+          <span>{t("receive")}</span>
         </motion.button>
 
         <motion.button
@@ -129,7 +131,7 @@ export default function QuickActions() {
           <span className={ICON_CLASS} style={{ backgroundColor: "rgba(240,74,110,0.10)", color: "var(--negative)" }}>
             <ArrowUpRight size={15} />
           </span>
-          <span>Send</span>
+          <span>{t("send")}</span>
         </motion.button>
 
         <Link href="/notifications?tab=price-alerts" className="flex flex-1 min-w-[104px]">
@@ -144,7 +146,7 @@ export default function QuickActions() {
             <span className={ICON_CLASS} style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--warning)" }}>
               <Bell size={15} />
             </span>
-            <span>Alert</span>
+            <span>{t("alert")}</span>
           </motion.div>
         </Link>
 
@@ -160,7 +162,7 @@ export default function QuickActions() {
           <span className={ICON_CLASS} style={{ backgroundColor: "rgba(251,146,60,0.12)", color: "#FB923C" }}>
             <Users size={15} />
           </span>
-          <span>Batch</span>
+          <span>{t("batch")}</span>
         </motion.button>
       </div>
 

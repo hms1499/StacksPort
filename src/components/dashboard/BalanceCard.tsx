@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
@@ -31,6 +32,7 @@ const BalanceCardChart = dynamic(() => import("./BalanceCardChart"), {
 });
 
 function BalanceCard() {
+  const t = useTranslations("dashboard.balance");
   const { stxAddress, isConnected } = useWalletStore();
   const isDark = useThemeStore((s) => s.theme === "dark");
   const [period, setPeriod] = useState<Period>("1W");
@@ -122,7 +124,7 @@ function BalanceCard() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold tracking-[0.1em] uppercase text-fg-muted">
-            Portfolio Value
+            {t("title")}
           </span>
           {isConnected && (
             <a
@@ -168,7 +170,7 @@ function BalanceCard() {
                 type="button"
                 onClick={() => setBreakdownOpen((v) => !v)}
                 className="flex items-baseline gap-1.5 group rounded-lg -ml-1 px-1 transition-colors"
-                title={breakdownOpen ? "Hide breakdown" : "Show portfolio breakdown"}
+                title={breakdownOpen ? t("hideBreakdown") : t("showBreakdown")}
               >
                 <AnimatedCounter
                   value={portfolio.totalUSD}
@@ -206,7 +208,7 @@ function BalanceCard() {
                 <>
                   <span className="text-edge">·</span>
                   <Link href="/assets" className="transition-colors hover:underline text-brand">
-                    +{formatUSD(portfolio.otherUSD)} other
+                    +{formatUSD(portfolio.otherUSD)} {t("other")}
                   </Link>
                 </>
               )}
@@ -232,26 +234,25 @@ function BalanceCard() {
                 {formatUSD(0)}
               </p>
               <span className="text-xs font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-md text-fg-muted bg-sunken">
-                No data
+                {t("noData")}
               </span>
             </div>
             <p className="max-w-md text-xs leading-relaxed text-fg-muted">
-              Portfolio data is not available yet. Check your assets or receive
-              STX to start tracking real balances here.
+              {t("noDataDesc")}
             </p>
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/assets"
                 className="inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold transition-colors bg-brand text-[#060C18]"
               >
-                View Assets
+                {t("viewAssets")}
               </Link>
               <Link
                 href="/trade"
                 className="inline-flex items-center rounded-xl px-3 py-2 text-xs font-semibold transition-colors text-fg"
                 style={{ border: "1px solid var(--border-subtle)" }}
               >
-                Swap
+                {t("swap")}
               </Link>
             </div>
           </div>
@@ -269,15 +270,14 @@ function BalanceCard() {
                   <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-brand" />
                   <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-brand" />
                 </span>
-                Demo
+                {t("demo")}
               </span>
               <span className="text-sm font-semibold font-data px-2 py-0.5 rounded-lg text-pos bg-pos-soft opacity-[0.7]">
                 +$234 (+1.9%)
               </span>
             </div>
             <p className="max-w-md text-xs leading-relaxed text-fg-muted">
-              Preview only · Connect from the banner or topbar to load real balances,
-              DCA plans, alerts, and activity.
+              {t("previewOnly")}
             </p>
           </div>
         )}
@@ -289,7 +289,7 @@ function BalanceCard() {
           <BalanceCardChart chartData={chartData} isConnected={isConnected} isDark={isDark} />
         ) : (
           <ChartPlaceholder
-            label={isConnected ? "Portfolio history will appear after balances load." : "Loading chart…"}
+            label={isConnected ? t("historyPending") : t("loadingChart")}
           />
         )}
       </div>

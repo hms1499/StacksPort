@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@/i18n/navigation";
@@ -22,6 +23,7 @@ const STORAGE_KEY = "stacksport_welcome_v2_dismissed";
 export default function WelcomeSteps() {
   const { isConnected, stxAddress } = useWalletStore();
   const alerts = usePriceAlertStore((s) => s.alerts);
+  const t = useTranslations("dashboard.welcome");
 
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: txData } = useTransactions(addr, 20);
@@ -47,24 +49,24 @@ export default function WelcomeSteps() {
   const steps: Step[] = [
     {
       id: "swap",
-      label: "Make a Swap",
-      description: "Trade tokens on Bitflow DEX",
+      label: t("swapLabel"),
+      description: t("swapDesc"),
       icon: <ArrowLeftRight size={16} />,
       href: "/trade",
       done: hasSwapped,
     },
     {
       id: "dca",
-      label: "Create DCA Plan",
-      description: "Set up automated investing",
+      label: t("dcaLabel"),
+      description: t("dcaDesc"),
       icon: <Repeat2 size={16} />,
       href: "/dca",
       done: hasDCAPlans,
     },
     {
       id: "alerts",
-      label: "Set Price Alert",
-      description: "Get notified on targets",
+      label: t("alertLabel"),
+      description: t("alertDesc"),
       icon: <Bell size={16} />,
       href: "/notifications",
       done: hasAlerts,
@@ -159,14 +161,14 @@ export default function WelcomeSteps() {
                 </motion.div>
                 <div className="min-w-0">
                   <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    {allDone ? "You're all set!" : nextStep ? `Next: ${nextStep.label}` : "Getting Started"}
+                    {allDone ? t("allSet") : nextStep ? t("next", { step: nextStep.label }) : t("gettingStarted")}
                   </h3>
                   <p className="text-xs leading-relaxed mt-0.5" style={{ color: allDone ? 'var(--accent)' : 'var(--text-muted)' }}>
                     {allDone
-                      ? "Every setup action is done."
+                      ? t("allDoneDesc")
                       : nextStep
-                        ? `${nextStep.description} · ${completedCount}/${steps.length} completed`
-                        : `${completedCount}/${steps.length} completed`}
+                        ? `${nextStep.description} · ${t("completed", { done: completedCount, total: steps.length })}`
+                        : t("completed", { done: completedCount, total: steps.length })}
                   </p>
                 </div>
               </div>
@@ -177,13 +179,13 @@ export default function WelcomeSteps() {
                     className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors"
                     style={{ backgroundColor: 'var(--accent)', color: '#060C18' }}
                   >
-                    Continue
+                    {t("continue")}
                     <ArrowRight size={15} />
                   </Link>
                 )}
                 <button
                   onClick={handleDismiss}
-                  aria-label="Dismiss getting started"
+                  aria-label={t("dismiss")}
                   className="p-2 transition-colors rounded-xl"
                   style={{ color: 'var(--text-muted)' }}
                 >
@@ -254,7 +256,7 @@ export default function WelcomeSteps() {
                       </p>
                       {!step.done && step.id === nextStep?.id && (
                         <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>
-                          Recommended
+                          {t("recommended")}
                         </span>
                       )}
                     </div>

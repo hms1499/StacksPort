@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { Repeat, TrendingUp, Activity, BarChart3, Info, WifiOff } from "lucide-react";
@@ -45,10 +46,10 @@ const METRICS: Array<{
   color: string;
   format: (v: number) => string;
 }> = [
-  { key: "plansCreated",    label: "DCA Plans Created", icon: Repeat,     color: "#00C27A", format: formatCompactInt },
-  { key: "volumeUsd",       label: "Volume Executed",   icon: TrendingUp, color: "#38BDF8", format: formatCompactUSD },
-  { key: "swapsExecuted",   label: "Swaps Executed",    icon: Activity,   color: "#A78BFA", format: formatCompactInt },
-  { key: "avgSwapsPerPlan", label: "Avg Swaps / Plan",  icon: BarChart3,  color: "#F472B6", format: formatRatio },
+  { key: "plansCreated",    label: "plansCreated", icon: Repeat,     color: "#00C27A", format: formatCompactInt },
+  { key: "volumeUsd",       label: "volumeExecuted", icon: TrendingUp, color: "#38BDF8", format: formatCompactUSD },
+  { key: "swapsExecuted",   label: "swapsExecuted", icon: Activity,   color: "#A78BFA", format: formatCompactInt },
+  { key: "avgSwapsPerPlan", label: "avgSwapsPerPlan", icon: BarChart3,  color: "#F472B6", format: formatRatio },
 ];
 
 export default function SocialProofStrip() {
@@ -56,6 +57,7 @@ export default function SocialProofStrip() {
     refreshInterval: 60_000,
     revalidateOnFocus: false,
   });
+  const t = useTranslations("dashboard.social");
 
   // Re-render every 30s so the relative timestamp stays fresh.
   const [now, setNow] = useState(() => Date.now());
@@ -105,7 +107,7 @@ export default function SocialProofStrip() {
       >
         <WifiOff size={15} style={{ color: "var(--text-muted)" }} />
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Live on-chain metrics are temporarily unavailable.
+          {t("unavailable")}
         </p>
       </div>
     );
@@ -130,14 +132,14 @@ export default function SocialProofStrip() {
               className="text-[10px] font-bold tracking-widest uppercase"
               style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
             >
-              Live on Stacks
+              {t("liveOnStacks")}
             </span>
             {updatedLabel && (
               <span
                 className="text-[9px] font-data"
                 style={{ color: 'var(--text-muted)' }}
               >
-                updated {updatedLabel}
+                {t("updated", { time: updatedLabel })}
               </span>
             )}
           </div>
@@ -165,7 +167,7 @@ export default function SocialProofStrip() {
                   className="text-[10px] uppercase tracking-wider truncate block"
                   style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}
                 >
-                  {label}
+                  {t(`metric.${label}`)}
                 </span>
               </div>
             </div>
@@ -176,8 +178,7 @@ export default function SocialProofStrip() {
         className="mt-3 text-[10px] leading-relaxed"
         style={{ color: "var(--text-muted)" }}
       >
-        On-chain totals from both DCA vaults. USD volume uses current market
-        prices and is hidden when a required source is unavailable.
+        {t("disclaimer")}
       </p>
     </div>
   );

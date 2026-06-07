@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Compass, Home } from "lucide-react";
 import "./globals.css";
 
@@ -26,13 +27,13 @@ export default function GlobalNotFound() {
               The page you&apos;re looking for doesn&apos;t exist or may have moved.
             </p>
           </div>
-          <a
+          <Link
             href="/dashboard"
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium text-white transition-colors"
             style={{ backgroundColor: "var(--accent)" }}
           >
             <Home size={14} /> Back to dashboard
-          </a>
+          </Link>
         </div>
       </body>
     </html>

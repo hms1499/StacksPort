@@ -1,0 +1,23 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "bubbles": "Bong bóng",
+    "assets": "Tài sản của tôi",
+    "assetsShort": "Tài sản",
+    "swap": "Hoán đổi",
+    "dcaVault": "Kho DCA",
+    "dcaShort": "DCA",
+    "alerts": "Cảnh báo",
+    "stacksAi": "Stacks AI",
+    "aiShort": "AI",
+    "connectedApps": "Ứng dụng kết nối",
+    "appsShort": "Ứng dụng",
+    "more": "Thêm",
+    "collapse": "Thu gọn"
+  },
+  "common": {
+    "language": "Ngôn ngữ",
+    "english": "English",
+    "vietnamese": "Tiếng Việt"
+  }
+}

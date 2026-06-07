@@ -1,0 +1,23 @@
+{
+  "nav": {
+    "home": "Home",
+    "bubbles": "Bubbles",
+    "assets": "My Assets",
+    "assetsShort": "Assets",
+    "swap": "Swap",
+    "dcaVault": "DCA Vault",
+    "dcaShort": "DCA",
+    "alerts": "Alerts",
+    "stacksAi": "Stacks AI",
+    "aiShort": "AI",
+    "connectedApps": "Connected Apps",
+    "appsShort": "Apps",
+    "more": "More",
+    "collapse": "Collapse"
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "vietnamese": "Tiếng Việt"
+  }
+}

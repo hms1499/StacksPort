@@ -184,5 +184,34 @@
       "customize": "Tùy chỉnh",
       "dismissTip": "Bỏ qua gợi ý"
     }
+  },
+  "trade": {
+    "swapTitle": "Hoán đổi",
+    "recentSwaps": "Hoán đổi gần đây",
+    "migrationTitle": "Chuyển đổi aeUSDC → USDCx",
+    "migrationDesc": "Nâng cấp lên USDC gốc của Circle trên Stacks",
+    "routingTitle": "Định tuyến on-chain",
+    "routingDesc": "Định tuyến hoán đổi qua các pool Bitflow bằng báo giá on-chain trực tiếp, với bảo vệ trượt giá được thực thi bởi hợp đồng.",
+    "yieldTitle": "Lợi nhuận thực",
+    "yieldDesc": "Phí được trả thẳng cho nhà cung cấp thanh khoản — không có phần thưởng token lạm phát.",
+    "tipsTitle": "Mẹo hoán đổi",
+    "tip1": "Đặt trượt giá 0.5% cho hầu hết giao dịch. Tăng lên 1% cho token thanh khoản thấp.",
+    "tip2": "sBTC → USDCx tự động đi đa chặng qua STX và aeUSDC — lộ trình cố định, bạn không cần chọn.",
+    "tip3": "Kiểm tra HealthScore ở tab Tài sản để biết token nào cần tái cân bằng.",
+    "tip4": "Giao dịch lớn có thể tác động giá cao hơn — cân nhắc chia thành các lệnh nhỏ hơn.",
+    "swap": {
+      "from": "Từ",
+      "to": "Đến",
+      "youReceive": "Bạn nhận (ước tính)",
+      "connectToSwap": "Kết nối ví để hoán đổi",
+      "waitingWallet": "Đang chờ ví...",
+      "gettingQuote": "Đang lấy báo giá...",
+      "swapPair": "Hoán đổi {from} → {to}",
+      "selectTokens": "Chọn token",
+      "poweredBy": "Cung cấp bởi",
+      "errQuote": "Không lấy được báo giá",
+      "errExpired": "Báo giá đã hết hạn — đang làm mới giá, vui lòng thử lại.",
+      "errFailed": "Hoán đổi thất bại"
+    }
   }
 }

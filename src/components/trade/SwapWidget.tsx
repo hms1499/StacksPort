@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -49,6 +50,7 @@ import {
 export default function SwapWidget() {
   const searchParams = useSearchParams();
   const { stxAddress, isConnected, network } = useWalletStore();
+  const t = useTranslations("trade.swap");
   const { addNotification } = useNotificationStore();
   const { data: swapPrices } = useSwapPrices();
 
@@ -158,10 +160,10 @@ export default function SwapWidget() {
         if (reqId !== quoteReqId.current) return;
         setQuote(null);
         setStatus("error");
-        setErrorMsg(e instanceof Error ? e.message : "Failed to get quote");
+        setErrorMsg(e instanceof Error ? e.message : t("errQuote"));
       }
     },
-    []
+    [t]
   );
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -186,8 +188,8 @@ export default function SwapWidget() {
     const amt = parseFloat(amountIn);
     if (isNaN(amt)) return;
     const delay = Math.max(QUOTE_TTL_MS - (Date.now() - quote.quotedAt), 0);
-    const t = setTimeout(() => fetchQuote(fromToken, toToken, amt), delay);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => fetchQuote(fromToken, toToken, amt), delay);
+    return () => clearTimeout(timer);
   }, [status, quote, fromToken, toToken, amountIn, fetchQuote]);
 
   // 1s tick for the countdown — only while a quote is actually live.
@@ -252,7 +254,7 @@ export default function SwapWidget() {
     // Defensive: never sign a stale price. Re-quote instead of submitting.
     if (isQuoteStale(quote.quotedAt)) {
       const amt = parseFloat(amountIn);
-      setErrorMsg("Quote expired — refreshing price, please try again.");
+      setErrorMsg(t("errExpired"));
       setStatus("error");
       if (!isNaN(amt)) fetchQuote(fromToken, toToken, amt);
       return;
@@ -301,7 +303,7 @@ export default function SwapWidget() {
           // Poll cho đến khi tx confirm/fail trên chain
           trackTx({
             txId: id,
-            label: `Swap ${fromToken.symbol} → ${toToken.symbol}`,
+            label: t("swapPair", { from: fromToken.symbol, to: toToken.symbol }),
             category: "swap",
             context: { txId: id, amount: amountIn, tokenSymbol: toToken.symbol },
             addNotification,
@@ -311,7 +313,7 @@ export default function SwapWidget() {
         onCancel: () => setStatus("ready"),
       });
     } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : "Swap failed";
+      const errorMessage = e instanceof Error ? e.message : t("errFailed");
       setErrorMsg(errorMessage);
       setStatus("error");
       addNotification(`Swap failed: ${errorMessage}`, "error", "swap", 5000);
@@ -368,7 +370,7 @@ export default function SwapWidget() {
           tokens={fromTokens}
           selected={fromToken}
           onChange={handleFromTokenChange}
-          label="From"
+          label={t("from")}
         />
 
         {/* Balance + % shortcuts */}
@@ -467,12 +469,12 @@ export default function SwapWidget() {
           tokens={toTokens}
           selected={toToken}
           onChange={setToToken}
-          label="To"
+          label={t("to")}
         />
         {/* Quote output */}
         <div>
           <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-muted)' }}>
-            You receive (estimated)
+            {t("youReceive")}
           </label>
           <div className="px-3.5 py-2.5 rounded-xl border min-h-[42px] flex items-center" style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-card)' }}>
             {status === "quoting" ? (
@@ -561,7 +563,7 @@ export default function SwapWidget() {
       {!isConnected && (
         <div className="flex items-center gap-2 text-xs rounded-xl px-3 py-2.5" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}>
           <Info size={13} />
-          Connect your wallet to swap
+          {t("connectToSwap")}
         </div>
       )}
 
@@ -581,22 +583,22 @@ export default function SwapWidget() {
       >
         {status === "swapping" ? (
           <>
-            <Loader2 size={15} className="animate-spin" /> Waiting for wallet...
+            <Loader2 size={15} className="animate-spin" /> {t("waitingWallet")}
           </>
         ) : status === "quoting" ? (
           <>
-            <Loader2 size={15} className="animate-spin" /> Getting quote...
+            <Loader2 size={15} className="animate-spin" /> {t("gettingQuote")}
           </>
         ) : fromToken && toToken ? (
-          `Swap ${fromToken.symbol} → ${toToken.symbol}`
+          t("swapPair", { from: fromToken.symbol, to: toToken.symbol })
         ) : (
-          "Select tokens"
+          t("selectTokens")
         )}
       </button>
 
       {/* Powered by */}
       <p className="text-center text-[11px]" style={{ color: 'var(--text-muted)' }}>
-        Powered by{" "}
+        {t("poweredBy")}{" "}
         <a
           href="https://bitflow.finance"
           target="_blank"

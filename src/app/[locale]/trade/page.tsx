@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import Topbar from "@/components/layout/Topbar";
 import SwapWidget from "@/components/trade/SwapWidget";
@@ -16,7 +17,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/trade" },
 };
 
-export default function TradePage() {
+export default async function TradePage() {
+  const t = await getTranslations("trade");
   return (
     <div className="flex flex-col min-h-screen">
       <Topbar title="Trade" />
@@ -32,7 +34,7 @@ export default function TradePage() {
               >
                 <ArrowLeftRight size={15} style={{ color: 'var(--accent)' }} />
               </div>
-              <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Swap</h2>
+              <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("swapTitle")}</h2>
             </div>
             <Suspense fallback={null}>
               <SwapWidget />
@@ -43,7 +45,7 @@ export default function TradePage() {
           <MotionCard className="glass-card rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <History size={15} style={{ color: 'var(--accent)' }} />
-              <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Recent Swaps</h3>
+              <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{t("recentSwaps")}</h3>
             </div>
             <RecentSwaps />
           </MotionCard>
@@ -58,8 +60,8 @@ export default function TradePage() {
                 <RefreshCw size={15} className="text-blue-500" />
               </div>
               <div>
-                <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>aeUSDC → USDCx Migration</h2>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Upgrade to native Circle USDC on Stacks</p>
+                <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("migrationTitle")}</h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{t("migrationDesc")}</p>
               </div>
             </div>
             <MigrationWidget />
@@ -71,19 +73,19 @@ export default function TradePage() {
               <div className="glass-card rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Zap size={15} style={{ color: 'var(--accent)' }} />
-                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>On-chain Routing</h3>
+                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{t("routingTitle")}</h3>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  Routes swaps through Bitflow Pools using live on-chain quotes, with slippage protection enforced by the contract.
+                  {t("routingDesc")}
                 </p>
               </div>
               <div className="glass-card rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Shield size={15} className="text-orange-500" />
-                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Real Yield</h3>
+                  <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{t("yieldTitle")}</h3>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  Fees go directly to liquidity providers — no inflationary token rewards.
+                  {t("yieldDesc")}
                 </p>
               </div>
             </div>
@@ -91,14 +93,9 @@ export default function TradePage() {
 
           {/* Swap Tips */}
           <MotionCard className="glass-card rounded-2xl p-5 shadow-sm">
-            <h3 className="font-semibold text-sm mb-3" style={{ color: 'var(--text-primary)' }}>Swap Tips</h3>
+            <h3 className="font-semibold text-sm mb-3" style={{ color: 'var(--text-primary)' }}>{t("tipsTitle")}</h3>
             <ul className="space-y-2.5">
-              {[
-                "Set slippage to 0.5% for most swaps. Increase to 1% for low-liquidity tokens.",
-                "sBTC → USDCx routes automatically multi-hop through STX and aeUSDC — the path is fixed, you don't pick it.",
-                "Check your HealthScore on the Assets tab to see which tokens to rebalance.",
-                "Large trades may have higher price impact — consider splitting into smaller swaps.",
-              ].map((tip, i) => (
+              {[t("tip1"), t("tip2"), t("tip3"), t("tip4")].map((tip, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
                   <span
                     className="w-5 h-5 rounded-full font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5"

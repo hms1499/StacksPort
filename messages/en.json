@@ -184,5 +184,34 @@
       "customize": "Customize",
       "dismissTip": "Dismiss tip"
     }
+  },
+  "trade": {
+    "swapTitle": "Swap",
+    "recentSwaps": "Recent Swaps",
+    "migrationTitle": "aeUSDC → USDCx Migration",
+    "migrationDesc": "Upgrade to native Circle USDC on Stacks",
+    "routingTitle": "On-chain Routing",
+    "routingDesc": "Routes swaps through Bitflow Pools using live on-chain quotes, with slippage protection enforced by the contract.",
+    "yieldTitle": "Real Yield",
+    "yieldDesc": "Fees go directly to liquidity providers — no inflationary token rewards.",
+    "tipsTitle": "Swap Tips",
+    "tip1": "Set slippage to 0.5% for most swaps. Increase to 1% for low-liquidity tokens.",
+    "tip2": "sBTC → USDCx routes automatically multi-hop through STX and aeUSDC — the path is fixed, you don't pick it.",
+    "tip3": "Check your HealthScore on the Assets tab to see which tokens to rebalance.",
+    "tip4": "Large trades may have higher price impact — consider splitting into smaller swaps.",
+    "swap": {
+      "from": "From",
+      "to": "To",
+      "youReceive": "You receive (estimated)",
+      "connectToSwap": "Connect your wallet to swap",
+      "waitingWallet": "Waiting for wallet...",
+      "gettingQuote": "Getting quote...",
+      "swapPair": "Swap {from} → {to}",
+      "selectTokens": "Select tokens",
+      "poweredBy": "Powered by",
+      "errQuote": "Failed to get quote",
+      "errExpired": "Quote expired — refreshing price, please try again.",
+      "errFailed": "Swap failed"
+    }
   }
 }

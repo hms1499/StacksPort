@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
 
 /**
  * CORS allow-list for the API proxy routes.
@@ -33,7 +35,7 @@ function corsHeaders(origin: string): Headers {
   return headers;
 }
 
-export function middleware(req: NextRequest) {
+function handleApiCors(req: NextRequest): NextResponse {
   const origin = req.headers.get("origin");
   const allowed = isAllowedOrigin(origin);
 
@@ -54,6 +56,19 @@ export function middleware(req: NextRequest) {
   return res;
 }
 
+const intlMiddleware = createMiddleware(routing);
+
+export function middleware(req: NextRequest) {
+  // API routes: keep the existing extension CORS handling, no locale rewriting.
+  if (req.nextUrl.pathname.startsWith("/api")) {
+    return handleApiCors(req);
+  }
+  // Page routes: resolve locale (URL prefix → cookie → Accept-Language → default).
+  return intlMiddleware(req);
+}
+
 export const config = {
-  matcher: "/api/:path*",
+  // Run on API routes (CORS) and all page routes (locale), skipping Next.js
+  // internals and any path with a dot (static files like /sw.js, /manifest.webmanifest).
+  matcher: ["/((?!_next|_vercel|.*\\..*).*)"],
 };

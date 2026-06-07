@@ -18,6 +18,37 @@
   "common": {
     "language": "Ngôn ngữ",
     "english": "English",
-    "vietnamese": "Tiếng Việt"
+    "vietnamese": "Tiếng Việt",
+    "connectWallet": "Kết nối ví",
+    "connecting": "Đang kết nối…",
+    "connected": "Đã kết nối",
+    "copyAddress": "Sao chép địa chỉ",
+    "copied": "Đã sao chép!",
+    "switchAccount": "Đổi tài khoản",
+    "explore": "Khám phá",
+    "disconnect": "Ngắt kết nối",
+    "openAccountMenu": "Mở menu tài khoản",
+    "switchToLight": "Chuyển sang chế độ sáng",
+    "switchToDark": "Chuyển sang chế độ tối",
+    "cmdk": {
+      "searchPlaceholder": "Tìm kiếm...",
+      "inputPlaceholder": "Nhập lệnh hoặc tìm kiếm...",
+      "noResults": "Không tìm thấy kết quả.",
+      "recent": "Gần đây",
+      "allCommands": "Tất cả lệnh",
+      "enter": "Enter",
+      "navigate": "Di chuyển",
+      "select": "Chọn",
+      "close": "Đóng",
+      "themeLight": "Chuyển sang chế độ sáng",
+      "themeDark": "Chuyển sang chế độ tối",
+      "themeDesc": "Đổi giao diện",
+      "home": { "label": "Trang chủ", "desc": "Tổng quan danh mục" },
+      "assets": { "label": "Tài sản của tôi", "desc": "Số dư & theo dõi lãi/lỗ" },
+      "swap": { "label": "Hoán đổi token", "desc": "Giao dịch trên Bitflow DEX" },
+      "dca": { "label": "Kho DCA", "desc": "Kế hoạch đầu tư tự động" },
+      "notifications": { "label": "Thông báo", "desc": "Cảnh báo & mục tiêu giá" },
+      "ai": { "label": "Stacks AI", "desc": "Phân tích bằng AI" }
+    }
   }
 }

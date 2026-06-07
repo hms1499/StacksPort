@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Moon, Sun, Loader2, Copy, Check, RefreshCw, LogOut, Compass } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useWalletStore } from "@/store/walletStore";
@@ -18,6 +19,7 @@ interface TopbarProps {
 }
 
 export default function Topbar({ title = "Dashboard" }: TopbarProps) {
+  const t = useTranslations("common");
   const { isConnected, stxAddress, connect, disconnect } = useWalletStore();
   const { theme, toggleTheme } = useThemeStore();
   const [connecting, setConnecting] = useState(false);
@@ -78,7 +80,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          aria-label={theme === "dark" ? t("switchToLight") : t("switchToDark")}
           className={cn(
             "p-2 rounded-xl hidden md:flex relative overflow-hidden",
             "transition-[background-color,color] duration-200",
@@ -104,7 +106,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              aria-label="Open account menu"
+              aria-label={t("openAccountMenu")}
               data-connected="true"
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-200"
               style={{
@@ -146,7 +148,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                   >
                   <div className="px-3 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>
-                      Connected
+                      {t("connected")}
                     </p>
                     <p
                       className="text-xs font-semibold truncate font-data"
@@ -168,7 +170,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                       ? <Check size={14} style={{ color: 'var(--accent)' }} />
                       : <Copy size={14} />
                     }
-                    {copied ? "Copied!" : "Copy Address"}
+                    {copied ? t("copied") : t("copyAddress")}
                   </button>
 
                   <button
@@ -180,7 +182,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     )}
                   >
                     <RefreshCw size={14} />
-                    Switch Account
+                    {t("switchAccount")}
                   </button>
 
                   <Link
@@ -195,7 +197,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     )}
                   >
                     <Compass size={14} />
-                    Explore
+                    {t("explore")}
                   </Link>
 
                   <div style={{ borderTop: '1px solid var(--border-subtle)', marginTop: '4px', paddingTop: '4px' }}>
@@ -208,7 +210,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                       )}
                     >
                       <LogOut size={14} />
-                      Disconnect
+                      {t("disconnect")}
                     </button>
                   </div>
                   </motion.div>
@@ -228,7 +230,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
             }}
           >
             {connecting && <Loader2 size={13} className="animate-spin" />}
-            {connecting ? "Connecting…" : "Connect Wallet"}
+            {connecting ? t("connecting") : t("connectWallet")}
           </button>
         )}
       </div>

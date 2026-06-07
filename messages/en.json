@@ -18,6 +18,37 @@
   "common": {
     "language": "Language",
     "english": "English",
-    "vietnamese": "Tiếng Việt"
+    "vietnamese": "Tiếng Việt",
+    "connectWallet": "Connect Wallet",
+    "connecting": "Connecting…",
+    "connected": "Connected",
+    "copyAddress": "Copy Address",
+    "copied": "Copied!",
+    "switchAccount": "Switch Account",
+    "explore": "Explore",
+    "disconnect": "Disconnect",
+    "openAccountMenu": "Open account menu",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "cmdk": {
+      "searchPlaceholder": "Search...",
+      "inputPlaceholder": "Type a command or search...",
+      "noResults": "No results found.",
+      "recent": "Recent",
+      "allCommands": "All commands",
+      "enter": "Enter",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close",
+      "themeLight": "Switch to Light Mode",
+      "themeDark": "Switch to Dark Mode",
+      "themeDesc": "Toggle theme",
+      "home": { "label": "Home", "desc": "Portfolio overview" },
+      "assets": { "label": "My Assets", "desc": "Holdings & P&L tracker" },
+      "swap": { "label": "Swap Tokens", "desc": "Trade on Bitflow DEX" },
+      "dca": { "label": "DCA Vault", "desc": "Automated investing plans" },
+      "notifications": { "label": "Notifications", "desc": "Alerts & price targets" },
+      "ai": { "label": "Stacks AI", "desc": "AI-powered insights" }
+    }
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -44,6 +45,7 @@ function readRecents(): string[] {
 }
 
 export default function CommandPalette() {
+  const t = useTranslations("common.cmdk");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -70,16 +72,16 @@ export default function CommandPalette() {
   );
 
   const commands: CommandItem[] = [
-    { id: "dashboard",     label: "Home",           description: "Portfolio overview",        icon: <Home size={18} />,         action: () => navigate("/dashboard", "dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
-    { id: "assets",        label: "My Assets",      description: "Holdings & P&L tracker",    icon: <Wallet size={18} />,       action: () => navigate("/assets", "assets"),            keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
-    { id: "swap",          label: "Swap Tokens",    description: "Trade on Bitflow DEX",      icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade", "swap"),             keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
-    { id: "dca",           label: "DCA Vault",      description: "Automated investing plans", icon: <Repeat2 size={18} />,      action: () => navigate("/dca", "dca"),                  keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
-    { id: "notifications", label: "Notifications",  description: "Alerts & price targets",    icon: <Bell size={18} />,         action: () => navigate("/notifications", "notifications"), keywords: ["notifications", "alerts", "price", "targets"] },
-    { id: "ai",            label: "Stacks AI",      description: "AI-powered insights",       icon: <Sparkles size={18} />,     action: () => navigate("/ai", "ai"),                    keywords: ["ai", "insights", "analysis", "intelligence"] },
+    { id: "dashboard",     label: t("home.label"),          description: t("home.desc"),          icon: <Home size={18} />,         action: () => navigate("/dashboard", "dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
+    { id: "assets",        label: t("assets.label"),        description: t("assets.desc"),        icon: <Wallet size={18} />,       action: () => navigate("/assets", "assets"),            keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
+    { id: "swap",          label: t("swap.label"),          description: t("swap.desc"),          icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade", "swap"),             keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
+    { id: "dca",           label: t("dca.label"),           description: t("dca.desc"),           icon: <Repeat2 size={18} />,      action: () => navigate("/dca", "dca"),                  keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
+    { id: "notifications", label: t("notifications.label"), description: t("notifications.desc"), icon: <Bell size={18} />,         action: () => navigate("/notifications", "notifications"), keywords: ["notifications", "alerts", "price", "targets"] },
+    { id: "ai",            label: t("ai.label"),            description: t("ai.desc"),            icon: <Sparkles size={18} />,     action: () => navigate("/ai", "ai"),                    keywords: ["ai", "insights", "analysis", "intelligence"] },
     {
       id: "theme",
-      label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`,
-      description: "Toggle theme",
+      label: theme === "dark" ? t("themeLight") : t("themeDark"),
+      description: t("themeDesc"),
       icon: theme === "dark" ? <Sun size={18} /> : <Moon size={18} />,
       action: () => { pushRecent("theme"); toggleTheme(); setOpen(false); },
       keywords: ["theme", "dark", "light", "mode", "toggle"],
@@ -159,7 +161,7 @@ export default function CommandPalette() {
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
       >
         <Search size={14} />
-        <span>Search...</span>
+        <span>{t("searchPlaceholder")}</span>
         <kbd className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-0.5" style={kbdStyle}>
           <Command size={10} />K
         </kbd>
@@ -193,7 +195,7 @@ export default function CommandPalette() {
                     value={query}
                     onChange={(e) => handleQueryChange(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Type a command or search..."
+                    placeholder={t("inputPlaceholder")}
                     className="flex-1 py-4 bg-transparent text-sm outline-none placeholder:text-gray-400"
                     style={{ color: 'var(--text-primary)' }}
                   />
@@ -206,7 +208,7 @@ export default function CommandPalette() {
                 <div className="max-h-[320px] overflow-y-auto py-2">
                   {filtered.length === 0 ? (
                     <div className="px-4 py-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
-                      No results found.
+                      {t("noResults")}
                     </div>
                   ) : (
                     <>
@@ -215,7 +217,7 @@ export default function CommandPalette() {
                           className="px-4 pt-1 pb-1.5 text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5"
                           style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
                         >
-                          <Clock size={10} /> Recent
+                          <Clock size={10} /> {t("recent")}
                         </div>
                       )}
                       {filtered.map((cmd, i) => {
@@ -228,7 +230,7 @@ export default function CommandPalette() {
                                 className="px-4 pt-2 pb-1.5 text-[10px] font-bold tracking-widest uppercase"
                                 style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
                               >
-                                All commands
+                                {t("allCommands")}
                               </div>
                             )}
                             <button
@@ -253,7 +255,7 @@ export default function CommandPalette() {
                               </div>
                               {isSelected && (
                                 <kbd className="px-1.5 py-0.5 rounded text-[10px] font-medium" style={kbdStyle}>
-                                  Enter
+                                  {t("enter")}
                                 </kbd>
                               )}
                             </button>
@@ -277,16 +279,16 @@ export default function CommandPalette() {
                     <span className="flex items-center gap-1">
                       <kbd className="px-1 py-0.5 rounded" style={kbdStyle}><ArrowUp size={9} /></kbd>
                       <kbd className="px-1 py-0.5 rounded" style={kbdStyle}><ArrowDown size={9} /></kbd>
-                      Navigate
+                      {t("navigate")}
                     </span>
                     <span className="flex items-center gap-1">
                       <kbd className="px-1 py-0.5 rounded" style={kbdStyle}><CornerDownLeft size={9} /></kbd>
-                      Select
+                      {t("select")}
                     </span>
                   </div>
                   <span className="flex items-center gap-1">
                     <kbd className="px-1 py-0.5 rounded" style={kbdStyle}>esc</kbd>
-                    Close
+                    {t("close")}
                   </span>
                 </div>
               </div>

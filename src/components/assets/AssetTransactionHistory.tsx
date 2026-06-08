@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -32,12 +33,14 @@ interface TxItem {
 
 const PAGE_SIZE = 15;
 
-function timeAgo(ts: number): string {
+type HistT = ReturnType<typeof useTranslations<"assets.history">>;
+
+function timeAgo(ts: number, t: HistT): string {
   const diff = Math.floor(Date.now() / 1000 - ts);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t("secondsAgo", { n: diff });
+  if (diff < 3600) return t("minutesAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("hoursAgo", { n: Math.floor(diff / 3600) });
+  return t("daysAgo", { n: Math.floor(diff / 86400) });
 }
 
 function formatMicroSTX(amount: string): string {
@@ -46,7 +49,7 @@ function formatMicroSTX(amount: string): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseTx(raw: any, myAddress: string): TxItem {
+function parseTx(raw: any, myAddress: string, t: HistT): TxItem {
   const tx = raw.tx ?? raw;
   const type = tx.tx_type;
   const status: TxStatus =
@@ -69,8 +72,8 @@ function parseTx(raw: any, myAddress: string): TxItem {
       txId: tx.tx_id,
       type: isSend ? "send" : "receive",
       status,
-      label: isSend ? "Sent STX" : "Received STX",
-      sublabel: isSend ? `To ${short}` : `From ${short}`,
+      label: isSend ? t("sentStx") : t("receivedStx"),
+      sublabel: isSend ? t("to", { addr: short }) : t("from", { addr: short }),
       amount: tx.token_transfer?.amount ?? null,
       timestamp,
     };
@@ -100,7 +103,7 @@ function parseTx(raw: any, myAddress: string): TxItem {
       txId: tx.tx_id,
       type: "smart_contract",
       status,
-      label: "Deploy Contract",
+      label: t("deployContract"),
       sublabel: tx.smart_contract?.contract_id?.split(".")[1] ?? "",
       amount: null,
       timestamp,
@@ -111,8 +114,8 @@ function parseTx(raw: any, myAddress: string): TxItem {
     txId: tx.tx_id,
     type: "coinbase",
     status,
-    label: "Coinbase",
-    sublabel: `Block ${tx.block_height ?? ""}`,
+    label: t("coinbase"),
+    sublabel: t("block", { height: tx.block_height ?? "" }),
     amount: null,
     timestamp,
   };
@@ -132,11 +135,11 @@ const STATUS_DOT: Record<TxStatus, string> = {
   failed: "bg-red-400",
 };
 
-const FILTER_TABS: { key: FilterTab; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "transfer", label: "Transfer" },
-  { key: "contract", label: "Contract" },
-  { key: "failed", label: "Failed" },
+const FILTER_TABS: { key: FilterTab; labelKey: string }[] = [
+  { key: "all", labelKey: "filterAll" },
+  { key: "transfer", labelKey: "filterTransfer" },
+  { key: "contract", labelKey: "filterContract" },
+  { key: "failed", labelKey: "filterFailed" },
 ];
 
 function matchesFilter(tx: TxItem, filter: FilterTab): boolean {
@@ -148,6 +151,7 @@ function matchesFilter(tx: TxItem, filter: FilterTab): boolean {
 }
 
 function TxRow({ tx }: { tx: TxItem }) {
+  const t = useTranslations("assets.history");
   const { icon: Icon, bg, color } = TYPE_STYLES[tx.type];
   return (
     <a
@@ -182,7 +186,7 @@ function TxRow({ tx }: { tx: TxItem }) {
       <div className="flex items-center gap-3 flex-shrink-0">
         <p className="text-xs text-gray-400 flex items-center gap-1">
           <Clock size={10} />
-          {tx.timestamp > 0 ? timeAgo(tx.timestamp) : "—"}
+          {tx.timestamp > 0 ? timeAgo(tx.timestamp, t) : "—"}
         </p>
         <ExternalLink
           size={12}
@@ -208,6 +212,7 @@ function SkeletonRow() {
 }
 
 export default function AssetTransactionHistory() {
+  const t = useTranslations("assets.history");
   const { stxAddress, isConnected } = useWalletStore();
   const [allTxs, setAllTxs] = useState<TxItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -230,7 +235,7 @@ export default function AssetTransactionHistory() {
         const data = await getTransactions(stxAddress, PAGE_SIZE, currentOffset);
         if (myReqId !== reqIdRef.current) return;
         const results: TxItem[] = (data.results ?? []).map((r: unknown) =>
-          parseTx(r, stxAddress)
+          parseTx(r, stxAddress, t)
         );
         setAllTxs((prev) => (append ? [...prev, ...results] : results));
         setHasMore(results.length === PAGE_SIZE);
@@ -244,7 +249,7 @@ export default function AssetTransactionHistory() {
         }
       }
     },
-    [stxAddress, isConnected]
+    [stxAddress, isConnected, t]
   );
 
   useEffect(() => {
@@ -279,17 +284,17 @@ export default function AssetTransactionHistory() {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
-        <h2 className="font-semibold text-gray-700">Transaction History</h2>
+        <h2 className="font-semibold text-gray-700">{t("title")}</h2>
         {isConnected && stxAddress && (
           <div className="flex items-center gap-3">
             {filtered.length > 0 && (
               <button
                 onClick={handleExport}
-                title="Export CSV"
+                title={t("exportTitle")}
                 className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#285A48] bg-gray-50 hover:bg-[#B0E4CC]/20 px-2 py-1 rounded-lg transition-colors"
               >
                 <Download size={11} />
-                Export
+                {t("export")}
               </button>
             )}
             <a
@@ -298,7 +303,7 @@ export default function AssetTransactionHistory() {
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-xs text-[#408A71] hover:text-[#285A48] transition-colors"
             >
-              View on Explorer <ExternalLink size={11} />
+              {t("viewExplorer")} <ExternalLink size={11} />
             </a>
           </div>
         )}
@@ -321,7 +326,7 @@ export default function AssetTransactionHistory() {
                   : "text-gray-500 hover:bg-gray-100"
               }`}
             >
-              {tab.label}
+              {t(tab.labelKey)}
               {count > 0 && (
                 <span
                   className={`text-[10px] px-1 rounded ${
@@ -340,7 +345,7 @@ export default function AssetTransactionHistory() {
       {!isConnected ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Activity size={36} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">Connect your wallet to view history</p>
+          <p className="text-sm text-gray-400">{t("connect")}</p>
         </div>
       ) : loading ? (
         <div className="divide-y divide-gray-50">
@@ -351,7 +356,7 @@ export default function AssetTransactionHistory() {
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Activity size={36} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">No transactions found</p>
+          <p className="text-sm text-gray-400">{t("noTx")}</p>
         </div>
       ) : (
         <>
@@ -369,11 +374,11 @@ export default function AssetTransactionHistory() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
                 {loadingMore ? (
-                  <span className="animate-pulse">Loading...</span>
+                  <span className="animate-pulse">{t("loading")}</span>
                 ) : (
                   <>
                     <ChevronDown size={15} />
-                    Load More
+                    {t("loadMore")}
                   </>
                 )}
               </button>

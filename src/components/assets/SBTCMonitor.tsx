@@ -11,19 +11,22 @@ import {
   AlertTriangle,
   XCircle,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useWalletStore } from "@/store/walletStore";
 import { SBTCData, SBTCBridgeTx } from "@/lib/stacks";
 import { useSBTCDataSnap } from "@/hooks/usePortfolioSnapshot";
 import { formatUSD } from "@/lib/utils";
 
+type SbtcT = ReturnType<typeof useTranslations<"assets.sbtc">>;
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function timeAgo(ts: number): string {
+function timeAgo(ts: number, t: SbtcT): string {
   const diff = Math.floor(Date.now() / 1000 - ts);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t("secondsAgo", { n: diff });
+  if (diff < 3600) return t("minutesAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("hoursAgo", { n: Math.floor(diff / 3600) });
+  return t("daysAgo", { n: Math.floor(diff / 86400) });
 }
 
 function formatBTC(n: number): string {
@@ -42,12 +45,13 @@ function shortenAddr(addr?: string): string {
 // ─── Peg Status ───────────────────────────────────────────────────────────────
 
 function PegStatusBar({ peg }: { peg: SBTCData["peg"] }) {
+  const t = useTranslations("assets.sbtc");
   const { btcPrice, sbtcPrice, deviation, status } = peg;
 
   const statusConfig = {
-    pegged:   { label: "Pegged",          color: "text-green-500",  bg: "bg-green-50",  bar: "bg-green-400", Icon: CheckCircle2 },
-    slight:   { label: "Slight Deviation",color: "text-yellow-500", bg: "bg-yellow-50", bar: "bg-yellow-400", Icon: AlertTriangle },
-    depegged: { label: "Depeg Risk",      color: "text-red-500",    bg: "bg-red-50",    bar: "bg-red-400",    Icon: XCircle },
+    pegged:   { label: t("pegPegged"),   color: "text-green-500",  bg: "bg-green-50",  bar: "bg-green-400", Icon: CheckCircle2 },
+    slight:   { label: t("pegSlight"),   color: "text-yellow-500", bg: "bg-yellow-50", bar: "bg-yellow-400", Icon: AlertTriangle },
+    depegged: { label: t("pegDepegged"), color: "text-red-500",    bg: "bg-red-50",    bar: "bg-red-400",    Icon: XCircle },
   }[status];
 
   const { Icon } = statusConfig;
@@ -137,8 +141,10 @@ const STATUS_DOT: Record<SBTCBridgeTx["txStatus"], string> = {
 };
 
 function BridgeTxRow({ tx }: { tx: SBTCBridgeTx }) {
+  const t = useTranslations("assets.sbtc");
   const style = TX_STYLES[tx.direction];
   const { Icon } = style;
+  const dirLabel = tx.direction === "deposit" ? t("txDeposit") : tx.direction === "withdrawal" ? t("txWithdrawal") : t("txTransfer");
 
   return (
     <a
@@ -153,7 +159,7 @@ function BridgeTxRow({ tx }: { tx: SBTCBridgeTx }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-medium text-gray-900">{style.label}</p>
+          <p className="text-sm font-medium text-gray-900">{dirLabel}</p>
           <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[tx.txStatus]} flex-shrink-0`} />
         </div>
         <p className="text-xs text-gray-400 truncate">
@@ -167,7 +173,7 @@ function BridgeTxRow({ tx }: { tx: SBTCBridgeTx }) {
         </p>
         <p className="text-xs text-gray-400 flex items-center justify-end gap-0.5 mt-0.5">
           <Clock size={9} />
-          {tx.timestamp > 0 ? timeAgo(tx.timestamp) : "—"}
+          {tx.timestamp > 0 ? timeAgo(tx.timestamp, t) : "—"}
         </p>
       </div>
 
@@ -213,6 +219,7 @@ function SkeletonLoader() {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function SBTCMonitor() {
+  const t = useTranslations("assets.sbtc");
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: snap, isLoading } = useSBTCDataSnap(addr);
@@ -227,7 +234,7 @@ export default function SBTCMonitor() {
           <div className="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
             <Bitcoin size={15} className="text-orange-500" />
           </div>
-          <h2 className="font-semibold text-gray-700">sBTC Position</h2>
+          <h2 className="font-semibold text-gray-700">{t("title")}</h2>
         </div>
         <a
           href="https://docs.stacks.co/concepts/sbtc"
@@ -235,14 +242,14 @@ export default function SBTCMonitor() {
           rel="noopener noreferrer"
           className="text-xs text-[#408A71] hover:text-[#285A48] transition-colors flex items-center gap-1"
         >
-          About sBTC <ExternalLink size={11} />
+          {t("about")} <ExternalLink size={11} />
         </a>
       </div>
 
       {!isConnected ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <Bitcoin size={32} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">Connect your wallet to view sBTC position</p>
+          <p className="text-sm text-gray-400">{t("connect")}</p>
         </div>
       ) : loading ? (
         <SkeletonLoader />
@@ -252,7 +259,7 @@ export default function SBTCMonitor() {
           <div className="grid grid-cols-3 gap-3">
             {/* Balance */}
             <div className="bg-orange-50 rounded-xl p-4">
-              <p className="text-xs text-orange-400 font-medium mb-1">sBTC Balance</p>
+              <p className="text-xs text-orange-400 font-medium mb-1">{t("balance")}</p>
               {data.balance > 0 ? (
                 <>
                   <p className="text-base font-bold text-gray-900">{formatBTC(data.balance)}</p>
@@ -261,27 +268,27 @@ export default function SBTCMonitor() {
               ) : (
                 <>
                   <p className="text-base font-bold text-gray-400">0 sBTC</p>
-                  <p className="text-xs text-gray-300 mt-0.5">No position</p>
+                  <p className="text-xs text-gray-300 mt-0.5">{t("noPosition")}</p>
                 </>
               )}
             </div>
 
             {/* BTC Price */}
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-400 font-medium mb-1">BTC Price</p>
+              <p className="text-xs text-gray-400 font-medium mb-1">{t("btcPrice")}</p>
               <p className="text-base font-bold text-gray-900">
                 ${data.peg.btcPrice.toLocaleString()}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">Reference</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t("reference")}</p>
             </div>
 
             {/* sBTC Price */}
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-400 font-medium mb-1">sBTC Price</p>
+              <p className="text-xs text-gray-400 font-medium mb-1">{t("sbtcPrice")}</p>
               <p className="text-base font-bold text-gray-900">
                 ${data.peg.sbtcPrice.toLocaleString()}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">CoinGecko</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t("coingecko")}</p>
             </div>
           </div>
 
@@ -292,14 +299,14 @@ export default function SBTCMonitor() {
           {data.balance === 0 && (
             <div className="text-center py-2">
               <p className="text-xs text-gray-400">
-                You don&apos;t hold any sBTC yet.{" "}
+                {t("noSbtcText")}
                 <a
                   href="https://app.stacks.co"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#408A71] hover:underline"
                 >
-                  Bridge BTC → sBTC
+                  {t("bridgeLink")}
                 </a>
               </p>
             </div>
@@ -308,10 +315,10 @@ export default function SBTCMonitor() {
           {/* Bridge History */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-700">Bridge History</p>
+              <p className="text-sm font-semibold text-gray-700">{t("bridgeHistory")}</p>
               {data.bridgeHistory.length > 0 && (
                 <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
-                  {data.bridgeHistory.length} transactions
+                  {t("transactions", { count: data.bridgeHistory.length })}
                 </span>
               )}
             </div>
@@ -319,7 +326,7 @@ export default function SBTCMonitor() {
             {data.bridgeHistory.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center bg-gray-50 rounded-xl">
                 <ArrowLeftRight size={24} className="text-gray-200 mb-2" />
-                <p className="text-xs text-gray-400">No sBTC bridge transactions found</p>
+                <p className="text-xs text-gray-400">{t("noBridge")}</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-50">

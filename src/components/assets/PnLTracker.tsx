@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { TrendingUp, TrendingDown, BarChart3, Info, Download } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { usePnLData } from "@/hooks/useMarketData";
@@ -158,10 +159,11 @@ function PnLRow({ entry }: { entry: PnLEntry }) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function PnLTracker() {
+  const t = useTranslations("assets.pnl");
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data, isLoading: loading, error: swrError } = usePnLData(addr);
-  const error = swrError ? "Failed to load PnL data." : null;
+  const error = swrError ? t("loadError") : null;
 
   const handleExport = useCallback(() => {
     if (!data) return;
@@ -184,10 +186,10 @@ export default function PnLTracker() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>PnL Tracker</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("title")}</h2>
           {!loading && data && (
             <span className="text-xs px-2 py-1 rounded-lg font-medium" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-elevated)' }}>
-              {data.entries.length} assets
+              {t("assets", { count: data.entries.length })}
             </span>
           )}
         </div>
@@ -195,17 +197,17 @@ export default function PnLTracker() {
           {!loading && data && data.entries.length > 0 && (
             <button
               onClick={handleExport}
-              title="Export CSV"
+              title={t("exportTitle")}
               className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#285A48] bg-gray-50 hover:bg-[#B0E4CC]/20 px-2 py-1 rounded-lg transition-colors"
             >
               <Download size={11} />
-              Export
+              {t("export")}
             </button>
           )}
           {loading && (
             <span className="flex items-center gap-1.5 text-xs text-gray-400">
               <span className="w-1.5 h-1.5 rounded-full bg-[#B0E4CC] animate-pulse" />
-              Calculating...
+              {t("calculating")}
             </span>
           )}
         </div>
@@ -215,7 +217,7 @@ export default function PnLTracker() {
       {!isConnected ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <BarChart3 size={36} className="mb-3" style={{ color: 'var(--border-default)' }} />
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Connect your wallet to view PnL</p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t("connect")}</p>
         </div>
       ) : loading ? (
         <SkeletonLoader />
@@ -227,7 +229,7 @@ export default function PnLTracker() {
       ) : !data || data.entries.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <BarChart3 size={32} className="mb-3" style={{ color: 'var(--border-default)' }} />
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No PnL data available</p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t("noData")}</p>
         </div>
       ) : (
         <div className="space-y-5">
@@ -237,25 +239,25 @@ export default function PnLTracker() {
               const totalCost = data.entries.reduce((s, e) => s + e.totalCost, 0);
               return (
                 <SummaryCard
-                  label="Unrealized PnL"
+                  label={t("unrealized")}
                   value={data.totalUnrealized}
                   pct={totalCost > 0 ? (data.totalUnrealized / totalCost) * 100 : undefined}
                 />
               );
             })()}
-            <SummaryCard label="Realized PnL" value={data.totalRealized} />
-            <SummaryCard label="Total PnL" value={data.totalPnL} />
+            <SummaryCard label={t("realized")} value={data.totalRealized} />
+            <SummaryCard label={t("totalPnl")} value={data.totalPnL} />
           </div>
 
           {/* Table */}
           <div className="overflow-x-auto">
             <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 py-2.5 text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border-subtle)' }}>
-              <span>Token</span>
-              <span className="text-right">Avg Cost</span>
-              <span className="text-right">Cur. Price</span>
-              <span className="text-right">Unrealized</span>
-              <span className="text-right">Realized</span>
-              <span className="text-right">Total PnL</span>
+              <span>{t("colToken")}</span>
+              <span className="text-right">{t("colAvgCost")}</span>
+              <span className="text-right">{t("colCurPrice")}</span>
+              <span className="text-right">{t("colUnrealized")}</span>
+              <span className="text-right">{t("colRealized")}</span>
+              <span className="text-right">{t("colTotal")}</span>
             </div>
             <div>
               {data.entries.map((entry) => (
@@ -268,7 +270,7 @@ export default function PnLTracker() {
           <div className="flex items-center gap-2 pt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             <Info size={11} className="shrink-0" style={{ color: 'var(--border-default)' }} />
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Based on on-chain history (max 1,000 txs). Results may be approximate.
+              {t("disclaimer")}
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
   Sparkles,
@@ -17,13 +18,13 @@ import { useStackingStatusSnap } from "@/hooks/usePortfolioSnapshot";
 
 type Opportunity = {
   id: string;
-  label: string;
+  labelKey: string;
   asset: string;
   apyRange: [number, number];
   icon: React.ElementType;
   iconColor: string;
   iconBg: string;
-  description: string;
+  descKey: string;
   href: string;
   external: boolean;
   /** Computed at render time from wallet state. */
@@ -37,45 +38,44 @@ type Opportunity = {
 const BASE_OPPORTUNITIES: Omit<Opportunity, "status" | "actionLabel">[] = [
   {
     id: "stacking",
-    label: "STX Stacking (PoX)",
+    labelKey: "stackingLabel",
     asset: "STX",
     apyRange: [7, 9],
     icon: Lock,
     iconColor: "#408A71",
     iconBg: "rgba(64, 138, 113, 0.14)",
-    description: "Lock STX to secure the network and earn BTC rewards each cycle.",
+    descKey: "stackingDesc",
     href: "https://stacking.club",
     external: true,
   },
   {
     id: "sbtc-yield",
-    label: "sBTC Liquidity",
+    labelKey: "sbtcLabel",
     asset: "sBTC",
     apyRange: [3, 5],
     icon: Bitcoin,
     iconColor: "#F7931A",
     iconBg: "rgba(247, 147, 26, 0.14)",
-    description:
-      "Provide sBTC to DEX pools (Bitflow / ALEX) to earn swap fees. Variable.",
+    descKey: "sbtcDesc",
     href: "/trade",
     external: false,
   },
   {
     id: "dca",
-    label: "Recurring DCA",
+    labelKey: "dcaLabel",
     asset: "Strategy",
     apyRange: [0, 0], // sentinel — DCA is not an APY product
     icon: Repeat2,
     iconColor: "#FFB547",
     iconBg: "rgba(255, 181, 71, 0.14)",
-    description:
-      "Average into sBTC/USDC on a schedule. Returns depend on price action.",
+    descKey: "dcaDesc",
     href: "/dca",
     external: false,
   },
 ];
 
 function YieldOpportunities() {
+  const t = useTranslations("assets.yield");
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: tokens } = useTokensWithValues(addr);
@@ -105,19 +105,19 @@ function YieldOpportunities() {
         return {
           ...o,
           status: isStacking ? "active" : "available",
-          actionLabel: isStacking ? "View position" : "Start stacking",
+          actionLabel: isStacking ? t("viewPosition") : t("startStacking"),
         };
       }
       if (o.id === "dca") {
         return {
           ...o,
           status: hasDca ? "active" : "available",
-          actionLabel: hasDca ? "Manage plans" : "Create plan",
+          actionLabel: hasDca ? t("managePlans") : t("createPlan"),
         };
       }
-      return { ...o, status: "available" as const, actionLabel: "Explore" };
+      return { ...o, status: "available" as const, actionLabel: t("explore") };
     });
-  }, [isStacking, hasDca]);
+  }, [isStacking, hasDca, t]);
 
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -129,7 +129,7 @@ function YieldOpportunities() {
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: "var(--text-muted)", letterSpacing: "0.1em" }}
           >
-            Put Your Assets to Work
+            {t("header")}
           </h3>
         </div>
         <span
@@ -140,7 +140,7 @@ function YieldOpportunities() {
             letterSpacing: "0.08em",
           }}
         >
-          Estimated APY
+          {t("estimatedApy")}
         </span>
       </div>
 
@@ -149,14 +149,14 @@ function YieldOpportunities() {
           const Icon = o.icon;
           const isDca = o.id === "dca";
           const apyLabel = isDca
-            ? "Variable"
+            ? t("variable")
             : o.apyRange[0] === o.apyRange[1]
             ? `~${o.apyRange[0]}%`
             : `${o.apyRange[0]}–${o.apyRange[1]}%`;
 
           const subline = isDca && o.status === "active"
-            ? `${dcaExecutions} swap${dcaExecutions === 1 ? "" : "s"} executed · ${o.description}`
-            : o.description;
+            ? t("subline", { count: dcaExecutions, desc: t(o.descKey) })
+            : t(o.descKey);
 
           return (
             <li
@@ -177,7 +177,7 @@ function YieldOpportunities() {
                     className="text-sm font-semibold truncate"
                     style={{ color: "var(--text-primary)" }}
                   >
-                    {o.label}
+                    {t(o.labelKey)}
                   </p>
                   {o.status === "active" && (
                     <span
@@ -188,7 +188,7 @@ function YieldOpportunities() {
                       }}
                     >
                       <CheckCircle2 size={10} />
-                      Active
+                      {t("active")}
                     </span>
                   )}
                 </div>
@@ -238,7 +238,7 @@ function YieldOpportunities() {
         className="text-[10px] mt-3 text-center"
         style={{ color: "var(--text-muted)" }}
       >
-        APY estimates are indicative — actual rewards vary with cycle, pool depth, and market conditions.
+        {t("disclaimer")}
       </p>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { BarChart3, ArrowUpRight } from "lucide-react";
 import { getDCAStats, microToSTX, type DCAStats } from "@/lib/dca";
@@ -20,6 +21,7 @@ export default function DCAHeroStats({
   userNextSwapLabel,
   mode,
 }: DCAHeroStatsProps) {
+  const t = useTranslations("dca.stats");
   const [stats, setStats] = useState<DCAStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,7 @@ export default function DCAHeroStats({
       {/* Protocol row */}
       <div className="grid grid-cols-2 gap-4">
         <StatBlock
-          label="Total Volume"
+          label={t("totalVolume")}
           value={
             loading ? "—" : (
               <AnimatedCounter
@@ -51,7 +53,7 @@ export default function DCAHeroStats({
           suffix="STX"
         />
         <StatBlock
-          label="Swaps Executed"
+          label={t("swapsExecuted")}
           value={
             loading ? "—" : (
               <AnimatedCounter
@@ -70,7 +72,7 @@ export default function DCAHeroStats({
           <>
             <div className="grid grid-cols-2 gap-4">
               <StatBlock
-                label="Your Active Plans"
+                label={t("yourActivePlans")}
                 value={
                   <AnimatedCounter
                     value={userActivePlans}
@@ -80,7 +82,7 @@ export default function DCAHeroStats({
                 }
               />
               <StatBlock
-                label="Next Swap"
+                label={t("nextSwap")}
                 value={
                   <span className={`text-xl sm:text-2xl font-bold font-data ${gradClass}`}>
                     {userNextSwapLabel ?? "—"}
@@ -95,7 +97,7 @@ export default function DCAHeroStats({
                 style={{ color: 'var(--accent)' }}
               >
                 <BarChart3 size={12} />
-                View performance &amp; cost basis
+                {t("viewPerformance")}
                 <ArrowUpRight size={11} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
             )}
@@ -103,7 +105,7 @@ export default function DCAHeroStats({
         ) : (
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
             <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-              Connect your wallet to see your active plans and next swap.
+              {t("connectPrompt")}
             </p>
             <ConnectWalletCTA />
           </div>

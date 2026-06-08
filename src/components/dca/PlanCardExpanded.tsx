@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { BarChart3, Zap, History, BrainCircuit } from "lucide-react";
 import { type DCAPlan } from "@/lib/dca";
 import { useWalletStore } from "@/store/walletStore";
@@ -19,11 +20,11 @@ interface PlanCardExpandedProps {
   defaultTab?: InnerTab;
 }
 
-const TABS: Array<{ key: InnerTab; label: string; icon: typeof BarChart3 }> = [
-  { key: "overview", label: "Overview",   icon: BarChart3 },
-  { key: "execute",  label: "Execute",    icon: Zap },
-  { key: "history",  label: "History",    icon: History },
-  { key: "smart",    label: "Smart DCA",  icon: BrainCircuit },
+const TABS: Array<{ key: InnerTab; labelKey: string; icon: typeof BarChart3 }> = [
+  { key: "overview", labelKey: "tabOverview", icon: BarChart3 },
+  { key: "execute",  labelKey: "tabExecute",  icon: Zap },
+  { key: "history",  labelKey: "tabHistory",  icon: History },
+  { key: "smart",    labelKey: "tabSmart",    icon: BrainCircuit },
 ];
 
 export default function PlanCardExpanded({
@@ -33,6 +34,7 @@ export default function PlanCardExpanded({
   onRequestCancel,
   defaultTab = "overview",
 }: PlanCardExpandedProps) {
+  const t = useTranslations("dca.card");
   const [active, setActive] = useState<InnerTab>(defaultTab);
   const stxAddress = useWalletStore((s) => s.stxAddress);
   // STX→sBTC plans have sbtc-token as their target (vault type 0).
@@ -56,7 +58,7 @@ export default function PlanCardExpanded({
         style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
         role="tablist"
       >
-        {TABS.map(({ key, label, icon: Icon }) => {
+        {TABS.map(({ key, labelKey, icon: Icon }) => {
           const isActive = active === key;
           return (
             <button
@@ -74,7 +76,7 @@ export default function PlanCardExpanded({
                   : { color: "var(--text-muted)" }
               }
             >
-              <Icon size={12} /> {label}
+              <Icon size={12} /> {t(labelKey)}
             </button>
           );
         })}

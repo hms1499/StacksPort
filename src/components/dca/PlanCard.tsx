@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, onToggle }: Props) {
+  const t = useTranslations("dca.card");
   const { addNotification } = useNotificationStore();
   const { stxAddress } = useWalletStore();
   const [defaultTab, setDefaultTab] = useState<"overview" | "execute" | "history">("overview");
@@ -56,11 +58,11 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
     cancelPlan(plan.id,
       ({ txId }) => {
         setCancelLoading(false);
-        addNotification("Cancel submitted — refund pending confirmation", "info", "dca", 5000,
+        addNotification(t("cancelSubmitted"), "info", "dca", 5000,
           { planId: String(plan.id), action: "cancelled", amount: balSTX.toFixed(2), txId });
         trackTx({
           txId,
-          label: `Plan #${plan.id} cancel & refund`,
+          label: t("cancelTxLabel", { id: plan.id }),
           category: "dca",
           context: { planId: String(plan.id), txId, amount: balSTX.toFixed(2) },
           addNotification,
@@ -70,7 +72,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
       },
       () => {
         setCancelLoading(false);
-        addNotification("Failed to cancel plan", "error", "dca", 5000);
+        addNotification(t("cancelFailed"), "error", "dca", 5000);
       },
     );
   };
@@ -132,13 +134,17 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
                 <Trash2 size={18} style={{ color: "var(--negative)" }} />
               </div>
               <div>
-                <h3 id={`cancel-plan-${plan.id}-title`} className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Cancel & Refund</h3>
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>Plan #{plan.id}</p>
+                <h3 id={`cancel-plan-${plan.id}-title`} className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{t("cancelRefund")}</h3>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t("planNumber", { id: plan.id })}</p>
               </div>
             </div>
             <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-              Are you sure? You will be refunded{" "}
-              <span className="font-semibold" style={{ color: "var(--text-primary)" }}>{balSTX.toFixed(2)} STX</span>.
+              {t.rich("cancelConfirm", {
+                amount: balSTX.toFixed(2),
+                b: (chunks) => (
+                  <span className="font-semibold" style={{ color: "var(--text-primary)" }}>{chunks}</span>
+                ),
+              })}
             </p>
             <div className="flex gap-2">
               <button
@@ -148,7 +154,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
                 className="flex-1 py-2.5 rounded-xl text-sm font-medium disabled:opacity-40 focus:outline-none focus:ring-2"
                 style={{ border: "1px solid var(--border-default)", color: "var(--text-secondary)", background: "var(--bg-card)" }}
               >
-                Keep Plan
+                {t("keepPlan")}
               </button>
               <button
                 onClick={confirmCancel}
@@ -156,7 +162,7 @@ export default function PlanCard({ plan, currentBlock, onRefresh, isExpanded, on
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-40 focus:outline-none focus:ring-2"
                 style={{ background: "var(--negative)" }}
               >
-                Cancel & Refund
+                {t("cancelRefund")}
               </button>
             </div>
           </div>

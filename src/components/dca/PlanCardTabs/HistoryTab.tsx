@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ExternalLink, History, RefreshCw } from "lucide-react";
 import {
   getPlanExecutionHistory,
@@ -12,13 +13,15 @@ interface Props {
   planId: number;
 }
 
-function timeAgo(ts: number): string {
-  if (!ts) return "pending";
+type HistoryT = ReturnType<typeof useTranslations<"dca.history">>;
+
+function timeAgo(ts: number, t: HistoryT): string {
+  if (!ts) return t("pending");
   const diff = Math.floor(Date.now() / 1000 - ts);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t("secondsAgo", { n: diff });
+  if (diff < 3600) return t("minutesAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("hoursAgo", { n: Math.floor(diff / 3600) });
+  return t("daysAgo", { n: Math.floor(diff / 86400) });
 }
 
 function shortTx(tx: string): string {
@@ -32,6 +35,7 @@ function statusColor(status: PlanExecutionEvent["status"]): string {
 }
 
 export default function HistoryTab({ planId }: Props) {
+  const t = useTranslations("dca.history");
   const [items, setItems] = useState<PlanExecutionEvent[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,12 +47,12 @@ export default function HistoryTab({ planId }: Props) {
       const data = await getPlanExecutionHistory(planId);
       setItems(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load history");
+      setError(e instanceof Error ? e.message : t("failedLoad"));
       setItems([]);
     } finally {
       setLoading(false);
     }
-  }, [planId]);
+  }, [planId, t]);
 
   useEffect(() => {
     fetchHistory();
@@ -57,14 +61,14 @@ export default function HistoryTab({ planId }: Props) {
   const header = (
     <div className="flex items-center justify-between">
       <p className="text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-        Recent executions {items && items.length > 0 && `· ${items.length}`}
+        {t("recentExecutions")} {items && items.length > 0 && `· ${items.length}`}
       </p>
       <button
         onClick={fetchHistory}
         disabled={loading}
         className="p-1 rounded-md disabled:opacity-40"
         style={{ color: "var(--text-muted)" }}
-        aria-label="Refresh history"
+        aria-label={t("refreshAria")}
       >
         <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
       </button>
@@ -113,10 +117,10 @@ export default function HistoryTab({ planId }: Props) {
           <History size={18} style={{ color: "var(--accent)" }} />
         </div>
         <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-          No executions yet
+          {t("noExecutions")}
         </p>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Swaps will appear here once the keeper runs this plan.
+          {t("noExecutionsDesc")}
         </p>
       </div>
     );
@@ -143,11 +147,11 @@ export default function HistoryTab({ planId }: Props) {
             </span>
             <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
               {ev.blockHeight === 0 && !ev.blockTime
-                ? "Awaiting confirmation"
+                ? t("awaitingConfirmation")
                 : (
                   <>
-                    {ev.blockHeight > 0 && `Block #${ev.blockHeight} · `}
-                    {timeAgo(ev.blockTime)}
+                    {ev.blockHeight > 0 && `${t("block", { height: ev.blockHeight })} · `}
+                    {timeAgo(ev.blockTime, t)}
                   </>
                 )}
             </span>
@@ -163,7 +167,7 @@ export default function HistoryTab({ planId }: Props) {
               </span>
               {ev.protocolFee !== undefined && (
                 <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                  fee {microToSTX(ev.protocolFee).toFixed(6)}
+                  {t("fee", { amount: microToSTX(ev.protocolFee).toFixed(6) })}
                 </span>
               )}
             </div>
@@ -177,7 +181,7 @@ export default function HistoryTab({ planId }: Props) {
               className="w-1.5 h-1.5 rounded-full"
               style={{ background: statusColor(ev.status) }}
             />
-            {ev.status}
+            {ev.status === "success" ? t("statusSuccess") : ev.status === "pending" ? t("statusPending") : t("statusFailed")}
           </span>
           <ExternalLink size={12} style={{ color: "var(--text-muted)" }} />
         </a>

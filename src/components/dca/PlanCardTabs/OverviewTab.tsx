@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Pause, Play, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { type DCAPlan, microToSTX, stxToMicro, depositToPlan, pausePlan, resumePlan } from "@/lib/dca";
 import { formatRelativeBlockDate } from "@/lib/dca-preview";
@@ -16,6 +17,7 @@ interface OverviewTabProps {
 }
 
 export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCancel }: OverviewTabProps) {
+  const t = useTranslations("dca.overview");
   const { addNotification } = useNotificationStore();
   const stxAddress = useWalletStore((s) => s.stxAddress);
   const [depositInput, setDepositInput] = useState("");
@@ -31,10 +33,10 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
     depositToPlan(plan.id, stxToMicro(n),
       ({ txId }) => {
         stopLoading(); setDepositInput("");
-        addNotification(`Deposited ${n} STX (tx ${txId.slice(0,10)}…)`, "success", "dca", 5000);
+        addNotification(t("depositedToast", { amount: n, tx: txId.slice(0, 10) }), "success", "dca", 5000);
         trackTx({
           txId,
-          label: `Plan #${plan.id} deposit +${n} STX`,
+          label: t("depositTxLabel", { id: plan.id, amount: n }),
           category: "dca",
           context: { planId: String(plan.id), txId, amount: n.toFixed(2) },
           addNotification,
@@ -53,7 +55,7 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
         stopLoading();
         trackTx({
           txId,
-          label: `Plan #${plan.id} paused`,
+          label: t("pausedTxLabel", { id: plan.id }),
           category: "dca",
           context: { planId: String(plan.id), txId },
           addNotification,
@@ -72,7 +74,7 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
         stopLoading();
         trackTx({
           txId,
-          label: `Plan #${plan.id} resumed`,
+          label: t("resumedTxLabel", { id: plan.id }),
           category: "dca",
           context: { planId: String(plan.id), txId },
           addNotification,
@@ -92,10 +94,10 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
     <div className="flex flex-col gap-3">
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-2">
-        <StatMini label="Swaps done" value={plan.tsd.toString()} />
-        <StatMini label="STX spent" value={microToSTX(plan.tss).toFixed(1)} />
-        <StatMini label="Avg STX / swap" value={microToSTX(avgStxPerSwap).toFixed(2)} />
-        <StatMini label="Created" value={formatRelativeBlockDate(currentBlock - plan.cat)} />
+        <StatMini label={t("swapsDone")} value={plan.tsd.toString()} />
+        <StatMini label={t("stxSpent")} value={microToSTX(plan.tss).toFixed(1)} />
+        <StatMini label={t("avgPerSwap")} value={microToSTX(avgStxPerSwap).toFixed(2)} />
+        <StatMini label={t("created")} value={formatRelativeBlockDate(currentBlock - plan.cat)} />
       </div>
 
       {/* Deposit row — active plans get the input; paused plans get a hint */}
@@ -106,7 +108,7 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
               type="number"
               value={depositInput}
               onChange={(e) => setDepositInput(e.target.value)}
-              placeholder="Add STX"
+              placeholder={t("addStx")}
               className="w-full px-3 py-2 pr-12 rounded-xl text-sm focus:outline-none focus:ring-2"
               style={{
                 border: "1px solid var(--border-default)",
@@ -123,14 +125,14 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
             style={{ background: "var(--accent)", color: "#fff" }}
           >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <PlusCircle size={14} />}
-            Add
+            {t("add")}
           </button>
         </div>
       ) : (
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
           {shortfallStx > 0
-            ? `Top up at least ${shortfallStx.toFixed(2)} more STX, then resume to add funds.`
-            : "Resume the plan to add funds."}
+            ? t("topUpHint", { amount: shortfallStx.toFixed(2) })
+            : t("resumeHint")}
         </p>
       )}
 
@@ -143,7 +145,7 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
             className="flex-1 py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 disabled:opacity-40"
             style={{ border: "1px solid var(--warning)", color: "var(--warning)", background: "var(--bg-card)" }}
           >
-            <Pause size={14} /> Pause
+            <Pause size={14} /> {t("pause")}
           </button>
         ) : plan.bal >= plan.amt ? (
           <button
@@ -152,7 +154,7 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
             className="flex-1 py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 disabled:opacity-40"
             style={{ border: "1px solid var(--accent)", color: "var(--accent)", background: "var(--bg-card)" }}
           >
-            <Play size={14} /> Resume
+            <Play size={14} /> {t("resume")}
           </button>
         ) : null}
         {(plan.active || plan.bal > 0) && (
@@ -162,7 +164,7 @@ export default function OverviewTab({ plan, currentBlock, onRefresh, onRequestCa
             className="flex-1 py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 disabled:opacity-40"
             style={{ border: "1px solid var(--negative)", color: "var(--negative)", background: "var(--bg-card)" }}
           >
-            <Trash2 size={14} /> Cancel & Refund
+            <Trash2 size={14} /> {t("cancelRefund")}
           </button>
         )}
       </div>

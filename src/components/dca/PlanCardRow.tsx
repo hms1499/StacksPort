@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AlertTriangle, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { type DCAPlan, microToSTX, blocksToInterval, TARGET_TOKENS } from "@/lib/dca";
 import { formatBlocksCountdown, formatRelativeBlockDate } from "@/lib/dca-preview";
@@ -48,6 +49,8 @@ export default function PlanCardRow({
   onExecuteShortcut,
   mode = "in",
 }: PlanCardRowProps) {
+  const t = useTranslations("dca.card");
+  const ti = useTranslations("dca.interval");
   const balSTX = microToSTX(plan.bal);
   const amtSTX = microToSTX(plan.amt);
   const nextBlock = plan.leb === 0 ? currentBlock : plan.leb + plan.ivl;
@@ -61,8 +64,15 @@ export default function PlanCardRow({
     ? plan.bal > 0 ? "var(--warning)" : "var(--text-muted)"
     : "var(--positive)";
   const statusLabel = !plan.active
-    ? plan.bal > 0 ? "Paused" : "Depleted"
-    : "Active";
+    ? plan.bal > 0 ? t("statusPaused") : t("statusDepleted")
+    : t("statusActive");
+
+  const intervalRaw = blocksToInterval(plan.ivl);
+  const intervalLabel = (["Daily", "Weekly", "Monthly"] as const).includes(
+    intervalRaw as "Daily" | "Weekly" | "Monthly",
+  )
+    ? ti(intervalRaw)
+    : intervalRaw;
 
   return (
     <div
@@ -79,9 +89,9 @@ export default function PlanCardRow({
         <span
           className="text-xs"
           style={{ color: "var(--text-muted)" }}
-          title={`Plan #${plan.id}`}
+          title={t("planNumber", { id: plan.id })}
         >
-          · {blocksToInterval(plan.ivl)} · {formatRelativeBlockDate(currentBlock - plan.cat)}
+          · {intervalLabel} · {formatRelativeBlockDate(currentBlock - plan.cat)}
         </span>
         <span className="ml-auto text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
           {amtSTX.toFixed(2)} STX
@@ -90,7 +100,7 @@ export default function PlanCardRow({
           type="button"
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
           aria-expanded={expanded}
-          aria-label={expanded ? "Collapse plan details" : "Expand plan details"}
+          aria-label={expanded ? t("collapseAria") : t("expandAria")}
           className="rounded p-0.5 focus:outline-none focus:ring-2 focus:ring-offset-1"
           style={{ color: "var(--text-muted)" }}
         >
@@ -107,9 +117,9 @@ export default function PlanCardRow({
         <span
           className="ml-auto text-[11px] font-data"
           style={{ color: "var(--text-muted)" }}
-          title="Swaps executed · swaps the current balance can still afford"
+          title={t("summaryTitle")}
         >
-          {plan.tsd} done · {swapsRemaining} affordable · {balSTX.toFixed(1)} STX left
+          {t("summary", { done: plan.tsd, affordable: swapsRemaining, left: balSTX.toFixed(1) })}
         </span>
       </div>
 
@@ -117,9 +127,9 @@ export default function PlanCardRow({
       <div className="flex items-center gap-2">
         <span className="text-[11px]" style={{ color: canExecuteNow ? "var(--positive)" : "var(--text-muted)" }}>
           {canExecuteNow
-            ? "⏱ Ready now"
+            ? t("readyNow")
             : plan.leb === 0
-              ? "⏱ Pending first swap"
+              ? t("pendingFirst")
               : (
                 <>
                   {absoluteTime && (
@@ -140,10 +150,10 @@ export default function PlanCardRow({
               color: "var(--warning)",
               border: "1px solid color-mix(in srgb, var(--warning) 28%, transparent)",
             }}
-            title={`Only ${swapsRemaining} swap${swapsRemaining === 1 ? '' : 's'} of funding left. There is no top-up action — create a new plan to continue.`}
+            title={t("lowBalanceTitle", { count: swapsRemaining })}
           >
             <AlertTriangle size={10} />
-            {swapsRemaining} swap{swapsRemaining === 1 ? '' : 's'} left
+            {t("swapsLeft", { count: swapsRemaining })}
           </span>
         )}
         {canExecuteNow && onExecuteShortcut && (
@@ -152,7 +162,7 @@ export default function PlanCardRow({
             onClick={(e) => { e.stopPropagation(); onExecuteShortcut(); }}
             className={`${mode === "in" ? "gradient-dca-in" : "gradient-dca-out"} ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-1`}
           >
-            <Zap size={10} /> Execute
+            <Zap size={10} /> {t("execute")}
           </button>
         )}
       </div>

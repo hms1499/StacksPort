@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Inbox, RefreshCw } from "lucide-react";
 import { getAllUserPlans, type DCAPlan } from "@/lib/dca";
 import PlanCard from "./PlanCard";
@@ -11,8 +12,8 @@ interface Props {
 }
 
 const PRESETS = [
-  { label: "10 STX weekly",    amount: "10",  interval: "Weekly",  deposit: "50"  },
-  { label: "50 STX monthly",   amount: "50",  interval: "Monthly", deposit: "200" },
+  { labelKey: "preset10", amount: "10",  interval: "Weekly",  deposit: "50"  },
+  { labelKey: "preset50", amount: "50",  interval: "Monthly", deposit: "200" },
 ];
 
 // Polling cadence for auto-refresh. 60s keeps Hiro fan-out low (one
@@ -28,6 +29,7 @@ function fireFillForm(p: typeof PRESETS[number]) {
 }
 
 export default function MyPlans({ address, onPlansLoaded }: Props) {
+  const t = useTranslations("dca.plans");
   const [plans, setPlans] = useState<DCAPlan[] | null>(null);
   const [completedPlans, setCompletedPlans] = useState<DCAPlan[]>([]);
   const [currentBlock, setCurrentBlock] = useState<number>(0);
@@ -121,7 +123,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
   const header = (
     <div className="flex items-center justify-between">
       <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>
-        My Plans
+        {t("myPlans")}
         {totalCount > 0 && (
           <span
             className="ml-2 text-xs font-medium rounded-full px-2 py-0.5"
@@ -134,7 +136,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
       <div className="flex items-center gap-2">
         {lastUpdated && !loading && (
           <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-            {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s ago
+            {t("secondsAgo", { seconds: Math.round((Date.now() - lastUpdated.getTime()) / 1000) })}
           </span>
         )}
         <button
@@ -181,7 +183,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2 pt-2">
         <h3 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-          Completed
+          {t("completed")}
         </h3>
         <span
           className="text-[10px] font-medium rounded-full px-2 py-0.5"
@@ -208,19 +210,19 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
           >
             <Inbox size={22} style={{ color: "var(--accent)" }} />
           </div>
-          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>No plans yet</p>
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{t("noPlans")}</p>
           <p className="text-xs max-w-xs" style={{ color: "var(--text-muted)" }}>
-            Create your first DCA plan on the left to start auto-buying sBTC.
+            {t("noPlansDesc")}
           </p>
           <div className="flex flex-wrap justify-center gap-2 mt-2">
             {PRESETS.map((p) => (
               <button
-                key={p.label}
+                key={p.labelKey}
                 onClick={() => fireFillForm(p)}
                 className="px-3 py-1.5 rounded-full text-xs font-medium"
                 style={{ background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid var(--border-subtle)" }}
               >
-                Try: {p.label}
+                {t("tryPreset", { label: t(p.labelKey) })}
               </button>
             ))}
           </div>
@@ -236,7 +238,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
         <div className="flex flex-col gap-3">
           {plans.length > 0 && completedPlans.length > 0 && (
             <h3 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-              Active
+              {t("active")}
             </h3>
           )}
           {plans.map(renderPlanCard)}

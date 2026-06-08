@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useSmartDcaStore } from "@/store/smartDcaStore";
 import { saveSmartDca, removeSmartDca, useSmartDcaSignal } from "@/hooks/useSmartDca";
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function SmartDcaPanel({ planId, address, vaultType }: Props) {
+  const t = useTranslations("dca.smart");
   const cfg = useSmartDcaStore((s) => s.configs[planId]);
   const enabled = !!cfg;
   const [thresholdPct, setThresholdPct] = useState(cfg ? cfg.thresholdBps / 100 : 5);
@@ -22,7 +24,7 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
   if (vaultType !== 0) {
     return (
       <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-        Smart DCA (buy the dip) is available on STX→sBTC plans.
+        {t("unavailable")}
       </p>
     );
   }
@@ -34,7 +36,7 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
       thresholdBps: Math.round(thresholdPct * 100),
       windowDays, maxDeferIntervals: maxDefer,
     });
-    if (!r.ok) setError(r.details?.join(", ") ?? "Save failed");
+    if (!r.ok) setError(r.details?.join(", ") ?? t("saveFailed"));
   }
 
   const pct = signal?.premium != null ? (signal.premium * 100).toFixed(1) : null;
@@ -47,7 +49,7 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-          Smart DCA — buy the dip
+          {t("title")}
         </span>
         {enabled && (
           <button
@@ -55,14 +57,14 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
             style={{ color: "var(--negative)" }}
             onClick={() => removeSmartDca(address, planId)}
           >
-            Turn off
+            {t("turnOff")}
           </button>
         )}
       </div>
 
       <label className="flex flex-col gap-1 text-xs" style={{ color: "var(--text-secondary)" }}>
         <span>
-          Buy only when 1 STX gets ≥ this % more sats than the {windowDays}-day average
+          {t("thresholdLabel", { days: windowDays })}
         </span>
         <input
           type="number"
@@ -81,7 +83,7 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
       </label>
 
       <label className="flex flex-col gap-1 text-xs" style={{ color: "var(--text-secondary)" }}>
-        <span>Average window (days)</span>
+        <span>{t("windowLabel")}</span>
         <input
           type="number"
           min={1}
@@ -98,7 +100,7 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
       </label>
 
       <label className="flex flex-col gap-1 text-xs" style={{ color: "var(--text-secondary)" }}>
-        <span>Max checks to skip before buying at market</span>
+        <span>{t("maxDeferLabel")}</span>
         <input
           type="number"
           min={0}
@@ -116,8 +118,8 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
 
       {enabled && pct != null && (
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Now: {pct}% vs average — need ≥ {need}%.
-          {Number(pct) >= Number(need) ? " Dip condition met." : " Waiting for a better entry."}
+          {t("statusLine", { pct, need })}{" "}
+          {Number(pct) >= Number(need) ? t("conditionMet") : t("waiting")}
         </p>
       )}
 
@@ -132,7 +134,7 @@ export function SmartDcaPanel({ planId, address, vaultType }: Props) {
         style={{ background: "var(--accent)", color: "#fff" }}
         onClick={onSave}
       >
-        {enabled ? "Update" : "Enable Smart DCA"}
+        {enabled ? t("update") : t("enable")}
       </button>
     </div>
   );

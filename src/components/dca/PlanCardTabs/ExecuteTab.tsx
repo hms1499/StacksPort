@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Zap, Loader2, AlertTriangle } from "lucide-react";
 import { type DCAPlan, microToSTX, executePlan, DEFAULT_SWAP_ROUTER } from "@/lib/dca";
 
@@ -22,6 +23,7 @@ interface ExecuteTabProps {
 }
 
 export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTabProps) {
+  const t = useTranslations("dca.execute");
   const { addNotification } = useNotificationStore();
   const stxAddress = useWalletStore((s) => s.stxAddress);
   const [routerInput, setRouterInput] = useState(DEFAULT_SWAP_ROUTER);
@@ -43,9 +45,9 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
     setQuoteLoading(true); setQuoteError(null); setQuotedSbtc(null);
     quoteSbtcForUstx(netUstx)
       .then(setQuotedSbtc)
-      .catch((e: Error) => setQuoteError(e.message ?? "Failed to get quote"))
+      .catch((e: Error) => setQuoteError(e.message ?? t("failedQuote")))
       .finally(() => setQuoteLoading(false));
-  }, [canExecuteNow, netUstx]);
+  }, [canExecuteNow, netUstx, t]);
 
   const trimmedRouter = routerInput.trim();
   const routerValid = CONTRACT_ID_RE.test(trimmedRouter);
@@ -61,11 +63,11 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
     executePlan(plan.id, trimmedRouter, minAmountOut,
       ({ txId }) => {
         setLoading(false);
-        addNotification("Plan executed! Swap completed", "success", "dca", 5000,
+        addNotification(t("executedToast"), "success", "dca", 5000,
           { planId: String(plan.id), txId, action: "executed" });
         trackTx({
           txId,
-          label: `Plan #${plan.id} executed`,
+          label: t("executedTxLabel", { id: plan.id }),
           category: "dca",
           context: { planId: String(plan.id), txId, action: "executed" },
           addNotification,
@@ -75,23 +77,23 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
       },
       () => {
         setLoading(false);
-        addNotification("Execution failed", "error", "dca", 5000, { planId: String(plan.id) });
+        addNotification(t("executionFailed"), "error", "dca", 5000, { planId: String(plan.id) });
       },
     );
   };
 
   if (!canExecuteNow) {
     const reason = !plan.active
-      ? "Plan is paused. Resume from the Overview tab."
+      ? t("paused")
       : plan.bal < plan.amt
-        ? `Insufficient balance. Need ${microToSTX(plan.amt - plan.bal).toFixed(2)} more STX.`
+        ? t("insufficient", { amount: microToSTX(plan.amt - plan.bal).toFixed(2) })
         : plan.leb === 0
-          ? "Pending first swap."
-          : `Next in ~${blocksLeft} block${blocksLeft === 1 ? "" : "s"}.`;
+          ? t("pendingFirst")
+          : t("nextIn", { count: blocksLeft });
     return (
       <div className="rounded-xl p-4 text-center" style={{ background: "var(--bg-elevated)" }}>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Not ready to execute. {reason}
+          {t("notReady", { reason })}
         </p>
       </div>
     );
@@ -101,15 +103,15 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
     <div className="gradient-border-dca-in rounded-xl p-3 flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <Zap size={13} style={{ color: "var(--accent)" }} />
-        <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>Ready to Execute</span>
-        <span className="ml-auto text-[11px]" style={{ color: "var(--text-muted)" }}>0.3% protocol fee</span>
+        <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>{t("readyToExecute")}</span>
+        <span className="ml-auto text-[11px]" style={{ color: "var(--text-muted)" }}>{t("protocolFee")}</span>
       </div>
 
       {/* Quote */}
       <div className="rounded-lg p-2.5 flex flex-col gap-2" style={{ background: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-medium" style={{ color: "var(--text-secondary)" }}>
-            Swap {microToSTX(netUstx).toFixed(4)} STX
+            {t("swapAmount", { amount: microToSTX(netUstx).toFixed(4) })}
           </span>
           <div className="flex gap-1">
             {[0.5, 1, 2].map((s) => (
@@ -126,12 +128,12 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
                 {s}%
               </button>
             ))}
-            <span className="text-[10px] self-center ml-0.5" style={{ color: "var(--text-muted)" }}>slip</span>
+            <span className="text-[10px] self-center ml-0.5" style={{ color: "var(--text-muted)" }}>{t("slip")}</span>
           </div>
         </div>
         {quoteLoading ? (
           <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
-            <Loader2 size={11} className="animate-spin" /> Fetching quote…
+            <Loader2 size={11} className="animate-spin" /> {t("fetchingQuote")}
           </span>
         ) : quoteError ? (
           <span className="text-xs" style={{ color: "var(--negative)" }}>{quoteError}</span>
@@ -142,7 +144,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
             </span>
             <span className="text-xs" style={{ color: "var(--text-muted)" }}>sBTC</span>
             <span className="text-[10px] ml-auto" style={{ color: "var(--text-muted)" }}>
-              min {minAmountOut} sats
+              {t("minSats", { amount: minAmountOut })}
             </span>
           </div>
         ) : null}
@@ -152,7 +154,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-            Routing via <span className="font-mono">bitflow-sbtc-swap-router</span>
+            {t("routingVia")} <span className="font-mono">bitflow-sbtc-swap-router</span>
           </span>
           <button
             type="button"
@@ -160,7 +162,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
             className="text-[10px] font-semibold focus:outline-none focus:underline"
             style={{ color: "var(--accent)" }}
           >
-            {showAdvanced ? "Hide" : "Advanced"}
+            {showAdvanced ? t("hide") : t("advanced")}
           </button>
         </div>
         {showAdvanced && (
@@ -169,7 +171,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
               type="text"
               value={routerInput}
               onChange={(e) => setRouterInput(e.target.value)}
-              placeholder="SP….swap-router-contract"
+              placeholder={t("routerPlaceholder")}
               className="w-full px-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:ring-2"
               style={{
                 border: `1px solid ${routerValid ? "var(--border-subtle)" : "var(--negative)"}`,
@@ -179,7 +181,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
             />
             {!routerValid && (
               <span className="text-[10px]" style={{ color: "var(--negative)" }}>
-                Not a valid contract id (e.g. SP….contract-name).
+                {t("invalidContract")}
               </span>
             )}
             {isCustomRouter && (
@@ -192,7 +194,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
                 }}
               >
                 <AlertTriangle size={11} className="mt-px shrink-0" />
-                <span>Custom router — executions through unverified contracts can drain your swap. Only use if you know the contract.</span>
+                <span>{t("customRouterWarn")}</span>
               </span>
             )}
             <button
@@ -201,7 +203,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
               className="text-[10px] self-start focus:outline-none focus:underline"
               style={{ color: "var(--text-muted)" }}
             >
-              Reset to default
+              {t("resetDefault")}
             </button>
           </div>
         )}
@@ -212,7 +214,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
         disabled={loading || quoteLoading || !!quoteError || quotedSbtc == null || !routerValid}
         className="gradient-dca-in px-4 py-2 rounded-lg text-white text-xs font-semibold flex items-center gap-1.5 disabled:opacity-40 self-start"
       >
-        <Zap size={13} /> {loading ? "Executing…" : "Execute"}
+        <Zap size={13} /> {loading ? t("executing") : t("execute")}
       </button>
     </div>
   );

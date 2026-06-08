@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Info, AlertTriangle } from "lucide-react";
 import { INTERVALS } from "@/lib/dca";
 import {
@@ -31,6 +32,7 @@ export default function LivePreviewCard({
   inputLabel,
   invalidReason,
 }: LivePreviewCardProps) {
+  const t = useTranslations("dca.preview");
   const swaps = swapsCount(depositStx, amountStx);
   const endDate = estimateEndDate(depositStx, amountStx, intervalKey);
   const fee = totalProtocolFee(depositStx, amountStx);
@@ -56,30 +58,30 @@ export default function LivePreviewCard({
       <div className="flex items-center gap-1.5">
         <Info size={12} style={{ color: "var(--text-muted)" }} />
         <span className="text-[11px] font-medium uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-          Live Preview
+          {t("livePreview")}
         </span>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Swaps</p>
+          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{t("swaps")}</p>
           <p className="text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
             {swaps} × {amountStx.toFixed(2)} {inputLabel}
           </p>
         </div>
         <div>
-          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Ends ~</p>
+          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{t("ends")}</p>
           <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
             {endDate ? endDate.toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "—"}
           </p>
         </div>
         <div>
-          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Est. output</p>
+          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{t("estOutput")}</p>
           <p className="text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
             {estimatedOutput != null ? `~${estimatedOutput.toFixed(outputLabel === "sBTC" ? 8 : 2)} ${outputLabel}` : "—"}
           </p>
         </div>
         <div>
-          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Total fee</p>
+          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>{t("totalFee")}</p>
           <p className="text-sm font-bold font-data" style={{ color: "var(--text-primary)" }}>
             {fee.toFixed(2)} {inputLabel}
           </p>

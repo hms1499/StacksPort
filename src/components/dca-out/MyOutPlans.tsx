@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { RefreshCw, Inbox } from "lucide-react";
 import { getSBTCUserPlans, type DCA_SBTCPlan } from "@/lib/dca-sbtc";
 import OutPlanCard from "./OutPlanCard";
@@ -10,8 +11,8 @@ interface Props {
 }
 
 const PRESETS = [
-  { label: "0.001 sBTC daily",  amount: "0.001", interval: "Daily",  deposit: "0.005" },
-  { label: "0.005 sBTC weekly", amount: "0.005", interval: "Weekly", deposit: "0.025" },
+  { labelKey: "preset1", amount: "0.001", interval: "Daily",  deposit: "0.005" },
+  { labelKey: "preset2", amount: "0.005", interval: "Weekly", deposit: "0.025" },
 ];
 
 function fireFillForm(p: typeof PRESETS[number]) {
@@ -19,6 +20,7 @@ function fireFillForm(p: typeof PRESETS[number]) {
 }
 
 export default function MyOutPlans({ address }: Props) {
+  const t = useTranslations("dca.out.plans");
   const [plans, setPlans] = useState<DCA_SBTCPlan[] | null>(null);
   const [currentBlock, setCurrentBlock] = useState(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -50,7 +52,7 @@ export default function MyOutPlans({ address }: Props) {
   const header = (
     <div className="flex items-center justify-between">
       <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>
-        My Plans
+        {t("myPlans")}
         {plans && plans.length > 0 && (
           <span
             className="ml-2 text-xs font-medium rounded-full px-2 py-0.5"
@@ -63,7 +65,7 @@ export default function MyOutPlans({ address }: Props) {
       <div className="flex items-center gap-2">
         {lastUpdated && !loading && (
           <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-            {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s ago
+            {t("secondsAgo", { seconds: Math.round((Date.now() - lastUpdated.getTime()) / 1000) })}
           </span>
         )}
         <button
@@ -109,19 +111,19 @@ export default function MyOutPlans({ address }: Props) {
           >
             <Inbox size={22} style={{ color: "var(--dca-out-primary)" }} />
           </div>
-          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>No plans yet</p>
+          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{t("noPlans")}</p>
           <p className="text-xs max-w-xs" style={{ color: "var(--text-muted)" }}>
-            Create your first DCA Out plan on the left to start selling sBTC for USDCx.
+            {t("noPlansDesc")}
           </p>
           <div className="flex flex-wrap justify-center gap-2 mt-2">
             {PRESETS.map((p) => (
               <button
-                key={p.label}
+                key={p.labelKey}
                 onClick={() => fireFillForm(p)}
                 className="px-3 py-1.5 rounded-full text-xs font-medium"
                 style={{ background: "var(--dca-out-dim)", color: "var(--dca-out-primary)", border: "1px solid var(--border-subtle)" }}
               >
-                Try: {p.label}
+                {t("tryPreset", { label: t(p.labelKey) })}
               </button>
             ))}
           </div>

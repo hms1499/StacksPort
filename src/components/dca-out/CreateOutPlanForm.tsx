@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { PlusCircle, ArrowRight } from "lucide-react";
 import {
   createSBTCPlan,
@@ -27,6 +28,8 @@ interface Props {
 }
 
 export default function CreateOutPlanForm({ onCreated }: Props) {
+  const t = useTranslations("dca.out.form");
+  const ti = useTranslations("dca.interval");
   const { stxAddress } = useWalletStore();
   const { addNotification } = useNotificationStore();
   const [amountPerSwap, setAmountPerSwap] = useState("");
@@ -58,11 +61,11 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
   const insufficientBalance = sbtcBalance != null && dep > sbtcBalance;
 
   const validate = (): string | null => {
-    if (btcToSats(amt) < 334) return "Minimum 334 satoshis per swap (0.00000334 sBTC)";
-    if (btcToSats(dep) < 668) return "Minimum deposit 668 satoshis";
-    if (dep < amt) return "Initial deposit must be ≥ amount per swap";
+    if (btcToSats(amt) < 334) return t("minSwap");
+    if (btcToSats(dep) < 668) return t("minDeposit");
+    if (dep < amt) return t("depositGteSwap");
     if (insufficientBalance)
-      return `Insufficient sBTC. Current balance: ${sbtcBalance?.toFixed(8)} sBTC`;
+      return t("insufficient", { balance: sbtcBalance?.toFixed(8) ?? "0" });
     return null;
   };
   const invalid = validate();
@@ -84,7 +87,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
         setTxId(txId);
         setLoading(false);
         addNotification(
-          `Plan created! Tx: ${txId.slice(0, 10)}...`,
+          t("createdToast", { tx: txId.slice(0, 10) }),
           "success",
           "dca-out",
           5000,
@@ -94,7 +97,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
       },
       () => {
         setLoading(false);
-        addNotification("Failed to create plan", "error", "dca-out", 5000);
+        addNotification(t("createFailed"), "error", "dca-out", 5000);
       }
     );
   };
@@ -108,13 +111,13 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
         >
           <PlusCircle size={18} style={{ color: "var(--accent)" }} />
         </div>
-        <p className="font-semibold" style={{ color: "var(--text-primary)" }}>Plan submitted!</p>
-        <p className="text-xs break-all" style={{ color: "var(--text-muted)" }}>Tx: {txId}</p>
+        <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{t("submitted")}</p>
+        <p className="text-xs break-all" style={{ color: "var(--text-muted)" }}>{t("submittedTx", { txId })}</p>
         <p
           className="text-xs rounded-lg px-3 py-2"
           style={{ background: "var(--bg-elevated)", color: "var(--warning)" }}
         >
-          Plan will appear after the transaction is confirmed (~1-2 min). Click refresh to update.
+          {t("submittedHint")}
         </p>
         <button
           onClick={() => {
@@ -124,7 +127,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
           }}
           className="mt-1 text-sm gradient-text-dca-out font-medium text-left hover:underline"
         >
-          + Create new plan
+          {t("createNew")}
         </button>
       </div>
     );
@@ -132,17 +135,17 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
 
   return (
     <div className="glass-card rounded-2xl p-5 flex flex-col gap-4" style={{ boxShadow: "var(--shadow-card)" }}>
-      <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>Create DCA Out Plan</h2>
+      <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>{t("heading")}</h2>
 
       {/* Source (sBTC) */}
-      <TokenRow symbol="sBTC" colorHex="#F7931A" description="Bitcoin on Stacks" label="Spend" glyph="₿" />
+      <TokenRow symbol="sBTC" colorHex="#F7931A" description={t("sbtcDesc")} rowLabel={t("tokenRowLabel", { label: t("spend") })} glyph="₿" />
       {/* Target (USDCx) */}
-      <TokenRow symbol="USDCx" colorHex="#2775CA" description="USD Coin on Stacks" label="Buy" glyph="$" />
+      <TokenRow symbol="USDCx" colorHex="#2775CA" description={t("usdcxDesc")} rowLabel={t("tokenRowLabel", { label: t("buy") })} glyph="$" />
 
       {/* Amount per swap */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-          Amount per Swap
+          {t("amountPerSwap")}
         </label>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -184,7 +187,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
 
       {/* Interval chips */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Frequency</label>
+        <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{t("frequency")}</label>
         <div className="grid grid-cols-3 gap-2">
           {(Object.keys(SBTC_INTERVALS) as (keyof typeof SBTC_INTERVALS)[]).map((key) => {
             const active = interval === key;
@@ -199,7 +202,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
                     : { border: "1px solid var(--border-default)", color: "var(--text-secondary)", background: "var(--bg-card)" }
                 }
               >
-                {key}
+                {ti(key)}
               </button>
             );
           })}
@@ -209,10 +212,10 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
       {/* Initial deposit */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Initial Deposit</label>
+          <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{t("initialDeposit")}</label>
           {sbtcBalance != null && (
             <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Balance:{" "}
+              {t("balance")}{" "}
               <span style={{ color: insufficientBalance ? "var(--negative)" : "var(--text-secondary)", fontWeight: 500 }}>
                 {sbtcBalance.toFixed(8)} sBTC
               </span>
@@ -251,7 +254,7 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
                   border: "1px solid var(--border-subtle)",
                 }}
               >
-                {label}
+                {label === "Max" ? t("max") : label}
               </button>
             ))}
           </div>
@@ -275,10 +278,10 @@ export default function CreateOutPlanForm({ onCreated }: Props) {
         disabled={loading || !!invalid}
         className="gradient-dca-out w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:brightness-110"
       >
-        {loading ? "Waiting for wallet…" : <>Create Plan <ArrowRight size={14} /></>}
+        {loading ? t("waitingWallet") : <>{t("createPlan")} <ArrowRight size={14} /></>}
       </button>
       <p className="text-[11px] text-center" style={{ color: "var(--text-muted)" }}>
-        Mainnet · 0.3% protocol fee per swap · 3-hop swap via Bitflow
+        {t("footnote")}
       </p>
     </div>
   );
@@ -288,18 +291,18 @@ function TokenRow({
   symbol,
   colorHex,
   description,
-  label,
+  rowLabel,
   glyph,
 }: {
   symbol: string;
   colorHex: string;
   description: string;
-  label: string;
+  rowLabel: string;
   glyph?: string;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label} (Source Token)</label>
+      <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{rowLabel}</label>
       <div
         className="flex items-center gap-2 px-3 py-2.5 rounded-xl"
         style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}

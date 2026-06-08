@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import {
   SWAP_TOKENS,
@@ -44,6 +45,7 @@ export default function QuickSwap({
   isSTX: boolean;
   onClose: () => void;
 }) {
+  const t = useTranslations("assets.drawer.qswap");
   const router = useRouter();
   const fromToken = resolveSwapFrom(token, isSTX);
   const dests = useMemo(
@@ -87,7 +89,7 @@ export default function QuickSwap({
         if (cancelled) return;
         setQuoteOut(null);
         setPriceImpact(null);
-        setError(e instanceof Error ? e.message : "Quote unavailable");
+        setError(e instanceof Error ? e.message : t("quoteUnavailable"));
       } finally {
         if (!cancelled) setQuoting(false);
       }
@@ -96,7 +98,7 @@ export default function QuickSwap({
       cancelled = true;
       clearTimeout(id);
     };
-  }, [amount, fromToken, toId]);
+  }, [amount, fromToken, toId, t]);
 
   if (!fromToken || dests.length === 0) return null;
 
@@ -125,7 +127,7 @@ export default function QuickSwap({
           className="text-xs uppercase tracking-wide"
           style={{ color: "var(--text-muted)" }}
         >
-          Quick Swap
+          {t("title")}
         </p>
         <div className="flex gap-1">
           {dests.map((d) => {
@@ -177,21 +179,21 @@ export default function QuickSwap({
             color: "var(--text-secondary)",
           }}
         >
-          MAX
+          {t("max")}
         </button>
       </div>
 
       <div className="flex items-center justify-between mt-2 min-h-[18px] text-xs">
         <span style={{ color: "var(--text-muted)" }}>
-          Balance: {formatBalance(balance)} {fromToken.symbol}
+          {t("balance", { bal: formatBalance(balance), symbol: fromToken.symbol })}
         </span>
         {overBalance ? (
-          <span className="text-red-500 font-medium">Exceeds balance</span>
+          <span className="text-red-500 font-medium">{t("exceeds")}</span>
         ) : quoting ? (
-          <span style={{ color: "var(--text-muted)" }}>Quoting…</span>
+          <span style={{ color: "var(--text-muted)" }}>{t("quoting")}</span>
         ) : quoteOut != null && toToken ? (
           <span style={{ color: "var(--text-secondary)" }}>
-            ≈ {formatOut(quoteOut)} {toToken.symbol}
+            {t("approx", { out: formatOut(quoteOut), symbol: toToken.symbol })}
             {priceImpact != null && Math.abs(priceImpact) >= 0.5 && (
               <span
                 className={priceImpact >= 5 ? "text-red-500 ml-1" : "ml-1"}
@@ -216,7 +218,7 @@ export default function QuickSwap({
           color: "#0A1628",
         }}
       >
-        {amount && !overBalance ? `Continue to swap` : `Enter amount`}
+        {amount && !overBalance ? t("continue") : t("enterAmount")}
       </button>
     </div>
   );

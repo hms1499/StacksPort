@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { openSTXTransfer, openContractCall } from "@stacks/connect";
 import { uintCV, standardPrincipalCV, noneCV, PostConditionMode } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
@@ -25,6 +26,7 @@ export default function QuickSend({
   token: TokenWithValue;
   isSTX: boolean;
 }) {
+  const t = useTranslations("assets.drawer.qsend");
   const { stxAddress, network, isConnected } = useWalletStore();
   const { addNotification } = useNotificationStore();
   const [recipient, setRecipient] = useState("");
@@ -40,10 +42,10 @@ export default function QuickSend({
   const exceedsBalance = numAmount > token.balance;
 
   const validate = (): string | null => {
-    if (!recipient.startsWith(addrPrefix)) return `Address must start with "${addrPrefix}"`;
-    if (recipient.length < 30) return "Invalid address";
-    if (!Number.isFinite(numAmount) || numAmount <= 0) return "Enter a valid amount";
-    if (exceedsBalance) return "Amount exceeds balance";
+    if (!recipient.startsWith(addrPrefix)) return t("addrMustStart", { prefix: addrPrefix });
+    if (recipient.length < 30) return t("invalidAddr");
+    if (!Number.isFinite(numAmount) || numAmount <= 0) return t("enterAmount");
+    if (exceedsBalance) return t("amountExceeds");
     return null;
   };
 
@@ -63,7 +65,7 @@ export default function QuickSend({
       setTxId(id);
       setStatus("success");
       addNotification(
-        `Transfer submitted: ${amount} ${token.symbol}`,
+        t("transferSubmittedToast", { amount, symbol: token.symbol }),
         "info",
         "send",
         5000,
@@ -71,7 +73,7 @@ export default function QuickSend({
       );
       trackTx({
         txId: id,
-        label: `Transfer ${amount} ${token.symbol}`,
+        label: t("transferLabel", { amount, symbol: token.symbol }),
         category: "send",
         context: { txId: id, amount, tokenSymbol: token.symbol },
         addNotification,
@@ -109,10 +111,10 @@ export default function QuickSend({
         });
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Transaction failed";
+      const msg = e instanceof Error ? e.message : t("txFailed");
       setErrorMsg(msg);
       setStatus("error");
-      addNotification(`Transfer failed: ${msg}`, "error", "send", 5000);
+      addNotification(t("transferFailedToast", { msg }), "error", "send", 5000);
     }
   };
 
@@ -128,7 +130,7 @@ export default function QuickSend({
           <CheckCircle2 size={20} className="text-green-500 shrink-0" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-              Transfer submitted
+              {t("submitted")}
             </p>
             <a
               href={`https://explorer.hiro.so/txid/${txId}?chain=${network}`}
@@ -137,7 +139,7 @@ export default function QuickSend({
               className="text-[11px] underline truncate block"
               style={{ color: "var(--accent)" }}
             >
-              View on Explorer
+              {t("viewExplorer")}
             </a>
           </div>
           <button
@@ -151,7 +153,7 @@ export default function QuickSend({
             className="text-xs font-semibold px-2 py-1 rounded-md"
             style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
           >
-            New
+            {t("newBtn")}
           </button>
         </div>
       </div>
@@ -164,7 +166,7 @@ export default function QuickSend({
         className="text-xs uppercase tracking-wide mb-2"
         style={{ color: "var(--text-muted)" }}
       >
-        Quick Send
+        {t("title")}
       </p>
 
       <input
@@ -215,16 +217,16 @@ export default function QuickSend({
             color: "var(--text-secondary)",
           }}
         >
-          MAX
+          {t("max")}
         </button>
       </div>
 
       <div className="flex items-center justify-between mt-2 min-h-[18px] text-xs">
         <span style={{ color: "var(--text-muted)" }}>
-          Balance: {formatBalance(token.balance)} {token.symbol}
+          {t("balance", { bal: formatBalance(token.balance), symbol: token.symbol })}
         </span>
         {exceedsBalance && (
-          <span className="text-red-500 font-medium">Exceeds balance</span>
+          <span className="text-red-500 font-medium">{t("exceeds")}</span>
         )}
       </div>
 
@@ -247,11 +249,11 @@ export default function QuickSend({
       >
         {status === "loading" ? (
           <>
-            <Loader2 size={14} className="animate-spin" /> Waiting for wallet…
+            <Loader2 size={14} className="animate-spin" /> {t("waiting")}
           </>
         ) : (
           <>
-            <ArrowUpRight size={14} /> Send {token.symbol}
+            <ArrowUpRight size={14} /> {t("sendSymbol", { symbol: token.symbol })}
           </>
         )}
       </button>

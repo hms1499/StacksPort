@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { type TokenWithValue } from "@/lib/stacks";
 import { usePnLData } from "@/hooks/useMarketData";
 import { useWalletStore } from "@/store/walletStore";
@@ -21,6 +22,7 @@ export default function PnL({
   token: TokenWithValue;
   isSTX: boolean;
 }) {
+  const t = useTranslations("assets.drawer.pnl");
   const { stxAddress, isConnected } = useWalletStore();
   const { data } = usePnLData(isConnected && stxAddress ? stxAddress : undefined);
 
@@ -50,7 +52,7 @@ export default function PnL({
         className="text-xs uppercase tracking-wide mb-2"
         style={{ color: "var(--text-muted)" }}
       >
-        Position PnL
+        {t("positionPnl")}
       </p>
       <div className="grid grid-cols-2 gap-2">
         <div
@@ -58,7 +60,7 @@ export default function PnL({
           style={{ backgroundColor: "var(--bg-elevated)" }}
         >
           <p className="text-[10px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-            Avg Cost
+            {t("avgCost")}
           </p>
           <p className="text-sm font-semibold font-mono" style={{ color: "var(--text-primary)" }}>
             {formatPrice(entry.avgCostBasis)}
@@ -69,7 +71,7 @@ export default function PnL({
           style={{ backgroundColor: "var(--bg-elevated)" }}
         >
           <p className="text-[10px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-            Cost Basis
+            {t("costBasis")}
           </p>
           <p className="text-sm font-semibold font-mono" style={{ color: "var(--text-primary)" }}>
             {formatUSD(entry.totalCost)}
@@ -80,7 +82,7 @@ export default function PnL({
           style={{ backgroundColor: "var(--bg-elevated)" }}
         >
           <p className="text-[10px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-            Unrealized
+            {t("unrealized")}
           </p>
           <p
             className={`text-sm font-semibold font-mono ${unrealizedPositive ? "text-green-500" : "text-red-500"}`}
@@ -98,7 +100,7 @@ export default function PnL({
           style={{ backgroundColor: "var(--bg-elevated)" }}
         >
           <p className="text-[10px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-            Realized
+            {t("realized")}
           </p>
           {hasRealized ? (
             <p

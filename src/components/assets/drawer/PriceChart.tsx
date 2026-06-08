@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
 import { useTokenPriceHistory } from "@/hooks/useMarketData";
 import { useThemeStore } from "@/store/themeStore";
@@ -13,6 +14,7 @@ const CHART_RANGES = [
 type ChartRangeKey = (typeof CHART_RANGES)[number]["key"];
 
 export default function PriceChart({ geckoId, symbol }: { geckoId: string; symbol: string }) {
+  const t = useTranslations("assets.drawer.chart");
   const isDark = useThemeStore((s) => s.theme === "dark");
   const [rangeKey, setRangeKey] = useState<ChartRangeKey>("7d");
   const days = CHART_RANGES.find((r) => r.key === rangeKey)!.days;
@@ -37,7 +39,7 @@ export default function PriceChart({ geckoId, symbol }: { geckoId: string; symbo
       className="inline-flex rounded-lg p-0.5 text-[11px] font-semibold"
       style={{ backgroundColor: "var(--bg-elevated)" }}
       role="tablist"
-      aria-label="Chart range"
+      aria-label={t("rangeAria")}
     >
       {CHART_RANGES.map((r) => {
         const active = r.key === rangeKey;
@@ -83,7 +85,7 @@ export default function PriceChart({ geckoId, symbol }: { geckoId: string; symbo
           className="h-32 rounded-xl flex items-center justify-center text-xs"
           style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }}
         >
-          Price history unavailable
+          {t("unavailable")}
         </div>
       </div>
     );
@@ -131,7 +133,7 @@ export default function PriceChart({ geckoId, symbol }: { geckoId: string; symbo
           className="text-[10px] mt-1 text-right"
           style={{ color: "var(--text-muted)" }}
         >
-          {rangeKey} · {isPositive ? "▲" : "▼"} via CoinGecko
+          {t("via", { range: rangeKey, arrow: isPositive ? "▲" : "▼" })}
         </p>
       </div>
     </div>

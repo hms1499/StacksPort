@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useTokenMarketStats } from "@/hooks/useMarketData";
 import { formatUSD } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ function formatCompactUsd(n: number | null | undefined): string {
 }
 
 export default function MarketStats({ geckoId }: { geckoId: string }) {
+  const t = useTranslations("assets.drawer.market");
   const { data, isLoading } = useTokenMarketStats(geckoId);
 
   if (isLoading && !data) {
@@ -39,10 +41,10 @@ export default function MarketStats({ geckoId }: { geckoId: string }) {
   if (!data) return null;
 
   const cells: Array<{ label: string; value: string }> = [
-    { label: "24h High", value: formatPrice(data.high24h ?? 0) },
-    { label: "24h Low", value: formatPrice(data.low24h ?? 0) },
-    { label: "24h Volume", value: formatCompactUsd(data.volume24h) },
-    { label: "Market Cap", value: formatCompactUsd(data.marketCap) },
+    { label: t("high24h"), value: formatPrice(data.high24h ?? 0) },
+    { label: t("low24h"), value: formatPrice(data.low24h ?? 0) },
+    { label: t("vol24h"), value: formatCompactUsd(data.volume24h) },
+    { label: t("marketCap"), value: formatCompactUsd(data.marketCap) },
   ];
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { X, ArrowUpRight, ArrowDownLeft, Repeat, Bell, Copy, Check, TrendingUp, TrendingDown } from "lucide-react";
 import { getGeckoIdForContract, type TokenWithValue } from "@/lib/stacks";
@@ -45,6 +46,7 @@ function truncateMiddle(s: string, head = 14, tail = 10): string {
 }
 
 export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, onReceive }: Props) {
+  const t = useTranslations("assets.drawer.main");
   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
@@ -104,7 +106,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
       {/* Backdrop */}
       <button
         type="button"
-        aria-label="Close drawer"
+        aria-label={t("closeDrawer")}
         onClick={onClose}
         className="flex-1 bg-black/40 backdrop-blur-sm transition-opacity"
       />
@@ -142,7 +144,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
             style={{ color: "var(--text-muted)" }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
-            aria-label="Close"
+            aria-label={t("close")}
           >
             <X size={18} />
           </button>
@@ -151,7 +153,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
         {/* Balance */}
         <div className="p-5" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
           <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--text-muted)" }}>
-            Your Balance
+            {t("yourBalance")}
           </p>
           <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             {formatBalance(token.balance)} {token.symbol}
@@ -162,7 +164,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
             </span>
             {pct > 0 && (
               <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                · {pct.toFixed(1)}% of portfolio
+                {t("portfolioPct", { pct: pct.toFixed(1) })}
               </span>
             )}
           </div>
@@ -179,7 +181,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
           <div className="flex items-baseline justify-between">
             <div>
               <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--text-muted)" }}>
-                Price
+                {t("price")}
               </p>
               <p className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
                 {formatPrice(token.priceUsd)}
@@ -193,7 +195,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
                 {isPositive ? "+" : ""}
                 {change24h.toFixed(2)}%
                 <span className="text-xs font-normal ml-0.5" style={{ color: "var(--text-muted)" }}>
-                  24h
+                  {t("h24")}
                 </span>
               </span>
             )}
@@ -221,16 +223,16 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
         {/* Actions */}
         <div className="p-5" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
           <div className="grid grid-cols-4 gap-2">
-            <ActionButton icon={<Repeat size={16} />} label="Swap" onClick={onSwap} />
-            <ActionButton icon={<ArrowUpRight size={16} />} label="Send" onClick={() => onSend(token)} />
-            <ActionButton icon={<ArrowDownLeft size={16} />} label="Receive" onClick={onReceive} />
+            <ActionButton icon={<Repeat size={16} />} label={t("swap")} onClick={onSwap} />
+            <ActionButton icon={<ArrowUpRight size={16} />} label={t("send")} onClick={() => onSend(token)} />
+            <ActionButton icon={<ArrowDownLeft size={16} />} label={t("receive")} onClick={onReceive} />
             <ActionButton
               ref={alertBtnRef}
               icon={<Bell size={16} />}
-              label="Alert"
+              label={t("alert")}
               onClick={onAlert}
               disabled={!isAlertSupported}
-              title={!isAlertSupported ? "Alerts available for STX, BTC, WELSH, ALEX, VELAR, stSTX" : undefined}
+              title={!isAlertSupported ? t("alertUnsupportedTitle") : undefined}
             />
           </div>
         </div>
@@ -238,14 +240,14 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
         {/* Meta */}
         <div className="p-5 mt-auto">
           <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "var(--text-muted)" }}>
-            Token Details
+            {t("tokenDetails")}
           </p>
           <dl className="space-y-2 text-xs">
             <div className="flex items-center justify-between gap-3">
-              <dt style={{ color: "var(--text-muted)" }}>Contract</dt>
+              <dt style={{ color: "var(--text-muted)" }}>{t("contract")}</dt>
               <dd className="flex items-center gap-1.5 font-mono" style={{ color: "var(--text-secondary)" }}>
                 <span className="truncate" title={token.contractId}>
-                  {truncateMiddle(token.contractId || "STX (native)")}
+                  {truncateMiddle(token.contractId || t("nativeStx"))}
                 </span>
                 {token.contractId && (
                   <button
@@ -255,7 +257,7 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
                     style={{ color: "var(--text-muted)" }}
                     onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)")}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
-                    aria-label="Copy contract id"
+                    aria-label={t("copyContract")}
                   >
                     {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
                   </button>
@@ -263,16 +265,16 @@ export default function TokenDetailDrawer({ token, totalUsd, onClose, onSend, on
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt style={{ color: "var(--text-muted)" }}>Decimals</dt>
+              <dt style={{ color: "var(--text-muted)" }}>{t("decimals")}</dt>
               <dd className="font-mono" style={{ color: "var(--text-secondary)" }}>{token.decimals}</dd>
             </div>
             {token.warning && (
               <div className="flex items-center justify-between">
-                <dt style={{ color: "var(--text-muted)" }}>Status</dt>
+                <dt style={{ color: "var(--text-muted)" }}>{t("status")}</dt>
                 <dd
                   className={`font-medium ${token.warning === "suspicious" ? "text-red-500" : "text-yellow-600"}`}
                 >
-                  {token.warning === "suspicious" ? "Suspicious" : "Unverified"}
+                  {token.warning === "suspicious" ? t("suspicious") : t("unverified")}
                 </dd>
               </div>
             )}

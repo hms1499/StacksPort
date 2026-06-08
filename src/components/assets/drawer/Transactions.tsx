@@ -1,16 +1,19 @@
 "use client";
 
 import { ArrowUpRight, ArrowDownLeft, Code2, ExternalLink, Clock } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useTokenTransactions, type TokenTxRow } from "@/hooks/useMarketData";
 import { useWalletStore } from "@/store/walletStore";
 import { type TokenWithValue } from "@/lib/stacks";
 
-function timeAgo(ts: number): string {
+type TxT = ReturnType<typeof useTranslations<"assets.drawer.tx">>;
+
+function timeAgo(ts: number, t: TxT): string {
   const diff = Math.floor(Date.now() / 1000 - ts);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t("secondsAgo", { n: diff });
+  if (diff < 3600) return t("minutesAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("hoursAgo", { n: Math.floor(diff / 3600) });
+  return t("daysAgo", { n: Math.floor(diff / 86400) });
 }
 
 function formatTxAmount(amount: number, symbol: string): string {
@@ -25,6 +28,7 @@ function formatTxAmount(amount: number, symbol: string): string {
 }
 
 function TokenTxRowView({ row }: { row: TokenTxRow }) {
+  const t = useTranslations("assets.drawer.tx");
   const isIn = row.direction === "in";
   const Icon = row.contractCall ? Code2 : isIn ? ArrowDownLeft : ArrowUpRight;
   const iconColor = row.contractCall
@@ -38,13 +42,14 @@ function TokenTxRowView({ row }: { row: TokenTxRow }) {
         .replace(/-/g, " ")
         .replace(/\b\w/g, (c) => c.toUpperCase())
     : isIn
-      ? `Received ${row.symbol}`
-      : `Sent ${row.symbol}`;
+      ? t("received", { symbol: row.symbol })
+      : t("sent", { symbol: row.symbol });
 
+  const counterShort = row.counterpart ? `${row.counterpart.slice(0, 6)}…${row.counterpart.slice(-4)}` : "";
   const sublabel = row.contractCall
     ? row.contractCall.contractId.split(".")[1] ?? ""
     : row.counterpart
-      ? `${isIn ? "From" : "To"} ${row.counterpart.slice(0, 6)}…${row.counterpart.slice(-4)}`
+      ? isIn ? t("from", { addr: counterShort }) : t("to", { addr: counterShort })
       : "—";
 
   return (
@@ -78,7 +83,7 @@ function TokenTxRowView({ row }: { row: TokenTxRow }) {
         )}
         <p className="text-[11px] flex items-center justify-end gap-0.5" style={{ color: "var(--text-muted)" }}>
           <Clock size={9} />
-          {row.timestamp > 0 ? timeAgo(row.timestamp) : "—"}
+          {row.timestamp > 0 ? timeAgo(row.timestamp, t) : "—"}
         </p>
       </div>
       <ExternalLink
@@ -97,6 +102,7 @@ export default function Transactions({
   token: TokenWithValue;
   isSTX: boolean;
 }) {
+  const t = useTranslations("assets.drawer.tx");
   const { stxAddress, isConnected } = useWalletStore();
   const contractKey = isSTX ? "stx" : token.contractId;
   const { data, isLoading } = useTokenTransactions(
@@ -114,7 +120,7 @@ export default function Transactions({
           className="text-xs uppercase tracking-wide"
           style={{ color: "var(--text-muted)" }}
         >
-          Recent Activity
+          {t("recentActivity")}
         </p>
         {isConnected && stxAddress && (
           <a
@@ -124,7 +130,7 @@ export default function Transactions({
             className="flex items-center gap-0.5 text-[11px]"
             style={{ color: "var(--accent)" }}
           >
-            All <ExternalLink size={10} />
+            {t("all")} <ExternalLink size={10} />
           </a>
         )}
       </div>
@@ -142,7 +148,7 @@ export default function Transactions({
         </div>
       ) : rows.length === 0 ? (
         <p className="text-xs py-3 text-center" style={{ color: "var(--text-muted)" }}>
-          No {token.symbol} activity yet
+          {t("noActivity", { symbol: token.symbol })}
         </p>
       ) : (
         <div className="space-y-0.5">

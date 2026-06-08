@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, TrendingUp, TrendingDown, Bell } from "lucide-react";
 import { usePriceAlertStore } from "@/store/priceAlertStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function AlertPopover({ token, currentPrice, open, onClose, anchorRef }: Props) {
+  const t = useTranslations("assets.drawer.alert");
   const addAlert = usePriceAlertStore((s) => s.addAlert);
   const removeAlert = usePriceAlertStore((s) => s.removeAlert);
   const existingAlerts = usePriceAlertStore((s) =>
@@ -90,7 +92,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) {
-      setError("Please enter a valid price greater than 0");
+      setError(t("invalidPrice"));
       return;
     }
     setError("");
@@ -109,12 +111,12 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
     >
       <div className="flex items-center justify-between mb-3">
         <h3 id="alert-popover-title" className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-          Set price alert — {token.symbol}
+          {t("title", { symbol: token.symbol })}
         </h3>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close price alert"
+          aria-label={t("closeAlert")}
           className="p-1 rounded transition-colors"
           style={{ color: "var(--text-muted)" }}
           onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)")}
@@ -125,13 +127,13 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
       </div>
 
       <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>
-        Current: ${currentPrice.toLocaleString()}
+        {t("current", { price: currentPrice.toLocaleString() })}
       </p>
 
       {existingAlerts.length > 0 && (
         <div className="mb-3 space-y-1.5">
           <p className="text-[11px] uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-            Existing alerts ({existingAlerts.length})
+            {t("existing", { count: existingAlerts.length })}
           </p>
           {existingAlerts.map((a) => (
             <div
@@ -145,7 +147,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
                 ) : (
                   <TrendingDown size={12} className="text-red-500" />
                 )}
-                {a.condition === "above" ? "Above" : "Below"} ${a.targetPrice.toLocaleString()}
+                {a.condition === "above" ? t("above") : t("below")} ${a.targetPrice.toLocaleString()}
                 <span
                   className={`ml-1 text-[10px] px-1.5 py-0.5 rounded ${
                     a.isActive
@@ -153,13 +155,13 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
                       : "bg-gray-500/10 text-gray-500"
                   }`}
                 >
-                  {a.isActive ? "Active" : "Triggered"}
+                  {a.isActive ? t("active") : t("triggered")}
                 </span>
               </span>
               <button
                 type="button"
                 onClick={() => removeAlert(a.id)}
-                aria-label={`Delete ${a.condition} $${a.targetPrice} alert`}
+                aria-label={t("deleteAlert")}
                 className="p-1 rounded transition-colors"
                 style={{ color: "var(--text-muted)" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--border-subtle)")}
@@ -175,7 +177,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
       <form onSubmit={handleSubmit} className="space-y-3">
         {currentPrice > 0 && (
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>Quick:</span>
+            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{t("quick")}</span>
             <button
               type="button"
               onClick={() => {
@@ -211,7 +213,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
             }`}
             style={condition !== "above" ? { color: "var(--text-secondary)" } : undefined}
           >
-            <TrendingUp size={14} /> Above
+            <TrendingUp size={14} /> {t("above")}
           </button>
           <button
             type="button"
@@ -221,13 +223,13 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
             }`}
             style={condition !== "below" ? { color: "var(--text-secondary)" } : undefined}
           >
-            <TrendingDown size={14} /> Below
+            <TrendingDown size={14} /> {t("below")}
           </button>
         </div>
 
         <div>
           <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
-            Target Price (USD)
+            {t("targetPrice")}
           </label>
           <div className="relative">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs" style={{ color: "var(--text-muted)" }}>$</span>
@@ -251,11 +253,12 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
 
         {isValid && (
           <div className="text-xs px-2.5 py-2 rounded-lg" style={{ backgroundColor: "var(--bg-elevated)", color: "var(--text-secondary)" }}>
-            Alert when <span className="font-semibold" style={{ color: "var(--text-primary)" }}>{token.symbol}</span>{" "}
-            {condition === "above" ? "rises above" : "drops below"}{" "}
-            <span className="font-semibold" style={{ color: "var(--text-primary)" }}>
-              ${parsed.toLocaleString()}
-            </span>
+            {t.rich("preview", {
+              symbol: token.symbol,
+              dir: condition === "above" ? t("risesAbove") : t("dropsBelow"),
+              price: parsed.toLocaleString(),
+              b: (c) => <span className="font-semibold" style={{ color: "var(--text-primary)" }}>{c}</span>,
+            })}
           </div>
         )}
 
@@ -264,7 +267,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
           className="w-full px-3 py-2 rounded-lg text-xs font-semibold transition-colors text-white"
           style={{ backgroundColor: "#408A71" }}
         >
-          Create alert
+          {t("createAlert")}
         </button>
       </form>
 
@@ -276,7 +279,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
           <Bell size={14} className="mt-0.5 shrink-0" style={{ color: "#408A71" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[11px] leading-snug" style={{ color: "var(--text-secondary)" }}>
-              Bật thông báo để nhận alert ngay cả khi đóng app
+              {t("pushPrompt")}
             </p>
             <div className="flex gap-2 mt-1.5">
               <button
@@ -286,7 +289,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
                 className="text-[11px] font-medium disabled:opacity-50"
                 style={{ color: "#408A71" }}
               >
-                {subscribing ? "Đang bật..." : "Bật"}
+                {subscribing ? t("enabling") : t("enable")}
               </button>
               <button
                 type="button"
@@ -294,7 +297,7 @@ export default function AlertPopover({ token, currentPrice, open, onClose, ancho
                 className="text-[11px]"
                 style={{ color: "var(--text-muted)" }}
               >
-                Bỏ qua
+                {t("dismiss")}
               </button>
             </div>
           </div>

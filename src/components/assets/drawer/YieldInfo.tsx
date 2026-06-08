@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { ExternalLink, Lock, Bitcoin, ArrowUpRight } from "lucide-react";
 import { useSBTCDataSnap } from "@/hooks/usePortfolioSnapshot";
@@ -7,6 +8,7 @@ import { useWalletStore } from "@/store/walletStore";
 import { type TokenWithValue } from "@/lib/stacks";
 
 function StSTXYieldCard({ token }: { token: TokenWithValue }) {
+  const t = useTranslations("assets.drawer.yield");
   // APY range mirrors YieldOpportunities — labelled "Estimated".
   const estApy = "7–9%";
   const stakedStxEquiv = token.balance > 0 ? token.balance : null; // ~1:1 receipt-to-STX claim
@@ -29,10 +31,10 @@ function StSTXYieldCard({ token }: { token: TokenWithValue }) {
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-              Liquid Stacking
+              {t("liquidStacking")}
             </p>
             <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-              via StackingDAO
+              {t("viaStackingDao")}
             </p>
           </div>
         </div>
@@ -42,13 +44,12 @@ function StSTXYieldCard({ token }: { token: TokenWithValue }) {
       </div>
 
       <p className="text-xs mb-3" style={{ color: "var(--text-secondary)" }}>
-        stSTX accrues PoX rewards automatically — its claim on STX grows each cycle.
-        {stakedStxEquiv != null && (
-          <>
-            {" "}
-            You hold ~<span className="font-mono">{stakedStxEquiv.toFixed(2)}</span> stSTX.
-          </>
-        )}
+        {t("stStxDesc")}
+        {stakedStxEquiv != null &&
+          t.rich("stStxHolding", {
+            amount: stakedStxEquiv.toFixed(2),
+            b: (c) => <span className="font-mono">{c}</span>,
+          })}
       </p>
 
       <div className="flex gap-2">
@@ -59,18 +60,19 @@ function StSTXYieldCard({ token }: { token: TokenWithValue }) {
           className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-semibold transition-colors"
           style={{ backgroundColor: "rgba(167, 139, 250, 0.15)", color: "#A78BFA" }}
         >
-          Manage on StackingDAO <ExternalLink size={11} />
+          {t("manageStackingDao")} <ExternalLink size={11} />
         </a>
       </div>
 
       <p className="text-[10px] mt-2 text-center" style={{ color: "var(--text-muted)" }}>
-        APY estimate · varies by cycle
+        {t("apyVaries")}
       </p>
     </div>
   );
 }
 
 function SBTCYieldCard() {
+  const t = useTranslations("assets.drawer.yield");
   const { stxAddress, isConnected } = useWalletStore();
   const router = useRouter();
   const { data: sbtc } = useSBTCDataSnap(
@@ -83,11 +85,11 @@ function SBTCYieldCard() {
     status === "pegged" ? "#22C55E" : status === "slight" ? "#F59E0B" : status === "depegged" ? "#EF4444" : "var(--text-muted)";
   const pegLabel =
     status === "pegged"
-      ? "Pegged"
+      ? t("pegPegged")
       : status === "slight"
-        ? "Slight drift"
+        ? t("pegSlight")
         : status === "depegged"
-          ? "Depegged"
+          ? t("pegDepegged")
           : "—";
 
   return (
@@ -108,10 +110,10 @@ function SBTCYieldCard() {
           </div>
           <div>
             <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-              sBTC Liquidity
+              {t("sbtcLiquidity")}
             </p>
             <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-              Bitflow / ALEX pools
+              {t("bitflowAlex")}
             </p>
           </div>
         </div>
@@ -121,7 +123,7 @@ function SBTCYieldCard() {
       </div>
 
       <div className="flex items-center justify-between text-xs mb-3">
-        <span style={{ color: "var(--text-muted)" }}>Peg status</span>
+        <span style={{ color: "var(--text-muted)" }}>{t("pegStatus")}</span>
         <span className="flex items-center gap-1.5">
           <span
             className="w-1.5 h-1.5 rounded-full"
@@ -140,7 +142,7 @@ function SBTCYieldCard() {
       </div>
 
       <p className="text-xs mb-3" style={{ color: "var(--text-secondary)" }}>
-        sBTC isn&apos;t yield-bearing on its own — supplying it to a DEX pool earns swap fees.
+        {t("sbtcDesc")}
       </p>
 
       <button
@@ -149,17 +151,18 @@ function SBTCYieldCard() {
         className="w-full flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-semibold transition-colors"
         style={{ backgroundColor: "rgba(247, 147, 26, 0.15)", color: "#F7931A" }}
       >
-        Explore sBTC pools <ArrowUpRight size={11} />
+        {t("exploreSbtc")} <ArrowUpRight size={11} />
       </button>
 
       <p className="text-[10px] mt-2 text-center" style={{ color: "var(--text-muted)" }}>
-        APY estimate · pool depth dependent
+        {t("apyPoolDepth")}
       </p>
     </div>
   );
 }
 
 export default function YieldInfo({ token }: { token: TokenWithValue }) {
+  const t = useTranslations("assets.drawer.yield");
   const isStSTX =
     token.symbol === "stSTX" ||
     (token.contractId?.split("::")[0].split(".")[1] === "ststx-token");
@@ -175,7 +178,7 @@ export default function YieldInfo({ token }: { token: TokenWithValue }) {
         className="text-xs uppercase tracking-wide mb-2"
         style={{ color: "var(--text-muted)" }}
       >
-        Yield
+        {t("yield")}
       </p>
       {isStSTX ? <StSTXYieldCard token={token} /> : <SBTCYieldCard />}
     </div>

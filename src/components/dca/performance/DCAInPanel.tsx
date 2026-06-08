@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import useSWR from "swr";
@@ -56,6 +57,7 @@ function formatDate(unixSeconds: number): string {
 export default function DCAInPanel({
   isConnected, stxAddress,
 }: { isConnected: boolean; stxAddress: string | null }) {
+  const tr = useTranslations("dca.perf");
   const { data: stx } = useSTXMarketStats();
   const { data: btcUsd } = useSWR<number>("btc-usd-spot", getBtcUsdPrice, {
     refreshInterval: 60_000, dedupingInterval: 60_000,
@@ -191,8 +193,8 @@ export default function DCAInPanel({
         <div className="glass-card rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
           <EmptyState
             icon={<Wallet size={28} style={{ color: "var(--accent)" }} />}
-            title="Connect your wallet to view performance"
-            description="Connect to see cost basis and execution history for all your DCA plans."
+            title={tr("common.connectTitle")}
+            description={tr("in.connectDesc")}
             action={<ConnectWalletCTA />}
           />
         </div>
@@ -213,10 +215,10 @@ export default function DCAInPanel({
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl p-8 text-center" style={{ boxShadow: "var(--shadow-card)" }}>
           <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
-            No executions yet
+            {tr("common.noExecutions")}
           </p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            Your plans haven&apos;t been executed by the keeper bot yet. Performance metrics will appear once the first swap completes.
+            {tr("in.noExecDesc")}
           </p>
         </div>
       </MotionCard>
@@ -230,7 +232,7 @@ export default function DCAInPanel({
         <MotionCard disableHover>
           <div className="flex justify-end">
             <span className="text-[11px] font-data" style={{ color: 'var(--text-muted)' }}>
-              {totals.executions} swap{totals.executions === 1 ? '' : 's'} analyzed
+              {tr("common.swapsAnalyzed", { count: totals.executions })}
             </span>
           </div>
         </MotionCard>
@@ -238,21 +240,21 @@ export default function DCAInPanel({
 
       <MotionCard disableHover>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <SummaryCard icon={<Activity size={13} />} label="Swaps executed"
+          <SummaryCard icon={<Activity size={13} />} label={tr("common.swapsExecuted")}
             primary={totals.executions.toLocaleString("en-US")}
-            secondary={`across ${perPlan.length} plan${perPlan.length === 1 ? '' : 's'}`}
+            secondary={tr("common.acrossPlans", { count: perPlan.length })}
             accent="#FFB547" />
-          <SummaryCard icon={<Coins size={13} />} label="STX invested"
+          <SummaryCard icon={<Coins size={13} />} label={tr("in.stxInvested")}
             primary={`${formatStx(totals.stxIn)} STX`}
-            secondary={stx ? `${formatUSD(totals.stxIn * stx.price)} at spot` : '—'}
+            secondary={stx ? tr("common.atSpot", { value: formatUSD(totals.stxIn * stx.price) }) : '—'}
             accent="#00C27A" />
-          <SummaryCard icon={<Bitcoin size={13} />} label="sBTC accumulated"
+          <SummaryCard icon={<Bitcoin size={13} />} label={tr("in.sbtcAccumulated")}
             primary={`${formatSbtc(totals.sbtcOut)} sBTC`}
-            secondary={btcUsd ? `${formatUSD(totals.sbtcOut * btcUsd)} at spot` : '—'}
+            secondary={btcUsd ? tr("common.atSpot", { value: formatUSD(totals.sbtcOut * btcUsd) }) : '—'}
             accent="#F7931A" />
-          <SummaryCard icon={<BarChart3 size={13} />} label="Avg cost basis"
+          <SummaryCard icon={<BarChart3 size={13} />} label={tr("in.avgCostBasis")}
             primary={`${formatStx(totals.avgStxPerSbtc, 1)} STX`}
-            secondary="per 1 sBTC" accent="#A78BFA" />
+            secondary={tr("in.per1Sbtc")} accent="#A78BFA" />
         </div>
       </MotionCard>
 
@@ -274,19 +276,22 @@ export default function DCAInPanel({
                 </div>
                 <div>
                   <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
-                    Your basis vs today&apos;s spot
+                    {tr("in.basisVsSpot")}
                     <button
                       type="button"
-                      title="Compares your weighted-avg STX per sBTC across all executed swaps against the current STX/sBTC rate (BTC USD / STX USD). Positive % means you got more sBTC per STX than today's spot would give you."
-                      aria-label="About: Your basis vs today's spot"
+                      title={tr("in.basisVsSpotInfo")}
+                      aria-label={tr("in.basisVsSpotAria")}
                       className="inline-flex items-center focus:outline-none focus-visible:ring-2 rounded"
                     >
                       <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
                     </button>
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                    Spot: 1 sBTC = <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatStx(spotStxPerSbtc, 0)}</span> STX ·
-                    Your avg: <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatStx(totals.avgStxPerSbtc, 0)}</span> STX
+                    {tr.rich("in.spotLine", {
+                      spot: formatStx(spotStxPerSbtc, 0),
+                      avg: formatStx(totals.avgStxPerSbtc, 0),
+                      b: (c) => <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{c}</span>,
+                    })}
                   </p>
                 </div>
               </div>
@@ -296,7 +301,7 @@ export default function DCAInPanel({
                   {basisVsSpotPct >= 0 ? '+' : ''}{basisVsSpotPct.toFixed(1)}%
                 </p>
                 <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                  {basisVsSpotPct >= 0 ? 'cheaper than spot' : 'above spot'}
+                  {basisVsSpotPct >= 0 ? tr("in.cheaperThanSpot") : tr("in.aboveSpot")}
                 </p>
               </div>
             </div>
@@ -320,24 +325,27 @@ export default function DCAInPanel({
                 </div>
                 <div>
                   <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
-                    DCA vs lump sum
+                    {tr("in.dcaVsLump")}
                     <button
                       type="button"
-                      title="For each plan, we look up the STX-USD and BTC-USD closing prices on the day of that plan's first execution and ask: if you had dumped the same total STX-in into sBTC on day 0 at the then-spot rate, how much sBTC would you hold? The delta shows whether DCA beat or trailed that counterfactual buy. Excludes plans where historical prices couldn't be fetched."
-                      aria-label="About: DCA vs lump sum"
+                      title={tr("in.dcaVsLumpInfo")}
+                      aria-label={tr("in.dcaVsLumpAria")}
                       className="inline-flex items-center focus:outline-none focus-visible:ring-2 rounded"
                     >
                       <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
                     </button>
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                    Across {lumpSumAggregate.count} plan{lumpSumAggregate.count === 1 ? '' : 's'} ·
-                    actual <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatSbtc(lumpSumAggregate.sumActualSbtc)}</span> sBTC vs
-                    lump <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatSbtc(lumpSumAggregate.sumLumpSbtc)}</span> sBTC
+                    {tr.rich("in.lumpSummary", {
+                      count: lumpSumAggregate.count,
+                      actual: formatSbtc(lumpSumAggregate.sumActualSbtc),
+                      lump: formatSbtc(lumpSumAggregate.sumLumpSbtc),
+                      b: (c) => <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{c}</span>,
+                    })}
                   </p>
                   {lumpSumAggregate.skipped > 0 && (
                     <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                      {lumpSumAggregate.skipped} plan{lumpSumAggregate.skipped === 1 ? '' : 's'} excluded — historical price unavailable
+                      {tr("in.lumpExcluded", { count: lumpSumAggregate.skipped })}
                     </p>
                   )}
                 </div>
@@ -348,7 +356,7 @@ export default function DCAInPanel({
                   {lumpSumAggregate.deltaPct >= 0 ? '+' : ''}{lumpSumAggregate.deltaPct.toFixed(1)}%
                 </p>
                 <p className="text-[11px] font-data" style={{ color: 'var(--text-muted)' }}>
-                  {lumpSumAggregate.deltaSbtc >= 0 ? '+' : ''}{formatSbtc(Math.abs(lumpSumAggregate.deltaSbtc))} sBTC vs lump
+                  {tr("in.deltaVsLump", { delta: `${lumpSumAggregate.deltaSbtc >= 0 ? '+' : ''}${formatSbtc(Math.abs(lumpSumAggregate.deltaSbtc))}` })}
                 </p>
               </div>
             </div>
@@ -375,9 +383,9 @@ export default function DCAInPanel({
                 <BarChart3 size={16} style={{ color: 'var(--text-muted)' }} />
               </div>
               <div>
-                <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Lump-sum comparison unavailable</h2>
+                <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{tr("in.lumpUnavailableTitle")}</h2>
                 <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                  Historical STX/BTC prices for your plan start dates couldn&apos;t be fetched from CoinGecko. The basis-vs-today&apos;s-spot strip above still works.
+                  {tr("in.lumpUnavailableDesc")}
                 </p>
               </div>
             </div>
@@ -391,7 +399,7 @@ export default function DCAInPanel({
 
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Per-plan breakdown</h2>
+          <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{tr("common.perPlanBreakdown")}</h2>
           <div className="space-y-3">
             {perPlan
               .filter((p) => p.perf.executionCount > 0)
@@ -425,9 +433,14 @@ function SummaryCard({ icon, label, primary, secondary, accent }:
 
 function PlanRow({ plan, perf, stxUsd, btcUsd, lumpSum }:
   { plan: DCAPlan; perf: PlanPerformance; stxUsd: number; btcUsd: number; lumpSum: LumpSumScenario | null }) {
+  const tr = useTranslations("dca.perf");
+  const ti = useTranslations("dca.interval");
   const planStxValueUsd = stxUsd ? perf.totalStxIn * stxUsd : null;
   const planSbtcValueUsd = btcUsd ? perf.totalSbtcOut * btcUsd : null;
-  const cadence = blocksToInterval(plan.ivl);
+  const cadenceRaw = blocksToInterval(plan.ivl);
+  const cadence = (["Daily", "Weekly", "Monthly"] as const).includes(cadenceRaw as "Daily" | "Weekly" | "Monthly")
+    ? ti(cadenceRaw)
+    : cadenceRaw;
 
   return (
     <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
@@ -438,13 +451,13 @@ function PlanRow({ plan, perf, stxUsd, btcUsd, lumpSum }:
               backgroundColor: plan.active ? 'color-mix(in srgb, #00C27A 14%, transparent)' : 'var(--border-subtle)',
               color: plan.active ? '#00C27A' : 'var(--text-muted)',
             }}>
-            Plan #{plan.id}
+            {tr("common.planNumber", { id: plan.id })}
           </span>
           <span className="text-[10px] uppercase tracking-wider"
-            style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>every {cadence}</span>
+            style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{tr("common.everyCadence", { cadence })}</span>
           {!plan.active && (
             <span className="text-[10px] uppercase tracking-wider font-semibold"
-              style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>· completed</span>
+              style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{tr("common.completed")}</span>
           )}
         </div>
         <span className="text-[11px] font-data" style={{ color: 'var(--text-muted)' }}>
@@ -453,21 +466,24 @@ function PlanRow({ plan, perf, stxUsd, btcUsd, lumpSum }:
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <Cell label="Executions" value={perf.executionCount.toString()} />
-        <Cell label="STX in" value={`${formatStx(perf.totalStxIn)}`}
+        <Cell label={tr("common.executions")} value={perf.executionCount.toString()} />
+        <Cell label={tr("in.cellStxIn")} value={`${formatStx(perf.totalStxIn)}`}
           sub={planStxValueUsd !== null ? formatUSD(planStxValueUsd) : undefined} />
-        <Cell label="sBTC out" value={formatSbtc(perf.totalSbtcOut)} sub={`${formatSats(perf.totalSbtcOut)} sats`} />
-        <Cell label="Avg cost" value={`${formatStx(perf.avgStxPerSbtc, 0)} STX/sBTC`}
-          sub={planSbtcValueUsd !== null ? `≈ ${formatUSD(planSbtcValueUsd)} now` : undefined} />
+        <Cell label={tr("in.cellSbtcOut")} value={formatSbtc(perf.totalSbtcOut)} sub={tr("in.satsSub", { sats: formatSats(perf.totalSbtcOut) })} />
+        <Cell label={tr("in.cellAvgCost")} value={`${formatStx(perf.avgStxPerSbtc, 0)} STX/sBTC`}
+          sub={planSbtcValueUsd !== null ? tr("in.nowSub", { usd: formatUSD(planSbtcValueUsd) }) : undefined} />
       </div>
 
       {lumpSum && (
         <div className="mt-3 pt-3 flex items-center justify-between flex-wrap gap-2"
           style={{ borderTop: '1px dashed var(--border-subtle)' }}>
           <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-            <span className="font-semibold uppercase tracking-wider" style={{ letterSpacing: '0.08em' }}>vs lump sum</span>
-            {' '}on {formatDate(new Date(lumpSum.referenceDate + 'T00:00:00Z').getTime() / 1000)} —
-            lump would&apos;ve been <span className="font-data" style={{ color: 'var(--text-secondary)' }}>{formatSbtc(lumpSum.lumpSumSbtc)}</span> sBTC
+            <span className="font-semibold uppercase tracking-wider" style={{ letterSpacing: '0.08em' }}>{tr("in.vsLumpLabel")}</span>
+            {' '}{tr.rich("in.vsLumpDetail", {
+              date: formatDate(new Date(lumpSum.referenceDate + 'T00:00:00Z').getTime() / 1000),
+              sbtc: formatSbtc(lumpSum.lumpSumSbtc),
+              b: (c) => <span className="font-data" style={{ color: 'var(--text-secondary)' }}>{c}</span>,
+            })}
           </p>
           <span className="text-[11px] font-data font-bold px-2 py-0.5 rounded-md"
             style={{
@@ -486,7 +502,7 @@ function PlanRow({ plan, perf, stxUsd, btcUsd, lumpSum }:
           target="_blank" rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
           style={{ color: 'var(--accent)' }}>
-          Latest execution <ExternalLink size={10} />
+          {tr("common.latestExecution")} <ExternalLink size={10} />
         </Link>
       )}
     </div>

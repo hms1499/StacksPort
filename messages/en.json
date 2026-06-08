@@ -492,6 +492,100 @@
         "hoursAgo": "{n}h ago",
         "daysAgo": "{n}d ago"
       }
+    },
+    "perf": {
+      "content": {
+        "title": "DCA Performance",
+        "back": "Back to plans"
+      },
+      "tabs": {
+        "in": "DCA In",
+        "out": "DCA Out",
+        "aria": "DCA performance view"
+      },
+      "common": {
+        "connectTitle": "Connect your wallet to view performance",
+        "swapsAnalyzed": "{count, plural, one {# swap} other {# swaps}} analyzed",
+        "swapsExecuted": "Swaps executed",
+        "acrossPlans": "across {count, plural, one {# plan} other {# plans}}",
+        "noExecutions": "No executions yet",
+        "perPlanBreakdown": "Per-plan breakdown",
+        "planNumber": "Plan #{id}",
+        "everyCadence": "every {cadence}",
+        "completed": "· completed",
+        "executions": "Executions",
+        "latestExecution": "Latest execution",
+        "atSpot": "{value} at spot",
+        "lastNDays": "last {days} days"
+      },
+      "in": {
+        "connectDesc": "Connect to see cost basis and execution history for all your DCA plans.",
+        "noExecDesc": "Your plans haven't been executed by the keeper bot yet. Performance metrics will appear once the first swap completes.",
+        "stxInvested": "STX invested",
+        "sbtcAccumulated": "sBTC accumulated",
+        "avgCostBasis": "Avg cost basis",
+        "per1Sbtc": "per 1 sBTC",
+        "basisVsSpot": "Your basis vs today's spot",
+        "basisVsSpotInfo": "Compares your weighted-avg STX per sBTC across all executed swaps against the current STX/sBTC rate (BTC USD / STX USD). Positive % means you got more sBTC per STX than today's spot would give you.",
+        "basisVsSpotAria": "About: Your basis vs today's spot",
+        "spotLine": "Spot: 1 sBTC = <b>{spot}</b> STX · Your avg: <b>{avg}</b> STX",
+        "cheaperThanSpot": "cheaper than spot",
+        "aboveSpot": "above spot",
+        "dcaVsLump": "DCA vs lump sum",
+        "dcaVsLumpInfo": "For each plan, we look up the STX-USD and BTC-USD closing prices on the day of that plan's first execution and ask: if you had dumped the same total STX-in into sBTC on day 0 at the then-spot rate, how much sBTC would you hold? The delta shows whether DCA beat or trailed that counterfactual buy. Excludes plans where historical prices couldn't be fetched.",
+        "dcaVsLumpAria": "About: DCA vs lump sum",
+        "lumpSummary": "Across {count, plural, one {# plan} other {# plans}} · actual <b>{actual}</b> sBTC vs lump <b>{lump}</b> sBTC",
+        "lumpExcluded": "{count, plural, one {# plan} other {# plans}} excluded — historical price unavailable",
+        "deltaVsLump": "{delta} sBTC vs lump",
+        "lumpUnavailableTitle": "Lump-sum comparison unavailable",
+        "lumpUnavailableDesc": "Historical STX/BTC prices for your plan start dates couldn't be fetched from CoinGecko. The basis-vs-today's-spot strip above still works.",
+        "cellStxIn": "STX in",
+        "cellSbtcOut": "sBTC out",
+        "cellAvgCost": "Avg cost",
+        "satsSub": "{sats} sats",
+        "nowSub": "≈ {usd} now",
+        "vsLumpLabel": "vs lump sum",
+        "vsLumpDetail": "on {date} — lump would've been <b>{sbtc}</b> sBTC"
+      },
+      "out": {
+        "connectDesc": "Connect to see your sBTC→USDCx sell history.",
+        "noPlans": "No DCA Out plans yet",
+        "noPlansDesc": "DCA Out converts sBTC back into USDCx on a schedule. Useful for taking profit or scheduled exits.",
+        "createPlan": "Create a DCA Out plan →",
+        "noExecDesc": "Your DCA Out plans haven't been executed by the keeper bot yet.",
+        "sbtcInvested": "sBTC invested",
+        "tokenReceived": "{token} received",
+        "avgSellRate": "Avg sell rate",
+        "per1Sbtc": "per 1 sBTC",
+        "sellVsSpot": "Your sell rate vs today's spot",
+        "sellVsSpotInfo": "Weighted-avg USDCx received per sBTC across executions vs current sBTC→USDCx rate (BTC USD, since USDCx ≈ $1). Positive % means you sold at better-than-current rates.",
+        "sellVsSpotAria": "About: Your sell rate vs today's spot",
+        "spotLine": "Spot: 1 sBTC ≈ <b>{spot}</b> {token} · Your avg: <b>{avg}</b> {token}",
+        "soldAboveSpot": "sold above spot",
+        "soldBelowSpot": "sold below spot",
+        "cellSbtcIn": "sBTC in",
+        "cellTokenOut": "{token} out",
+        "cellAvgRate": "Avg rate",
+        "avgRateValue": "{rate} {token}/sBTC"
+      },
+      "chart": {
+        "title": "Cost basis over time",
+        "need2": "Need at least 2 executions on different days for a meaningful cost-basis chart.",
+        "pricesUnavailable": "Historical STX/BTC prices unavailable — chart can't be drawn.",
+        "legendBasis": "Your running cost basis",
+        "legendSpot": "Spot STX/sBTC",
+        "tooltipBasis": "Basis",
+        "tooltipSpot": "Spot"
+      },
+      "chartOut": {
+        "title": "Sell rate over time",
+        "need2": "Need at least 2 executions on different days for a meaningful sell-rate chart.",
+        "pricesUnavailable": "Historical BTC prices unavailable — chart can't be drawn.",
+        "legendBasis": "Your running avg sell rate ({token} per sBTC)",
+        "legendSpot": "Spot {token}/sBTC",
+        "tooltipAvg": "Your avg",
+        "tooltipSpot": "Spot"
+      }
     }
   }
 }

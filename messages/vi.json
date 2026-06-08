@@ -492,6 +492,100 @@
         "hoursAgo": "{n}h trước",
         "daysAgo": "{n}d trước"
       }
+    },
+    "perf": {
+      "content": {
+        "title": "Hiệu suất DCA",
+        "back": "Quay lại danh sách kế hoạch"
+      },
+      "tabs": {
+        "in": "DCA In",
+        "out": "DCA Out",
+        "aria": "Chế độ xem hiệu suất DCA"
+      },
+      "common": {
+        "connectTitle": "Kết nối ví để xem hiệu suất",
+        "swapsAnalyzed": "đã phân tích {count} lần hoán đổi",
+        "swapsExecuted": "Số lần hoán đổi",
+        "acrossPlans": "trên {count} kế hoạch",
+        "noExecutions": "Chưa có lần thực thi nào",
+        "perPlanBreakdown": "Chi tiết theo kế hoạch",
+        "planNumber": "Kế hoạch #{id}",
+        "everyCadence": "mỗi {cadence}",
+        "completed": "· đã hoàn tất",
+        "executions": "Số lần thực thi",
+        "latestExecution": "Lần thực thi mới nhất",
+        "atSpot": "{value} theo giá hiện tại",
+        "lastNDays": "{days} ngày gần nhất"
+      },
+      "in": {
+        "connectDesc": "Kết nối để xem giá vốn và lịch sử thực thi của tất cả kế hoạch DCA.",
+        "noExecDesc": "Các kế hoạch của bạn chưa được keeper bot thực thi. Số liệu hiệu suất sẽ xuất hiện sau lần hoán đổi đầu tiên.",
+        "stxInvested": "STX đã đầu tư",
+        "sbtcAccumulated": "sBTC tích lũy",
+        "avgCostBasis": "Giá vốn TB",
+        "per1Sbtc": "mỗi 1 sBTC",
+        "basisVsSpot": "Giá vốn của bạn so với giá hôm nay",
+        "basisVsSpotInfo": "So sánh giá STX trung bình theo trọng số trên mỗi sBTC của bạn qua tất cả các lần hoán đổi với tỷ giá STX/sBTC hiện tại (BTC USD / STX USD). % dương nghĩa là bạn nhận được nhiều sBTC trên mỗi STX hơn so với giá hiện tại.",
+        "basisVsSpotAria": "Thông tin: Giá vốn của bạn so với giá hôm nay",
+        "spotLine": "Giá hiện tại: 1 sBTC = <b>{spot}</b> STX · TB của bạn: <b>{avg}</b> STX",
+        "cheaperThanSpot": "rẻ hơn giá hiện tại",
+        "aboveSpot": "cao hơn giá hiện tại",
+        "dcaVsLump": "DCA so với mua một lần",
+        "dcaVsLumpInfo": "Với mỗi kế hoạch, chúng tôi tra giá đóng cửa STX-USD và BTC-USD vào ngày kế hoạch đó thực thi lần đầu và đặt câu hỏi: nếu bạn dồn toàn bộ STX vào sBTC ngay ngày đầu theo giá lúc đó, bạn sẽ nắm bao nhiêu sBTC? Chênh lệch cho thấy DCA thắng hay thua so với kịch bản đó. Loại trừ các kế hoạch không tra được giá lịch sử.",
+        "dcaVsLumpAria": "Thông tin: DCA so với mua một lần",
+        "lumpSummary": "Trên {count} kế hoạch · thực tế <b>{actual}</b> sBTC so với mua một lần <b>{lump}</b> sBTC",
+        "lumpExcluded": "{count} kế hoạch bị loại trừ — không có giá lịch sử",
+        "deltaVsLump": "{delta} sBTC so với mua một lần",
+        "lumpUnavailableTitle": "Không có so sánh mua một lần",
+        "lumpUnavailableDesc": "Không tra được giá STX/BTC lịch sử cho ngày bắt đầu kế hoạch từ CoinGecko. Dải so sánh với giá hiện tại phía trên vẫn hoạt động.",
+        "cellStxIn": "STX vào",
+        "cellSbtcOut": "sBTC ra",
+        "cellAvgCost": "Giá vốn TB",
+        "satsSub": "{sats} sats",
+        "nowSub": "≈ {usd} hiện tại",
+        "vsLumpLabel": "so với mua một lần",
+        "vsLumpDetail": "vào {date} — mua một lần sẽ là <b>{sbtc}</b> sBTC"
+      },
+      "out": {
+        "connectDesc": "Kết nối để xem lịch sử bán sBTC→USDCx của bạn.",
+        "noPlans": "Chưa có kế hoạch DCA Out",
+        "noPlansDesc": "DCA Out chuyển sBTC ngược về USDCx theo lịch. Hữu ích để chốt lời hoặc thoát theo lịch trình.",
+        "createPlan": "Tạo kế hoạch DCA Out →",
+        "noExecDesc": "Các kế hoạch DCA Out của bạn chưa được keeper bot thực thi.",
+        "sbtcInvested": "sBTC đã đầu tư",
+        "tokenReceived": "{token} nhận được",
+        "avgSellRate": "Tỷ giá bán TB",
+        "per1Sbtc": "mỗi 1 sBTC",
+        "sellVsSpot": "Tỷ giá bán của bạn so với giá hôm nay",
+        "sellVsSpotInfo": "USDCx trung bình theo trọng số nhận được trên mỗi sBTC qua các lần thực thi so với tỷ giá sBTC→USDCx hiện tại (BTC USD, vì USDCx ≈ $1). % dương nghĩa là bạn đã bán với giá tốt hơn hiện tại.",
+        "sellVsSpotAria": "Thông tin: Tỷ giá bán của bạn so với giá hôm nay",
+        "spotLine": "Giá hiện tại: 1 sBTC ≈ <b>{spot}</b> {token} · TB của bạn: <b>{avg}</b> {token}",
+        "soldAboveSpot": "đã bán cao hơn giá hiện tại",
+        "soldBelowSpot": "đã bán thấp hơn giá hiện tại",
+        "cellSbtcIn": "sBTC vào",
+        "cellTokenOut": "{token} ra",
+        "cellAvgRate": "Tỷ giá TB",
+        "avgRateValue": "{rate} {token}/sBTC"
+      },
+      "chart": {
+        "title": "Giá vốn theo thời gian",
+        "need2": "Cần ít nhất 2 lần thực thi vào các ngày khác nhau để có biểu đồ giá vốn có ý nghĩa.",
+        "pricesUnavailable": "Không có giá STX/BTC lịch sử — không vẽ được biểu đồ.",
+        "legendBasis": "Giá vốn tích lũy của bạn",
+        "legendSpot": "Giá STX/sBTC hiện tại",
+        "tooltipBasis": "Giá vốn",
+        "tooltipSpot": "Giá hiện tại"
+      },
+      "chartOut": {
+        "title": "Tỷ giá bán theo thời gian",
+        "need2": "Cần ít nhất 2 lần thực thi vào các ngày khác nhau để có biểu đồ tỷ giá bán có ý nghĩa.",
+        "pricesUnavailable": "Không có giá BTC lịch sử — không vẽ được biểu đồ.",
+        "legendBasis": "Tỷ giá bán TB tích lũy của bạn ({token} mỗi sBTC)",
+        "legendSpot": "Giá {token}/sBTC hiện tại",
+        "tooltipAvg": "TB của bạn",
+        "tooltipSpot": "Giá hiện tại"
+      }
     }
   }
 }

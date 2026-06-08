@@ -1,15 +1,17 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 type Tab = "in" | "out";
 
 export default function PerformanceTabs({
   active, onChange,
 }: { active: Tab; onChange: (t: Tab) => void }) {
+  const t = useTranslations("dca.perf.tabs");
   const items: { id: Tab; label: string }[] = [
-    { id: "in", label: "DCA In" },
-    { id: "out", label: "DCA Out" },
+    { id: "in", label: t("in") },
+    { id: "out", label: t("out") },
   ];
   const refs = useRef<Record<Tab, HTMLButtonElement | null>>({ in: null, out: null });
 
@@ -32,7 +34,7 @@ export default function PerformanceTabs({
       className="flex items-center gap-1 border-b"
       style={{ borderColor: "var(--border-subtle)" }}
       role="tablist"
-      aria-label="DCA performance view"
+      aria-label={t("aria")}
     >
       {items.map((it, idx) => {
         const isActive = active === it.id;

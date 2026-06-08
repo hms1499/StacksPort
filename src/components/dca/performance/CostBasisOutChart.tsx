@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { TrendingUp } from "lucide-react";
 import {
   CartesianGrid,
@@ -58,6 +59,7 @@ function* dateRange(fromISO: string, toISO: string): Generator<string> {
 }
 
 export default function CostBasisOutChart({ perPlan }: Props) {
+  const tr = useTranslations("dca.perf.chartOut");
   const sortedEvents = useMemo(() => {
     return perPlan
       .flatMap((p) => p.perf.successfulEvents)
@@ -150,7 +152,7 @@ export default function CostBasisOutChart({ perPlan }: Props) {
     return (
       <ChartShell>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Need at least 2 executions on different days for a meaningful sell-rate chart.
+          {tr("need2")}
         </p>
       </ChartShell>
     );
@@ -168,7 +170,7 @@ export default function CostBasisOutChart({ perPlan }: Props) {
     return (
       <ChartShell>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Historical BTC prices unavailable — chart can&apos;t be drawn.
+          {tr("pricesUnavailable")}
         </p>
       </ChartShell>
     );
@@ -221,23 +223,24 @@ export default function CostBasisOutChart({ perPlan }: Props) {
         </ResponsiveContainer>
       </div>
       <div className="mt-2 flex items-center gap-4 text-[10px] flex-wrap" style={{ color: "var(--text-muted)" }}>
-        <LegendDot color="#00C27A" label={`Your running avg sell rate (${TOKEN_LABEL} per sBTC)`} />
-        <LegendDot color="var(--text-muted)" label={`Spot ${TOKEN_LABEL}/sBTC`} dashed />
+        <LegendDot color="#00C27A" label={tr("legendBasis", { token: TOKEN_LABEL })} />
+        <LegendDot color="var(--text-muted)" label={tr("legendSpot", { token: TOKEN_LABEL })} dashed />
       </div>
     </ChartShell>
   );
 }
 
 function ChartShell({ children }: { children: React.ReactNode }) {
+  const tr = useTranslations("dca.perf");
   return (
     <div className="glass-card rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
       <div className="flex items-center gap-2 mb-3">
         <TrendingUp size={14} style={{ color: "#00C27A" }} />
         <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>
-          Sell rate over time
+          {tr("chartOut.title")}
         </h2>
         <span className="text-[10px] ml-auto" style={{ color: "var(--text-muted)" }}>
-          last {MAX_CHART_DAYS} days
+          {tr("common.lastNDays", { days: MAX_CHART_DAYS })}
         </span>
       </div>
       {children}
@@ -266,6 +269,7 @@ interface TooltipPayload {
 }
 
 function SellRateTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: string }) {
+  const tr = useTranslations("dca.perf.chartOut");
   if (!active || !payload || payload.length === 0 || !label) return null;
   const p = payload[0].payload;
   return (
@@ -287,11 +291,11 @@ function SellRateTooltip({ active, payload, label }: { active?: boolean; payload
         })}
       </div>
       <div className="flex items-center justify-between gap-3 font-data">
-        <span style={{ color: "#00C27A" }}>Your avg</span>
+        <span style={{ color: "#00C27A" }}>{tr("tooltipAvg")}</span>
         <span>{Math.round(p.basis).toLocaleString()} {TOKEN_LABEL}</span>
       </div>
       <div className="flex items-center justify-between gap-3 font-data">
-        <span style={{ color: "var(--text-muted)" }}>Spot</span>
+        <span style={{ color: "var(--text-muted)" }}>{tr("tooltipSpot")}</span>
         <span>{p.spot != null ? `${Math.round(p.spot).toLocaleString()} ${TOKEN_LABEL}` : "—"}</span>
       </div>
     </div>

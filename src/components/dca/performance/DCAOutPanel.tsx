@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import useSWR from "swr";
@@ -51,6 +52,7 @@ const TOKEN_LABEL = "USDCx";
 export default function DCAOutPanel({
   isConnected, stxAddress,
 }: { isConnected: boolean; stxAddress: string | null }) {
+  const tr = useTranslations("dca.perf");
   const { data: btcUsd } = useSWR<number>("btc-usd-spot", getBtcUsdPrice, {
     refreshInterval: 60_000, dedupingInterval: 60_000,
   });
@@ -119,8 +121,8 @@ export default function DCAOutPanel({
         <div className="glass-card rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
           <EmptyState
             icon={<Wallet size={28} style={{ color: "var(--accent)" }} />}
-            title="Connect your wallet to view performance"
-            description="Connect to see your sBTC→USDCx sell history."
+            title={tr("common.connectTitle")}
+            description={tr("out.connectDesc")}
             action={<ConnectWalletCTA />}
           />
         </div>
@@ -140,14 +142,14 @@ export default function DCAOutPanel({
     return (
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl p-8 text-center" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No DCA Out plans yet</p>
+          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{tr("out.noPlans")}</p>
           <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-            DCA Out converts sBTC back into USDCx on a schedule. Useful for taking profit or scheduled exits.
+            {tr("out.noPlansDesc")}
           </p>
           <Link href="/dca?direction=out"
             className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
             style={{ backgroundColor: 'var(--accent)', color: '#000' }}>
-            Create a DCA Out plan →
+            {tr("out.createPlan")}
           </Link>
         </div>
       </MotionCard>
@@ -157,9 +159,9 @@ export default function DCAOutPanel({
     return (
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl p-8 text-center" style={{ boxShadow: "var(--shadow-card)" }}>
-          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No executions yet</p>
+          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{tr("common.noExecutions")}</p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            Your DCA Out plans haven&apos;t been executed by the keeper bot yet.
+            {tr("out.noExecDesc")}
           </p>
         </div>
       </MotionCard>
@@ -173,7 +175,7 @@ export default function DCAOutPanel({
         <MotionCard disableHover>
           <div className="flex justify-end">
             <span className="text-[11px] font-data" style={{ color: 'var(--text-muted)' }}>
-              {totals.executions} swap{totals.executions === 1 ? '' : 's'} analyzed
+              {tr("common.swapsAnalyzed", { count: totals.executions })}
             </span>
           </div>
         </MotionCard>
@@ -181,21 +183,21 @@ export default function DCAOutPanel({
 
       <MotionCard disableHover>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <SummaryCard icon={<Activity size={13} />} label="Swaps executed"
+          <SummaryCard icon={<Activity size={13} />} label={tr("common.swapsExecuted")}
             primary={totals.executions.toLocaleString("en-US")}
-            secondary={`across ${perPlan.length} plan${perPlan.length === 1 ? '' : 's'}`}
+            secondary={tr("common.acrossPlans", { count: perPlan.length })}
             accent="#FFB547" />
-          <SummaryCard icon={<Bitcoin size={13} />} label="sBTC invested"
+          <SummaryCard icon={<Bitcoin size={13} />} label={tr("out.sbtcInvested")}
             primary={`${formatSbtc(totals.sbtcIn)} sBTC`}
-            secondary={btcUsd ? `${formatUSD(totals.sbtcIn * btcUsd)} at spot` : '—'}
+            secondary={btcUsd ? tr("common.atSpot", { value: formatUSD(totals.sbtcIn * btcUsd) }) : '—'}
             accent="#F7931A" />
-          <SummaryCard icon={<DollarSign size={13} />} label={`${TOKEN_LABEL} received`}
+          <SummaryCard icon={<DollarSign size={13} />} label={tr("out.tokenReceived", { token: TOKEN_LABEL })}
             primary={`${formatNum(totals.tokenOut)} ${TOKEN_LABEL}`}
             secondary={`${formatUSD(totals.tokenOut * TOKEN_USD)}`}
             accent="#00C27A" />
-          <SummaryCard icon={<BarChart3 size={13} />} label="Avg sell rate"
+          <SummaryCard icon={<BarChart3 size={13} />} label={tr("out.avgSellRate")}
             primary={`${formatNum(totals.avgTokenPerSbtc, 0)} ${TOKEN_LABEL}`}
-            secondary="per 1 sBTC" accent="#A78BFA" />
+            secondary={tr("out.per1Sbtc")} accent="#A78BFA" />
         </div>
       </MotionCard>
 
@@ -217,19 +219,23 @@ export default function DCAOutPanel({
                 </div>
                 <div>
                   <h2 className="font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-primary)' }}>
-                    Your sell rate vs today&apos;s spot
+                    {tr("out.sellVsSpot")}
                     <button
                       type="button"
-                      title="Weighted-avg USDCx received per sBTC across executions vs current sBTC→USDCx rate (BTC USD, since USDCx ≈ $1). Positive % means you sold at better-than-current rates."
-                      aria-label="About: Your sell rate vs today's spot"
+                      title={tr("out.sellVsSpotInfo")}
+                      aria-label={tr("out.sellVsSpotAria")}
                       className="inline-flex items-center focus:outline-none focus-visible:ring-2 rounded"
                     >
                       <Info size={12} style={{ color: 'var(--text-muted)', cursor: 'help' }} />
                     </button>
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                    Spot: 1 sBTC ≈ <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatNum(spotTokenPerSbtc, 0)}</span> {TOKEN_LABEL} ·
-                    Your avg: <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{formatNum(totals.avgTokenPerSbtc, 0)}</span> {TOKEN_LABEL}
+                    {tr.rich("out.spotLine", {
+                      spot: formatNum(spotTokenPerSbtc, 0),
+                      avg: formatNum(totals.avgTokenPerSbtc, 0),
+                      token: TOKEN_LABEL,
+                      b: (c) => <span className="font-data font-semibold" style={{ color: 'var(--text-primary)' }}>{c}</span>,
+                    })}
                   </p>
                 </div>
               </div>
@@ -239,7 +245,7 @@ export default function DCAOutPanel({
                   {sellVsSpotPct >= 0 ? '+' : ''}{sellVsSpotPct.toFixed(1)}%
                 </p>
                 <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                  {sellVsSpotPct >= 0 ? 'sold above spot' : 'sold below spot'}
+                  {sellVsSpotPct >= 0 ? tr("out.soldAboveSpot") : tr("out.soldBelowSpot")}
                 </p>
               </div>
             </div>
@@ -253,7 +259,7 @@ export default function DCAOutPanel({
 
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
-          <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Per-plan breakdown</h2>
+          <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{tr("common.perPlanBreakdown")}</h2>
           <div className="space-y-3">
             {perPlan
               .filter((p) => p.perf.executionCount > 0)
@@ -286,10 +292,15 @@ function SummaryCard({ icon, label, primary, secondary, accent }:
 
 function PlanRow({ plan, perf, btcUsd }:
   { plan: DCA_SBTCPlan; perf: SBTCPlanPerformance; btcUsd: number }) {
+  const tr = useTranslations("dca.perf");
+  const ti = useTranslations("dca.interval");
   const sbtc = perf.totalSbtcIn / 1e8;
   const sbtcUsd = btcUsd ? sbtc * btcUsd : null;
   const tokenUsd = perf.totalTokenOut * TOKEN_USD;
-  const cadence = blocksToInterval(plan.ivl);
+  const cadenceRaw = blocksToInterval(plan.ivl);
+  const cadence = (["Daily", "Weekly", "Monthly"] as const).includes(cadenceRaw as "Daily" | "Weekly" | "Monthly")
+    ? ti(cadenceRaw)
+    : cadenceRaw;
 
   return (
     <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
@@ -300,13 +311,13 @@ function PlanRow({ plan, perf, btcUsd }:
               backgroundColor: plan.active ? 'color-mix(in srgb, #00C27A 14%, transparent)' : 'var(--border-subtle)',
               color: plan.active ? '#00C27A' : 'var(--text-muted)',
             }}>
-            Plan #{plan.id}
+            {tr("common.planNumber", { id: plan.id })}
           </span>
           <span className="text-[10px] uppercase tracking-wider"
-            style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>every {cadence}</span>
+            style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{tr("common.everyCadence", { cadence })}</span>
           {!plan.active && (
             <span className="text-[10px] uppercase tracking-wider font-semibold"
-              style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>· completed</span>
+              style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{tr("common.completed")}</span>
           )}
         </div>
         <span className="text-[11px] font-data" style={{ color: 'var(--text-muted)' }}>
@@ -315,12 +326,12 @@ function PlanRow({ plan, perf, btcUsd }:
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <Cell label="Executions" value={perf.executionCount.toString()} />
-        <Cell label="sBTC in" value={formatSbtc(sbtc)}
+        <Cell label={tr("common.executions")} value={perf.executionCount.toString()} />
+        <Cell label={tr("out.cellSbtcIn")} value={formatSbtc(sbtc)}
           sub={sbtcUsd !== null ? formatUSD(sbtcUsd) : undefined} />
-        <Cell label={`${TOKEN_LABEL} out`} value={formatNum(perf.totalTokenOut)}
+        <Cell label={tr("out.cellTokenOut", { token: TOKEN_LABEL })} value={formatNum(perf.totalTokenOut)}
           sub={formatUSD(tokenUsd)} />
-        <Cell label="Avg rate" value={`${formatNum(perf.avgTokenPerSbtc, 0)} ${TOKEN_LABEL}/sBTC`} />
+        <Cell label={tr("out.cellAvgRate")} value={tr("out.avgRateValue", { rate: formatNum(perf.avgTokenPerSbtc, 0), token: TOKEN_LABEL })} />
       </div>
 
       {perf.successfulEvents.length > 0 && (
@@ -328,7 +339,7 @@ function PlanRow({ plan, perf, btcUsd }:
           target="_blank" rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
           style={{ color: 'var(--accent)' }}>
-          Latest execution <ExternalLink size={10} />
+          {tr("common.latestExecution")} <ExternalLink size={10} />
         </Link>
       )}
     </div>

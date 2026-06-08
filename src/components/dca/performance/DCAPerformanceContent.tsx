@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
 import Topbar from "@/components/layout/Topbar";
@@ -15,10 +16,11 @@ import PerformanceTabs from "./PerformanceTabs";
 export default function DCAPerformanceContent() {
   const { isConnected, stxAddress } = useWalletStore();
   const [tab, setTab] = useState<"in" | "out">("in");
+  const t = useTranslations("dca.perf.content");
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="DCA Performance" />
+      <Topbar title={t("title")} />
       <AnimatedPage className="max-w-5xl mx-auto w-full px-4 py-6">
         <StaggerChildren className="flex flex-col gap-6">
           <MotionCard disableHover>
@@ -26,7 +28,7 @@ export default function DCAPerformanceContent() {
               className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
               style={{ color: 'var(--text-muted)' }}>
               <ArrowLeft size={14} />
-              Back to plans
+              {t("back")}
             </Link>
           </MotionCard>
 

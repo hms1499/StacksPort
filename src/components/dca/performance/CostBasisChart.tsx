@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { TrendingUp } from "lucide-react";
 import {
   CartesianGrid,
@@ -53,6 +54,7 @@ function* dateRange(fromISO: string, toISO: string): Generator<string> {
 }
 
 export default function CostBasisChart({ perPlan }: Props) {
+  const tr = useTranslations("dca.perf.chart");
   // Flatten every successful execution across every plan into one timeline.
   // Sorted by blockTime so the cumulative cost basis walks forward in time.
   const sortedEvents = useMemo(() => {
@@ -162,7 +164,7 @@ export default function CostBasisChart({ perPlan }: Props) {
     return (
       <ChartShell>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Need at least 2 executions on different days for a meaningful cost-basis chart.
+          {tr("need2")}
         </p>
       </ChartShell>
     );
@@ -180,7 +182,7 @@ export default function CostBasisChart({ perPlan }: Props) {
     return (
       <ChartShell>
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Historical STX/BTC prices unavailable — chart can&apos;t be drawn.
+          {tr("pricesUnavailable")}
         </p>
       </ChartShell>
     );
@@ -233,23 +235,24 @@ export default function CostBasisChart({ perPlan }: Props) {
         </ResponsiveContainer>
       </div>
       <div className="mt-2 flex items-center gap-4 text-[10px]" style={{ color: "var(--text-muted)" }}>
-        <LegendDot color="#A78BFA" label="Your running cost basis" />
-        <LegendDot color="var(--text-muted)" label="Spot STX/sBTC" dashed />
+        <LegendDot color="#A78BFA" label={tr("legendBasis")} />
+        <LegendDot color="var(--text-muted)" label={tr("legendSpot")} dashed />
       </div>
     </ChartShell>
   );
 }
 
 function ChartShell({ children }: { children: React.ReactNode }) {
+  const tr = useTranslations("dca.perf");
   return (
     <div className="glass-card rounded-2xl p-5" style={{ boxShadow: "var(--shadow-card)" }}>
       <div className="flex items-center gap-2 mb-3">
         <TrendingUp size={14} style={{ color: "#A78BFA" }} />
         <h2 className="font-semibold" style={{ color: "var(--text-primary)" }}>
-          Cost basis over time
+          {tr("chart.title")}
         </h2>
         <span className="text-[10px] ml-auto" style={{ color: "var(--text-muted)" }}>
-          last {MAX_CHART_DAYS} days
+          {tr("common.lastNDays", { days: MAX_CHART_DAYS })}
         </span>
       </div>
       {children}
@@ -278,6 +281,7 @@ interface TooltipPayload {
 }
 
 function CostBasisTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: string }) {
+  const tr = useTranslations("dca.perf.chart");
   if (!active || !payload || payload.length === 0 || !label) return null;
   const p = payload[0].payload;
   return (
@@ -299,11 +303,11 @@ function CostBasisTooltip({ active, payload, label }: { active?: boolean; payloa
         })}
       </div>
       <div className="flex items-center justify-between gap-3 font-data">
-        <span style={{ color: "#A78BFA" }}>Basis</span>
+        <span style={{ color: "#A78BFA" }}>{tr("tooltipBasis")}</span>
         <span>{Math.round(p.basis).toLocaleString()} STX</span>
       </div>
       <div className="flex items-center justify-between gap-3 font-data">
-        <span style={{ color: "var(--text-muted)" }}>Spot</span>
+        <span style={{ color: "var(--text-muted)" }}>{tr("tooltipSpot")}</span>
         <span>{p.spot != null ? `${Math.round(p.spot).toLocaleString()} STX` : "—"}</span>
       </div>
     </div>

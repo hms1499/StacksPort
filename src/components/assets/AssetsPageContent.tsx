@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { useWalletStore } from "@/store/walletStore";
 import { useTokensWithValues } from "@/hooks/useMarketData";
 import Topbar from "@/components/layout/Topbar";
@@ -37,29 +38,30 @@ const AssetTransactionHistory = dynamic(
 );
 
 const TABS = [
-  { key: "overview", label: "Overview" },
-  { key: "holdings", label: "Holdings" },
-  { key: "positions", label: "Positions" },
-  { key: "activity", label: "Activity" },
+  { key: "overview", labelKey: "tabOverview" },
+  { key: "holdings", labelKey: "tabHoldings" },
+  { key: "positions", labelKey: "tabPositions" },
+  { key: "activity", labelKey: "tabActivity" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
 function TabNav({ active, onChange }: { active: TabKey; onChange: (k: TabKey) => void }) {
+  const t = useTranslations("assets.page");
   return (
     <div
       className="flex gap-1 p-1 rounded-xl w-fit"
       style={{ backgroundColor: "var(--border-subtle)" }}
       role="tablist"
-      aria-label="Assets sections"
+      aria-label={t("tabsAria")}
     >
-      {TABS.map((t) => {
-        const isActive = active === t.key;
+      {TABS.map((tab) => {
+        const isActive = active === tab.key;
         return (
           <button
-            key={t.key}
+            key={tab.key}
             role="tab"
             aria-selected={isActive}
-            onClick={() => onChange(t.key)}
+            onClick={() => onChange(tab.key)}
             className="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150"
             style={
               isActive
@@ -71,7 +73,7 @@ function TabNav({ active, onChange }: { active: TabKey; onChange: (k: TabKey) =>
                 : { color: "var(--text-muted)" }
             }
           >
-            {t.label}
+            {t(tab.labelKey)}
           </button>
         );
       })}
@@ -84,6 +86,7 @@ export default function AssetsPageContent() {
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data, isLoading: loading } = useTokensWithValues(addr);
   const [tab, setTab] = useState<TabKey>("overview");
+  const tt = useTranslations("assets.page");
 
   const stx = data?.stx ?? null;
   const tokens = data?.tokens ?? [];
@@ -91,7 +94,7 @@ export default function AssetsPageContent() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="My Assets" />
+      <Topbar title={tt("title")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <div className="mb-4 md:mb-5">
           <TabNav active={tab} onChange={setTab} />

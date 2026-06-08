@@ -12,6 +12,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { TrendingDown, TrendingUp, LineChart as LineChartIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useWalletStore } from "@/store/walletStore";
 import { useThemeStore } from "@/store/themeStore";
 import {
@@ -42,9 +43,11 @@ function formatTick(t: number, range: PortfolioHistoryRange): string {
 }
 
 function PortfolioPerformanceChart() {
+  const t = useTranslations("assets.perf");
   const { stxAddress, isConnected } = useWalletStore();
   const isDark = useThemeStore((s) => s.theme === "dark");
   const [period, setPeriod] = useState<Period>("1M");
+  const periodLabel = period === "All" ? t("all") : period;
 
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const range = PERIOD_TO_RANGE[period];
@@ -93,13 +96,13 @@ function PortfolioPerformanceChart() {
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: "var(--text-muted)", letterSpacing: "0.1em" }}
           >
-            Portfolio Performance
+            {t("title")}
           </h3>
         </div>
         <EmptyState
           icon={<LineChartIcon size={32} />}
-          title="Track portfolio over time"
-          description="Connect your wallet to record net-worth history. Tracking begins on your first visit."
+          title={t("connectTitle")}
+          description={t("connectDesc")}
           action={<ConnectWalletCTA />}
         />
       </div>
@@ -107,11 +110,13 @@ function PortfolioPerformanceChart() {
   }
 
   const firstSeenLabel = data?.firstSeenAt
-    ? `Tracking since ${new Date(data.firstSeenAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}`
+    ? t("trackingSince", {
+        date: new Date(data.firstSeenAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+      })
     : null;
 
   return (
@@ -124,7 +129,7 @@ function PortfolioPerformanceChart() {
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: "var(--text-muted)", letterSpacing: "0.1em" }}
           >
-            Portfolio Performance
+            {t("title")}
           </h3>
         </div>
 
@@ -148,7 +153,7 @@ function PortfolioPerformanceChart() {
               }
               aria-pressed={period === p}
             >
-              {p}
+              {p === "All" ? t("all") : p}
             </button>
           ))}
         </div>
@@ -182,7 +187,7 @@ function PortfolioPerformanceChart() {
               {formatPercent(changePct)}
             </span>
             <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-              over {period}
+              {t("over", { period: periodLabel })}
             </span>
           </div>
         ) : (
@@ -255,7 +260,7 @@ function PortfolioPerformanceChart() {
                 color: isDark ? "#DDE8F8" : "#0A1628",
                 boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
               }}
-              formatter={(v: unknown) => [formatUSD(Number(v)), "Portfolio"]}
+              formatter={(v: unknown) => [formatUSD(Number(v)), t("tooltipPortfolio")]}
             />
             <Area
               type="monotone"
@@ -274,9 +279,7 @@ function PortfolioPerformanceChart() {
           style={{ backgroundColor: "var(--border-subtle)" }}
         >
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-            {isLoading
-              ? "Loading chart…"
-              : "Not enough history yet — net worth is recorded each time you visit. Check back in an hour for your first data point."}
+            {isLoading ? t("loading") : t("notEnough")}
           </span>
         </div>
       )}

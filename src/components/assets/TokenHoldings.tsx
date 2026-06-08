@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, memo } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowUpRight, ArrowDownLeft, AlertTriangle, ShieldAlert, ChevronDown, ChevronUp, Download, Wallet } from "lucide-react";
 import { downloadCSV, csvDate } from "@/lib/export";
 import { TokenWithValue } from "@/lib/stacks";
@@ -54,36 +55,39 @@ function TokenAvatar({ symbol, imageUri, warning }: { symbol: string; imageUri?:
 
 // Warning badge shown next to token name
 function WarningBadge({ warning }: { warning: TokenWithValue["warning"] }) {
+  const t = useTranslations("assets.holdings");
   if (!warning) return null;
 
   if (warning === "suspicious") {
     return (
       <span
-        title="This token has no registered metadata. It may be a spam airdrop or scam token. Do not interact unless you trust the source."
+        title={t("suspiciousTitle")}
         className="flex items-center gap-0.5 text-[10px] font-semibold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full cursor-help shrink-0"
       >
         <ShieldAlert size={9} />
-        Suspicious
+        {t("suspicious")}
       </span>
     );
   }
 
   return (
     <span
-      title="This token is not listed in any known price feed. It may be legitimate but unverified. Exercise caution."
+      title={t("unverifiedTitle")}
       className="flex items-center gap-0.5 text-[10px] font-semibold text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded-full cursor-help shrink-0"
     >
       <AlertTriangle size={9} />
-      Unverified
+      {t("unverified")}
     </span>
   );
 }
 
 // Warning banner shown at the top when flagged tokens exist
 function WarningBanner({ suspicious, unverified }: { suspicious: number; unverified: number }) {
+  const t = useTranslations("assets.holdings");
   if (suspicious === 0 && unverified === 0) return null;
 
   const hasSuspicious = suspicious > 0;
+  const bold = (c: React.ReactNode) => <span className="font-semibold">{c}</span>;
 
   return (
     <div className={`flex items-start gap-2.5 px-3 md:px-6 py-3 border-b ${hasSuspicious ? "bg-red-50 border-red-100" : "bg-yellow-50 border-yellow-100"}`}>
@@ -92,17 +96,9 @@ function WarningBanner({ suspicious, unverified }: { suspicious: number; unverif
         : <AlertTriangle size={14} className="text-yellow-500 shrink-0 mt-0.5" />
       }
       <p className={`text-xs leading-relaxed ${hasSuspicious ? "text-red-700" : "text-yellow-700"}`}>
-        {hasSuspicious && (
-          <>
-            <span className="font-semibold">{suspicious} suspicious token{suspicious > 1 ? "s" : ""}</span> detected — likely spam airdrops with no registered metadata.{" "}
-          </>
-        )}
-        {unverified > 0 && (
-          <>
-            <span className="font-semibold">{unverified} unverified token{unverified > 1 ? "s" : ""}</span> found with no price data.{" "}
-          </>
-        )}
-        Do not interact with unknown tokens unless you trust the source.
+        {hasSuspicious && t.rich("bannerSuspicious", { count: suspicious, b: bold })}
+        {unverified > 0 && t.rich("bannerUnverified", { count: unverified, b: bold })}
+        {t("bannerWarn")}
       </p>
     </div>
   );
@@ -117,6 +113,7 @@ interface TokenRowProps {
 }
 
 const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive, onSelect }: TokenRowProps) {
+  const tr = useTranslations("assets.holdings");
   const pct = totalUsd > 0 ? (t.valueUsd / totalUsd) * 100 : 0;
   const isPositive = (t.change24h ?? 0) >= 0;
   const isFlagged = !!t.warning;
@@ -197,7 +194,7 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive, onSele
               e.stopPropagation();
               onSend(t);
             }}
-            title="Send"
+            title={tr("send")}
             className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
           >
             <ArrowUpRight size={11} className="text-red-500" />
@@ -207,7 +204,7 @@ const TokenRow = memo(function TokenRow({ t, totalUsd, onSend, onReceive, onSele
               e.stopPropagation();
               onReceive();
             }}
-            title="Receive"
+            title={tr("receive")}
             className="p-1.5 rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
           >
             <ArrowDownLeft size={11} className="text-green-500" />
@@ -226,6 +223,7 @@ interface Props {
 }
 
 export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props) {
+  const t = useTranslations("assets.holdings");
   const [sendToken, setSendToken] = useState<SendTokenInfo | null>(null);
   const [receiveOpen, setReceiveOpen] = useState(false);
   const [showFlagged, setShowFlagged] = useState(false);
@@ -284,26 +282,26 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
       <div className="glass-card rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Token Holdings</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("title")}</h2>
           {!loading && (
             <div className="flex items-center gap-2">
               {flaggedTokens.length > 0 && (
                 <span className="flex items-center gap-1 text-xs font-medium text-red-500 bg-red-50 px-2 py-1 rounded-lg">
                   <ShieldAlert size={11} />
-                  {flaggedTokens.length} flagged
+                  {t("flagged", { count: flaggedTokens.length })}
                 </span>
               )}
               <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
-                {allTokens.length} assets
+                {t("assetsCount", { count: allTokens.length })}
               </span>
               {allTokens.length > 0 && (
                 <button
                   onClick={handleExport}
-                  title="Export CSV"
+                  title={t("exportTitle")}
                   className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#285A48] bg-gray-50 hover:bg-[#B0E4CC]/20 px-2 py-1 rounded-lg transition-colors"
                 >
                   <Download size={11} />
-                  Export
+                  {t("export")}
                 </button>
               )}
             </div>
@@ -317,12 +315,12 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
 
         {/* Table header */}
         <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[2fr_1fr_1fr_60px_1fr_80px] gap-3 md:gap-4 px-3 md:px-6 py-2.5 text-xs font-medium uppercase tracking-wide" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
-          <span>Token</span>
-          <span className="hidden md:block text-right">Balance</span>
-          <span className="hidden md:block text-right">Price</span>
-          <span className="hidden md:block text-center">7d</span>
-          <span className="text-right">Value</span>
-          <span className="text-right">24h</span>
+          <span>{t("colToken")}</span>
+          <span className="hidden md:block text-right">{t("colBalance")}</span>
+          <span className="hidden md:block text-right">{t("colPrice")}</span>
+          <span className="hidden md:block text-center">{t("col7d")}</span>
+          <span className="text-right">{t("colValue")}</span>
+          <span className="text-right">{t("col24h")}</span>
         </div>
 
         {/* Rows */}
@@ -350,8 +348,8 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
           ) : allTokens.length === 0 ? (
             <EmptyState
               icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
-              title="No tokens found"
-              description="Connect your wallet or fund it with STX to see your token holdings here."
+              title={t("noTokens")}
+              description={t("noTokensDesc")}
               action={<ConnectWalletCTA />}
             />
           ) : (
@@ -371,7 +369,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
                   >
                     <span className="flex items-center gap-2 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
                       <ShieldAlert size={13} className="text-red-400" />
-                      {flaggedTokens.length} flagged token{flaggedTokens.length > 1 ? "s" : ""} (spam / unverified)
+                      {t("flaggedToggle", { count: flaggedTokens.length })}
                     </span>
                     {showFlagged ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
                   </button>

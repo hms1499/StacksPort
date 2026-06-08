@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { TokenWithValue } from "@/lib/stacks";
 import { formatUSD, formatPercent } from "@/lib/utils";
@@ -75,6 +76,7 @@ interface Props {
 }
 
 const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }: Omit<Props, "loading">) {
+  const t = useTranslations("assets.summary");
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const segments = useMemo(() => {
@@ -90,10 +92,10 @@ const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }:
         color: ALLOCATION_COLORS[i],
       })),
       ...(otherUsd > 0
-        ? [{ label: "Other", usd: otherUsd, pct: (otherUsd / totalUsd) * 100, color: ALLOCATION_COLORS[7] }]
+        ? [{ label: t("other"), usd: otherUsd, pct: (otherUsd / totalUsd) * 100, color: ALLOCATION_COLORS[7] }]
         : []),
     ];
-  }, [stx, tokens, totalUsd]);
+  }, [stx, tokens, totalUsd, t]);
 
   if (segments.length === 0) return null;
 
@@ -160,6 +162,7 @@ const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }:
 });
 
 export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Props) {
+  const t = useTranslations("assets.summary");
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: history } = usePortfolioHistorySnap(addr, "24h");
@@ -183,8 +186,8 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
       <div className="glass-card rounded-2xl shadow-sm">
         <EmptyState
           icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
-          title="Portfolio overview"
-          description="Connect your wallet to view your net worth and asset allocation."
+          title={t("connectTitle")}
+          description={t("connectDesc")}
           action={<ConnectWalletCTA />}
         />
       </div>
@@ -195,7 +198,7 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
 
   return (
     <div className="glass-card rounded-2xl p-6 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Net Worth</p>
+      <p className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>{t("netWorth")}</p>
 
       {loading ? (
         <div className="space-y-3 mt-2 animate-pulse">
@@ -229,17 +232,19 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
               <span
                 className="font-normal text-xs ml-0.5"
                 style={{ color: 'var(--text-muted)' }}
-                title={hasRealDelta ? "Portfolio 24h" : "STX 24h (portfolio history still recording)"}
+                title={hasRealDelta ? t("portfolio24h") : t("stx24h")}
               >
-                24h
+                {t("h24")}
               </span>
             </span>
             {hasRealDelta && <Sparkline points={points} color={sparkColor} />}
           </div>
 
           <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
-            {stx?.balance.toLocaleString("en-US", { maximumFractionDigits: 2 })} STX ·{" "}
-            {[stx!, ...tokens].length} assets
+            {t("assetsLine", {
+              balance: stx?.balance.toLocaleString("en-US", { maximumFractionDigits: 2 }) ?? "0",
+              count: [stx!, ...tokens].length,
+            })}
           </p>
 
           <AllocationDonut stx={stx} tokens={tokens} totalUsd={totalUsd} />

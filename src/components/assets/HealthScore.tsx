@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Lightbulb, Wallet } from "lucide-react";
 import { TokenWithValue } from "@/lib/stacks";
 import { useThemeStore } from "@/store/themeStore";
+
+type HealthT = ReturnType<typeof useTranslations<"assets.health">>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -43,7 +46,8 @@ interface HealthResult {
 function calcHealth(
   stx: TokenWithValue,
   tokens: TokenWithValue[],
-  totalUsd: number
+  totalUsd: number,
+  t: HealthT
 ): HealthResult {
   const allAssets = [stx, ...tokens.filter((t) => t.valueUsd > 0)];
 
@@ -61,7 +65,7 @@ function calcHealth(
     : [];
   const topVolAlloc = volAllocs.length > 0 ? Math.max(...volAllocs) : 0;
   const volHHI = volAllocs.reduce((s, a) => s + a * a, 0);
-  const topVolToken = volatiles[0]?.symbol ?? "volatile assets";
+  const topVolToken = volatiles[0]?.symbol ?? t("fallbackToken");
 
   // ── Factor 1: Volatile Concentration (35 pts) ──────────────────────────────
   let cScore: number;
@@ -71,22 +75,22 @@ function calcHealth(
 
   if (nV === 0) {
     cScore = 20; cLevel = "moderate";
-    cDesc = "No volatile assets — no concentration risk";
+    cDesc = t("cNone");
   } else if (topVolAlloc > 0.9) {
     cScore = 0; cLevel = "poor";
-    cDesc = `${topPct}% of volatile assets in ${topVolToken} — extreme`;
+    cDesc = t("cExtreme", { pct: topPct, token: topVolToken });
   } else if (topVolAlloc > 0.7) {
     cScore = 10; cLevel = "poor";
-    cDesc = `${topPct}% of volatile assets in ${topVolToken} — high`;
+    cDesc = t("cHigh", { pct: topPct, token: topVolToken });
   } else if (topVolAlloc > 0.5) {
     cScore = 22; cLevel = "moderate";
-    cDesc = `${topPct}% of volatile assets in ${topVolToken} — moderate`;
+    cDesc = t("cModerate", { pct: topPct, token: topVolToken });
   } else if (topVolAlloc > 0.3) {
     cScore = 30; cLevel = "moderate";
-    cDesc = `${topPct}% in top volatile asset — manageable`;
+    cDesc = t("cManageable", { pct: topPct });
   } else {
     cScore = 35; cLevel = "good";
-    cDesc = `${topPct}% in top volatile asset — well spread`;
+    cDesc = t("cWellSpread", { pct: topPct });
   }
 
   // ── Factor 2: Volatile Asset Count (25 pts) ────────────────────────────────
@@ -96,22 +100,22 @@ function calcHealth(
 
   if (nV === 0) {
     aScore = 0; aLevel = "poor";
-    aDesc = "No volatile assets — portfolio is fully in stablecoins";
+    aDesc = t("aNone");
   } else if (nV === 1) {
     aScore = 5; aLevel = "poor";
-    aDesc = "1 volatile asset — no diversification";
+    aDesc = t("aOne");
   } else if (nV === 2) {
     aScore = 12; aLevel = "poor";
-    aDesc = "2 volatile assets — minimal diversification";
+    aDesc = t("aTwo");
   } else if (nV <= 4) {
     aScore = 18; aLevel = "moderate";
-    aDesc = `${nV} volatile assets — moderate diversification`;
+    aDesc = t("aModerate", { n: nV });
   } else if (nV <= 7) {
     aScore = 22; aLevel = "good";
-    aDesc = `${nV} volatile assets — good diversification`;
+    aDesc = t("aGood", { n: nV });
   } else {
     aScore = 25; aLevel = "good";
-    aDesc = `${nV} volatile assets — excellent diversification`;
+    aDesc = t("aExcellent", { n: nV });
   }
 
   // ── Factor 3: Distribution quality / HHI (25 pts) ─────────────────────────
@@ -121,22 +125,22 @@ function calcHealth(
 
   if (nV === 0) {
     hScore = 5; hLevel = "poor";
-    hDesc = "No volatile assets to distribute";
+    hDesc = t("hNone");
   } else if (volHHI > 0.8) {
     hScore = 0; hLevel = "poor";
-    hDesc = "Highly concentrated volatile distribution";
+    hDesc = t("hHighlyConcentrated");
   } else if (volHHI > 0.6) {
     hScore = 6; hLevel = "poor";
-    hDesc = "Concentrated volatile distribution";
+    hDesc = t("hConcentrated");
   } else if (volHHI > 0.4) {
     hScore = 13; hLevel = "moderate";
-    hDesc = "Moderate balance among volatile assets";
+    hDesc = t("hModerate");
   } else if (volHHI > 0.2) {
     hScore = 20; hLevel = "moderate";
-    hDesc = "Good balance among volatile assets";
+    hDesc = t("hGood");
   } else {
     hScore = 25; hLevel = "good";
-    hDesc = "Excellent balance among volatile assets";
+    hDesc = t("hExcellent");
   }
 
   // ── Factor 4: Stablecoin Reserve (15 pts) ─────────────────────────────────
@@ -147,49 +151,49 @@ function calcHealth(
 
   if (stablePct > 0.6) {
     sScore = 3; sLevel = "poor";
-    sDesc = `${sPct}% stablecoins — mostly cash, underdeployed`;
+    sDesc = t("sMostlyCash", { pct: sPct });
   } else if (stablePct > 0.3) {
     sScore = 10; sLevel = "moderate";
-    sDesc = `${sPct}% stablecoins — cautious position`;
+    sDesc = t("sCautious", { pct: sPct });
   } else if (stablePct > 0.05) {
     sScore = 15; sLevel = "good";
-    sDesc = `${sPct}% stablecoins — healthy reserve`;
+    sDesc = t("sHealthy", { pct: sPct });
   } else if (stablePct > 0) {
     sScore = 12; sLevel = "good";
-    sDesc = `${sPct}% stablecoins — small reserve`;
+    sDesc = t("sSmall", { pct: sPct });
   } else {
     sScore = 8; sLevel = "moderate";
-    sDesc = "No stablecoin reserve";
+    sDesc = t("sNone");
   }
 
   const total = cScore + aScore + hScore + sScore;
 
   // ── Label & color ──────────────────────────────────────────────────────────
   const { label, color } =
-    total >= 86 ? { label: "Excellent",  color: "#22c55e" } :
-    total >= 71 ? { label: "Good",       color: "#84cc16" } :
-    total >= 51 ? { label: "Moderate",   color: "#eab308" } :
-    total >= 31 ? { label: "Needs Work", color: "#f97316" } :
-                  { label: "Unbalanced", color: "#ef4444" };
+    total >= 86 ? { label: t("levelExcellent"),  color: "#22c55e" } :
+    total >= 71 ? { label: t("levelGood"),       color: "#84cc16" } :
+    total >= 51 ? { label: t("levelModerate"),   color: "#eab308" } :
+    total >= 31 ? { label: t("levelNeedsWork"),  color: "#f97316" } :
+                  { label: t("levelUnbalanced"), color: "#ef4444" };
 
   // ── Tip ────────────────────────────────────────────────────────────────────
   let tip: string;
   if (nV === 0)
-    tip = `Your portfolio is ${sPct}% stablecoins with no volatile assets. Consider deploying into Stacks ecosystem tokens like STX, ALEX, or Velar.`;
+    tip = t("tipNoVolatile", { pct: sPct });
   else if (stablePct > 0.6)
-    tip = `${sPct}% of your portfolio is in stablecoins. A large cash position is safe but limits growth exposure.`;
+    tip = t("tipMostlyStable", { pct: sPct });
   else if (topVolAlloc > 0.9)
-    tip = `${topPct}% of your volatile allocation is in ${topVolToken}. Even small positions in 2–3 other Stacks tokens would significantly reduce concentration risk.`;
+    tip = t("tipExtremeConc", { pct: topPct, token: topVolToken });
   else if (nV === 1)
-    tip = `You hold only 1 volatile asset (${topVolToken}). Adding 2–3 more Stacks ecosystem tokens (e.g. ALEX, sBTC, Velar) would improve your score quickly.`;
+    tip = t("tipOneAsset", { token: topVolToken });
   else if (topVolAlloc > 0.7)
-    tip = `${topVolToken} makes up ${topPct}% of your volatile portfolio. Gradually rebalancing into other assets could lower your concentration risk.`;
+    tip = t("tipHighConc", { token: topVolToken, pct: topPct });
   else if (stablePct === 0 && nV > 0)
-    tip = `No stablecoin reserve detected. Holding 5–15% in a stablecoin like USDCx provides a buffer during market downturns.`;
+    tip = t("tipNoStable");
   else if (total >= 80)
-    tip = "Your portfolio shows healthy diversification across the Stacks ecosystem. Keep maintaining a balanced allocation.";
+    tip = t("tipHealthy");
   else
-    tip = "Consider gradually rebalancing volatile assets to spread weight more evenly and maintain a stablecoin reserve.";
+    tip = t("tipDefault");
 
   return {
     score: total,
@@ -198,10 +202,10 @@ function calcHealth(
     stablePct,
     volatilePct,
     metrics: [
-      { label: "Volatile Concentration", score: cScore, maxScore: 35, description: cDesc, level: cLevel },
-      { label: "Asset Count",            score: aScore, maxScore: 25, description: aDesc, level: aLevel },
-      { label: "Distribution Quality",   score: hScore, maxScore: 25, description: hDesc, level: hLevel },
-      { label: "Stablecoin Reserve",     score: sScore, maxScore: 15, description: sDesc, level: sLevel },
+      { label: t("mVolatileConcentration"), score: cScore, maxScore: 35, description: cDesc, level: cLevel },
+      { label: t("mAssetCount"),            score: aScore, maxScore: 25, description: aDesc, level: aLevel },
+      { label: t("mDistributionQuality"),   score: hScore, maxScore: 25, description: hDesc, level: hLevel },
+      { label: t("mStablecoinReserve"),     score: sScore, maxScore: 15, description: sDesc, level: sLevel },
     ],
     tip,
   };
@@ -210,6 +214,7 @@ function calcHealth(
 // ─── UI components ────────────────────────────────────────────────────────────
 
 function ScoreRing({ score, color, label, isDark }: { score: number; color: string; label: string; isDark: boolean }) {
+  const t = useTranslations("assets.health");
   const r = 46;
   const circ = 2 * Math.PI * r;
   const offset = circ - (score / 100) * circ;
@@ -234,7 +239,7 @@ function ScoreRing({ score, color, label, isDark }: { score: number; color: stri
         <text x="62" y="56" textAnchor="middle" fontSize="30" fontWeight="bold"
           fill={textPrimary} fontFamily="system-ui, sans-serif">{score}</text>
         <text x="62" y="73" textAnchor="middle" fontSize="11"
-          fill={textMuted} fontFamily="system-ui, sans-serif">/ 100</text>
+          fill={textMuted} fontFamily="system-ui, sans-serif">{t("outOf")}</text>
       </svg>
       <span className="text-sm font-semibold" style={{ color }}>{label}</span>
     </div>
@@ -281,10 +286,11 @@ interface Props {
 }
 
 export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
+  const t = useTranslations("assets.health");
   const isDark = useThemeStore((s) => s.theme === "dark");
   const result = useMemo(
-    () => (stx && totalUsd > 0 ? calcHealth(stx, tokens, totalUsd) : null),
-    [stx, tokens, totalUsd]
+    () => (stx && totalUsd > 0 ? calcHealth(stx, tokens, totalUsd, t) : null),
+    [stx, tokens, totalUsd, t]
   );
   const s = { backgroundColor: 'var(--border-subtle)' } as const;
 
@@ -312,7 +318,7 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
     return (
       <div className="glass-card rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center py-10 text-center">
         <Wallet size={32} className="mb-3" style={{ color: 'var(--border-default)' }} />
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Connect your wallet to see your health score</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t("connectMsg")}</p>
       </div>
     );
   }
@@ -321,15 +327,15 @@ export default function HealthScore({ stx, tokens, totalUsd, loading }: Props) {
     <div className="glass-card rounded-2xl p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Portfolio Health Score</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("title")}</h2>
         <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           <span>
             <span className="inline-block w-2 h-2 rounded-full bg-[#B0E4CC] mr-1" />
-            Volatile {(result.volatilePct * 100).toFixed(0)}%
+            {t("volatile", { pct: (result.volatilePct * 100).toFixed(0) })}
           </span>
           <span>
             <span className="inline-block w-2 h-2 rounded-full bg-blue-300 mr-1" />
-            Stable {(result.stablePct * 100).toFixed(0)}%
+            {t("stable", { pct: (result.stablePct * 100).toFixed(0) })}
           </span>
         </div>
       </div>

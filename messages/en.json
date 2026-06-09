@@ -1099,5 +1099,41 @@
     "smartAlerts": {
       "title": "Smart Alerts"
     }
+  },
+  "apps": {
+    "title": "Connected Apps",
+    "intro": "DeFi protocols and contracts you have interacted with on Stacks, based on your 50 most recent transactions.",
+    "connectPrompt": "Connect your wallet to see your app history",
+    "loadError": "Failed to load app history.",
+    "retry": "Retry",
+    "exploreHeading": "Explore DeFi on Stacks",
+    "knownHeading": "Known Protocols",
+    "unverifiedHeading": "Unverified Contracts",
+    "showLess": "Show less",
+    "showMore": "Show {count} more",
+    "card": {
+      "unableFetch": "Unable to fetch position",
+      "total": "Total",
+      "net": "Net",
+      "lastUsed": "Last used {time}",
+      "open": "Open",
+      "tryIt": "Try it"
+    },
+    "explore": {
+      "stackingdao": "Stake STX and receive stSTX, a liquid token earning stacking rewards",
+      "lisa": "Stake STX and receive LiSTX while keeping liquidity",
+      "zest": "Supply assets to earn yield or borrow against your crypto",
+      "arkadiko": "Mint USDA stablecoin by locking STX as collateral",
+      "bitflow": "Swap tokens on Stacks with low fees",
+      "alex": "Trade, lend, and borrow across Stacks DeFi",
+      "velar": "Swap and provide liquidity on Stacks"
+    },
+    "unknown": {
+      "unverified": "Unverified",
+      "unverifiedTitle": "Contract not recognized as a known DeFi protocol",
+      "openSource": "Open Source",
+      "viewExplorer": "View on Stacks Explorer",
+      "openAria": "Open {name} on Stacks Explorer"
+    }
   }
 }

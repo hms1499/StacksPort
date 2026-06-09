@@ -1,7 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ExternalLink } from "lucide-react";
 import { TokenImage } from "@/components/ui";
+
+// protocol name → translation subkey under apps.explore.*
+const NAME_KEY: Record<string, string> = {
+  StackingDAO: "stackingdao",
+  Lisa: "lisa",
+  "Zest Protocol": "zest",
+  Arkadiko: "arkadiko",
+  Bitflow: "bitflow",
+  ALEX: "alex",
+  Velar: "velar",
+};
 
 interface ExploreProtocolCardProps {
   name: string;
@@ -70,6 +82,9 @@ export default function ExploreProtocolCard({
   category,
   tagline,
 }: ExploreProtocolCardProps) {
+  const t = useTranslations("apps");
+  const key = NAME_KEY[name];
+  const description = key ? t(`explore.${key}`) : tagline;
   return (
     <div
       className="rounded-xl p-4 flex flex-col gap-3"
@@ -99,7 +114,7 @@ export default function ExploreProtocolCard({
         </div>
       </div>
       <p className="text-xs line-clamp-2" style={{ color: "var(--text-muted)" }}>
-        {tagline}
+        {description}
       </p>
       <div className="flex justify-end">
         <a
@@ -112,7 +127,7 @@ export default function ExploreProtocolCard({
             color: "var(--accent)",
           }}
         >
-          Try it <ExternalLink size={11} />
+          {t("card.tryIt")} <ExternalLink size={11} />
         </a>
       </div>
     </div>

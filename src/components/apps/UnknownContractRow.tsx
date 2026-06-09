@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Code2, ExternalLink } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
 import { useContractInfo } from "@/hooks/useMarketData";
@@ -13,6 +14,7 @@ export default function UnknownContractRow({
   contractId,
   lastInteractedAt,
 }: UnknownContractRowProps) {
+  const t = useTranslations("apps.unknown");
   const explorerUrl = `https://explorer.hiro.so/address/${contractId}?chain=mainnet`;
   const contractName = contractId.split(".")[1] ?? contractId;
   const deployer = contractId.split(".")[0];
@@ -49,9 +51,9 @@ export default function UnknownContractRow({
               backgroundColor: "rgba(245,158,11,0.15)",
               color: "#d97706",
             }}
-            title="Contract not recognized as a known DeFi protocol"
+            title={t("unverifiedTitle")}
           >
-            Unverified
+            {t("unverified")}
           </span>
         </div>
 
@@ -73,7 +75,7 @@ export default function UnknownContractRow({
                   color: "var(--accent)",
                 }}
               >
-                Open Source
+                {t("openSource")}
               </span>
             )}
           </div>
@@ -86,8 +88,8 @@ export default function UnknownContractRow({
         rel="noopener noreferrer"
         className="shrink-0 transition-opacity hover:opacity-70"
         style={{ color: "var(--text-muted)" }}
-        title="View on Stacks Explorer"
-        aria-label={`Open ${contractName} on Stacks Explorer`}
+        title={t("viewExplorer")}
+        aria-label={t("openAria", { name: contractName })}
       >
         <ExternalLink size={15} />
       </a>

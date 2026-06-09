@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ExternalLink } from "lucide-react";
 import { TokenImage } from "@/components/ui";
 import { timeAgo } from "@/lib/utils";
@@ -15,6 +16,7 @@ interface ProtocolCardProps {
 }
 
 function PositionRow({ position }: { position: ProtocolPosition | null | "loading" }) {
+  const t = useTranslations("apps.card");
   if (position === "loading") {
     return (
       <div
@@ -42,7 +44,7 @@ function PositionRow({ position }: { position: ProtocolPosition | null | "loadin
         <span
           className="text-xs"
           style={{ color: "var(--text-muted)" }}
-          title="Unable to fetch position"
+          title={t("unableFetch")}
         >
           —
         </span>
@@ -82,7 +84,7 @@ function PositionRow({ position }: { position: ProtocolPosition | null | "loadin
           style={{ borderColor: "var(--border-subtle)" }}
         >
           <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
-            {position.totalUsd >= 0 ? "Total" : "Net"}
+            {position.totalUsd >= 0 ? t("total") : t("net")}
           </span>
           <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>
             ${Math.abs(position.totalUsd).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -101,6 +103,7 @@ export default function ProtocolCard({
   lastInteractedAt,
   position,
 }: ProtocolCardProps) {
+  const t = useTranslations("apps.card");
   return (
     <div
       className="rounded-xl p-4 flex flex-col gap-3"
@@ -134,7 +137,7 @@ export default function ProtocolCard({
 
       <div className="flex items-center justify-between">
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Last used {lastInteractedAt > 0 ? timeAgo(lastInteractedAt) : "—"}
+          {t("lastUsed", { time: lastInteractedAt > 0 ? timeAgo(lastInteractedAt) : "—" })}
         </p>
         <a
           href={url}
@@ -146,7 +149,7 @@ export default function ProtocolCard({
             color: "var(--accent)",
           }}
         >
-          Open <ExternalLink size={11} />
+          {t("open")} <ExternalLink size={11} />
         </a>
       </div>
     </div>

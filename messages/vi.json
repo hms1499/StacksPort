@@ -1099,5 +1099,41 @@
     "smartAlerts": {
       "title": "Cảnh báo thông minh"
     }
+  },
+  "apps": {
+    "title": "Ứng dụng đã kết nối",
+    "intro": "Các giao thức DeFi và hợp đồng bạn đã tương tác trên Stacks, dựa trên 50 giao dịch gần nhất của bạn.",
+    "connectPrompt": "Kết nối ví để xem lịch sử ứng dụng của bạn",
+    "loadError": "Không tải được lịch sử ứng dụng.",
+    "retry": "Thử lại",
+    "exploreHeading": "Khám phá DeFi trên Stacks",
+    "knownHeading": "Giao thức đã biết",
+    "unverifiedHeading": "Hợp đồng chưa xác minh",
+    "showLess": "Thu gọn",
+    "showMore": "Xem thêm {count}",
+    "card": {
+      "unableFetch": "Không thể lấy vị thế",
+      "total": "Tổng",
+      "net": "Ròng",
+      "lastUsed": "Dùng lần cuối {time}",
+      "open": "Mở",
+      "tryIt": "Dùng thử"
+    },
+    "explore": {
+      "stackingdao": "Stake STX và nhận stSTX, token thanh khoản kiếm thưởng stacking",
+      "lisa": "Stake STX và nhận LiSTX trong khi vẫn giữ thanh khoản",
+      "zest": "Cung cấp tài sản để kiếm lợi nhuận hoặc vay thế chấp bằng crypto của bạn",
+      "arkadiko": "Đúc stablecoin USDA bằng cách khóa STX làm tài sản thế chấp",
+      "bitflow": "Swap token trên Stacks với phí thấp",
+      "alex": "Giao dịch, cho vay và vay trên Stacks DeFi",
+      "velar": "Swap và cung cấp thanh khoản trên Stacks"
+    },
+    "unknown": {
+      "unverified": "Chưa xác minh",
+      "unverifiedTitle": "Hợp đồng không được nhận diện là giao thức DeFi đã biết",
+      "openSource": "Mã nguồn mở",
+      "viewExplorer": "Xem trên Stacks Explorer",
+      "openAria": "Mở {name} trên Stacks Explorer"
+    }
   }
 }

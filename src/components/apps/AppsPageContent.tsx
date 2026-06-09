@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Globe } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useConnectedApps, useProtocolPositions } from "@/hooks/useMarketData";
@@ -24,6 +25,7 @@ function SkeletonCard() {
 }
 
 export default function AppsPageContent() {
+  const t = useTranslations("apps");
   const { stxAddress, isConnected } = useWalletStore();
   const { data, isLoading, error, mutate } = useConnectedApps(
     stxAddress ?? undefined
@@ -41,18 +43,17 @@ export default function AppsPageContent() {
 
   return (
     <>
-      <Topbar title="Connected Apps" />
+      <Topbar title={t("title")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-4xl mx-auto w-full">
         <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-          DeFi protocols and contracts you have interacted with on Stacks,
-          based on your 50 most recent transactions.
+          {t("intro")}
         </p>
 
         {!isConnected ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Globe size={40} style={{ color: "var(--text-muted)" }} />
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-              Connect your wallet to see your app history
+              {t("connectPrompt")}
             </p>
           </div>
         ) : isLoading ? (
@@ -64,7 +65,7 @@ export default function AppsPageContent() {
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-              Failed to load app history.
+              {t("loadError")}
             </p>
             <button
               onClick={() => mutate()}
@@ -74,7 +75,7 @@ export default function AppsPageContent() {
                 color: "var(--accent)",
               }}
             >
-              Retry
+              {t("retry")}
             </button>
           </div>
         ) : isEmpty ? (
@@ -83,7 +84,7 @@ export default function AppsPageContent() {
               className="text-sm font-semibold mb-3"
               style={{ color: "var(--text-secondary)" }}
             >
-              Explore DeFi on Stacks
+              {t("exploreHeading")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {EXPLORE_PROTOCOLS.map((p) => (
@@ -114,7 +115,7 @@ export default function AppsPageContent() {
                   className="text-sm font-semibold mb-3"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Known Protocols
+                  {t("knownHeading")}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {data.knownProtocols.map((p) => (
@@ -139,7 +140,7 @@ export default function AppsPageContent() {
                   className="text-sm font-semibold mb-3"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Unverified Contracts
+                  {t("unverifiedHeading")}
                 </h2>
                 <div className="space-y-2">
                   {(showAllContracts
@@ -156,8 +157,8 @@ export default function AppsPageContent() {
                     style={{ color: "var(--accent)" }}
                   >
                     {showAllContracts
-                      ? "Show less"
-                      : `Show ${data.unknownContracts.length - 3} more`}
+                      ? t("showLess")
+                      : t("showMore", { count: data.unknownContracts.length - 3 })}
                   </button>
                 )}
               </section>

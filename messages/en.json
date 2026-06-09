@@ -1051,5 +1051,53 @@
     "badge": {
       "aria": "{count, plural, =0 {Notifications} other {Notifications (# unread)}}"
     }
+  },
+  "ai": {
+    "title": "Stacks AI",
+    "marketIntel": "Market Intelligence",
+    "updated": "Updated {time}",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago"
+    },
+    "error": {
+      "title": "Failed to load insights",
+      "desc": "Market intelligence is temporarily unavailable. Please try again in a moment."
+    },
+    "sentiment": {
+      "title": "Market Sentiment",
+      "bullish": "Bullish",
+      "bearish": "Bearish",
+      "neutral": "Neutral",
+      "fearGreed": "Fear & Greed"
+    },
+    "kol": {
+      "title": "Social Signals",
+      "empty": "No social data available",
+      "vol": "Vol {value}"
+    },
+    "news": {
+      "title": "News Digest",
+      "loading": "Loading article…",
+      "loadError": "Could not load article content.",
+      "readMore": "Read full article"
+    },
+    "position": {
+      "title": "Your Position",
+      "badge": "Personalized",
+      "error": "Couldn't load your alerts. Try refreshing in a moment.",
+      "healthy": "Your portfolio looks healthy — no alerts right now."
+    },
+    "priority": {
+      "high": "high",
+      "medium": "medium",
+      "low": "low"
+    },
+    "smartAlerts": {
+      "title": "Smart Alerts"
+    }
   }
 }

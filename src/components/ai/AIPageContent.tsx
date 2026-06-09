@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { RefreshCw, Sparkles, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAIInsights } from "@/hooks/useAIInsights";
@@ -12,11 +13,11 @@ import NewsDigestCard from "./NewsDigestCard";
 import YourPositionCard from "./YourPositionCard";
 import { useWalletStore } from "@/store/walletStore";
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, t: (key: string, values?: Record<string, number>) => string): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 60) return t("time.justNow");
+  if (diff < 3600) return t("time.minutesAgo", { n: Math.floor(diff / 60) });
+  return t("time.hoursAgo", { n: Math.floor(diff / 3600) });
 }
 
 function Skeleton({ className }: { className?: string }) {
@@ -34,12 +35,13 @@ function Skeleton({ className }: { className?: string }) {
 }
 
 export default function AIPageContent() {
+  const t = useTranslations("ai");
   const { data, error, isLoading, isValidating, mutate } = useAIInsights();
   const { isConnected, stxAddress } = useWalletStore();
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="Stacks AI" />
+      <Topbar title={t("title")} />
 
       <AnimatedPage className="flex-1 p-4 md:p-6 pb-24 md:pb-6">
         {/* Header */}
@@ -47,11 +49,11 @@ export default function AIPageContent() {
           <div className="flex items-center gap-2">
             <Sparkles size={18} style={{ color: 'var(--accent)' }} />
             <h2 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-              Market Intelligence
+              {t("marketIntel")}
             </h2>
             {data && (
               <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                Updated {timeAgo(data.generatedAt)}
+                {t("updated", { time: timeAgo(data.generatedAt, t) })}
               </span>
             )}
           </div>
@@ -62,7 +64,7 @@ export default function AIPageContent() {
             style={{ color: 'var(--text-secondary)' }}
           >
             <RefreshCw size={13} className={isValidating ? "animate-spin" : ""} />
-            Refresh
+            {t("refresh")}
           </button>
         </div>
 
@@ -80,17 +82,17 @@ export default function AIPageContent() {
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <AlertCircle size={40} className="mb-3" style={{ color: 'var(--text-muted)' }} />
             <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
-              Failed to load insights
+              {t("error.title")}
             </p>
             <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-              Market intelligence is temporarily unavailable. Please try again in a moment.
+              {t("error.desc")}
             </p>
             <button
               onClick={() => mutate()}
               className="px-4 py-2 text-white text-sm font-medium rounded-xl transition-colors"
               style={{ backgroundColor: 'var(--accent)' }}
             >
-              Retry
+              {t("retry")}
             </button>
           </div>
         )}

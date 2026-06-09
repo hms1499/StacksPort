@@ -1051,5 +1051,53 @@
     "badge": {
       "aria": "{count, plural, =0 {Thông báo} other {Thông báo (# chưa đọc)}}"
     }
+  },
+  "ai": {
+    "title": "Stacks AI",
+    "marketIntel": "Thông tin thị trường",
+    "updated": "Cập nhật {time}",
+    "refresh": "Làm mới",
+    "retry": "Thử lại",
+    "time": {
+      "justNow": "vừa xong",
+      "minutesAgo": "{n} phút trước",
+      "hoursAgo": "{n} giờ trước"
+    },
+    "error": {
+      "title": "Không tải được thông tin",
+      "desc": "Thông tin thị trường tạm thời không khả dụng. Vui lòng thử lại sau giây lát."
+    },
+    "sentiment": {
+      "title": "Tâm lý thị trường",
+      "bullish": "Tăng giá",
+      "bearish": "Giảm giá",
+      "neutral": "Trung lập",
+      "fearGreed": "Sợ hãi & Tham lam"
+    },
+    "kol": {
+      "title": "Tín hiệu mạng xã hội",
+      "empty": "Không có dữ liệu mạng xã hội",
+      "vol": "KL {value}"
+    },
+    "news": {
+      "title": "Tổng hợp tin tức",
+      "loading": "Đang tải bài viết…",
+      "loadError": "Không thể tải nội dung bài viết.",
+      "readMore": "Đọc toàn bộ bài viết"
+    },
+    "position": {
+      "title": "Vị thế của bạn",
+      "badge": "Cá nhân hóa",
+      "error": "Không tải được cảnh báo của bạn. Thử làm mới sau giây lát.",
+      "healthy": "Danh mục của bạn ổn định — chưa có cảnh báo nào."
+    },
+    "priority": {
+      "high": "Cao",
+      "medium": "Trung bình",
+      "low": "Thấp"
+    },
+    "smartAlerts": {
+      "title": "Cảnh báo thông minh"
+    }
   }
 }

@@ -1,12 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { AlertItem } from "@/lib/ai";
 import AlertRow from "./AlertRow";
 
 export default function SmartAlertsCard({ items }: { items: AlertItem[] }) {
+  const t = useTranslations("ai.smartAlerts");
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
-      <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Smart Alerts</h3>
+      <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{t("title")}</h3>
 
       <div className="space-y-3">
         {items.map((alert, i) => (

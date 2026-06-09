@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Radio, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 import type { KOLSignalsData } from "@/lib/ai";
 
@@ -22,6 +23,7 @@ const sentimentConfig = {
 };
 
 export default function KOLSignalsCard({ data }: { data: KOLSignalsData | undefined }) {
+  const t = useTranslations("ai.kol");
   if (!data) return null;
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -30,7 +32,7 @@ export default function KOLSignalsCard({ data }: { data: KOLSignalsData | undefi
         <div className="flex items-center gap-2">
           <Radio size={16} style={{ color: "var(--accent)" }} />
           <h3 className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
-            Social Signals
+            {t("title")}
           </h3>
         </div>
         <span
@@ -51,7 +53,7 @@ export default function KOLSignalsCard({ data }: { data: KOLSignalsData | undefi
       {/* Coins list */}
       {data.coins.length === 0 ? (
         <p className="text-xs text-center py-6" style={{ color: "var(--text-muted)" }}>
-          No social data available
+          {t("empty")}
         </p>
       ) : (
         <div className="space-y-2">
@@ -90,7 +92,7 @@ export default function KOLSignalsCard({ data }: { data: KOLSignalsData | undefi
                     </span>
                     {/* Social volume */}
                     <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                      Vol {formatVolume(coin.socialVolume)}
+                      {t("vol", { value: formatVolume(coin.socialVolume) })}
                     </span>
                   </div>
                   <p className="text-[11px] mt-0.5 truncate" style={{ color: "var(--text-muted)" }}>

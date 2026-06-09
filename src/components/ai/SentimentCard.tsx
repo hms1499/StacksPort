@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SentimentData } from "@/lib/ai";
 
 function ScoreBadge({ score }: { score: number }) {
+  const t = useTranslations("ai.sentiment");
   const color =
     score >= 30
       ? "bg-green-100 text-green-700"
@@ -12,7 +14,7 @@ function ScoreBadge({ score }: { score: number }) {
         ? "bg-red-100 text-red-700"
         : "bg-yellow-100 text-yellow-700";
 
-  const label = score >= 30 ? "Bullish" : score <= -30 ? "Bearish" : "Neutral";
+  const label = score >= 30 ? t("bullish") : score <= -30 ? t("bearish") : t("neutral");
 
   return (
     <span className={cn("inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold", color)}>
@@ -23,10 +25,11 @@ function ScoreBadge({ score }: { score: number }) {
 }
 
 export default function SentimentCard({ data }: { data: SentimentData }) {
+  const t = useTranslations("ai.sentiment");
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Market Sentiment</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("title")}</h3>
         <ScoreBadge score={data.score} />
       </div>
 
@@ -37,7 +40,7 @@ export default function SentimentCard({ data }: { data: SentimentData }) {
       {/* Fear & Greed */}
       <div className="flex items-center gap-3 mb-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
-          Fear & Greed
+          {t("fearGreed")}
         </span>
         <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
           <div

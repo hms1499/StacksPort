@@ -4,6 +4,7 @@
 // type→color/icon and priority→badge mapping lives here so a new alert type or
 // restyle is a one-file change instead of two copies drifting apart.
 import type { CSSProperties } from "react";
+import { useTranslations } from "next-intl";
 import { Zap, AlertTriangle, Info } from "lucide-react";
 import type { Alert } from "@/lib/ai";
 
@@ -41,6 +42,7 @@ const priorityBadge: Record<Alert["priority"], CSSProperties> = {
 };
 
 export default function AlertRow({ alert }: { alert: Alert }) {
+  const t = useTranslations("ai.priority");
   const config = typeConfig[alert.type];
   const Icon = config.icon;
   return (
@@ -55,7 +57,7 @@ export default function AlertRow({ alert }: { alert: Alert }) {
             className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full"
             style={priorityBadge[alert.priority]}
           >
-            {alert.priority}
+            {t(alert.priority)}
           </span>
         </div>
         <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>

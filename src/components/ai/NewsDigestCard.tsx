@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { ExternalLink, Newspaper, ChevronDown, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -36,6 +37,7 @@ function NewsImage({ src, alt, className = "w-14 h-14" }: { src?: string; alt: s
 }
 
 function NewsItem({ item }: { item: NewsDigestItem }) {
+  const t = useTranslations("ai.news");
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -132,13 +134,13 @@ function NewsItem({ item }: { item: NewsDigestItem }) {
               {loading && (
                 <div className="flex items-center gap-2 py-4 justify-center">
                   <Loader2 size={15} className="animate-spin" style={{ color: "var(--text-muted)" }} />
-                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>Loading article…</span>
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>{t("loading")}</span>
                 </div>
               )}
 
               {error && (
                 <p className="text-xs py-2" style={{ color: "var(--text-muted)" }}>
-                  Could not load article content.
+                  {t("loadError")}
                 </p>
               )}
 
@@ -161,7 +163,7 @@ function NewsItem({ item }: { item: NewsDigestItem }) {
                 className="inline-flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
                 style={{ color: "var(--accent)" }}
               >
-                Read full article
+                {t("readMore")}
                 <ExternalLink size={12} />
               </a>
             </div>
@@ -179,10 +181,11 @@ export default function NewsDigestCard({
   summary: string;
   items: NewsDigestItem[];
 }) {
+  const t = useTranslations("ai.news");
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
       <h3 className="font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
-        News Digest
+        {t("title")}
       </h3>
 
       <p className="text-sm mb-4 leading-relaxed" style={{ color: "var(--text-secondary)" }}>

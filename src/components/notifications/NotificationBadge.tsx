@@ -10,6 +10,7 @@ import { NotificationDrawer } from './NotificationDrawer';
 export default function NotificationBadge() {
   const t = useTranslations('notifications');
   const [isOpen, setIsOpen] = useState(false);
+  const bellRef = useRef<HTMLButtonElement>(null);
 
   // Selector trả về primitive (number) → Zustand chỉ re-render khi count thực sự thay đổi,
   // không phải mỗi khi bất kỳ notification nào update.
@@ -32,6 +33,7 @@ export default function NotificationBadge() {
   return (
     <div className="relative">
       <button
+        ref={bellRef}
         onClick={() => (isOpen ? setIsOpen(false) : handleOpen())}
         className="relative p-2 rounded-xl transition-colors duration-150"
         style={{ color: 'var(--text-muted)' }}
@@ -70,7 +72,7 @@ export default function NotificationBadge() {
         </span>
       )}
 
-      <NotificationDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <NotificationDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} anchorRef={bellRef} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { Bell, ArrowRight, Trash2 } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -13,6 +14,7 @@ interface NotificationDrawerProps {
 }
 
 export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps) {
+  const t = useTranslations('notifications');
   const { notifications, dismissNotification, clearAll, markAllAsRead } = useNotificationStore();
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
           style={{ borderColor: 'var(--border-subtle)' }}
         >
           <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-            Notifications
+            {t('drawer.title')}
           </h3>
           {displayNotifications.length > 0 && (
             <button
@@ -84,7 +86,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
               className="text-xs transition-opacity hover:opacity-70"
               style={{ color: 'var(--text-muted)' }}
             >
-              Clear all
+              {t('drawer.clearAll')}
             </button>
           )}
         </div>
@@ -95,7 +97,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
             <div className="px-4 py-10 text-center">
               <Bell size={32} className="mx-auto mb-2" style={{ color: 'var(--border-subtle)' }} />
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                No notifications yet
+                {t('drawer.empty')}
               </p>
             </div>
           ) : (
@@ -151,7 +153,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
                       }}
                       className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                       style={{ color: 'var(--text-muted)' }}
-                      aria-label="Dismiss"
+                      aria-label={t('dismiss')}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -173,7 +175,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
               borderColor: 'var(--border-subtle)',
             }}
           >
-            View all
+            {t('drawer.viewAll')}
             <ArrowRight size={16} />
           </Link>
         )}

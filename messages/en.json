@@ -931,5 +931,125 @@
         "dismiss": "Dismiss"
       }
     }
+  },
+  "notifications": {
+    "pageTitle": "Notifications",
+    "pageTabs": {
+      "activity": "Activity",
+      "priceAlerts": "Price Alerts",
+      "preferences": "Preferences"
+    },
+    "tabs": {
+      "all": "All",
+      "transactions": "Transactions",
+      "alerts": "Alerts",
+      "dca": "DCA",
+      "wallet": "Wallet"
+    },
+    "search": "Search...",
+    "filters": "Filters",
+    "sort": "Sort",
+    "newestFirst": "Newest first",
+    "oldestFirst": "Oldest first",
+    "delete": "Delete ({count})",
+    "unread": "{count} unread",
+    "selectAll": "Select all ({count})",
+    "deselectAll": "Deselect all ({count})",
+    "empty": {
+      "title": "No notifications yet",
+      "desc": "Notifications will appear here when you make swaps, DCA executions, or hit price targets."
+    },
+    "date": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "dismiss": "Dismiss",
+    "category": {
+      "dca": "DCA Vault",
+      "dcaOut": "DCA Out",
+      "wallet": "Wallet",
+      "swap": "Swap",
+      "send": "Send",
+      "price": "Price Alert"
+    },
+    "plan": "Plan #{id}",
+    "unreadAria": "Unread",
+    "drawer": {
+      "title": "Notifications",
+      "clearAll": "Clear all",
+      "empty": "No notifications yet",
+      "viewAll": "View all"
+    },
+    "filterPanel": {
+      "title": "Filters",
+      "clear": "Clear",
+      "close": "Close filters",
+      "type": "Type",
+      "category": "Category",
+      "dateRange": "Date Range",
+      "applied": "{count, plural, one {# filter applied} other {# filters applied}}"
+    },
+    "type": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info"
+    },
+    "filterCategory": {
+      "dca": "DCA In",
+      "dcaOut": "DCA Out",
+      "wallet": "Wallet",
+      "swap": "Swap",
+      "send": "Send",
+      "price": "Price Alert"
+    },
+    "range": {
+      "hour": "Last hour",
+      "day": "Last day",
+      "week": "Last week",
+      "all": "All time"
+    },
+    "prefs": {
+      "title": "Notification Preferences",
+      "subtitle": "Errors always show regardless of these settings.",
+      "resetAll": "Reset all",
+      "footer": "Preferences are saved locally and persist across sessions.",
+      "enable": "Enable",
+      "disable": "Disable",
+      "toggleAria": "{action} {label} notifications",
+      "cat": {
+        "dca": {
+          "label": "DCA In",
+          "desc": "Plan created, executed, paused, resumed, cancelled"
+        },
+        "dcaOut": {
+          "label": "DCA Out",
+          "desc": "sBTC→USDCx plan events"
+        },
+        "swap": {
+          "label": "Swap",
+          "desc": "Swap submitted and confirmed"
+        },
+        "send": {
+          "label": "Transfer",
+          "desc": "STX and token transfers"
+        },
+        "price": {
+          "label": "Price Alerts",
+          "desc": "Token price target reached"
+        },
+        "wallet": {
+          "label": "Wallet",
+          "desc": "Connect, disconnect, account changes"
+        }
+      }
+    },
+    "toast": {
+      "dismiss": "Dismiss notification",
+      "region": "Notifications"
+    },
+    "badge": {
+      "aria": "{count, plural, =0 {Notifications} other {Notifications (# unread)}}"
+    }
   }
 }

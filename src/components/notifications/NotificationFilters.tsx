@@ -1,10 +1,16 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
 import type { NotificationType, NotificationCategory } from '@/types/notifications';
 import { cn } from '@/lib/utils';
+
+// category id → translation subkey (dca-out → dcaOut)
+const CATEGORY_KEY: Record<NotificationCategory, string> = {
+  dca: 'dca', 'dca-out': 'dcaOut', wallet: 'wallet', swap: 'swap', send: 'send', price: 'price',
+};
 
 const typeOptions: NotificationType[] = ['success', 'error', 'warning', 'info'];
 const categoryOptions: NotificationCategory[] = ['dca', 'dca-out', 'wallet', 'swap', 'send', 'price'];
@@ -18,6 +24,7 @@ export default function NotificationFilters({
   isMobileOpen = false,
   onMobileClose,
 }: NotificationFiltersProps) {
+  const t = useTranslations('notifications');
   const { filters, setTypeFilter, setCategoryFilter, setDateRangeFilter, clearFilters } = useNotificationStore();
 
   const hasActiveFilters =
@@ -31,14 +38,9 @@ export default function NotificationFilters({
     setCategoryFilter(filters.categories.includes(category) ? filters.categories.filter((c) => c !== category) : [...filters.categories, category]);
   };
 
-  const getTypeLabel = (type: NotificationType) => type.charAt(0).toUpperCase() + type.slice(1);
+  const getTypeLabel = (type: NotificationType) => t(`type.${type}`);
 
-  const getCategoryLabel = (category: NotificationCategory) => {
-    const labels: Record<NotificationCategory, string> = {
-      dca: 'DCA In', 'dca-out': 'DCA Out', wallet: 'Wallet', swap: 'Swap', send: 'Send', price: 'Price Alert',
-    };
-    return labels[category];
-  };
+  const getCategoryLabel = (category: NotificationCategory) => t(`filterCategory.${CATEGORY_KEY[category]}`);
 
   const sidebarStyle: React.CSSProperties = {
     backgroundColor: 'var(--bg-card)',
@@ -48,7 +50,7 @@ export default function NotificationFilters({
   const content = (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Filters</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t('filterPanel.title')}</h2>
         <div className="flex items-center gap-3">
           {hasActiveFilters && (
             <button
@@ -56,7 +58,7 @@ export default function NotificationFilters({
               className="text-xs font-medium transition-colors"
               style={{ color: 'var(--accent)' }}
             >
-              Clear
+              {t('filterPanel.clear')}
             </button>
           )}
           {onMobileClose && (
@@ -64,7 +66,7 @@ export default function NotificationFilters({
               onClick={onMobileClose}
               className="lg:hidden transition-colors"
               style={{ color: 'var(--text-muted)' }}
-              aria-label="Close filters"
+              aria-label={t('filterPanel.close')}
             >
               <X size={20} />
             </button>
@@ -74,7 +76,7 @@ export default function NotificationFilters({
 
       {/* Type filters */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Type</h3>
+        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>{t('filterPanel.type')}</h3>
         <div className="space-y-2">
           {typeOptions.map((type) => (
             <label key={type} className="flex items-center gap-2 cursor-pointer">
@@ -92,7 +94,7 @@ export default function NotificationFilters({
 
       {/* Category filters */}
       <div className="mb-6">
-        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Category</h3>
+        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>{t('filterPanel.category')}</h3>
         <div className="space-y-2">
           {categoryOptions.map((category) => (
             <label key={category} className="flex items-center gap-2 cursor-pointer">
@@ -110,7 +112,7 @@ export default function NotificationFilters({
 
       {/* Date range filters */}
       <div>
-        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Date Range</h3>
+        <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>{t('filterPanel.dateRange')}</h3>
         <div className="space-y-2">
           {(['hour', 'day', 'week', 'all'] as const).map((range) => (
             <label key={range} className="flex items-center gap-2 cursor-pointer">
@@ -123,7 +125,7 @@ export default function NotificationFilters({
                 className="w-4 h-4 cursor-pointer" style={{ accentColor: 'var(--accent)' }}
               />
               <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                {range === 'hour' ? 'Last hour' : range === 'day' ? 'Last day' : range === 'week' ? 'Last week' : 'All time'}
+                {t(`range.${range}`)}
               </span>
             </label>
           ))}
@@ -133,8 +135,7 @@ export default function NotificationFilters({
       {hasActiveFilters && (
         <div className="mt-6 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
           <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-            {filters.types.length + filters.categories.length} filter
-            {filters.types.length + filters.categories.length !== 1 ? 's' : ''} applied
+            {t('filterPanel.applied', { count: filters.types.length + filters.categories.length })}
           </p>
         </div>
       )}

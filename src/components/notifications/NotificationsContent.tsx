@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search, Trash2, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
 import NotificationFilters from './NotificationFilters';
@@ -23,14 +24,14 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key'];
 
 // --- Date grouping ---
-function getDateLabel(timestamp: number): string {
+function getDateLabel(timestamp: number, t: (key: string) => string): string {
   const date = new Date(timestamp);
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  if (date.toDateString() === today.toDateString()) return 'Today';
-  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  if (date.toDateString() === today.toDateString()) return t('date.today');
+  if (date.toDateString() === yesterday.toDateString()) return t('date.yesterday');
 
   const daysDiff = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
   if (daysDiff < 7) return date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -38,12 +39,15 @@ function getDateLabel(timestamp: number): string {
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 }
 
-function groupByDate(notifications: Notification[]): { label: string; items: Notification[] }[] {
+function groupByDate(
+  notifications: Notification[],
+  t: (key: string) => string
+): { label: string; items: Notification[] }[] {
   const groups: { label: string; items: Notification[] }[] = [];
   const seen = new Map<string, Notification[]>();
 
   for (const n of notifications) {
-    const label = getDateLabel(n.timestamp);
+    const label = getDateLabel(n.timestamp, t);
     if (!seen.has(label)) {
       const items: Notification[] = [];
       seen.set(label, items);
@@ -56,6 +60,7 @@ function groupByDate(notifications: Notification[]): { label: string; items: Not
 }
 
 export default function NotificationsContent() {
+  const t = useTranslations('notifications');
   const {
     notifications,
     filters,
@@ -115,7 +120,7 @@ export default function NotificationsContent() {
     return filtered;
   }, [notifications, filters, activeTab]);
 
-  const groups = useMemo(() => groupByDate(filteredNotifications), [filteredNotifications]);
+  const groups = useMemo(() => groupByDate(filteredNotifications, t), [filteredNotifications, t]);
 
   const handleSelectNotification = (id: string) => {
     const newSelected = new Set(selectedIds);
@@ -167,7 +172,7 @@ export default function NotificationsContent() {
                     color: activeTab === tab.key ? 'var(--accent)' : 'var(--text-muted)',
                   }}
                 >
-                  {tab.label}
+                  {t(`tabs.${tab.key}`)}
                 </button>
               ))}
             </div>
@@ -175,7 +180,7 @@ export default function NotificationsContent() {
             {unreadCount > 0 && (
               <span className="text-xs font-medium shrink-0 pl-3" style={{ color: 'var(--text-muted)' }}>
                 <span className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ backgroundColor: 'var(--accent)' }} />
-                <span className="hidden sm:inline">{unreadCount} unread</span>
+                <span className="hidden sm:inline">{t('unread', { count: unreadCount })}</span>
                 <span className="sm:hidden">{unreadCount}</span>
               </span>
             )}
@@ -197,7 +202,7 @@ export default function NotificationsContent() {
               }}
             >
               <SlidersHorizontal size={16} />
-              <span className="hidden sm:inline">Filters</span>
+              <span className="hidden sm:inline">{t('filters')}</span>
               {activeFilterCount > 0 && (
                 <span className="text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center" style={{ backgroundColor: 'var(--accent)' }}>
                   {activeFilterCount}
@@ -210,7 +215,7 @@ export default function NotificationsContent() {
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t('search')}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-sm"
                 style={{
@@ -226,11 +231,11 @@ export default function NotificationsContent() {
               <div className="relative">
                 <button
                   onClick={() => setIsSortOpen(!isSortOpen)}
-                  aria-label="Sort"
+                  aria-label={t('sort')}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
                   style={{ border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}
                 >
-                  <span className="hidden sm:inline">Sort</span>
+                  <span className="hidden sm:inline">{t('sort')}</span>
                   <ChevronDown size={15} />
                 </button>
 
@@ -249,7 +254,7 @@ export default function NotificationsContent() {
                             fontWeight: filters.sortBy === sort ? 500 : 400,
                           }}
                         >
-                          {sort === 'newest' ? 'Newest first' : 'Oldest first'}
+                          {sort === 'newest' ? t('newestFirst') : t('oldestFirst')}
                         </button>
                       ))}
                     </div>
@@ -263,7 +268,7 @@ export default function NotificationsContent() {
                   className="flex items-center gap-1.5 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm font-medium"
                 >
                   <Trash2 size={15} />
-                  <span className="hidden sm:inline">Delete ({selectedIds.size})</span>
+                  <span className="hidden sm:inline">{t('delete', { count: selectedIds.size })}</span>
                   <span className="sm:hidden">{selectedIds.size}</span>
                 </button>
               )}
@@ -276,8 +281,8 @@ export default function NotificationsContent() {
           {filteredNotifications.length === 0 ? (
             <EmptyState
               icon={<Bell size={28} style={{ color: 'var(--accent)' }} />}
-              title="No notifications yet"
-              description="Notifications will appear here when you make swaps, DCA executions, or hit price targets."
+              title={t('empty.title')}
+              description={t('empty.desc')}
             />
           ) : (
             <div className="space-y-6">
@@ -292,8 +297,8 @@ export default function NotificationsContent() {
                   />
                   <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
                     {selectedIds.size === filteredNotifications.length
-                      ? `Deselect all (${filteredNotifications.length})`
-                      : `Select all (${filteredNotifications.length})`}
+                      ? t('deselectAll', { count: filteredNotifications.length })
+                      : t('selectAll', { count: filteredNotifications.length })}
                   </span>
                 </label>
               )}

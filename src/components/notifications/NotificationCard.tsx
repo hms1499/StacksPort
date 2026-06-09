@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { X, ExternalLink } from 'lucide-react';
 import type { Notification } from '@/types/notifications';
 import NotificationIcon from './NotificationIcon';
@@ -25,16 +26,14 @@ const getAccentColor = (type: string): string => {
   }
 };
 
-const getCategoryLabel = (category: string): string => {
-  const labels: Record<string, string> = {
-    dca: 'DCA Vault',
-    'dca-out': 'DCA Out',
-    wallet: 'Wallet',
-    swap: 'Swap',
-    send: 'Send',
-    price: 'Price Alert',
-  };
-  return labels[category] || category;
+// Map notification category → translation subkey under notifications.category.*
+const CATEGORY_KEY: Record<string, string> = {
+  dca: 'dca',
+  'dca-out': 'dcaOut',
+  wallet: 'wallet',
+  swap: 'swap',
+  send: 'send',
+  price: 'price',
 };
 
 export default function NotificationCard({
@@ -43,7 +42,10 @@ export default function NotificationCard({
   isSelected,
   onSelect,
 }: NotificationCardProps) {
+  const t = useTranslations('notifications');
   const accentColor = getAccentColor(notification.type);
+  const categoryKey = CATEGORY_KEY[notification.category];
+  const categoryLabel = categoryKey ? t(`category.${categoryKey}`) : notification.category;
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
@@ -89,7 +91,7 @@ export default function NotificationCard({
                   <span
                     className="flex-shrink-0 w-2 h-2 rounded-full"
                     style={{ backgroundColor: 'var(--accent)' }}
-                    aria-label="Unread"
+                    aria-label={t('unreadAria')}
                   />
                 )}
                 <p
@@ -107,7 +109,7 @@ export default function NotificationCard({
                     color: 'var(--text-secondary)',
                   }}
                 >
-                  {getCategoryLabel(notification.category)}
+                  {categoryLabel}
                 </span>
                 <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                   {new Date(notification.timestamp).toLocaleString('vi-VN')}
@@ -120,7 +122,7 @@ export default function NotificationCard({
               onClick={() => onDismiss(notification.id)}
               className="flex-shrink-0 transition-colors mt-1 hover:opacity-70"
               style={{ color: 'var(--text-muted)' }}
-              aria-label="Dismiss"
+              aria-label={t('dismiss')}
             >
               <X size={18} />
             </button>
@@ -156,7 +158,7 @@ export default function NotificationCard({
                   }}
                   title={notification.context.planId}
                 >
-                  Plan #{notification.context.planId.slice(-6)}
+                  {t('plan', { id: notification.context.planId.slice(-6) })}
                 </span>
               )}
 

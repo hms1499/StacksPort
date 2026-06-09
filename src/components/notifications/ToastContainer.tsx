@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence } from 'framer-motion';
 import { useNotificationStore } from '@/store/notificationStore';
 import Toast from './Toast';
 
 export default function ToastContainer() {
+  const t = useTranslations('notifications');
   const { notifications, dismissNotification } = useNotificationStore();
 
   const toasts = notifications.filter((n) => n.duration && n.isShown !== false);
@@ -14,7 +16,7 @@ export default function ToastContainer() {
     <div
       className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none md:bottom-6 md:right-6"
       role="region"
-      aria-label="Notifications"
+      aria-label={t('toast.region')}
       aria-live="polite"
     >
       <AnimatePresence mode="popLayout">

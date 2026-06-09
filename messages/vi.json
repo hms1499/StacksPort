@@ -931,5 +931,125 @@
         "dismiss": "Bỏ qua"
       }
     }
+  },
+  "notifications": {
+    "pageTitle": "Thông báo",
+    "pageTabs": {
+      "activity": "Hoạt động",
+      "priceAlerts": "Cảnh báo giá",
+      "preferences": "Tùy chọn"
+    },
+    "tabs": {
+      "all": "Tất cả",
+      "transactions": "Giao dịch",
+      "alerts": "Cảnh báo",
+      "dca": "DCA",
+      "wallet": "Ví"
+    },
+    "search": "Tìm kiếm...",
+    "filters": "Bộ lọc",
+    "sort": "Sắp xếp",
+    "newestFirst": "Mới nhất trước",
+    "oldestFirst": "Cũ nhất trước",
+    "delete": "Xóa ({count})",
+    "unread": "{count} chưa đọc",
+    "selectAll": "Chọn tất cả ({count})",
+    "deselectAll": "Bỏ chọn tất cả ({count})",
+    "empty": {
+      "title": "Chưa có thông báo nào",
+      "desc": "Thông báo sẽ xuất hiện ở đây khi bạn thực hiện swap, chạy DCA, hoặc đạt mục tiêu giá."
+    },
+    "date": {
+      "today": "Hôm nay",
+      "yesterday": "Hôm qua"
+    },
+    "dismiss": "Bỏ qua",
+    "category": {
+      "dca": "Kho DCA",
+      "dcaOut": "DCA Ra",
+      "wallet": "Ví",
+      "swap": "Swap",
+      "send": "Gửi",
+      "price": "Cảnh báo giá"
+    },
+    "plan": "Kế hoạch #{id}",
+    "unreadAria": "Chưa đọc",
+    "drawer": {
+      "title": "Thông báo",
+      "clearAll": "Xóa tất cả",
+      "empty": "Chưa có thông báo nào",
+      "viewAll": "Xem tất cả"
+    },
+    "filterPanel": {
+      "title": "Bộ lọc",
+      "clear": "Xóa",
+      "close": "Đóng bộ lọc",
+      "type": "Loại",
+      "category": "Danh mục",
+      "dateRange": "Khoảng thời gian",
+      "applied": "{count, plural, other {Đã áp dụng # bộ lọc}}"
+    },
+    "type": {
+      "success": "Thành công",
+      "error": "Lỗi",
+      "warning": "Cảnh báo",
+      "info": "Thông tin"
+    },
+    "filterCategory": {
+      "dca": "DCA Vào",
+      "dcaOut": "DCA Ra",
+      "wallet": "Ví",
+      "swap": "Swap",
+      "send": "Gửi",
+      "price": "Cảnh báo giá"
+    },
+    "range": {
+      "hour": "1 giờ qua",
+      "day": "1 ngày qua",
+      "week": "1 tuần qua",
+      "all": "Tất cả"
+    },
+    "prefs": {
+      "title": "Tùy chọn thông báo",
+      "subtitle": "Lỗi luôn hiển thị bất kể các cài đặt này.",
+      "resetAll": "Đặt lại tất cả",
+      "footer": "Tùy chọn được lưu cục bộ và duy trì qua các phiên.",
+      "enable": "Bật",
+      "disable": "Tắt",
+      "toggleAria": "{action} thông báo {label}",
+      "cat": {
+        "dca": {
+          "label": "DCA Vào",
+          "desc": "Tạo, thực thi, tạm dừng, tiếp tục, hủy kế hoạch"
+        },
+        "dcaOut": {
+          "label": "DCA Ra",
+          "desc": "Sự kiện kế hoạch sBTC→USDCx"
+        },
+        "swap": {
+          "label": "Swap",
+          "desc": "Swap đã gửi và xác nhận"
+        },
+        "send": {
+          "label": "Chuyển",
+          "desc": "Chuyển STX và token"
+        },
+        "price": {
+          "label": "Cảnh báo giá",
+          "desc": "Đạt mục tiêu giá token"
+        },
+        "wallet": {
+          "label": "Ví",
+          "desc": "Kết nối, ngắt kết nối, thay đổi tài khoản"
+        }
+      }
+    },
+    "toast": {
+      "dismiss": "Bỏ qua thông báo",
+      "region": "Thông báo"
+    },
+    "badge": {
+      "aria": "{count, plural, =0 {Thông báo} other {Thông báo (# chưa đọc)}}"
+    }
   }
 }

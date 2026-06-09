@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { Bell, BellRing, Settings } from 'lucide-react';
@@ -16,13 +17,14 @@ import { cn } from '@/lib/utils';
 
 type Tab = 'activity' | 'price-alerts' | 'preferences';
 
-const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-  { id: 'activity',     label: 'Activity',      icon: Bell },
-  { id: 'price-alerts', label: 'Price Alerts',  icon: BellRing },
-  { id: 'preferences',  label: 'Preferences',   icon: Settings },
+const tabs: { id: Tab; tKey: string; icon: React.ElementType }[] = [
+  { id: 'activity',     tKey: 'activity',     icon: Bell },
+  { id: 'price-alerts', tKey: 'priceAlerts',  icon: BellRing },
+  { id: 'preferences',  tKey: 'preferences',  icon: Settings },
 ];
 
 export default function NotificationsPageWrapper() {
+  const t = useTranslations('notifications');
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = (searchParams.get('tab') as Tab) ?? 'activity';
@@ -39,12 +41,12 @@ export default function NotificationsPageWrapper() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="Notifications" />
+      <Topbar title={t('pageTitle')} />
 
       {/* Tab bar */}
       <div className="px-4 md:px-6" style={{ backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="flex gap-1">
-          {tabs.map(({ id, label, icon: Icon }) => (
+          {tabs.map(({ id, tKey, icon: Icon }) => (
             <button
               key={id}
               onClick={() => handleTabChange(id)}
@@ -55,7 +57,7 @@ export default function NotificationsPageWrapper() {
               }
             >
               <Icon size={16} />
-              {label}
+              {t(`pageTabs.${tKey}`)}
             </button>
           ))}
         </div>

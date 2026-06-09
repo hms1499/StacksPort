@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Notification } from '@/types/notifications';
@@ -26,6 +27,7 @@ const getProgressStyle = (type: string): React.CSSProperties => ({
 });
 
 export default function Toast({ notification, onDismiss }: ToastProps) {
+  const t = useTranslations('notifications');
   const duration = notification.duration || 4000;
 
   return (
@@ -67,7 +69,7 @@ export default function Toast({ notification, onDismiss }: ToastProps) {
         onClick={() => onDismiss(notification.id)}
         className="shrink-0 transition-colors"
         style={{ color: 'var(--text-muted)' }}
-        aria-label="Dismiss notification"
+        aria-label={t('toast.dismiss')}
       >
         <X size={16} />
       </button>

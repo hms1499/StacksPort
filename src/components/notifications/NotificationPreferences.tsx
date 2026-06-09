@@ -1,25 +1,26 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useNotificationStore } from '@/store/notificationStore';
 import type { NotificationCategory } from '@/types/notifications';
 
 interface CategoryConfig {
   category: NotificationCategory;
-  label: string;
-  description: string;
+  key: string; // translation subkey under notifications.prefs.cat.*
 }
 
 const CATEGORIES: CategoryConfig[] = [
-  { category: 'dca',      label: 'DCA In',       description: 'Plan created, executed, paused, resumed, cancelled' },
-  { category: 'dca-out',  label: 'DCA Out',      description: 'sBTC→USDCx plan events' },
-  { category: 'swap',     label: 'Swap',         description: 'Swap submitted and confirmed' },
-  { category: 'send',     label: 'Transfer',     description: 'STX and token transfers' },
-  { category: 'price',    label: 'Price Alerts', description: 'Token price target reached' },
-  { category: 'wallet',   label: 'Wallet',       description: 'Connect, disconnect, account changes' },
+  { category: 'dca',      key: 'dca' },
+  { category: 'dca-out',  key: 'dcaOut' },
+  { category: 'swap',     key: 'swap' },
+  { category: 'send',     key: 'send' },
+  { category: 'price',    key: 'price' },
+  { category: 'wallet',   key: 'wallet' },
 ];
 
 export default function NotificationPreferences() {
+  const t = useTranslations('notifications');
   const { preferences, setPreference, resetPreferences } = useNotificationStore();
 
   const allOn = Object.values(preferences).every(Boolean);
@@ -31,10 +32,10 @@ export default function NotificationPreferences() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>
-            Notification Preferences
+            {t('prefs.title')}
           </h2>
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-            Errors always show regardless of these settings.
+            {t('prefs.subtitle')}
           </p>
         </div>
         {!allOn && (
@@ -43,7 +44,7 @@ export default function NotificationPreferences() {
             className="text-xs font-medium transition-opacity hover:opacity-70"
             style={{ color: 'var(--accent)' }}
           >
-            Reset all
+            {t('prefs.resetAll')}
           </button>
         )}
       </div>
@@ -53,8 +54,10 @@ export default function NotificationPreferences() {
         className="rounded-xl divide-y overflow-hidden"
         style={{ border: '1px solid var(--border-subtle)' }}
       >
-        {CATEGORIES.map(({ category, label, description }) => {
+        {CATEGORIES.map(({ category, key }) => {
           const enabled = preferences[category] ?? true;
+          const label = t(`prefs.cat.${key}.label`);
+          const description = t(`prefs.cat.${key}.desc`);
           return (
             <div
               key={category}
@@ -77,7 +80,7 @@ export default function NotificationPreferences() {
               <button
                 role="switch"
                 aria-checked={enabled}
-                aria-label={`${enabled ? 'Disable' : 'Enable'} ${label} notifications`}
+                aria-label={t('prefs.toggleAria', { action: enabled ? t('prefs.disable') : t('prefs.enable'), label })}
                 onClick={() => setPreference(category, !enabled)}
                 className="relative flex-shrink-0 w-10 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2"
                 style={{
@@ -95,7 +98,7 @@ export default function NotificationPreferences() {
       </div>
 
       <p className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-        Preferences are saved locally and persist across sessions.
+        {t('prefs.footer')}
       </p>
     </div>
   );

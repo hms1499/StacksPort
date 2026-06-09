@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Bell } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
 import { NotificationDrawer } from './NotificationDrawer';
 
 export default function NotificationBadge() {
+  const t = useTranslations('notifications');
   const [isOpen, setIsOpen] = useState(false);
 
   // Selector trả về primitive (number) → Zustand chỉ re-render khi count thực sự thay đổi,
@@ -35,7 +37,7 @@ export default function NotificationBadge() {
         style={{ color: 'var(--text-muted)' }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border-subtle)')}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-        aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ''}`}
+        aria-label={t('badge.aria', { count: unreadCount })}
       >
         <motion.span
           key={shake}

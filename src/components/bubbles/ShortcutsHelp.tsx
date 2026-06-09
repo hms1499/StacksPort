@@ -1,24 +1,26 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 
 interface ShortcutsHelpProps {
   onClose: () => void;
 }
 
-const ROWS: Array<{ keys: string[]; label: string }> = [
-  { keys: ["/"], label: "Focus search" },
-  { keys: ["Esc"], label: "Clear / close" },
-  { keys: ["1", "2", "3"], label: "Metric: % · MCap · Vol" },
-  { keys: ["Q", "W", "E", "R", "T"], label: "Timeframe: 1h · 24h · 7d · 30d · 1y" },
-  { keys: ["A", "S", "D", "H"], label: "Scope: All · Stacks · Watchlist · Holdings" },
-  { keys: ["G"], label: "Refresh data" },
-  { keys: ["P"], label: "Pause / resume motion" },
-  { keys: ["L"], label: "Toggle list view" },
-  { keys: ["?"], label: "Toggle this help" },
+const ROWS: Array<{ keys: string[]; tKey: string }> = [
+  { keys: ["/"], tKey: "search" },
+  { keys: ["Esc"], tKey: "clear" },
+  { keys: ["1", "2", "3"], tKey: "metric" },
+  { keys: ["Q", "W", "E", "R", "T"], tKey: "timeframe" },
+  { keys: ["A", "S", "D", "H"], tKey: "scope" },
+  { keys: ["G"], tKey: "refresh" },
+  { keys: ["P"], tKey: "pause" },
+  { keys: ["L"], tKey: "list" },
+  { keys: ["?"], tKey: "help" },
 ];
 
 export default function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
+  const t = useTranslations("bubbles.shortcuts");
   return (
     <div
       className="absolute inset-0 z-30 flex items-center justify-center px-4 motion-safe:animate-[fadeIn_150ms_ease-out]"
@@ -35,12 +37,12 @@ export default function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
       >
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            Keyboard shortcuts
+            {t("title")}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("close")}
             className="hover:opacity-80"
           >
             <X size={14} style={{ color: "var(--text-muted)" }} />
@@ -48,7 +50,7 @@ export default function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
         </div>
         <ul className="flex flex-col gap-2">
           {ROWS.map((row) => (
-            <li key={row.label} className="flex items-center justify-between gap-3">
+            <li key={row.tKey} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-1">
                 {row.keys.map((k) => (
                   <kbd
@@ -65,7 +67,7 @@ export default function ShortcutsHelp({ onClose }: ShortcutsHelpProps) {
                 ))}
               </div>
               <span className="text-xs text-right" style={{ color: "var(--text-muted)" }}>
-                {row.label}
+                {t(`rows.${row.tKey}`)}
               </span>
             </li>
           ))}

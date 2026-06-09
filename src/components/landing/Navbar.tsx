@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { Zap, Menu, X } from 'lucide-react';
 
-const NAV_LINKS = [
+const NAV_LINKS: ReadonlyArray<{ tKey: string; href: string; external?: boolean }> = [
   { tKey: 'features', href: '#features' },
   { tKey: 'howItWorks', href: '#how-it-works' },
   { tKey: 'github', href: 'https://github.com/hms1499/StacksPort', external: true },
-] as const;
+];
 
 interface NavbarProps {
   onConnectClick: () => void;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Circle, List } from "lucide-react";
 
 export type View = "bubbles" | "list";
@@ -10,9 +11,10 @@ interface ViewToggleProps {
 }
 
 export default function ViewToggle({ value, onChange }: ViewToggleProps) {
+  const t = useTranslations("bubbles.view");
   const opts: Array<{ k: View; icon: typeof Circle; label: string }> = [
-    { k: "bubbles", icon: Circle, label: "Bubble view" },
-    { k: "list", icon: List, label: "List view" },
+    { k: "bubbles", icon: Circle, label: t("bubble") },
+    { k: "list", icon: List, label: t("list") },
   ];
   return (
     <div

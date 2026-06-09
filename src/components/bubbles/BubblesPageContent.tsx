@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useBubblesData } from "@/hooks/useBubblesData";
@@ -40,6 +41,7 @@ const VALID_METRIC: Metric[] = ["change", "marketCap", "volume"];
 const VALID_VIEW: View[] = ["bubbles", "list"];
 
 export default function BubblesPageContent() {
+  const tr = useTranslations("bubbles");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -240,7 +242,7 @@ export default function BubblesPageContent() {
             className="text-base font-semibold shrink-0 flex items-baseline gap-1.5"
             style={{ color: "var(--text-primary)" }}
           >
-            Crypto Bubbles
+            {tr("title")}
             {visibleTokens && (
               <span
                 className="text-[11px] font-normal font-mono"
@@ -267,7 +269,7 @@ export default function BubblesPageContent() {
               ref={searchRef}
               value={search}
               onChange={setSearch}
-              placeholder={isMobile ? "Search…" : "Search…  ( / )"}
+              placeholder={isMobile ? tr("searchShort") : tr("searchHint")}
             />
             <ViewToggle value={view} onChange={setView} />
             <MetricToggle value={metric} onChange={setMetric} />
@@ -306,7 +308,7 @@ export default function BubblesPageContent() {
         {error && !tokens && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-              Failed to load data.
+              {tr("failedLoad")}
             </p>
             <button
               type="button"
@@ -318,7 +320,7 @@ export default function BubblesPageContent() {
                 color: "var(--text-primary)",
               }}
             >
-              Retry
+              {tr("retry")}
             </button>
           </div>
         )}
@@ -359,7 +361,7 @@ export default function BubblesPageContent() {
               border: "1px solid var(--border-subtle)",
             }}
           >
-            Showing Stacks tokens with a CoinGecko price feed · DEX-only tokens not included
+            {tr("stacksNote")}
           </div>
         )}
 
@@ -376,14 +378,14 @@ export default function BubblesPageContent() {
             </div>
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
               {search.trim()
-                ? `No tokens match "${search}".`
+                ? tr("noMatch", { q: search })
                 : scope === "watchlist"
-                ? "Your watchlist is empty. Tap the ⭐ on any bubble to add it."
+                ? tr("watchlistEmpty")
                 : scope === "holdings"
                 ? isConnected
-                  ? "None of your holdings are among the tracked tokens."
-                  : "Connect your wallet to see your holdings as bubbles."
-                : "No Stacks ecosystem tokens available."}
+                  ? tr("holdingsEmptyTracked")
+                  : tr("holdingsConnect")
+                : tr("noStacksTokens")}
             </p>
             {search.trim() && (
               <button
@@ -396,7 +398,7 @@ export default function BubblesPageContent() {
                   color: "var(--text-primary)",
                 }}
               >
-                Clear search
+                {tr("clearSearch")}
               </button>
             )}
             {!search.trim() &&
@@ -411,7 +413,7 @@ export default function BubblesPageContent() {
                   color: "var(--text-primary)",
                 }}
               >
-                Browse all tokens
+                {tr("browseAll")}
               </button>
             )}
           </div>
@@ -435,7 +437,7 @@ export default function BubblesPageContent() {
           className="px-4 py-1.5 text-center text-xs"
           style={{ color: "var(--text-muted)", borderTop: "1px solid var(--border-subtle)" }}
         >
-          Data may be outdated
+          {tr("dataOutdated")}
         </div>
       )}
     </div>

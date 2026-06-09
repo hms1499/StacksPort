@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { useTranslations } from "next-intl";
 import Topbar from "@/components/layout/Topbar";
 import BubblesPageContent from "@/components/bubbles/BubblesPageContent";
 
@@ -11,9 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function BubblesPage() {
+  const t = useTranslations("nav");
   return (
     <div className="flex flex-col h-screen">
-      <Topbar title="Bubbles" />
+      <Topbar title={t("bubbles")} />
       <div className="flex-1 overflow-hidden">
         <Suspense fallback={null}>
           <BubblesPageContent />

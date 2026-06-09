@@ -1,22 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface UpdatedAtProps {
   timestamp: number | null;
 }
 
-function format(ts: number, now: number): string {
+function format(
+  ts: number,
+  now: number,
+  t: (key: string, values?: Record<string, number>) => string
+): string {
   const s = Math.max(0, Math.floor((now - ts) / 1000));
-  if (s < 5) return "just now";
-  if (s < 60) return `${s}s ago`;
+  if (s < 5) return t("time.justNow");
+  if (s < 60) return t("time.secondsAgo", { n: s });
   const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
+  if (m < 60) return t("time.minutesAgo", { n: m });
   const h = Math.floor(m / 60);
-  return `${h}h ago`;
+  return t("time.hoursAgo", { n: h });
 }
 
 export default function UpdatedAt({ timestamp }: UpdatedAtProps) {
+  const t = useTranslations("bubbles");
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -32,7 +38,7 @@ export default function UpdatedAt({ timestamp }: UpdatedAtProps) {
       style={{ color: "var(--text-muted)" }}
       title={new Date(timestamp).toLocaleString()}
     >
-      Updated {format(timestamp, now)}
+      {t("updated", { time: format(timestamp, now, t) })}
     </span>
   );
 }

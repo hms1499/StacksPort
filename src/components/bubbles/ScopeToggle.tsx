@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Star, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -57,13 +58,14 @@ export default function ScopeToggle({
   watchlistCount,
   holdingsCount,
 }: ScopeToggleProps) {
+  const t = useTranslations("bubbles.scope");
   return (
     <div className="flex gap-1 rounded-lg p-0.5" style={{ backgroundColor: "var(--bg-card)" }}>
       <Pill active={value === "all"} onClick={() => onChange("all")}>
-        All
+        {t("all")}
       </Pill>
       <Pill active={value === "stacks"} onClick={() => onChange("stacks")}>
-        Stacks
+        {t("stacks")}
         <Count active={value === "stacks"} n={stacksCount} />
       </Pill>
       <Pill active={value === "watchlist"} onClick={() => onChange("watchlist")}>

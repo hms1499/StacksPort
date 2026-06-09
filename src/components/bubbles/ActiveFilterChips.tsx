@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import {
   DEFAULT_FILTERS,
@@ -18,18 +19,11 @@ function fmtMcap(v: number): string {
   return `$${v}+`;
 }
 
-const SORT_LABEL: Record<SortBy, string> = {
-  mcap: "Market cap",
-  volume: "Volume",
-  gainers: "Top gainers",
-  losers: "Top losers",
-  name: "A–Z",
-};
-
 export default function ActiveFilterChips({
   filters,
   onChange,
 }: ActiveFilterChipsProps) {
+  const t = useTranslations("bubbles.chips");
   const chips: Array<{ key: string; label: string; onRemove: () => void }> = [];
 
   if (filters.minMarketCap > 0) {
@@ -56,14 +50,14 @@ export default function ActiveFilterChips({
   if (filters.excludeStables) {
     chips.push({
       key: "ns",
-      label: "No stables",
+      label: t("noStables"),
       onRemove: () => onChange({ ...filters, excludeStables: false }),
     });
   }
   if (filters.sortBy !== "mcap") {
     chips.push({
       key: "sort",
-      label: `Sort: ${SORT_LABEL[filters.sortBy]}`,
+      label: t("sortPrefix", { label: t(`sort.${filters.sortBy}`) }),
       onRemove: () => onChange({ ...filters, sortBy: "mcap" }),
     });
   }
@@ -97,7 +91,7 @@ export default function ActiveFilterChips({
         className="shrink-0 text-[10px] px-2 py-0.5 ml-1 hover:opacity-80"
         style={{ color: "var(--text-muted)" }}
       >
-        Clear all
+        {t("clearAll")}
       </button>
     </div>
   );

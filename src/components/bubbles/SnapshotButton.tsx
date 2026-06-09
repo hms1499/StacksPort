@@ -2,6 +2,7 @@
 
 import { Camera, Check } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface SnapshotButtonProps {
   filenamePrefix?: string;
@@ -10,6 +11,7 @@ interface SnapshotButtonProps {
 export default function SnapshotButton({
   filenamePrefix = "bubbles",
 }: SnapshotButtonProps) {
+  const t = useTranslations("bubbles.buttons");
   const [saved, setSaved] = useState(false);
 
   const onClick = () => {
@@ -38,8 +40,8 @@ export default function SnapshotButton({
     <button
       type="button"
       onClick={onClick}
-      aria-label="Download snapshot as PNG"
-      title="Download PNG"
+      aria-label={t("snapshotAria")}
+      title={t("downloadPng")}
       className="h-7 w-7 rounded-lg flex items-center justify-center hover:opacity-80"
       style={{
         backgroundColor: saved ? "rgba(64,138,113,0.18)" : "var(--bg-card)",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { Timeframe } from "./TimeframeToggle";
 import type { Metric } from "./MetricToggle";
 
@@ -9,17 +10,12 @@ interface ColorLegendProps {
   metric?: Metric;
 }
 
-const METRIC_LABEL: Record<Metric, string> = {
-  change: "% change",
-  marketCap: "market cap",
-  volume: "24h volume",
-};
-
 export default function ColorLegend({
   range = 10,
   timeframe,
   metric = "change",
 }: ColorLegendProps) {
+  const t = useTranslations("bubbles.legend");
   return (
     <div
       className="absolute bottom-2 right-2 pointer-events-none hidden sm:flex items-center gap-2.5 px-2.5 py-1 rounded-md"
@@ -31,7 +27,7 @@ export default function ColorLegend({
       {/* Size encoding — bigger bubble = more of the selected metric. */}
       <div className="flex items-center gap-1.5">
         <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-          Size
+          {t("size")}
         </span>
         <span className="flex items-end gap-1" aria-hidden>
           <span
@@ -44,7 +40,7 @@ export default function ColorLegend({
           />
         </span>
         <span className="text-[10px] font-mono" style={{ color: "var(--text-secondary)" }}>
-          {METRIC_LABEL[metric]}
+          {t(`metric.${metric}`)}
         </span>
       </div>
 
@@ -53,7 +49,7 @@ export default function ColorLegend({
       {/* Color encoding — % change over the active timeframe. */}
       <div className="flex items-center gap-1.5">
         <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-          Color
+          {t("color")}
         </span>
         {timeframe && (
           <span className="text-[10px] font-mono" style={{ color: "var(--text-muted)" }}>

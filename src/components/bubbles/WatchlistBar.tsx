@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Download, Trash2, Upload } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 
 export default function WatchlistBar() {
+  const t = useTranslations("bubbles.watchlistBar");
   const { ids, size, clear, replace } = useWatchlist();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imported, setImported] = useState<string | null>(null);
@@ -41,21 +43,21 @@ export default function WatchlistBar() {
       const parsed = JSON.parse(text);
       const arr: unknown = Array.isArray(parsed) ? parsed : parsed?.ids;
       if (!Array.isArray(arr)) {
-        setImported("Invalid file");
+        setImported(t("invalidFile"));
       } else {
         const clean = arr.filter((v): v is string => typeof v === "string");
         replace(clean);
-        setImported(`Imported ${clean.length}`);
+        setImported(t("imported", { n: clean.length }));
       }
     } catch {
-      setImported("Invalid JSON");
+      setImported(t("invalidJson"));
     }
     setTimeout(() => setImported(null), 2000);
   };
 
   const onClear = () => {
     if (size === 0) return;
-    if (window.confirm(`Clear ${size} watched token${size === 1 ? "" : "s"}?`)) {
+    if (window.confirm(t("confirmClear", { n: size }))) {
       clear();
     }
   };
@@ -69,9 +71,9 @@ export default function WatchlistBar() {
       }}
     >
       <span>
-        Watchlist:{" "}
+        {t("label")}{" "}
         <span style={{ color: "var(--text-primary)" }}>
-          {size} token{size === 1 ? "" : "s"}
+          {t("tokenCount", { n: size })}
         </span>
       </span>
       <span className="opacity-40">·</span>
@@ -81,7 +83,7 @@ export default function WatchlistBar() {
         disabled={size === 0}
         className="flex items-center gap-1 hover:opacity-80 disabled:opacity-40"
       >
-        <Download size={11} /> Export
+        <Download size={11} /> {t("export")}
       </button>
       <span className="opacity-40">·</span>
       <button
@@ -89,7 +91,7 @@ export default function WatchlistBar() {
         onClick={onImportClick}
         className="flex items-center gap-1 hover:opacity-80"
       >
-        <Upload size={11} /> Import
+        <Upload size={11} /> {t("import")}
       </button>
       <span className="opacity-40">·</span>
       <button
@@ -99,7 +101,7 @@ export default function WatchlistBar() {
         className="flex items-center gap-1 hover:opacity-80 disabled:opacity-40"
         style={{ color: size === 0 ? undefined : "#f87171" }}
       >
-        <Trash2 size={11} /> Clear all
+        <Trash2 size={11} /> {t("clearAll")}
       </button>
       {imported && (
         <span className="ml-auto" style={{ color: "#5fb594" }}>

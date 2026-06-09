@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { BubbleToken } from "@/hooks/useBubblesData";
 import type { Timeframe } from "./TimeframeToggle";
 import Sparkline from "./Sparkline";
@@ -44,14 +45,15 @@ export default function BubbleList({
   selectedId,
   onRowClick,
 }: BubbleListProps) {
+  const t = useTranslations("bubbles.list");
   return (
     <div className="absolute inset-0 overflow-y-auto">
       <table className="w-full text-xs">
         <thead className="sticky top-0 z-10" style={{ backgroundColor: "#000" }}>
           <tr style={{ color: "rgba(255,255,255,0.55)" }} className="text-[10px] uppercase">
             <th className="text-left px-3 py-2 font-medium">#</th>
-            <th className="text-left px-2 py-2 font-medium">Token</th>
-            <th className="text-right px-2 py-2 font-medium">Price</th>
+            <th className="text-left px-2 py-2 font-medium">{t("token")}</th>
+            <th className="text-right px-2 py-2 font-medium">{t("price")}</th>
             <th className="text-right px-2 py-2 font-medium">{timeframe.toUpperCase()}</th>
             <th className="text-right px-2 py-2 font-medium hidden md:table-cell">7d</th>
             <th className="text-right px-2 py-2 font-medium hidden sm:table-cell">MCap</th>

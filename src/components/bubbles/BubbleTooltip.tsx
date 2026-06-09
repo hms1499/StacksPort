@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Star, Bell } from "lucide-react";
 import type { BubbleToken } from "@/hooks/useBubblesData";
@@ -66,6 +67,7 @@ export default function BubbleTooltip({
   timeframe,
   onClose,
 }: BubbleTooltipProps) {
+  const t = useTranslations("bubbles.tooltip");
   const ref = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -191,10 +193,10 @@ export default function BubbleTooltip({
           <button
             type="button"
             onClick={() => setShowAlert((v) => !v)}
-            aria-label="Set price alert"
+            aria-label={t("setAlert")}
             aria-pressed={showAlert}
             className="p-1.5 rounded-md transition-colors hover:bg-white/5"
-            title="Set price alert"
+            title={t("setAlert")}
           >
             <Bell
               size={16}
@@ -206,10 +208,10 @@ export default function BubbleTooltip({
           <button
             type="button"
             onClick={() => toggleStar(token.id)}
-            aria-label={starred ? "Remove from watchlist" : "Add to watchlist"}
+            aria-label={starred ? t("removeWatch") : t("addWatch")}
             aria-pressed={starred}
             className="p-1.5 rounded-md transition-colors hover:bg-white/5"
-            title={starred ? "Remove from watchlist" : "Add to watchlist"}
+            title={starred ? t("removeWatch") : t("addWatch")}
           >
             <Star
               size={16}
@@ -233,7 +235,7 @@ export default function BubbleTooltip({
         <div className="-mx-1 mb-3">
           <Sparkline data={token.sparkline7d} width={sparklineWidth} height={isMobile ? 72 : 56} />
           <div className="text-[10px] mt-0.5 px-1" style={{ color: "var(--text-muted)" }}>
-            7d price
+            {t("price7d")}
           </div>
         </div>
 
@@ -246,7 +248,7 @@ export default function BubbleTooltip({
             }}
           >
             <span className="font-semibold" style={{ color: "#5fb594" }}>
-              You hold
+              {t("youHold")}
             </span>
             <span className="font-semibold" style={{ color: "var(--text-primary)" }}>
               {fmtAmount(held.amount)} {token.symbol}
@@ -281,7 +283,7 @@ export default function BubbleTooltip({
               className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
               style={{ backgroundColor: "#408A71", color: "white" }}
             >
-              Swap on Bitflow
+              {t("swapBitflow")}
             </Link>
           ) : token.isStacks ? (
             <a
@@ -291,7 +293,7 @@ export default function BubbleTooltip({
               className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
               style={{ backgroundColor: "#408A71", color: "white" }}
             >
-              Trade on Bitflow ↗
+              {t("tradeBitflow")}
             </a>
           ) : (
             <a
@@ -301,7 +303,7 @@ export default function BubbleTooltip({
               className="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors"
               style={{ backgroundColor: "var(--border-subtle)", color: "var(--text-primary)" }}
             >
-              View on CoinGecko
+              {t("viewCoingecko")}
             </a>
           )}
         </div>

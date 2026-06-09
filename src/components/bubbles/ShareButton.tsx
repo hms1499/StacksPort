@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Link2 } from "lucide-react";
 
 export default function ShareButton() {
+  const t = useTranslations("bubbles.buttons");
   const [copied, setCopied] = useState(false);
 
   const onClick = async () => {
@@ -21,8 +23,8 @@ export default function ShareButton() {
     <button
       type="button"
       onClick={onClick}
-      aria-label="Copy link to current view"
-      title="Copy share link"
+      aria-label={t("shareAria")}
+      title={t("copyShareLink")}
       className="h-7 px-2 rounded-lg flex items-center gap-1 text-xs hover:opacity-80"
       style={{
         backgroundColor: copied ? "rgba(64,138,113,0.18)" : "var(--bg-card)",
@@ -31,7 +33,7 @@ export default function ShareButton() {
       }}
     >
       {copied ? <Check size={12} /> : <Link2 size={12} />}
-      <span className="hidden sm:inline">{copied ? "Copied" : "Share"}</span>
+      <span className="hidden sm:inline">{copied ? t("copied") : t("share")}</span>
     </button>
   );
 }

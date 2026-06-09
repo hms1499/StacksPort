@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { TrendingUp, TrendingDown, Bell, X } from "lucide-react";
 import { usePriceAlertStore } from "@/store/priceAlertStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -17,6 +18,7 @@ function fmtTarget(v: number): string {
 }
 
 export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props) {
+  const t = useTranslations("bubbles.alert");
   const addAlert = usePriceAlertStore((s) => s.addAlert);
   const removeAlert = usePriceAlertStore((s) => s.removeAlert);
   const existingAlerts = usePriceAlertStore((s) =>
@@ -51,7 +53,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) {
-      setError("Enter a price greater than 0");
+      setError(t("enterPrice"));
       return;
     }
     setError("");
@@ -75,7 +77,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
                 ) : (
                   <TrendingDown size={11} className="text-red-500" />
                 )}
-                {a.condition === "above" ? "Above" : "Below"} ${a.targetPrice.toLocaleString()}
+                {a.condition === "above" ? t("above") : t("below")} ${a.targetPrice.toLocaleString()}
                 <span
                   className={`ml-1 px-1 py-0.5 rounded text-[9px] ${
                     a.isActive
@@ -83,13 +85,13 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
                       : "bg-gray-500/10 text-gray-500"
                   }`}
                 >
-                  {a.isActive ? "Active" : "Triggered"}
+                  {a.isActive ? t("active") : t("triggered")}
                 </span>
               </span>
               <button
                 type="button"
                 onClick={() => removeAlert(a.id)}
-                aria-label={`Delete ${a.condition} $${a.targetPrice} alert`}
+                aria-label={t("deleteAria", { condition: a.condition === "above" ? t("above") : t("below"), price: a.targetPrice })}
                 className="p-0.5 rounded hover:bg-white/5"
                 style={{ color: "var(--text-muted)" }}
               >
@@ -112,7 +114,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
             }`}
             style={condition !== "above" ? { color: "var(--text-secondary)" } : undefined}
           >
-            <TrendingUp size={12} /> Above
+            <TrendingUp size={12} /> {t("above")}
           </button>
           <button
             type="button"
@@ -124,14 +126,14 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
             }`}
             style={condition !== "below" ? { color: "var(--text-secondary)" } : undefined}
           >
-            <TrendingDown size={12} /> Below
+            <TrendingDown size={12} /> {t("below")}
           </button>
         </div>
 
         {currentPrice > 0 && (
           <div className="flex items-center gap-1.5">
             <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-              Quick:
+              {t("quick")}
             </span>
             <button
               type="button"
@@ -172,7 +174,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
             type="number"
             step="any"
             min="0"
-            placeholder="Target price"
+            placeholder={t("targetPrice")}
             value={targetPrice}
             onChange={(e) => {
               setTargetPrice(e.target.value);
@@ -193,7 +195,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
           className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: "#408A71" }}
         >
-          <Bell size={13} /> Create alert
+          <Bell size={13} /> {t("createAlert")}
         </button>
       </form>
 
@@ -205,7 +207,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
           <Bell size={12} className="mt-0.5 shrink-0" style={{ color: "#408A71" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] leading-snug" style={{ color: "var(--text-secondary)" }}>
-              Enable notifications to get alerts even when the app is closed
+              {t("pushPrompt")}
             </p>
             <div className="flex gap-2 mt-1">
               <button
@@ -215,7 +217,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
                 className="text-[10px] font-medium disabled:opacity-50"
                 style={{ color: "#408A71" }}
               >
-                {subscribing ? "Enabling…" : "Enable"}
+                {subscribing ? t("enabling") : t("enable")}
               </button>
               <button
                 type="button"
@@ -223,7 +225,7 @@ export default function BubbleAlertForm({ symbol, geckoId, currentPrice }: Props
                 className="text-[10px]"
                 style={{ color: "var(--text-muted)" }}
               >
-                Dismiss
+                {t("dismiss")}
               </button>
             </div>
           </div>

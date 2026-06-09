@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   MoreHorizontal,
   RefreshCw,
@@ -66,6 +67,7 @@ export default function ToolbarMenu({
   onTogglePause,
   onShowHelp,
 }: ToolbarMenuProps) {
+  const t = useTranslations("bubbles.toolbar");
   const [open, setOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -126,10 +128,10 @@ export default function ToolbarMenu({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="More actions"
+        aria-label={t("more")}
         aria-haspopup="menu"
         aria-expanded={open}
-        title="More actions"
+        title={t("more")}
         className="h-7 w-7 rounded-lg flex items-center justify-center hover:opacity-80"
         style={{
           backgroundColor: open ? "rgba(64,138,113,0.18)" : "var(--bg-card)",
@@ -156,14 +158,14 @@ export default function ToolbarMenu({
                 className={isRefreshing ? "motion-safe:animate-spin" : ""}
               />
             }
-            label={isRefreshing ? "Refreshing…" : "Refresh data"}
+            label={isRefreshing ? t("refreshing") : t("refresh")}
             hint="G"
             onClick={onRefresh}
           />
           {bubbleView && (
             <MenuItem
               icon={paused ? <Play size={13} /> : <Pause size={13} />}
-              label={paused ? "Resume motion" : "Pause motion"}
+              label={paused ? t("resumeMotion") : t("pauseMotion")}
               hint="P"
               active={paused}
               onClick={onTogglePause}
@@ -172,20 +174,20 @@ export default function ToolbarMenu({
           {bubbleView && (
             <MenuItem
               icon={saved ? <Check size={13} /> : <Camera size={13} />}
-              label={saved ? "Saved" : "Download PNG"}
+              label={saved ? t("saved") : t("downloadPng")}
               active={saved}
               onClick={handleSnapshot}
             />
           )}
           <MenuItem
             icon={copied ? <Check size={13} /> : <Link2 size={13} />}
-            label={copied ? "Link copied" : "Copy share link"}
+            label={copied ? t("linkCopied") : t("copyLink")}
             active={copied}
             onClick={handleShare}
           />
           <MenuItem
             icon={<Keyboard size={13} />}
-            label="Keyboard shortcuts"
+            label={t("shortcuts")}
             hint="?"
             onClick={() => {
               setOpen(false);

@@ -1274,5 +1274,164 @@
       "copyright": "© {year} StacksPort — Xây dựng trên Stacks",
       "mainnet": "Mainnet"
     }
+  },
+  "bubbles": {
+    "title": "Bong bóng Crypto",
+    "searchShort": "Tìm kiếm…",
+    "searchHint": "Tìm kiếm…  ( / )",
+    "clearSearch": "Xóa tìm kiếm",
+    "failedLoad": "Không tải được dữ liệu.",
+    "retry": "Thử lại",
+    "stacksNote": "Đang hiển thị token Stacks có nguồn giá CoinGecko · không bao gồm token chỉ có trên DEX",
+    "noMatch": "Không có token nào khớp \"{q}\".",
+    "watchlistEmpty": "Danh sách theo dõi trống. Chạm ⭐ trên bất kỳ bong bóng nào để thêm.",
+    "holdingsEmptyTracked": "Không có tài sản nào của bạn nằm trong các token được theo dõi.",
+    "holdingsConnect": "Kết nối ví để xem tài sản của bạn dưới dạng bong bóng.",
+    "noStacksTokens": "Không có token hệ sinh thái Stacks nào.",
+    "browseAll": "Xem tất cả token",
+    "dataOutdated": "Dữ liệu có thể đã cũ",
+    "updated": "Cập nhật {time}",
+    "time": {
+      "justNow": "vừa xong",
+      "secondsAgo": "{n}s trước",
+      "minutesAgo": "{n}m trước",
+      "hoursAgo": "{n}h trước"
+    },
+    "scope": {
+      "all": "Tất cả",
+      "stacks": "Stacks"
+    },
+    "view": {
+      "bubble": "Dạng bong bóng",
+      "list": "Dạng danh sách"
+    },
+    "metric": {
+      "changeTitle": "Kích thước theo % thay đổi",
+      "mcapTitle": "Kích thước theo vốn hóa",
+      "volTitle": "Kích thước theo khối lượng 24h"
+    },
+    "filter": {
+      "filters": "Bộ lọc",
+      "close": "Đóng",
+      "marketCap": "Vốn hóa",
+      "show": "Hiển thị",
+      "sortBy": "Sắp xếp theo",
+      "moversOnly": "Chỉ biến động",
+      "bubbleSize": "Kích thước bong bóng ({d}×)",
+      "excludeStables": "Loại trừ stablecoin",
+      "resetAll": "Đặt lại tất cả",
+      "any": "Bất kỳ",
+      "all": "Tất cả",
+      "off": "Tắt",
+      "sort": {
+        "mcap": "Vốn hóa",
+        "volume": "Khối lượng",
+        "gainers": "Tăng mạnh nhất",
+        "losers": "Giảm mạnh nhất",
+        "name": "Tên (A-Z)"
+      }
+    },
+    "chips": {
+      "noStables": "Không stablecoin",
+      "sortPrefix": "Sắp xếp: {label}",
+      "clearAll": "Xóa tất cả",
+      "sort": {
+        "mcap": "Vốn hóa",
+        "volume": "Khối lượng",
+        "gainers": "Tăng mạnh nhất",
+        "losers": "Giảm mạnh nhất",
+        "name": "A–Z"
+      }
+    },
+    "toolbar": {
+      "more": "Thêm hành động",
+      "refreshing": "Đang làm mới…",
+      "refresh": "Làm mới dữ liệu",
+      "resumeMotion": "Tiếp tục chuyển động",
+      "pauseMotion": "Tạm dừng chuyển động",
+      "saved": "Đã lưu",
+      "downloadPng": "Tải PNG",
+      "linkCopied": "Đã sao chép liên kết",
+      "copyLink": "Sao chép liên kết chia sẻ",
+      "shortcuts": "Phím tắt"
+    },
+    "list": {
+      "token": "Token",
+      "price": "Giá"
+    },
+    "tooltip": {
+      "setAlert": "Đặt cảnh báo giá",
+      "addWatch": "Thêm vào danh sách theo dõi",
+      "removeWatch": "Xóa khỏi danh sách theo dõi",
+      "price7d": "Giá 7 ngày",
+      "youHold": "Bạn đang giữ",
+      "swapBitflow": "Swap trên Bitflow",
+      "tradeBitflow": "Giao dịch trên Bitflow ↗",
+      "viewCoingecko": "Xem trên CoinGecko"
+    },
+    "alert": {
+      "above": "Trên",
+      "below": "Dưới",
+      "active": "Đang bật",
+      "triggered": "Đã kích hoạt",
+      "deleteAria": "Xóa cảnh báo {condition} ${price}",
+      "quick": "Nhanh:",
+      "targetPrice": "Giá mục tiêu",
+      "enterPrice": "Nhập giá lớn hơn 0",
+      "createAlert": "Tạo cảnh báo",
+      "pushPrompt": "Bật thông báo để nhận cảnh báo ngay cả khi ứng dụng đã đóng",
+      "enabling": "Đang bật…",
+      "enable": "Bật",
+      "dismiss": "Bỏ qua"
+    },
+    "watchlistBar": {
+      "label": "Danh sách theo dõi:",
+      "tokenCount": "{n, plural, other {# token}}",
+      "export": "Xuất",
+      "import": "Nhập",
+      "clearAll": "Xóa tất cả",
+      "invalidFile": "Tệp không hợp lệ",
+      "invalidJson": "JSON không hợp lệ",
+      "imported": "Đã nhập {n}",
+      "confirmClear": "Xóa {n, plural, other {# token đang theo dõi}}?"
+    },
+    "legend": {
+      "size": "Kích thước",
+      "color": "Màu",
+      "metric": {
+        "change": "% thay đổi",
+        "marketCap": "vốn hóa",
+        "volume": "khối lượng 24h"
+      }
+    },
+    "shortcuts": {
+      "title": "Phím tắt",
+      "close": "Đóng",
+      "rows": {
+        "search": "Tập trung tìm kiếm",
+        "clear": "Xóa / đóng",
+        "metric": "Chỉ số: % · MCap · Vol",
+        "timeframe": "Khung thời gian: 1h · 24h · 7d · 30d · 1y",
+        "scope": "Phạm vi: Tất cả · Stacks · Theo dõi · Nắm giữ",
+        "refresh": "Làm mới dữ liệu",
+        "pause": "Tạm dừng / tiếp tục chuyển động",
+        "list": "Bật/tắt dạng danh sách",
+        "help": "Bật/tắt trợ giúp này"
+      }
+    },
+    "buttons": {
+      "snapshotAria": "Tải ảnh chụp dạng PNG",
+      "downloadPng": "Tải PNG",
+      "shareAria": "Sao chép liên kết tới chế độ xem hiện tại",
+      "copyShareLink": "Sao chép liên kết chia sẻ",
+      "copied": "Đã sao chép",
+      "share": "Chia sẻ",
+      "refreshAria": "Làm mới dữ liệu",
+      "refreshTitle": "Làm mới (G)",
+      "resumeAnim": "Tiếp tục hoạt ảnh",
+      "pauseAnim": "Tạm dừng hoạt ảnh",
+      "resumeP": "Tiếp tục (P)",
+      "pauseP": "Tạm dừng (P)"
+    }
   }
 }

@@ -1274,5 +1274,164 @@
       "copyright": "© {year} StacksPort — Built on Stacks",
       "mainnet": "Mainnet"
     }
+  },
+  "bubbles": {
+    "title": "Crypto Bubbles",
+    "searchShort": "Search…",
+    "searchHint": "Search…  ( / )",
+    "clearSearch": "Clear search",
+    "failedLoad": "Failed to load data.",
+    "retry": "Retry",
+    "stacksNote": "Showing Stacks tokens with a CoinGecko price feed · DEX-only tokens not included",
+    "noMatch": "No tokens match \"{q}\".",
+    "watchlistEmpty": "Your watchlist is empty. Tap the ⭐ on any bubble to add it.",
+    "holdingsEmptyTracked": "None of your holdings are among the tracked tokens.",
+    "holdingsConnect": "Connect your wallet to see your holdings as bubbles.",
+    "noStacksTokens": "No Stacks ecosystem tokens available.",
+    "browseAll": "Browse all tokens",
+    "dataOutdated": "Data may be outdated",
+    "updated": "Updated {time}",
+    "time": {
+      "justNow": "just now",
+      "secondsAgo": "{n}s ago",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago"
+    },
+    "scope": {
+      "all": "All",
+      "stacks": "Stacks"
+    },
+    "view": {
+      "bubble": "Bubble view",
+      "list": "List view"
+    },
+    "metric": {
+      "changeTitle": "Size by % change",
+      "mcapTitle": "Size by market cap",
+      "volTitle": "Size by 24h volume"
+    },
+    "filter": {
+      "filters": "Filters",
+      "close": "Close",
+      "marketCap": "Market cap",
+      "show": "Show",
+      "sortBy": "Sort by",
+      "moversOnly": "Movers only",
+      "bubbleSize": "Bubble size ({d}×)",
+      "excludeStables": "Exclude stablecoins",
+      "resetAll": "Reset all",
+      "any": "Any",
+      "all": "All",
+      "off": "Off",
+      "sort": {
+        "mcap": "Market cap",
+        "volume": "Volume",
+        "gainers": "Top gainers",
+        "losers": "Top losers",
+        "name": "Name (A-Z)"
+      }
+    },
+    "chips": {
+      "noStables": "No stables",
+      "sortPrefix": "Sort: {label}",
+      "clearAll": "Clear all",
+      "sort": {
+        "mcap": "Market cap",
+        "volume": "Volume",
+        "gainers": "Top gainers",
+        "losers": "Top losers",
+        "name": "A–Z"
+      }
+    },
+    "toolbar": {
+      "more": "More actions",
+      "refreshing": "Refreshing…",
+      "refresh": "Refresh data",
+      "resumeMotion": "Resume motion",
+      "pauseMotion": "Pause motion",
+      "saved": "Saved",
+      "downloadPng": "Download PNG",
+      "linkCopied": "Link copied",
+      "copyLink": "Copy share link",
+      "shortcuts": "Keyboard shortcuts"
+    },
+    "list": {
+      "token": "Token",
+      "price": "Price"
+    },
+    "tooltip": {
+      "setAlert": "Set price alert",
+      "addWatch": "Add to watchlist",
+      "removeWatch": "Remove from watchlist",
+      "price7d": "7d price",
+      "youHold": "You hold",
+      "swapBitflow": "Swap on Bitflow",
+      "tradeBitflow": "Trade on Bitflow ↗",
+      "viewCoingecko": "View on CoinGecko"
+    },
+    "alert": {
+      "above": "Above",
+      "below": "Below",
+      "active": "Active",
+      "triggered": "Triggered",
+      "deleteAria": "Delete {condition} ${price} alert",
+      "quick": "Quick:",
+      "targetPrice": "Target price",
+      "enterPrice": "Enter a price greater than 0",
+      "createAlert": "Create alert",
+      "pushPrompt": "Enable notifications to get alerts even when the app is closed",
+      "enabling": "Enabling…",
+      "enable": "Enable",
+      "dismiss": "Dismiss"
+    },
+    "watchlistBar": {
+      "label": "Watchlist:",
+      "tokenCount": "{n, plural, one {# token} other {# tokens}}",
+      "export": "Export",
+      "import": "Import",
+      "clearAll": "Clear all",
+      "invalidFile": "Invalid file",
+      "invalidJson": "Invalid JSON",
+      "imported": "Imported {n}",
+      "confirmClear": "Clear {n, plural, one {# watched token} other {# watched tokens}}?"
+    },
+    "legend": {
+      "size": "Size",
+      "color": "Color",
+      "metric": {
+        "change": "% change",
+        "marketCap": "market cap",
+        "volume": "24h volume"
+      }
+    },
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "close": "Close",
+      "rows": {
+        "search": "Focus search",
+        "clear": "Clear / close",
+        "metric": "Metric: % · MCap · Vol",
+        "timeframe": "Timeframe: 1h · 24h · 7d · 30d · 1y",
+        "scope": "Scope: All · Stacks · Watchlist · Holdings",
+        "refresh": "Refresh data",
+        "pause": "Pause / resume motion",
+        "list": "Toggle list view",
+        "help": "Toggle this help"
+      }
+    },
+    "buttons": {
+      "snapshotAria": "Download snapshot as PNG",
+      "downloadPng": "Download PNG",
+      "shareAria": "Copy link to current view",
+      "copyShareLink": "Copy share link",
+      "copied": "Copied",
+      "share": "Share",
+      "refreshAria": "Refresh data",
+      "refreshTitle": "Refresh (G)",
+      "resumeAnim": "Resume animation",
+      "pauseAnim": "Pause animation",
+      "resumeP": "Resume (P)",
+      "pauseP": "Pause (P)"
+    }
   }
 }

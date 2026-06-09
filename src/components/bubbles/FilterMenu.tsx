@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { SlidersHorizontal, X } from "lucide-react";
+
+// English option labels that need translating (numeric/value labels stay as-is)
+const CHOICE_KEY: Record<string, string> = { Any: "any", All: "all", Off: "off" };
 
 export type SortBy = "mcap" | "volume" | "gainers" | "losers" | "name";
 
@@ -112,6 +116,7 @@ interface FilterMenuProps {
 }
 
 export default function FilterMenu({ value, onChange }: FilterMenuProps) {
+  const t = useTranslations("bubbles.filter");
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -157,8 +162,8 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Filters"
-        title="Filters"
+        aria-label={t("filters")}
+        title={t("filters")}
         className="h-7 px-2 rounded-lg flex items-center gap-1 text-xs hover:opacity-80"
         style={{
           backgroundColor: active ? "var(--accent)" : "var(--bg-card)",
@@ -167,7 +172,7 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
         }}
       >
         <SlidersHorizontal size={12} />
-        <span className="hidden sm:inline">Filters</span>
+        <span className="hidden sm:inline">{t("filters")}</span>
         {active && (
           <span
             className="ml-0.5 text-[10px] font-mono px-1 rounded"
@@ -207,12 +212,12 @@ export default function FilterMenu({ value, onChange }: FilterMenuProps) {
                 className="text-sm font-semibold"
                 style={{ color: "var(--text-primary)" }}
               >
-                Filters
+                {t("filters")}
               </h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="Close"
+                aria-label={t("close")}
                 className="hover:opacity-80"
               >
                 <X size={16} style={{ color: "var(--text-muted)" }} />
@@ -249,9 +254,10 @@ function FilterBody({
   onChange: (v: BubbleFilters) => void;
   active: boolean;
 }) {
+  const t = useTranslations("bubbles.filter");
   return (
     <>
-      <Group label="Market cap">
+      <Group label={t("marketCap")}>
             <Choices
               options={MCAP_OPTIONS}
               value={value.minMarketCap}
@@ -259,7 +265,7 @@ function FilterBody({
             />
           </Group>
 
-          <Group label="Show">
+          <Group label={t("show")}>
             <Choices
               options={TOPN_OPTIONS}
               value={value.topN}
@@ -267,17 +273,9 @@ function FilterBody({
             />
           </Group>
 
-          <Group label="Sort by">
+          <Group label={t("sortBy")}>
             <div className="flex flex-wrap gap-1">
-              {(
-                [
-                  ["mcap", "Market cap"],
-                  ["volume", "Volume"],
-                  ["gainers", "Top gainers"],
-                  ["losers", "Top losers"],
-                  ["name", "Name (A-Z)"],
-                ] as Array<[SortBy, string]>
-              ).map(([k, label]) => {
+              {(["mcap", "volume", "gainers", "losers", "name"] as SortBy[]).map((k) => {
                 const a = value.sortBy === k;
                 return (
                   <button
@@ -291,14 +289,14 @@ function FilterBody({
                       border: "1px solid var(--border-subtle)",
                     }}
                   >
-                    {label}
+                    {t(`sort.${k}`)}
                   </button>
                 );
               })}
             </div>
           </Group>
 
-          <Group label="Movers only">
+          <Group label={t("moversOnly")}>
             <Choices
               options={MOVERS_OPTIONS}
               value={value.moversThreshold}
@@ -306,7 +304,7 @@ function FilterBody({
             />
           </Group>
 
-          <Group label={`Bubble size (${value.density.toFixed(2)}×)`}>
+          <Group label={t("bubbleSize", { d: value.density.toFixed(2) })}>
             <input
               type="range"
               min={0.8}
@@ -322,7 +320,7 @@ function FilterBody({
           </Group>
 
           <label className="flex items-center justify-between text-xs cursor-pointer">
-            <span style={{ color: "var(--text-primary)" }}>Exclude stablecoins</span>
+            <span style={{ color: "var(--text-primary)" }}>{t("excludeStables")}</span>
             <input
               type="checkbox"
               checked={value.excludeStables}
@@ -339,7 +337,7 @@ function FilterBody({
           className="text-[11px] mt-1 self-end hover:opacity-80"
           style={{ color: "var(--text-muted)" }}
         >
-          Reset all
+          {t("resetAll")}
         </button>
       )}
     </>
@@ -369,10 +367,12 @@ function Choices({
   value: number;
   onChange: (v: number) => void;
 }) {
+  const t = useTranslations("bubbles.filter");
   return (
     <div className="flex flex-wrap gap-1">
       {options.map((o) => {
         const active = o.value === value;
+        const key = CHOICE_KEY[o.label];
         return (
           <button
             key={o.label}
@@ -385,7 +385,7 @@ function Choices({
               border: "1px solid var(--border-subtle)",
             }}
           >
-            {o.label}
+            {key ? t(key) : o.label}
           </button>
         );
       })}

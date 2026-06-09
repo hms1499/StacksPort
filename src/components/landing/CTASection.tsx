@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { ArrowRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
@@ -12,6 +13,7 @@ export default function CTASection({
   onConnect: () => void;
   connecting: boolean;
 }) {
+  const t = useTranslations('landing');
   const ctaRef = useRef<HTMLElement>(null);
   const ctaGlowRef = useRef<HTMLDivElement>(null);
   const ctaH2Ref = useRef<HTMLHeadingElement>(null);
@@ -81,7 +83,7 @@ export default function CTASection({
           className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
           style={{ letterSpacing: '-0.04em' }}
         >
-          Put your sBTC plan{' '}
+          {t('cta.titleLine1')}{' '}
           <span
             style={{
               backgroundImage: 'linear-gradient(135deg, #00E5A0 0%, #38BDF8 100%)',
@@ -90,7 +92,7 @@ export default function CTASection({
               backgroundClip: 'text',
             }}
           >
-            on a schedule
+            {t('cta.titleLine2')}
           </span>
         </h2>
         <p
@@ -98,8 +100,7 @@ export default function CTASection({
           className="text-lg mb-10"
           style={{ color: 'rgba(221,232,248,0.45)' }}
         >
-          Choose an amount and interval, review the 0.3% protocol fee, then
-          approve the plan from your Stacks wallet.
+          {t('cta.subtitle')}
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <button
@@ -109,14 +110,14 @@ export default function CTASection({
             aria-busy={connecting}
             className="landing-primary-cta inline-flex items-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold transition-all duration-300 disabled:cursor-wait disabled:opacity-50"
           >
-            {connecting ? 'Connecting...' : 'Connect wallet'}
+            {connecting ? t('common.connecting') : t('common.connectWallet')}
             <ArrowRight size={18} />
           </button>
           <Link
             href="/dashboard"
             className="landing-nav-link inline-flex items-center justify-center px-8 py-4 text-sm font-semibold transition-colors"
           >
-            Explore dashboard
+            {t('common.exploreDashboard')}
           </Link>
         </div>
       </div>

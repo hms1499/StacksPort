@@ -1135,5 +1135,144 @@
       "viewExplorer": "Xem trên Stacks Explorer",
       "openAria": "Mở {name} trên Stacks Explorer"
     }
+  },
+  "landing": {
+    "common": {
+      "connectWallet": "Kết nối ví",
+      "connecting": "Đang kết nối...",
+      "exploreDashboard": "Khám phá bảng điều khiển"
+    },
+    "nav": {
+      "features": "Tính năng",
+      "howItWorks": "Cách hoạt động",
+      "github": "GitHub",
+      "openMenu": "Mở menu điều hướng",
+      "closeMenu": "Đóng menu điều hướng"
+    },
+    "hero": {
+      "badge": "Đang chạy trên Stacks Mainnet",
+      "titleLine1": "Tự động hóa",
+      "titleLine2": "chiến lược Bitcoin",
+      "subtitle": "Chuyển STX thành sBTC theo lịch bạn kiểm soát. Mỗi lần thực thi DCA đều phi lưu ký, được thực thi on-chain, và có thể tạm dừng hoặc hủy từ ví của bạn.",
+      "trust": {
+        "nonCustodial": "Phi lưu ký",
+        "openSource": "Hợp đồng mã nguồn mở",
+        "mainnet": "Stacks mainnet"
+      },
+      "portfolioPreview": "Xem trước danh mục",
+      "dcaPlan": "Kế hoạch DCA",
+      "running": "Đang chạy",
+      "planMeta": "50 STX · mỗi 144 block",
+      "previewExecutions": "Lần thực thi (xem trước)"
+    },
+    "walkthrough": {
+      "eyebrow": "Một quy trình, từ đầu đến cuối",
+      "heading": "Từ mua định kỳ đến hiểu rõ danh mục",
+      "intro": "StacksPort kết nối tự động hóa, thực thi và đo lường mà không nắm giữ ví của bạn.",
+      "steps": {
+        "automate": {
+          "eyebrow": "Tự động",
+          "title": "Xây lịch STX sang sBTC",
+          "description": "Chọn số tiền và khoảng thời gian, xem lại toàn bộ kế hoạch, và phê duyệt từ ví của bạn. Vault chỉ giữ số dư được phân bổ cho kế hoạch đó.",
+          "b1": "Hàng ngày, hàng tuần hoặc hàng tháng",
+          "b2": "Tạm dừng và tiếp tục bất cứ lúc nào",
+          "b3": "Phí giao thức 0.3% mỗi lần swap"
+        },
+        "measure": {
+          "eyebrow": "Đo lường",
+          "title": "Theo dõi giá vốn và số lần còn lại",
+          "description": "Xem giá trị danh mục, lịch sử thực thi DCA, giá vào trung bình, và số lần swap theo lịch mà số dư còn lại có thể hỗ trợ.",
+          "b1": "Số dư Stacks trực tiếp",
+          "b2": "Hiệu suất DCA so với mua một lần",
+          "b3": "Lịch sử thực thi on-chain"
+        },
+        "act": {
+          "eyebrow": "Hành động",
+          "title": "Swap trực tiếp và luôn nắm thông tin",
+          "description": "Dùng tuyến Bitflow để swap trực tiếp, sau đó theo dõi mục tiêu giá và các lần thực thi DCA mà không cần canh bảng điều khiển cả ngày.",
+          "b1": "Báo giá swap thời gian thực",
+          "b2": "Cảnh báo giá và thực thi",
+          "b3": "Thông tin AI theo danh mục"
+        }
+      },
+      "dcaPreview": {
+        "title": "Tạo kế hoạch DCA",
+        "mainnet": "Mainnet",
+        "spend": "Chi",
+        "buy": "Mua",
+        "everyWeek": "Mỗi tuần",
+        "confirmed": "Đã xác nhận từ ví của bạn"
+      },
+      "perfPreview": {
+        "label": "Hiệu suất DCA",
+        "preview": "Danh mục xem trước · +4.8%",
+        "avgEntry": "Giá vào trung bình",
+        "runway": "Số lần còn lại",
+        "swaps": "8 lần swap"
+      },
+      "alertsPreview": {
+        "quote": "Báo giá swap",
+        "viaBitflow": "Qua Bitflow",
+        "execConfirmed": "Đã xác nhận thực thi DCA",
+        "execDesc": "Lần swap STX sang sBTC theo lịch của bạn đã được xác nhận trên Stacks."
+      }
+    },
+    "how": {
+      "eyebrow": "Cách hoạt động",
+      "heading": "Ba bước để tự động hóa",
+      "steps": {
+        "s1": {
+          "title": "Kết nối ví của bạn",
+          "desc": "Dùng Leather hoặc Xverse. Không chia sẻ cụm từ khôi phục — khóa của bạn không bao giờ rời thiết bị."
+        },
+        "s2": {
+          "title": "Tạo kế hoạch DCA",
+          "desc": "Chọn cặp token, đặt số tiền và khoảng thời gian. Nạp STX hoặc sBTC làm tài sản thế chấp."
+        },
+        "s3": {
+          "title": "Để bot thực thi",
+          "desc": "Keeper bot của chúng tôi chạy qua GitHub Actions và thực thi kế hoạch của bạn on-chain ở mỗi khoảng thời gian. Tạm dừng hoặc hủy bất cứ lúc nào."
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "Xác minh, đừng tin tưởng",
+      "heading": "Xây dựng cho tự động hóa minh bạch",
+      "intro": "Tự động hóa chạy qua các hợp đồng mã nguồn mở được triển khai trên Stacks mainnet. Xem lại quy tắc và hoạt động hợp đồng trực tiếp trước khi kết nối ví.",
+      "points": {
+        "control": {
+          "title": "Bạn giữ quyền kiểm soát",
+          "desc": "Cần phê duyệt từ ví cho việc nạp tiền và thay đổi kế hoạch. StacksPort không bao giờ nhận cụm từ khôi phục hoặc khóa riêng tư của bạn."
+        },
+        "automated": {
+          "title": "Tự động on-chain",
+          "desc": "Keeper gửi các lần thực thi đến hạn, trong khi hợp đồng vault thực thi số dư kế hoạch, khoảng thời gian và hạch toán swap."
+        },
+        "pause": {
+          "title": "Tạm dừng hoặc hủy",
+          "desc": "Các kế hoạch vẫn thuộc quyền kiểm soát của ví bạn. Tạm dừng các lần thực thi trong tương lai hoặc hủy và rút số dư vault còn lại."
+        },
+        "fees": {
+          "title": "Phí minh bạch",
+          "desc": "Mỗi lần swap tự động tính phí giao thức 0.3%. Chi phí mạng và thực thi DEX được tính riêng."
+        }
+      },
+      "contracts": {
+        "stxSbtc": "Vault STX sang sBTC",
+        "sbtcUsdcx": "Vault sBTC sang USDCx"
+      },
+      "explorerAria": "{label} trên Stacks Explorer"
+    },
+    "cta": {
+      "titleLine1": "Đặt kế hoạch sBTC của bạn",
+      "titleLine2": "theo lịch trình",
+      "subtitle": "Chọn số tiền và khoảng thời gian, xem lại phí giao thức 0.3%, rồi phê duyệt kế hoạch từ ví Stacks của bạn."
+    },
+    "footer": {
+      "tagline": "Tự động hóa DCA phi lưu ký và quản lý danh mục trên blockchain Stacks.",
+      "product": "Sản phẩm",
+      "copyright": "© {year} StacksPort — Xây dựng trên Stacks",
+      "mainnet": "Mainnet"
+    }
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { ArrowRight, CheckCircle2, ArrowLeftRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
@@ -12,6 +13,7 @@ export default function Hero({
   onConnect: () => void;
   connecting: boolean;
 }) {
+  const t = useTranslations('landing');
   const heroRef = useRef<HTMLElement>(null);
   const dotGridRef = useRef<HTMLDivElement>(null);
   const ambientGlowRef = useRef<HTMLDivElement>(null);
@@ -170,7 +172,7 @@ export default function Hero({
                 className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: '#00E5A0', boxShadow: '0 0 6px #00E5A0', animation: 'pulse 2s infinite' }}
               />
-              Live on Stacks Mainnet
+              {t('hero.badge')}
             </span>
           </div>
 
@@ -179,7 +181,7 @@ export default function Hero({
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-none mb-5 md:mb-6"
             style={{ letterSpacing: '-0.04em' }}
           >
-            Automate your<br />
+            {t('hero.titleLine1')}<br />
             <span
               style={{
                 backgroundImage: 'linear-gradient(135deg, #00E5A0 0%, #38BDF8 100%)',
@@ -188,7 +190,7 @@ export default function Hero({
                 backgroundClip: 'text',
               }}
             >
-              Bitcoin strategy
+              {t('hero.titleLine2')}
             </span>
           </h1>
 
@@ -197,9 +199,7 @@ export default function Hero({
             className="text-base md:text-lg leading-relaxed mb-8 md:mb-10 max-w-lg"
             style={{ color: 'rgba(221,232,248,0.55)' }}
           >
-            Turn STX into sBTC on a schedule you control. Every DCA execution
-            is non-custodial, enforced on-chain, and can be paused or cancelled
-            from your wallet.
+            {t('hero.subtitle')}
           </p>
 
           <div
@@ -212,14 +212,14 @@ export default function Hero({
               aria-busy={connecting}
               className="landing-primary-cta flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-50"
             >
-              {connecting ? 'Connecting...' : 'Connect wallet'}
+              {connecting ? t('common.connecting') : t('common.connectWallet')}
               <ArrowRight size={16} />
             </button>
             <Link
               href="/dashboard"
               className="landing-secondary-cta flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200"
             >
-              Explore dashboard
+              {t('common.exploreDashboard')}
             </Link>
           </div>
 
@@ -229,14 +229,14 @@ export default function Hero({
             style={{ color: 'rgba(221,232,248,0.3)' }}
           >
             {[
-              { label: 'Non-custodial' },
+              { tKey: 'nonCustodial' },
               {
-                label: 'Open-source contracts',
+                tKey: 'openSource',
                 href: 'https://github.com/hms1499/StacksPort/tree/main/contracts',
               },
-              { label: 'Stacks mainnet' },
-            ].map(({ label, href }) => (
-              <span key={label} className="flex items-center gap-1.5">
+              { tKey: 'mainnet' },
+            ].map(({ tKey, href }) => (
+              <span key={tKey} className="flex items-center gap-1.5">
                 <CheckCircle2 size={12} style={{ color: '#00E5A0' }} />
                 {href ? (
                   <a
@@ -245,9 +245,9 @@ export default function Hero({
                     rel="noopener noreferrer"
                     className="underline underline-offset-2 hover:text-[#DDE8F8] transition-colors"
                   >
-                    {label}
+                    {t(`hero.trust.${tKey}`)}
                   </a>
-                ) : label}
+                ) : t(`hero.trust.${tKey}`)}
               </span>
             ))}
           </div>
@@ -269,7 +269,7 @@ export default function Hero({
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: 'rgba(221,232,248,0.25)', letterSpacing: '0.1em', fontFamily: 'var(--font-mono)' }}
             >
-              Portfolio Preview
+              {t('hero.portfolioPreview')}
             </p>
             <div className="flex items-baseline gap-3 mb-1">
               <p
@@ -321,14 +321,14 @@ export default function Hero({
                 className="text-xs font-bold tracking-widest uppercase"
                 style={{ color: 'rgba(221,232,248,0.25)', letterSpacing: '0.1em' }}
               >
-                DCA Plan
+                {t('hero.dcaPlan')}
               </p>
               <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#00E5A0', fontFamily: 'var(--font-mono)' }}>
                 <span
                   className="w-1.5 h-1.5 rounded-full"
                   style={{ backgroundColor: '#00E5A0', animation: 'pulse 2s infinite' }}
                 />
-                Running
+                {t('hero.running')}
               </span>
             </div>
             <div className="flex items-center gap-2 mb-1">
@@ -339,7 +339,7 @@ export default function Hero({
               className="text-xs mb-3"
               style={{ color: 'rgba(221,232,248,0.35)', fontFamily: 'var(--font-mono)' }}
             >
-              50 STX · every 144 blocks
+              {t('hero.planMeta')}
             </p>
             <div className="flex items-center gap-2.5">
               <div
@@ -372,7 +372,7 @@ export default function Hero({
             >
               1,247
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(221,232,248,0.3)' }}>Preview executions</p>
+            <p className="text-xs mt-0.5" style={{ color: 'rgba(221,232,248,0.3)' }}>{t('hero.previewExecutions')}</p>
           </div>
         </div>
       </div>

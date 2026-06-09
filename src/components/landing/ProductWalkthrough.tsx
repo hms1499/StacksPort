@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import {
   ArrowDown,
   BellRing,
@@ -8,43 +9,23 @@ import {
 } from "lucide-react";
 
 const STEPS = [
-  {
-    eyebrow: "Automate",
-    title: "Build an STX to sBTC schedule",
-    description:
-      "Choose an amount and interval, review the full plan, and approve it from your wallet. The vault holds only the balance allocated to that plan.",
-    bullets: ["Daily, weekly, or monthly", "Pause and resume anytime", "0.3% protocol fee per swap"],
-    visual: "dca",
-  },
-  {
-    eyebrow: "Measure",
-    title: "Track cost basis and plan runway",
-    description:
-      "See portfolio value, DCA execution history, average entry price, and the number of scheduled swaps your remaining balance can support.",
-    bullets: ["Live Stacks balances", "DCA vs lump-sum performance", "On-chain execution history"],
-    visual: "performance",
-  },
-  {
-    eyebrow: "Act",
-    title: "Swap directly and stay informed",
-    description:
-      "Use Bitflow routes for direct swaps, then monitor price targets and DCA executions without watching the dashboard all day.",
-    bullets: ["Real-time swap quotes", "Price and execution alerts", "Portfolio-aware AI insights"],
-    visual: "alerts",
-  },
+  { key: "automate", visual: "dca" },
+  { key: "measure", visual: "performance" },
+  { key: "act", visual: "alerts" },
 ] as const;
 
 function DcaPreview() {
+  const t = useTranslations("landing.walkthrough.dcaPreview");
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-[#0A1626] p-5 shadow-2xl">
       <div className="mb-5 flex items-center justify-between">
-        <span className="text-sm font-bold">Create DCA plan</span>
+        <span className="text-sm font-bold">{t("title")}</span>
         <span className="rounded-full bg-[#00E5A0]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#00E5A0]">
-          Mainnet
+          {t("mainnet")}
         </span>
       </div>
       <div className="rounded-xl border border-white/10 bg-[#0E1E30] p-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Spend</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">{t("spend")}</p>
         <div className="mt-2 flex items-center justify-between">
           <span className="font-mono text-2xl font-bold">50</span>
           <span className="rounded-lg bg-white/5 px-3 py-1.5 text-sm font-bold">STX</span>
@@ -54,9 +35,9 @@ function DcaPreview() {
         <ArrowDown size={15} />
       </div>
       <div className="rounded-xl border border-[#00E5A0]/20 bg-[#0E1E30] p-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Buy</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">{t("buy")}</p>
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-sm text-white/45">Every week</span>
+          <span className="text-sm text-white/45">{t("everyWeek")}</span>
           <span className="rounded-lg bg-[#00E5A0]/10 px-3 py-1.5 text-sm font-bold text-[#00E5A0]">
             sBTC
           </span>
@@ -64,20 +45,21 @@ function DcaPreview() {
       </div>
       <div className="mt-4 flex items-center gap-2 text-xs text-white/40">
         <ShieldCheck size={13} className="text-[#00E5A0]" />
-        Confirmed from your wallet
+        {t("confirmed")}
       </div>
     </div>
   );
 }
 
 function PerformancePreview() {
+  const t = useTranslations("landing.walkthrough.perfPreview");
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-[#0A1626] p-5 shadow-2xl">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">DCA performance</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">{t("label")}</p>
           <p className="mt-2 font-mono text-3xl font-bold">$4,280.40</p>
-          <p className="mt-1 text-xs text-[#00E5A0]">Preview portfolio · +4.8%</p>
+          <p className="mt-1 text-xs text-[#00E5A0]">{t("preview")}</p>
         </div>
         <div className="rounded-xl bg-[#38BDF8]/10 p-2.5 text-[#38BDF8]">
           <LineChart size={18} />
@@ -102,12 +84,12 @@ function PerformancePreview() {
       </svg>
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-xl bg-white/[0.03] p-3">
-          <p className="text-[10px] uppercase tracking-wider text-white/30">Average entry</p>
+          <p className="text-[10px] uppercase tracking-wider text-white/30">{t("avgEntry")}</p>
           <p className="mt-1 font-mono text-sm font-bold">$64,120</p>
         </div>
         <div className="rounded-xl bg-white/[0.03] p-3">
-          <p className="text-[10px] uppercase tracking-wider text-white/30">Plan runway</p>
-          <p className="mt-1 font-mono text-sm font-bold">8 swaps</p>
+          <p className="text-[10px] uppercase tracking-wider text-white/30">{t("runway")}</p>
+          <p className="mt-1 font-mono text-sm font-bold">{t("swaps")}</p>
         </div>
       </div>
     </div>
@@ -115,12 +97,13 @@ function PerformancePreview() {
 }
 
 function AlertsPreview() {
+  const t = useTranslations("landing.walkthrough.alertsPreview");
   return (
     <div className="mx-auto w-full max-w-md space-y-3">
       <div className="rounded-2xl border border-white/10 bg-[#0A1626] p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-sm font-bold">Swap quote</span>
-          <span className="text-[10px] uppercase tracking-wider text-white/30">Via Bitflow</span>
+          <span className="text-sm font-bold">{t("quote")}</span>
+          <span className="text-[10px] uppercase tracking-wider text-white/30">{t("viaBitflow")}</span>
         </div>
         <div className="flex items-center justify-between rounded-xl bg-white/[0.03] p-4">
           <span className="font-mono text-lg font-bold">100 STX</span>
@@ -134,9 +117,9 @@ function AlertsPreview() {
             <BellRing size={16} />
           </div>
           <div>
-            <p className="text-sm font-bold">DCA execution confirmed</p>
+            <p className="text-sm font-bold">{t("execConfirmed")}</p>
             <p className="mt-1 text-xs leading-relaxed text-white/40">
-              Your scheduled STX to sBTC swap was confirmed on Stacks.
+              {t("execDesc")}
             </p>
           </div>
         </div>
@@ -152,6 +135,7 @@ const VISUALS = {
 } as const;
 
 export default function ProductWalkthrough() {
+  const t = useTranslations("landing.walkthrough");
   return (
     <section id="features" aria-labelledby="product-heading" className="px-5 py-24 md:px-8">
       <div className="mx-auto max-w-6xl">
@@ -160,40 +144,39 @@ export default function ProductWalkthrough() {
             className="mb-3 text-xs font-bold uppercase tracking-widest"
             style={{ color: "#00E5A0", letterSpacing: "0.12em" }}
           >
-            One workflow, end to end
+            {t("eyebrow")}
           </p>
           <h2 id="product-heading" className="text-4xl font-bold md:text-5xl" style={{ letterSpacing: "-0.03em" }}>
-            From recurring buy to portfolio insight
+            {t("heading")}
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/45">
-            StacksPort connects automation, execution, and measurement without
-            taking custody of your wallet.
+            {t("intro")}
           </p>
         </div>
 
         <div className="space-y-28">
-          {STEPS.map(({ eyebrow, title, description, bullets, visual }, index) => {
+          {STEPS.map(({ key, visual }, index) => {
             const Visual = VISUALS[visual];
             return (
               <article
-                key={title}
+                key={key}
                 className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20"
               >
                 <div className={index % 2 === 1 ? "lg:order-2" : undefined}>
                   <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#00E5A0]">
-                    {String(index + 1).padStart(2, "0")} · {eyebrow}
+                    {String(index + 1).padStart(2, "0")} · {t(`steps.${key}.eyebrow`)}
                   </p>
                   <h3 className="text-3xl font-bold md:text-4xl" style={{ letterSpacing: "-0.03em" }}>
-                    {title}
+                    {t(`steps.${key}.title`)}
                   </h3>
                   <p className="mt-5 text-base leading-relaxed text-white/45">
-                    {description}
+                    {t(`steps.${key}.description`)}
                   </p>
                   <ul className="mt-7 space-y-3">
-                    {bullets.map((bullet) => (
-                      <li key={bullet} className="flex items-center gap-3 text-sm text-white/65">
+                    {["b1", "b2", "b3"].map((b) => (
+                      <li key={b} className="flex items-center gap-3 text-sm text-white/65">
                         <CheckCircle2 size={15} className="shrink-0 text-[#00E5A0]" />
-                        {bullet}
+                        {t(`steps.${key}.${b}`)}
                       </li>
                     ))}
                   </ul>

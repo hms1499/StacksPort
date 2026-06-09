@@ -1,27 +1,17 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const STEPS = [
-  {
-    n: '01',
-    title: 'Connect your wallet',
-    desc: 'Use Leather or Xverse. No seed phrases shared — your keys never leave your device.',
-  },
-  {
-    n: '02',
-    title: 'Create a DCA plan',
-    desc: 'Pick a token pair, set your amount and interval. Deposit STX or sBTC as collateral.',
-  },
-  {
-    n: '03',
-    title: 'Let the bot execute',
-    desc: 'Our keeper bot runs via GitHub Actions and executes your plan on-chain at every interval. Pause or cancel anytime.',
-  },
-];
+  { n: '01', key: 's1' },
+  { n: '02', key: 's2' },
+  { n: '03', key: 's3' },
+] as const;
 
 export default function HowItWorks() {
+  const t = useTranslations('landing.how');
   const howRef = useRef<HTMLElement>(null);
   const howHeadingRef = useRef<HTMLDivElement>(null);
   const stepCardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -82,15 +72,15 @@ export default function HowItWorks() {
             className="text-xs font-bold tracking-widest uppercase mb-3"
             style={{ color: '#00E5A0', letterSpacing: '0.12em' }}
           >
-            How it works
+            {t('eyebrow')}
           </p>
           <h2 className="text-4xl md:text-5xl font-bold" style={{ letterSpacing: '-0.03em' }}>
-            Three steps to automate
+            {t('heading')}
           </h2>
         </div>
 
         <div className="space-y-3">
-          {STEPS.map(({ n, title, desc }, i) => (
+          {STEPS.map(({ n, key }, i) => (
             <div
               key={n}
               ref={(el) => { stepCardRefs.current[i] = el; }}
@@ -103,8 +93,8 @@ export default function HowItWorks() {
                 {n}
               </span>
               <div>
-                <h3 className="font-bold text-lg mb-1.5" style={{ color: '#DDE8F8' }}>{title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(221,232,248,0.40)' }}>{desc}</p>
+                <h3 className="font-bold text-lg mb-1.5" style={{ color: '#DDE8F8' }}>{t(`steps.${key}.title`)}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(221,232,248,0.40)' }}>{t(`steps.${key}.desc`)}</p>
               </div>
             </div>
           ))}

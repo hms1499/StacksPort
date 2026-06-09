@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Bot, ExternalLink, KeyRound, RotateCcw, ShieldCheck } from "lucide-react";
 import {
   DCA_CONTRACT_ID,
@@ -6,35 +7,15 @@ import {
 } from "@/lib/dca-contracts";
 
 const TRUST_POINTS = [
-  {
-    icon: KeyRound,
-    title: "You keep control",
-    description:
-      "Wallet approval is required for deposits and plan changes. StacksPort never receives your seed phrase or private key.",
-  },
-  {
-    icon: Bot,
-    title: "Automated on-chain",
-    description:
-      "A keeper submits due executions, while the vault contracts enforce plan balances, intervals, and swap accounting.",
-  },
-  {
-    icon: RotateCcw,
-    title: "Pause or cancel",
-    description:
-      "Plans remain under your wallet's control. Pause future executions or cancel and withdraw the remaining vault balance.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Transparent fees",
-    description:
-      "Each automated swap charges a 0.3% protocol fee. Network and DEX execution costs are separate.",
-  },
+  { icon: KeyRound, key: "control" },
+  { icon: Bot, key: "automated" },
+  { icon: RotateCcw, key: "pause" },
+  { icon: ShieldCheck, key: "fees" },
 ] as const;
 
 const CONTRACTS = [
-  { label: "STX to sBTC vault", id: DCA_CONTRACT_ID },
-  { label: "sBTC to USDCx vault", id: DCA_SBTC_CONTRACT_ID },
+  { key: "stxSbtc", id: DCA_CONTRACT_ID },
+  { key: "sbtcUsdcx", id: DCA_SBTC_CONTRACT_ID },
 ] as const;
 
 function shortenContract(contractId: string): string {
@@ -43,6 +24,7 @@ function shortenContract(contractId: string): string {
 }
 
 export default function TrustSection() {
+  const t = useTranslations("landing.trust");
   return (
     <section
       id="security"
@@ -56,29 +38,27 @@ export default function TrustSection() {
             className="mb-3 text-xs font-bold uppercase tracking-widest"
             style={{ color: "#00E5A0", letterSpacing: "0.12em" }}
           >
-            Verify, don&apos;t trust
+            {t("eyebrow")}
           </p>
           <h2
             id="trust-heading"
             className="text-4xl font-bold md:text-5xl"
             style={{ letterSpacing: "-0.03em" }}
           >
-            Built for transparent automation
+            {t("heading")}
           </h2>
           <p
             className="mt-5 text-base leading-relaxed"
             style={{ color: "rgba(221,232,248,0.5)" }}
           >
-            The automation runs through open-source contracts deployed on
-            Stacks mainnet. Review the rules and live contract activity before
-            connecting a wallet.
+            {t("intro")}
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {TRUST_POINTS.map(({ icon: Icon, title, description }) => (
+          {TRUST_POINTS.map(({ icon: Icon, key }) => (
             <article
-              key={title}
+              key={key}
               className="landing-card rounded-2xl p-5"
             >
               <div
@@ -88,13 +68,13 @@ export default function TrustSection() {
                 <Icon size={18} style={{ color: "#00E5A0" }} />
               </div>
               <h3 className="mb-2 font-bold" style={{ color: "#DDE8F8" }}>
-                {title}
+                {t(`points.${key}.title`)}
               </h3>
               <p
                 className="text-sm leading-relaxed"
                 style={{ color: "rgba(221,232,248,0.42)" }}
               >
-                {description}
+                {t(`points.${key}.desc`)}
               </p>
             </article>
           ))}
@@ -107,21 +87,21 @@ export default function TrustSection() {
             border: "1px solid rgba(28,49,80,0.8)",
           }}
         >
-          {CONTRACTS.map(({ label, id }) => (
+          {CONTRACTS.map(({ key, id }) => (
             <a
               key={id}
               href={mainnetContractExplorerUrl(id)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition-colors hover:bg-white/[0.03]"
-              aria-label={`${label} on Stacks Explorer`}
+              aria-label={t("explorerAria", { label: t(`contracts.${key}`) })}
             >
               <span>
                 <span
                   className="block text-xs font-bold uppercase tracking-wider"
                   style={{ color: "rgba(221,232,248,0.35)" }}
                 >
-                  {label}
+                  {t(`contracts.${key}`)}
                 </span>
                 <span
                   className="mt-1 block text-xs"

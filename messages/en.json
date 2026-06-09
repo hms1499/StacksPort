@@ -1135,5 +1135,144 @@
       "viewExplorer": "View on Stacks Explorer",
       "openAria": "Open {name} on Stacks Explorer"
     }
+  },
+  "landing": {
+    "common": {
+      "connectWallet": "Connect wallet",
+      "connecting": "Connecting...",
+      "exploreDashboard": "Explore dashboard"
+    },
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "github": "GitHub",
+      "openMenu": "Open navigation menu",
+      "closeMenu": "Close navigation menu"
+    },
+    "hero": {
+      "badge": "Live on Stacks Mainnet",
+      "titleLine1": "Automate your",
+      "titleLine2": "Bitcoin strategy",
+      "subtitle": "Turn STX into sBTC on a schedule you control. Every DCA execution is non-custodial, enforced on-chain, and can be paused or cancelled from your wallet.",
+      "trust": {
+        "nonCustodial": "Non-custodial",
+        "openSource": "Open-source contracts",
+        "mainnet": "Stacks mainnet"
+      },
+      "portfolioPreview": "Portfolio Preview",
+      "dcaPlan": "DCA Plan",
+      "running": "Running",
+      "planMeta": "50 STX · every 144 blocks",
+      "previewExecutions": "Preview executions"
+    },
+    "walkthrough": {
+      "eyebrow": "One workflow, end to end",
+      "heading": "From recurring buy to portfolio insight",
+      "intro": "StacksPort connects automation, execution, and measurement without taking custody of your wallet.",
+      "steps": {
+        "automate": {
+          "eyebrow": "Automate",
+          "title": "Build an STX to sBTC schedule",
+          "description": "Choose an amount and interval, review the full plan, and approve it from your wallet. The vault holds only the balance allocated to that plan.",
+          "b1": "Daily, weekly, or monthly",
+          "b2": "Pause and resume anytime",
+          "b3": "0.3% protocol fee per swap"
+        },
+        "measure": {
+          "eyebrow": "Measure",
+          "title": "Track cost basis and plan runway",
+          "description": "See portfolio value, DCA execution history, average entry price, and the number of scheduled swaps your remaining balance can support.",
+          "b1": "Live Stacks balances",
+          "b2": "DCA vs lump-sum performance",
+          "b3": "On-chain execution history"
+        },
+        "act": {
+          "eyebrow": "Act",
+          "title": "Swap directly and stay informed",
+          "description": "Use Bitflow routes for direct swaps, then monitor price targets and DCA executions without watching the dashboard all day.",
+          "b1": "Real-time swap quotes",
+          "b2": "Price and execution alerts",
+          "b3": "Portfolio-aware AI insights"
+        }
+      },
+      "dcaPreview": {
+        "title": "Create DCA plan",
+        "mainnet": "Mainnet",
+        "spend": "Spend",
+        "buy": "Buy",
+        "everyWeek": "Every week",
+        "confirmed": "Confirmed from your wallet"
+      },
+      "perfPreview": {
+        "label": "DCA performance",
+        "preview": "Preview portfolio · +4.8%",
+        "avgEntry": "Average entry",
+        "runway": "Plan runway",
+        "swaps": "8 swaps"
+      },
+      "alertsPreview": {
+        "quote": "Swap quote",
+        "viaBitflow": "Via Bitflow",
+        "execConfirmed": "DCA execution confirmed",
+        "execDesc": "Your scheduled STX to sBTC swap was confirmed on Stacks."
+      }
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "heading": "Three steps to automate",
+      "steps": {
+        "s1": {
+          "title": "Connect your wallet",
+          "desc": "Use Leather or Xverse. No seed phrases shared — your keys never leave your device."
+        },
+        "s2": {
+          "title": "Create a DCA plan",
+          "desc": "Pick a token pair, set your amount and interval. Deposit STX or sBTC as collateral."
+        },
+        "s3": {
+          "title": "Let the bot execute",
+          "desc": "Our keeper bot runs via GitHub Actions and executes your plan on-chain at every interval. Pause or cancel anytime."
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "Verify, don't trust",
+      "heading": "Built for transparent automation",
+      "intro": "The automation runs through open-source contracts deployed on Stacks mainnet. Review the rules and live contract activity before connecting a wallet.",
+      "points": {
+        "control": {
+          "title": "You keep control",
+          "desc": "Wallet approval is required for deposits and plan changes. StacksPort never receives your seed phrase or private key."
+        },
+        "automated": {
+          "title": "Automated on-chain",
+          "desc": "A keeper submits due executions, while the vault contracts enforce plan balances, intervals, and swap accounting."
+        },
+        "pause": {
+          "title": "Pause or cancel",
+          "desc": "Plans remain under your wallet's control. Pause future executions or cancel and withdraw the remaining vault balance."
+        },
+        "fees": {
+          "title": "Transparent fees",
+          "desc": "Each automated swap charges a 0.3% protocol fee. Network and DEX execution costs are separate."
+        }
+      },
+      "contracts": {
+        "stxSbtc": "STX to sBTC vault",
+        "sbtcUsdcx": "sBTC to USDCx vault"
+      },
+      "explorerAria": "{label} on Stacks Explorer"
+    },
+    "cta": {
+      "titleLine1": "Put your sBTC plan",
+      "titleLine2": "on a schedule",
+      "subtitle": "Choose an amount and interval, review the 0.3% protocol fee, then approve the plan from your Stacks wallet."
+    },
+    "footer": {
+      "tagline": "Non-custodial DCA automation and portfolio management on Stacks blockchain.",
+      "product": "Product",
+      "copyright": "© {year} StacksPort — Built on Stacks",
+      "mainnet": "Mainnet"
+    }
   }
 }

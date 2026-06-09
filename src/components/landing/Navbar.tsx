@@ -1,8 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { Zap, Menu, X } from 'lucide-react';
+
+const NAV_LINKS = [
+  { tKey: 'features', href: '#features' },
+  { tKey: 'howItWorks', href: '#how-it-works' },
+  { tKey: 'github', href: 'https://github.com/hms1499/StacksPort', external: true },
+] as const;
 
 interface NavbarProps {
   onConnectClick: () => void;
@@ -10,6 +17,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
+  const t = useTranslations('landing');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -64,19 +72,15 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          {[
-            { label: 'Features', href: '#features' },
-            { label: 'How it works', href: '#how-it-works' },
-            { label: 'GitHub', href: 'https://github.com/hms1499/StacksPort', external: true },
-          ].map(({ label, href, external }) => (
+          {NAV_LINKS.map(({ tKey, href, external }) => (
             <a
-              key={label}
+              key={tKey}
               href={href}
               target={external ? '_blank' : undefined}
               rel={external ? 'noopener noreferrer' : undefined}
               className="landing-nav-link text-sm font-medium transition-colors duration-200"
             >
-              {label}
+              {t(`nav.${tKey}`)}
             </a>
           ))}
         </div>
@@ -87,7 +91,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
             href="/dashboard"
             className="landing-nav-link hidden text-sm font-semibold transition-colors duration-200 md:block"
           >
-            Explore dashboard
+            {t('common.exploreDashboard')}
           </Link>
           <button
             onClick={onConnectClick}
@@ -95,12 +99,12 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
             aria-busy={connecting}
             className="landing-primary-cta hidden md:flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 disabled:cursor-wait disabled:opacity-60"
           >
-            {connecting ? 'Connecting...' : 'Connect wallet'}
+            {connecting ? t('common.connecting') : t('common.connectWallet')}
           </button>
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-label={mobileOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={mobileOpen}
             className="md:hidden p-2 rounded-xl transition-colors"
             style={{ color: 'rgba(221, 232, 248, 0.7)' }}
@@ -116,19 +120,15 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
           className="md:hidden px-5 pb-5 pt-3 space-y-1"
           style={{ borderTop: '1px solid rgba(28, 49, 80, 0.6)' }}
         >
-          {[
-            { label: 'Features', href: '#features' },
-            { label: 'How it works', href: '#how-it-works' },
-            { label: 'GitHub', href: 'https://github.com/hms1499/StacksPort' },
-          ].map(({ label, href }) => (
+          {NAV_LINKS.map(({ tKey, href }) => (
             <a
-              key={label}
+              key={tKey}
               href={href}
               className="block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
               style={{ color: 'rgba(221, 232, 248, 0.6)' }}
               onClick={() => setMobileOpen(false)}
             >
-              {label}
+              {t(`nav.${tKey}`)}
             </a>
           ))}
           <Link
@@ -137,7 +137,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
             style={{ color: 'rgba(221, 232, 248, 0.6)' }}
             onClick={() => setMobileOpen(false)}
           >
-            Explore dashboard
+            {t('common.exploreDashboard')}
           </Link>
           <button
             onClick={() => { onConnectClick(); setMobileOpen(false); }}
@@ -145,7 +145,7 @@ export default function Navbar({ onConnectClick, connecting }: NavbarProps) {
             aria-busy={connecting}
             className="landing-primary-cta w-full mt-2 py-2.5 rounded-xl text-sm font-bold disabled:cursor-wait disabled:opacity-60"
           >
-            {connecting ? 'Connecting...' : 'Connect wallet'}
+            {connecting ? t('common.connecting') : t('common.connectWallet')}
           </button>
         </div>
       )}

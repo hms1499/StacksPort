@@ -1,6 +1,13 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Zap } from 'lucide-react';
+
+const FOOTER_LINKS = [
+  { tKey: 'features', href: '#features' },
+  { tKey: 'howItWorks', href: '#how-it-works' },
+  { tKey: 'github', href: 'https://github.com/hms1499/StacksPort' },
+] as const;
 
 function GitHubSVG({ size = 17 }: { size?: number }) {
   return (
@@ -11,6 +18,7 @@ function GitHubSVG({ size = 17 }: { size?: number }) {
 }
 
 export default function Footer() {
+  const t = useTranslations('landing');
   const year = new Date().getFullYear();
 
   return (
@@ -31,7 +39,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(221, 232, 248, 0.35)' }}>
-              Non-custodial DCA automation and portfolio management on Stacks blockchain.
+              {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-2">
               {[
@@ -55,20 +63,16 @@ export default function Footer() {
           <div className="flex gap-12 md:gap-16">
             <div>
               <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: 'rgba(221, 232, 248, 0.25)', letterSpacing: '0.1em' }}>
-                Product
+                {t('footer.product')}
               </p>
               <ul className="space-y-2.5">
-                {[
-                  { label: 'Features', href: '#features' },
-                  { label: 'How it works', href: '#how-it-works' },
-                  { label: 'GitHub', href: 'https://github.com/hms1499/StacksPort' },
-                ].map(({ label, href }) => (
-                  <li key={label}>
+                {FOOTER_LINKS.map(({ tKey, href }) => (
+                  <li key={tKey}>
                     <a
                       href={href}
                       className="landing-footer-link text-sm transition-colors"
                     >
-                      {label}
+                      {t(`nav.${tKey}`)}
                     </a>
                   </li>
                 ))}
@@ -83,7 +87,7 @@ export default function Footer() {
           style={{ borderTop: '1px solid rgba(28, 49, 80, 0.4)' }}
         >
           <p className="text-xs" style={{ color: 'rgba(221, 232, 248, 0.2)', fontFamily: 'var(--font-mono)' }}>
-            © {year} StacksPort — Built on Stacks
+            {t('footer.copyright', { year: String(year) })}
           </p>
           <div className="flex items-center gap-2">
             <span
@@ -91,7 +95,7 @@ export default function Footer() {
               style={{ backgroundColor: '#00E5A0', boxShadow: '0 0 6px #00E5A0' }}
             />
             <span className="text-xs" style={{ color: 'rgba(221, 232, 248, 0.3)', fontFamily: 'var(--font-mono)' }}>
-              Mainnet
+              {t('footer.mainnet')}
             </span>
           </div>
         </div>

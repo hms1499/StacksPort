@@ -45,12 +45,12 @@ export default function NotificationsPageWrapper() {
 
       {/* Tab bar */}
       <div className="px-4 md:px-6" style={{ backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="flex gap-1">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
           {tabs.map(({ id, tKey, icon: Icon }) => (
             <button
               key={id}
               onClick={() => handleTabChange(id)}
-              className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors')}
+              className={cn('flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap shrink-0')}
               style={activeTab === id
                 ? { borderColor: '#408A71', color: 'var(--accent)' }
                 : { borderColor: 'transparent', color: 'var(--text-muted)' }

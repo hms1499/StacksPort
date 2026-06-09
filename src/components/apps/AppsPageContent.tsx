@@ -100,7 +100,7 @@ export default function AppsPageContent() {
                   className="text-sm font-semibold mb-3"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Explore DeFi on Stacks
+                  {t("exploreHeading")}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {EXPLORE_PROTOCOLS.map((p) => (

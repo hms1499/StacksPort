@@ -495,6 +495,27 @@
         "hoursAgo": "{n}h ago",
         "daysAgo": "{n}d ago"
       },
+      "stxPlans": {
+        "myPlans": "My Plans",
+        "secondsAgo": "{seconds}s ago",
+        "noPlans": "No plans yet",
+        "noPlansDesc": "Create your first STX→USDCx plan on the left to start selling STX for USDCx.",
+        "tryPreset": "Try: {label}",
+        "preset1": "10 STX weekly",
+        "preset2": "50 STX monthly"
+      },
+      "stxCard": {
+        "stxSpent": "STX Spent",
+        "netSwap": "Net swap: {amount} STX",
+        "directSwap": "STX → USDCx via Bitflow router",
+        "execute": "Execute",
+        "depositPlaceholder": "Deposit STX",
+        "cancelledToast": "Plan cancelled & refunded",
+        "cancelFailed": "Failed to cancel plan",
+        "executedToast": "Plan executed! Swap completed",
+        "executionFailed": "Execution failed",
+        "cancelConfirm": "Are you sure? You will be refunded <b>{amount} STX</b>."
+      },
       "stxForm": {
         "heading": "Create STX→USDCx DCA Plan",
         "spend": "Spend",

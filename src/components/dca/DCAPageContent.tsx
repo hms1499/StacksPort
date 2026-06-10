@@ -22,6 +22,7 @@ import CreateOutPlanForm from "@/components/dca-out/CreateOutPlanForm";
 import MyOutPlans from "@/components/dca-out/MyOutPlans";
 import OutSourceToggle, { type OutSource } from "@/components/dca-out/OutSourceToggle";
 import CreateStxOutPlanForm from "@/components/dca-out/CreateStxOutPlanForm";
+import MyStxOutPlans from "@/components/dca-out/MyStxOutPlans";
 
 export default function DCAPageContent() {
   const { isConnected, stxAddress } = useWalletStore();
@@ -111,7 +112,7 @@ export default function DCAPageContent() {
                       </MobileCollapsibleForm>
                     </div>
                     <div className="order-1 lg:order-2">
-                      {null}
+                      <MyStxOutPlans key={`${stxAddress}-${outRefreshKey}`} address={stxAddress!} />
                     </div>
                   </div>
                 )}

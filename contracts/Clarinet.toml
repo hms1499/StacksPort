@@ -44,64 +44,64 @@ contract_id = 'SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE.usdcx'
 [contracts.dca-vault]
 path = 'dca-vault.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.bitflow-sbtc-swap-router]
 path = 'bitflow-sbtc-swap-router.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.dca-vault-sbtc-v2]
 path = 'dca-vault-sbtc.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.bitflow-usdcx-swap-router]
 path = 'bitflow-usdcx-swap-router.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.mock-sbtc]
 path = 'mock-sbtc.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.mock-usdcx]
 path = 'mock-usdcx.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.test-dca-vault-sbtc]
 path = 'test-dca-vault-sbtc.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.mock-sbtc-swap-router]
 path = 'mock-sbtc-swap-router.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.dca-vault-v2]
 path = 'dca-vault-v2.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.batch-dca-executor]
 path = 'batch-dca-executor.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.dca-vault-stx-usdcx]
 path = 'dca-vault-stx-usdcx.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.bitflow-usdcx-from-stx-router]
 path = 'bitflow-usdcx-from-stx-router.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'
 
 [contracts.batch-dca-executor-v2]
 path = 'batch-dca-executor-v2.clar'
 clarity_version = 3
-epoch = '3.0'
+epoch = '3.3'

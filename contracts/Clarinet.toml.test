@@ -23,3 +23,13 @@ epoch = '3.0'
 path = 'mock-sbtc-swap-router.clar'
 clarity_version = 3
 epoch = '3.0'
+
+[contracts.test-dca-vault-stx-usdcx]
+path = 'test-dca-vault-stx-usdcx.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.mock-stx-usdcx-router]
+path = 'mock-stx-usdcx-router.clar'
+clarity_version = 3
+epoch = '3.0'

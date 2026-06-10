@@ -8,9 +8,6 @@ telemetry = false
 contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-core-v-1-2'
 
 [[project.requirements]]
-contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-sbtc-stx-v-1-1'
-
-[[project.requirements]]
 contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-trait-v-1-2'
 
 [[project.requirements]]
@@ -21,6 +18,9 @@ contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2'
 
 [[project.requirements]]
 contract_id = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token'
+
+[[project.requirements]]
+contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-sbtc-stx-v-1-1'
 
 [[project.requirements]]
 contract_id = 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-stx-aeusdc-v-1-2'
@@ -88,5 +88,15 @@ epoch = '3.0'
 
 [contracts.batch-dca-executor]
 path = 'batch-dca-executor.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.dca-vault-stx-usdcx]
+path = 'dca-vault-stx-usdcx.clar'
+clarity_version = 3
+epoch = '3.0'
+
+[contracts.bitflow-usdcx-from-stx-router]
+path = 'bitflow-usdcx-from-stx-router.clar'
 clarity_version = 3
 epoch = '3.0'

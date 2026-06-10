@@ -9,15 +9,23 @@ export { CircuitOpenError };
 export class StacksClient {
   private stxVault: DCAVault;
   private sbtcVault: DCAVault;
+  private stxUsdcxVault: DCAVault;
+  private vaultsById: Map<string, DCAVault>;
   private hiroBreaker = new CircuitBreaker("hiro-rpc");
 
   constructor(private config: BotConfig) {
-    this.stxVault = new DCAVault("stx-to-sbtc", {
+    this.stxVault = new DCAVault("stx-to-sbtc", { apiUrl: config.hiroApiUrl });
+    this.sbtcVault = new DCAVault("sbtc-to-usdcx", { apiUrl: config.hiroApiUrl });
+    const [, stxUsdcxName] = config.stxUsdcxVaultContract.split(".");
+    this.stxUsdcxVault = new DCAVault("stx-to-sbtc", {
       apiUrl: config.hiroApiUrl,
+      contractName: stxUsdcxName,
     });
-    this.sbtcVault = new DCAVault("sbtc-to-usdcx", {
-      apiUrl: config.hiroApiUrl,
-    });
+    this.vaultsById = new Map([
+      [config.stxVaultContract, this.stxVault],
+      [config.sbtcVaultContract, this.sbtcVault],
+      [config.stxUsdcxVaultContract, this.stxUsdcxVault],
+    ]);
   }
 
   breakerSnapshot() {
@@ -25,7 +33,9 @@ export class StacksClient {
   }
 
   private getVault(vaultContract: string): DCAVault {
-    return vaultContract.includes("sbtc") ? this.sbtcVault : this.stxVault;
+    const v = this.vaultsById.get(vaultContract);
+    if (!v) throw new Error(`Unknown vault contract: ${vaultContract}`);
+    return v;
   }
 
   async getTotalPlans(vaultContract: string): Promise<number> {
@@ -140,29 +150,33 @@ export class StacksClient {
     return executable;
   }
 
-  async getExecutablePlansForBothVaults(): Promise<BatchPlan[]> {
-    const { stxVaultContract, sbtcVaultContract } = this.config;
+  async getExecutablePlansForAllVaults(): Promise<BatchPlan[]> {
+    const { stxVaultContract, sbtcVaultContract, stxUsdcxVaultContract } = this.config;
 
-    const [stxTotal, sbtcTotal] = await Promise.all([
+    const [stxTotal, sbtcTotal, stxUsdcxTotal] = await Promise.all([
       this.getTotalPlans(stxVaultContract),
       this.getTotalPlans(sbtcVaultContract),
+      this.getTotalPlans(stxUsdcxVaultContract),
     ]);
 
-    log.info("Total plans per vault", { stxTotal, sbtcTotal });
+    log.info("Total plans per vault", { stxTotal, sbtcTotal, stxUsdcxTotal });
 
     const stxIds = stxTotal > 0 ? await this.getExecutablePlanIds(stxVaultContract, stxTotal) : [];
     const sbtcIds = sbtcTotal > 0 ? await this.getExecutablePlanIds(sbtcVaultContract, sbtcTotal) : [];
+    const stxUsdcxIds = stxUsdcxTotal > 0
+      ? await this.getExecutablePlanIds(stxUsdcxVaultContract, stxUsdcxTotal)
+      : [];
 
     log.info("Executable plans found", {
       stxExecutable: stxIds.length,
       sbtcExecutable: sbtcIds.length,
-      stxPlanIds: stxIds,
-      sbtcPlanIds: sbtcIds,
+      stxUsdcxExecutable: stxUsdcxIds.length,
     });
 
     const plans: BatchPlan[] = [
       ...stxIds.map((id) => ({ planId: id, vaultType: 0 as const })),
       ...sbtcIds.map((id) => ({ planId: id, vaultType: 1 as const })),
+      ...stxUsdcxIds.map((id) => ({ planId: id, vaultType: 2 as const })),
     ];
 
     return plans;

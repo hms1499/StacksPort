@@ -70,8 +70,8 @@ async function runOnce(): Promise<number> {
     });
   }
 
-  // Scan both vaults for executable plans
-  const plans = await client.getExecutablePlansForBothVaults();
+  // Scan all vaults for executable plans
+  const plans = await client.getExecutablePlansForAllVaults();
   log.info("Plans ready to execute", { count: plans.length, plans });
 
   if (plans.length === 0) {

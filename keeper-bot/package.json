@@ -9,7 +9,8 @@
     "dev": "node --loader ts-node/esm src/index.ts",
     "push": "node --loader ts-node/esm src/push-worker.ts",
     "push:prod": "node dist/push-worker.js",
-    "push:once": "node dist/push-once.js"
+    "push:once": "node dist/push-once.js",
+    "test": "vitest run"
   },
   "dependencies": {
     "@stacks/network": "^7.3.1",
@@ -24,6 +25,7 @@
     "@types/node": "^20",
     "@types/web-push": "^3.6.4",
     "ts-node": "^10.9.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.9"
   }
 }

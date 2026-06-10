@@ -66,6 +66,84 @@ test.describe("DCA Page (Connected)", () => {
   });
 });
 
+test.describe("DCA Out — STX→USDCx create plan", () => {
+  test.beforeEach(async ({ page }) => {
+    await mockWalletConnected(page);
+    await mockAPIs(page);
+    await page.goto("/dca");
+  });
+
+  test("shows STX source toggle in DCA Out tab", async ({ page }) => {
+    await page.getByRole("tab", { name: /DCA Out/i }).click();
+    // OutSourceToggle renders a tablist with "Sell sBTC" and "Sell STX" buttons
+    await expect(
+      page.getByRole("tab", { name: /Sell STX/i })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("tab", { name: /Sell sBTC/i })
+    ).toBeVisible();
+  });
+
+  test("STX source toggle switches to STX out form", async ({ page }) => {
+    await page.getByRole("tab", { name: /DCA Out/i }).click();
+    await page.getByRole("tab", { name: /Sell STX/i }).click();
+    // The form h2 heading is visible on desktop (always rendered on lg+).
+    // Use role=heading to avoid matching the mobile collapsible button label.
+    await expect(
+      page.getByRole("heading", { name: "Create STX→USDCx DCA Plan" })
+    ).toBeVisible({ timeout: 8000 });
+  });
+
+  test("creates STX→USDCx plan — reaches signing path", async ({ page }) => {
+    // 1. Switch to DCA Out tab
+    await page.getByRole("tab", { name: /DCA Out/i }).click();
+
+    // 2. Select STX as source
+    await page.getByRole("tab", { name: /Sell STX/i }).click();
+
+    // 3. On mobile the form is collapsed behind a disclosure button; open it if
+    //    the button is visible (it is hidden on lg+ via CSS).
+    const mobileToggle = page
+      .locator("button[aria-expanded]")
+      .filter({ hasText: /STX.*USDCx|Create STX/i });
+    if (await mobileToggle.isVisible()) {
+      await mobileToggle.click();
+    }
+
+    // 4. Wait for the form to be present and inputs to be interactive.
+    //    There are two number inputs: amount-per-swap (min 1) and initial-deposit (min 2).
+    //    Scope to the glass-card div that contains the h2 form heading so we
+    //    don't accidentally target the mobile-collapsible button with a similar label.
+    const formCard = page.locator("div.glass-card").filter({
+      has: page.getByRole("heading", { name: "Create STX→USDCx DCA Plan" }),
+    });
+
+    // amount per swap (first number input in the form card)
+    const amountInput = formCard.locator('input[type="number"]').first();
+    await amountInput.waitFor({ state: "visible", timeout: 8000 });
+    await amountInput.fill("10");
+
+    // initial deposit (second number input)
+    const depositInput = formCard.locator('input[type="number"]').nth(1);
+    await depositInput.fill("20");
+
+    // 5. Pick "Weekly" interval (it is the default, but explicitly click for clarity)
+    await page.getByRole("button", { name: "Weekly" }).first().click();
+
+    // 6. Submit — the button is enabled when amount ≥ 1 and deposit ≥ 2.
+    const createBtn = formCard.getByRole("button", { name: /Create Plan/i });
+    await expect(createBtn).toBeEnabled();
+    await createBtn.click();
+
+    // 7. The form calls createStxUsdcxPlan → openContractCall. The loading
+    //    state is set synchronously before the wallet call, so the button text
+    //    changes to "Waiting for wallet…". This is the signing-path signal.
+    await expect(
+      formCard.getByRole("button", { name: /Waiting for wallet/i })
+    ).toBeVisible({ timeout: 5000 });
+  });
+});
+
 test.describe("DCA Page (Guest)", () => {
   test.beforeEach(async ({ page }) => {
     await mockWalletDisconnected(page);

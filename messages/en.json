@@ -220,6 +220,7 @@
     "connectDesc": "Connect a Leather or Xverse wallet to create and manage your DCA plans.",
     "createInTitle": "Create DCA In plan",
     "createOutTitle": "Create DCA Out plan",
+    "createStxOutTitle": "Create STX→USDCx DCA plan",
     "hero": {
       "modeAria": "DCA mode",
       "expand": "Expand hero",
@@ -493,6 +494,32 @@
         "minutesAgo": "{n}m ago",
         "hoursAgo": "{n}h ago",
         "daysAgo": "{n}d ago"
+      },
+      "stxForm": {
+        "heading": "Create STX→USDCx DCA Plan",
+        "spend": "Spend",
+        "buy": "Buy",
+        "stxDesc": "Native Stacks token",
+        "usdcxDesc": "USD Coin on Stacks",
+        "tokenRowLabel": "{label} (Source Token)",
+        "amountPerSwap": "Amount per Swap",
+        "frequency": "Frequency",
+        "initialDeposit": "Initial Deposit",
+        "balance": "Balance:",
+        "max": "Max",
+        "createPlan": "Create Plan",
+        "waitingWallet": "Waiting for wallet…",
+        "footnote": "Mainnet · 0.3% protocol fee per swap",
+        "submitted": "Plan submitted!",
+        "submittedTx": "Tx: {txId}",
+        "submittedHint": "Plan will appear after the transaction is confirmed (~1-2 min). Click refresh to update.",
+        "createNew": "+ Create new plan",
+        "minSwap": "Minimum 1 STX per swap",
+        "minDeposit": "Minimum deposit 2 STX",
+        "depositGteSwap": "Initial deposit must be ≥ amount per swap",
+        "insufficient": "Insufficient STX. Current balance: {balance} STX",
+        "createdToast": "Plan created! Tx: {tx}...",
+        "createFailed": "Failed to create plan"
       }
     },
     "perf": {

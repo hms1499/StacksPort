@@ -220,6 +220,7 @@
     "connectDesc": "Kết nối ví Leather hoặc Xverse để tạo và quản lý các kế hoạch DCA của bạn.",
     "createInTitle": "Tạo kế hoạch DCA In",
     "createOutTitle": "Tạo kế hoạch DCA Out",
+    "createStxOutTitle": "Tạo kế hoạch DCA STX→USDCx",
     "hero": {
       "modeAria": "Chế độ DCA",
       "expand": "Mở rộng",
@@ -493,6 +494,32 @@
         "minutesAgo": "{n}m trước",
         "hoursAgo": "{n}h trước",
         "daysAgo": "{n}d trước"
+      },
+      "stxForm": {
+        "heading": "Tạo kế hoạch DCA STX→USDCx",
+        "spend": "Chi",
+        "buy": "Mua",
+        "stxDesc": "Token gốc của Stacks",
+        "usdcxDesc": "USD Coin trên Stacks",
+        "tokenRowLabel": "{label} (Token nguồn)",
+        "amountPerSwap": "Số lượng mỗi lần",
+        "frequency": "Tần suất",
+        "initialDeposit": "Khoản nạp ban đầu",
+        "balance": "Số dư:",
+        "max": "Tối đa",
+        "createPlan": "Tạo kế hoạch",
+        "waitingWallet": "Đang chờ ví…",
+        "footnote": "Mainnet · phí giao thức 0.3% mỗi lần hoán đổi",
+        "submitted": "Đã gửi kế hoạch!",
+        "submittedTx": "Tx: {txId}",
+        "submittedHint": "Kế hoạch sẽ xuất hiện sau khi giao dịch được xác nhận (~1-2 phút). Nhấn làm mới để cập nhật.",
+        "createNew": "+ Tạo kế hoạch mới",
+        "minSwap": "Tối thiểu 1 STX mỗi lần",
+        "minDeposit": "Nạp tối thiểu 2 STX",
+        "depositGteSwap": "Khoản nạp ban đầu phải ≥ số lượng mỗi lần",
+        "insufficient": "Không đủ STX. Số dư hiện tại: {balance} STX",
+        "createdToast": "Đã tạo kế hoạch! Tx: {tx}...",
+        "createFailed": "Tạo kế hoạch thất bại"
       }
     },
     "perf": {

@@ -100,3 +100,8 @@ epoch = '3.0'
 path = 'bitflow-usdcx-from-stx-router.clar'
 clarity_version = 3
 epoch = '3.0'
+
+[contracts.batch-dca-executor-v2]
+path = 'batch-dca-executor-v2.clar'
+clarity_version = 3
+epoch = '3.0'

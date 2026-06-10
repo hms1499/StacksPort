@@ -405,6 +405,8 @@
       "hoursAgo": "{n}h ago",
       "daysAgo": "{n}d ago"
     },
+    "outSourceSbtc": "Sell sBTC",
+    "outSourceStx": "Sell STX",
     "out": {
       "form": {
         "heading": "Create DCA Out Plan",

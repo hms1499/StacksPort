@@ -20,10 +20,12 @@ import InfoFooter from "./InfoFooter";
 import MobileCollapsibleForm from "./MobileCollapsibleForm";
 import CreateOutPlanForm from "@/components/dca-out/CreateOutPlanForm";
 import MyOutPlans from "@/components/dca-out/MyOutPlans";
+import OutSourceToggle, { type OutSource } from "@/components/dca-out/OutSourceToggle";
 
 export default function DCAPageContent() {
   const { isConnected, stxAddress } = useWalletStore();
   const [tab, setTab] = useState<DCATab>("in");
+  const [outSource, setOutSource] = useState<OutSource>("sbtc");
   const t = useTranslations("dca");
   const [refreshKey, setRefreshKey] = useState(0);
   const [outRefreshKey, setOutRefreshKey] = useState(0);
@@ -87,15 +89,20 @@ export default function DCAPageContent() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
-                <div className="order-2 lg:order-1 lg:sticky lg:top-6">
-                  <MobileCollapsibleForm title={t("createOutTitle")} openOnEvent="dca-out:fill-form">
-                    <CreateOutPlanForm onCreated={handleOutRefresh} />
-                  </MobileCollapsibleForm>
-                </div>
-                <div className="order-1 lg:order-2">
-                  <MyOutPlans key={`${stxAddress}-${outRefreshKey}`} address={stxAddress!} />
-                </div>
+              <div className="flex flex-col gap-4">
+                <OutSourceToggle value={outSource} onChange={setOutSource} />
+                {outSource === "sbtc" ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
+                    <div className="order-2 lg:order-1 lg:sticky lg:top-6">
+                      <MobileCollapsibleForm title={t("createOutTitle")} openOnEvent="dca-out:fill-form">
+                        <CreateOutPlanForm onCreated={handleOutRefresh} />
+                      </MobileCollapsibleForm>
+                    </div>
+                    <div className="order-1 lg:order-2">
+                      <MyOutPlans key={`${stxAddress}-${outRefreshKey}`} address={stxAddress!} />
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
           </MotionCard>

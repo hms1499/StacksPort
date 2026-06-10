@@ -405,6 +405,8 @@
       "hoursAgo": "{n}h trước",
       "daysAgo": "{n}d trước"
     },
+    "outSourceSbtc": "Bán sBTC",
+    "outSourceStx": "Bán STX",
     "out": {
       "form": {
         "heading": "Tạo kế hoạch DCA Out",

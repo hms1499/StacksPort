@@ -18,6 +18,7 @@ export interface BotConfig {
   batchExecutorContract: string; // "SP2CMK....batch-dca-executor"
   stxVaultContract:      string; // "SP2CMK....dca-vault"
   sbtcVaultContract:     string; // "SP2CMK....dca-vault-sbtc-v2"
+  stxUsdcxVaultContract: string; // "SP2CMK....dca-vault-stx-usdcx"
   hiroApiUrl:            string;
   minAmountOut:          number;
 }
@@ -64,7 +65,7 @@ export async function loadConfig(): Promise<BotConfig> {
     keeperAddress,
     batchExecutorContract: optional(
       "BATCH_EXECUTOR_CONTRACT",
-      "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.batch-dca-executor"
+      "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.batch-dca-executor-v2"
     ),
     stxVaultContract: optional(
       "STX_VAULT_CONTRACT",
@@ -73,6 +74,10 @@ export async function loadConfig(): Promise<BotConfig> {
     sbtcVaultContract: optional(
       "SBTC_VAULT_CONTRACT",
       "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.dca-vault-sbtc-v2"
+    ),
+    stxUsdcxVaultContract: optional(
+      "STX_USDCX_VAULT_CONTRACT",
+      "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.dca-vault-stx-usdcx"
     ),
     hiroApiUrl:   optional("HIRO_API_URL", "https://api.hiro.so"),
     minAmountOut: Number(optional("MIN_AMOUNT_OUT", "1")),

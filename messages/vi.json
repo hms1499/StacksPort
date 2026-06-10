@@ -616,7 +616,22 @@
         "cellSbtcIn": "sBTC vào",
         "cellTokenOut": "{token} ra",
         "cellAvgRate": "Tỷ giá TB",
-        "avgRateValue": "{rate} {token}/sBTC"
+        "avgRateValue": "{rate} {token}/sBTC",
+        "sourceAria": "Nguồn DCA out",
+        "sourceSbtc": "sBTC Out",
+        "sourceStx": "STX Out",
+        "stxNoPlans": "Chưa có kế hoạch DCA STX→USDCx",
+        "stxNoPlansDesc": "STX Out chuyển STX thành USDCx theo lịch.",
+        "stxNoExecDesc": "Các kế hoạch STX→USDCx của bạn chưa được keeper bot thực thi.",
+        "stxInvested": "STX đã đầu tư",
+        "stxAvgSellRate": "Tỷ giá bán TB",
+        "stxPer1Stx": "mỗi 1 STX",
+        "stxSellVsSpot": "Tỷ giá bán của bạn so với giá hôm nay",
+        "stxSellVsSpotInfo": "USDCx trung bình theo trọng số nhận được trên mỗi STX qua các lần thực thi so với giá STX hiện tại (vì USDCx ≈ $1). % dương nghĩa là bạn đã bán với giá tốt hơn hiện tại.",
+        "stxSellVsSpotAria": "Thông tin: Tỷ giá bán STX của bạn so với giá hôm nay",
+        "stxSpotLine": "Giá hiện tại: 1 STX ≈ <b>{spot}</b> {token} · TB của bạn: <b>{avg}</b> {token}",
+        "stxCellStxIn": "STX vào",
+        "stxAvgRateValue": "{rate} {token}/STX"
       },
       "chart": {
         "title": "Giá vốn theo thời gian",

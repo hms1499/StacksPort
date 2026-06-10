@@ -616,7 +616,22 @@
         "cellSbtcIn": "sBTC in",
         "cellTokenOut": "{token} out",
         "cellAvgRate": "Avg rate",
-        "avgRateValue": "{rate} {token}/sBTC"
+        "avgRateValue": "{rate} {token}/sBTC",
+        "sourceAria": "DCA out source",
+        "sourceSbtc": "sBTC Out",
+        "sourceStx": "STX Out",
+        "stxNoPlans": "No STX→USDCx DCA plans yet",
+        "stxNoPlansDesc": "STX Out converts STX into USDCx on a schedule.",
+        "stxNoExecDesc": "Your STX→USDCx plans haven't been executed by the keeper bot yet.",
+        "stxInvested": "STX invested",
+        "stxAvgSellRate": "Avg sell rate",
+        "stxPer1Stx": "per 1 STX",
+        "stxSellVsSpot": "Your sell rate vs today's spot",
+        "stxSellVsSpotInfo": "Weighted-avg USDCx received per STX across executions vs current STX price (since USDCx ≈ $1). Positive % means you sold at better-than-current rates.",
+        "stxSellVsSpotAria": "About: Your STX sell rate vs today's spot",
+        "stxSpotLine": "Spot: 1 STX ≈ <b>{spot}</b> {token} · Your avg: <b>{avg}</b> {token}",
+        "stxCellStxIn": "STX in",
+        "stxAvgRateValue": "{rate} {token}/STX"
       },
       "chart": {
         "title": "Cost basis over time",

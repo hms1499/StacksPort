@@ -15,6 +15,29 @@ webpush.setVapidDetails(
 
 const HIRO_EXPLORER = 'https://explorer.hiro.so';
 
+function vaultTitle(vaultType: 0 | 1 | 2): string {
+  if (vaultType === 0) return 'STX sold — sBTC acquired ✓';
+  if (vaultType === 1) return 'sBTC sold — USDCx acquired ✓';
+  return 'STX sold — USDCx acquired ✓'; // vaultType === 2
+}
+
+function vaultBody(vaultType: 0 | 1 | 2, planLabel: string, boughtDip: boolean): string {
+  if (vaultType === 0) {
+    return boughtDip
+      ? `${planLabel} executed on a dip ✓ Tap to view details.`
+      : `${planLabel} executed successfully. Tap to view details.`;
+  }
+  if (vaultType === 1) {
+    return boughtDip
+      ? `${planLabel} executed on a dip ✓ Tap to view details.`
+      : `${planLabel} executed successfully. Tap to view details.`;
+  }
+  // vaultType === 2: STX → USDCx
+  return boughtDip
+    ? `${planLabel} STX → USDCx executed on a dip ✓ Tap to view details.`
+    : `${planLabel} Your scheduled STX → USDCx sell executed. Tap to view details.`;
+}
+
 // Gửi push cho tất cả wallet owners có plans trong batch vừa execute.
 // allSubs: snapshot từ readAllSubs() đầu run — tránh gọi Redis thêm lần nữa.
 export async function sendDcaExecutionNotifications(
@@ -56,13 +79,16 @@ export async function sendDcaExecutionNotifications(
       ? `Plan #${planIds[0]}`
       : `${planIds.length} plans (${planIds.map((id) => `#${id}`).join(', ')})`;
 
+    // Use the vault type of the first plan in the group for title/body copy.
+    // When a wallet has plans across multiple vaults, each group was already
+    // assembled per-wallet; pick the dominant type (first plan's type).
+    const primaryVaultType = plans[0].vaultType;
     const boughtDip = !!dipPlanIds && planIds.some((id) => dipPlanIds.has(id));
-    const body = boughtDip
-      ? `${planLabel} executed on a dip ✓ Tap to view details.`
-      : `${planLabel} executed successfully. Tap to view details.`;
+    const title = vaultTitle(primaryVaultType);
+    const body = vaultBody(primaryVaultType, planLabel, boughtDip);
 
     const payload = JSON.stringify({
-      title: 'StacksPort — DCA Executed ✓',
+      title,
       body,
       txid,
       url: `${HIRO_EXPLORER}/txid/${txid}?chain=mainnet`,

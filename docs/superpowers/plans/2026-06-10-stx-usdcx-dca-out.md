@@ -328,13 +328,23 @@ curl -s "https://api.hiro.so/v2/contracts/interface/SP2CMK69QNY60HBG8BJ4X5TD7XX2
 ```
 Expected: all three return contract interfaces.
 
-- [ ] **Step 4: Commit the recorded addresses**
+- [x] **Step 4: Commit the recorded addresses**
 
 Write the three confirmed contract ids into this plan file under this task, then:
 ```bash
 git add docs/superpowers/plans/2026-06-10-stx-usdcx-dca-out.md
 git commit -m "chore(dca): record deployed STX→USDCx contract addresses"
 ```
+
+**✅ DEPLOYED 2026-06-10 — mainnet block 8244361** (via `clarinet deployments apply --mainnet --use-on-disk-deployment-plan`, plan pruned to the 3 new contracts, total fee 2.667713 STX):
+
+| Contract id | Publish txid |
+|---|---|
+| `SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.dca-vault-stx-usdcx` | `0x7c76ddeb6a7e464082d67b8b9310d55bd08bf2a563ba00af3a732d049593a88c` |
+| `SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.bitflow-usdcx-from-stx-router` | `0xa667945ee2a10c97250cf727d64b53caf96dad4684f219ba83a766ff5bce65a0` |
+| `SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.batch-dca-executor-v2` | `0x308fbf0cdc52b2f969c018db6911d2c0c64bb1555f310743562b76353d6b148d` |
+
+All three interfaces verified via Hiro (`/v2/contracts/interface/...`), all txs `success`.
 
 ---
 

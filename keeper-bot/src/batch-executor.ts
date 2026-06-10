@@ -12,7 +12,7 @@ import { sleep } from "./stacks-client.js";
 
 export interface BatchPlan {
   planId: number;
-  vaultType: 0 | 1; // 0 = dca-vault (STX→sBTC), 1 = dca-vault-sbtc-v2 (sBTC→USDCx)
+  vaultType: 0 | 1 | 2; // 0 = STX→sBTC, 1 = sBTC→USDCx, 2 = STX→USDCx
 }
 
 const BASE_FEE_USTX     = 5_000;

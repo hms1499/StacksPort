@@ -5,8 +5,9 @@
 // restyle is a one-file change instead of two copies drifting apart.
 import type { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
-import { Zap, AlertTriangle, Info } from "lucide-react";
-import type { Alert } from "@/lib/ai";
+import { Zap, AlertTriangle, Info, ArrowRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { type Alert, ALERT_ACTION_HREF } from "@/lib/ai";
 
 // Theme-agnostic colors: rgba tints + CSS vars work on both light and dark,
 // unlike hardcoded *-50/*-100 light-mode utilities (which render as near-white
@@ -42,7 +43,7 @@ const priorityBadge: Record<Alert["priority"], CSSProperties> = {
 };
 
 export default function AlertRow({ alert }: { alert: Alert }) {
-  const t = useTranslations("ai.priority");
+  const t = useTranslations("ai");
   const config = typeConfig[alert.type];
   const Icon = config.icon;
   return (
@@ -57,12 +58,22 @@ export default function AlertRow({ alert }: { alert: Alert }) {
             className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full"
             style={priorityBadge[alert.priority]}
           >
-            {t(alert.priority)}
+            {t(`priority.${alert.priority}`)}
           </span>
         </div>
         <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           {alert.description}
         </p>
+        {alert.action && (
+          <Link
+            href={ALERT_ACTION_HREF[alert.action]}
+            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold transition-opacity hover:opacity-80"
+            style={config.iconStyle}
+          >
+            {t(`action.${alert.action}`)}
+            <ArrowRight size={12} />
+          </Link>
+        )}
       </div>
     </div>
   );

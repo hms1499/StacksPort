@@ -1163,6 +1163,11 @@
     },
     "smartAlerts": {
       "title": "Cảnh báo thông minh"
+    },
+    "action": {
+      "dca-open": "Thiết lập DCA",
+      "trade-swap": "Swap ngay",
+      "view-assets": "Xem tài sản"
     }
   },
   "apps": {

@@ -1163,6 +1163,11 @@
     },
     "smartAlerts": {
       "title": "Smart Alerts"
+    },
+    "action": {
+      "dca-open": "Set up DCA",
+      "trade-swap": "Swap now",
+      "view-assets": "View holdings"
     }
   },
   "apps": {

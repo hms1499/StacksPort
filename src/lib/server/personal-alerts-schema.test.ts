@@ -32,4 +32,16 @@ describe("parsePersonalAlerts", () => {
   it("throws when alerts is not an array-like value", () => {
     expect(() => parsePersonalAlerts({ alerts: "nope" })).toThrow();
   });
+
+  it("keeps a valid signalKind and drops an unrecognized one to undefined", () => {
+    const out = parsePersonalAlerts({
+      alerts: [
+        { title: "a", description: "d", type: "warning", priority: "high", signalKind: "dca-runway-low" },
+        { title: "b", description: "d", type: "info", priority: "low", signalKind: "made-up-kind" },
+      ],
+    });
+    expect(out.alerts).toHaveLength(2); // bad signalKind doesn't drop the alert
+    expect(out.alerts[0].signalKind).toBe("dca-runway-low");
+    expect(out.alerts[1].signalKind).toBeUndefined();
+  });
 });

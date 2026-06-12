@@ -13,17 +13,36 @@ const lenientArray = <T extends z.ZodTypeAny>(item: T) =>
     })
   );
 
+const signalKindSchema = z.enum([
+  "dca-runway-low",
+  "dca-balance-empty",
+  "dca-dip-buy",
+  "pnl-gain",
+  "pnl-loss",
+  "sbtc-depeg",
+]);
+
 const alertSchema = z.object({
   title: z.string(),
   description: z.string(),
   type: z.enum(["opportunity", "warning", "info"]),
   priority: z.enum(["high", "medium", "low"]),
+  // Which detector signal this alert is based on. Used downstream to attach the
+  // right in-app CTA, then stripped. Missing/unrecognized → no CTA (the alert
+  // still renders).
+  signalKind: signalKindSchema.optional().catch(undefined),
 });
 
 const schema = z.object({
   alerts: lenientArray(alertSchema).default([]),
 });
 
-export function parsePersonalAlerts(raw: unknown): { alerts: PersonalAlert[] } {
+// Alerts carry a transient `signalKind` the caller maps to a CTA then strips —
+// so the parsed shape is a PersonalAlert plus that optional field.
+export type ParsedPersonalAlert = PersonalAlert & {
+  signalKind?: z.infer<typeof signalKindSchema>;
+};
+
+export function parsePersonalAlerts(raw: unknown): { alerts: ParsedPersonalAlert[] } {
   return schema.parse(raw);
 }

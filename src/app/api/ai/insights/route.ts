@@ -166,7 +166,7 @@ Respond with a JSON object matching this exact structure (no markdown, just raw 
   },
   "alerts": {
     "items": [
-      {"title": "short title", "description": "actionable insight", "type": "<opportunity|warning|info>", "priority": "<high|medium|low>"}
+      {"title": "short title", "description": "actionable insight", "type": "<opportunity|warning|info>", "priority": "<high|medium|low>", "action": "<dca-open|trade-swap|view-assets, or omit>"}
     ]
   },
   "newsDigest": {
@@ -179,6 +179,7 @@ Important:
 - Focus on Stacks (STX) ecosystem and Bitcoin (sBTC) relevance
 - Provide 3-5 signals in sentiment
 - Provide 2-4 actionable alerts
+- Optionally add "action" to an alert when there's a clear next step the user can take in this app: "trade-swap" for a buy/swap opportunity (STX→sBTC), "dca-open" to set up recurring buys, "view-assets" to review holdings. OMIT "action" entirely for purely informational alerts.
 - Keep insights concise and actionable
 - newsDigest.insights must be an array of plain strings, one per news item above in the SAME ORDER, for the first ${Math.min(news.length, 5)} items. Do NOT repeat the headline or URL — only the relevance sentence.
 - For kolSignals, include all coins from the LunarCrush data provided; if no LunarCrush data, return empty coins array

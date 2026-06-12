@@ -34,6 +34,23 @@ describe("parseInsights", () => {
     expect(out.newsDigest.insights).toEqual(["Relevant to Stacks.", "Bitcoin tailwind."]);
   });
 
+  it("keeps a valid alert action and drops an unrecognized one to undefined", () => {
+    const out = parseInsights({
+      ...valid,
+      alerts: {
+        items: [
+          { title: "Buy", description: "d", type: "opportunity", priority: "high", action: "trade-swap" },
+          { title: "Info", description: "d", type: "info", priority: "low", action: "go-to-moon" },
+          { title: "Plain", description: "d", type: "info", priority: "low" },
+        ],
+      },
+    });
+    expect(out.alerts.items).toHaveLength(3); // bad action doesn't drop the alert
+    expect(out.alerts.items[0].action).toBe("trade-swap");
+    expect(out.alerts.items[1].action).toBeUndefined();
+    expect(out.alerts.items[2].action).toBeUndefined();
+  });
+
   it("drops non-string news insights instead of failing the parse", () => {
     const out = parseInsights({
       ...valid,

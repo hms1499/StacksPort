@@ -35,6 +35,24 @@ describe("templateAlerts", () => {
     expect(out[4].description).toContain("-$90"); // not "$-90"
     expect(out[5].type).toBe("warning");         // depeg
   });
+
+  it("attaches a deep-link action derived from the signal kind", () => {
+    const signals: PortfolioSignal[] = [
+      { kind: "dca-runway-low", severity: "medium", facts: { planId: 3, swapsLeft: 2, daysLeft: 1.5 } },
+      { kind: "dca-balance-empty", severity: "high", facts: { planId: 4, balanceStx: 0.5, amtPerSwapStx: 1 } },
+      { kind: "dca-dip-buy", severity: "low", facts: { fearGreedValue: 18, classification: "Extreme Fear", planCount: 2 } },
+      { kind: "pnl-gain", severity: "low", facts: { symbol: "ALEX", unrealizedPct: 32, unrealizedPnL: 40, currentValue: 160 } },
+      { kind: "pnl-loss", severity: "high", facts: { symbol: "WELSH", unrealizedPct: -45, unrealizedPnL: -90 } },
+      { kind: "sbtc-depeg", severity: "high", facts: { deviationPct: -6, pegPrice: 94000, balance: 1000 } },
+    ];
+    const out = templateAlerts(signals);
+    expect(out[0].action).toBe("dca-open");    // dca-runway-low
+    expect(out[1].action).toBe("dca-open");    // dca-balance-empty
+    expect(out[2].action).toBe("dca-open");    // dca-dip-buy
+    expect(out[3].action).toBe("view-assets"); // pnl-gain
+    expect(out[4].action).toBe("view-assets"); // pnl-loss
+    expect(out[5].action).toBeUndefined();     // sbtc-depeg → no CTA
+  });
 });
 
 import { generatePersonalAlerts } from "./personal-alerts";

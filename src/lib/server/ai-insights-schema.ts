@@ -55,6 +55,10 @@ const alertSchema = z.object({
   description: z.string(),
   type: z.enum(["opportunity", "warning", "info"]),
   priority: z.enum(["high", "medium", "low"]),
+  // Optional deep-link CTA. A missing or unrecognized value drops the CTA
+  // (-> undefined) rather than dropping the whole alert — the model classifies
+  // the destination, but the actual URL is resolved client-side from the enum.
+  action: z.enum(["dca-open", "trade-swap", "view-assets"]).optional().catch(undefined),
 });
 
 const insightsSchema = z.object({

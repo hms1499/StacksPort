@@ -4,6 +4,7 @@
 // mapping); generatePersonalAlerts() (Task 5) asks Groq to phrase them and
 // falls back here on any failure.
 import type { PersonalAlert } from "@/lib/ai-portfolio";
+import type { AlertActionKind } from "@/lib/ai";
 import { parsePersonalAlerts } from "./personal-alerts-schema";
 import { completeJSON } from "./groq-client";
 import type { PortfolioSignal, SignalKind } from "./portfolio-signals";
@@ -18,7 +19,29 @@ const TYPE_BY_KIND: Record<SignalKind, PersonalAlert["type"]> = {
   "sbtc-depeg": "warning",
 };
 
+// Signal kind → deep-link CTA. Derived from the trusted detector `kind`, never
+// from LLM text, so the destination is always correct. Kinds with no obvious
+// in-app action (sbtc-depeg is a "be cautious" warning) are intentionally
+// absent → no CTA.
+const ACTION_BY_KIND: Partial<Record<SignalKind, AlertActionKind>> = {
+  "dca-runway-low": "dca-open",
+  "dca-balance-empty": "dca-open",
+  "dca-dip-buy": "dca-open",
+  "pnl-gain": "view-assets",
+  "pnl-loss": "view-assets",
+};
+
+export function actionForKind(kind: SignalKind): AlertActionKind | undefined {
+  return ACTION_BY_KIND[kind];
+}
+
 function template(sig: PortfolioSignal): PersonalAlert {
+  const base = templateBody(sig);
+  const action = ACTION_BY_KIND[sig.kind];
+  return action ? { ...base, action } : base;
+}
+
+function templateBody(sig: PortfolioSignal): PersonalAlert {
   const f = sig.facts;
   const type = TYPE_BY_KIND[sig.kind];
   const priority = sig.severity;
@@ -70,13 +93,14 @@ Select the 2-4 most important signals and write user-facing alerts. Respond with
 JSON object (no markdown fences):
 {
   "alerts": [
-    {"title": "short title", "description": "1-2 sentences", "type": "opportunity|warning|info", "priority": "high|medium|low"}
+    {"title": "short title", "description": "1-2 sentences", "type": "opportunity|warning|info", "priority": "high|medium|low", "signalKind": "<the kind of the signal this alert is based on>"}
   ]
 }
 
 Rules:
 - Use ONLY numbers that appear in the signal facts. Never compute or invent figures.
 - Keep priority consistent with each signal's severity.
+- Set "signalKind" to the exact "kind" value of the signal each alert is based on (e.g. "dca-runway-low"). This is used to attach the right in-app action.
 - Be concise and actionable. Return ONLY valid JSON.`;
 }
 
@@ -97,8 +121,15 @@ export async function generatePersonalAlerts(
         label: "Portfolio Alerts",
       })
     );
+    // Resolve the CTA from the trusted detector kind the model echoed back —
+    // the model never supplies the URL, only classifies which signal it used.
+    // An absent/unknown signalKind simply yields no CTA.
+    const withActions = alerts.map(({ signalKind, ...alert }) => {
+      const action = signalKind ? ACTION_BY_KIND[signalKind] : undefined;
+      return action ? { ...alert, action } : alert;
+    });
     // If the model returned nothing usable, fall back rather than show an empty section.
-    return alerts.length > 0 ? alerts : templateAlerts(signals);
+    return withActions.length > 0 ? withActions : templateAlerts(signals);
   } catch (err) {
     console.warn("[Portfolio Alerts] generation failed, using template fallback:", err);
     return templateAlerts(signals);

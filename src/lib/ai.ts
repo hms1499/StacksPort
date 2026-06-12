@@ -21,6 +21,25 @@ export interface KOLSignalsData {
   coins: KOLSignalCoin[];
 }
 
+// An alert may carry an optional call-to-action that deep-links to where the
+// user would act on it. The destination set is a fixed enum — neither the LLM
+// (global feed) nor any signal (personalized feed) ever supplies a raw URL, so
+// a CTA can only ever point at a route we control. `href` is resolved from the
+// kind via ALERT_ACTION_HREF; locale prefixing is handled by next-intl <Link>.
+export type AlertActionKind = "dca-open" | "trade-swap" | "view-assets";
+
+export const ALERT_ACTION_KINDS: readonly AlertActionKind[] = [
+  "dca-open",
+  "trade-swap",
+  "view-assets",
+];
+
+export const ALERT_ACTION_HREF: Record<AlertActionKind, string> = {
+  "dca-open": "/dca",
+  "trade-swap": "/trade?from=STX&to=sBTC",
+  "view-assets": "/assets",
+};
+
 // Canonical actionable-alert shape. Shared by the global insights feed
 // (AlertItem) and the personalized portfolio alerts (PersonalAlert, re-aliased
 // in ai-portfolio.ts) so the shape — and any future type/priority value — is
@@ -30,6 +49,8 @@ export interface Alert {
   description: string;
   type: "opportunity" | "warning" | "info";
   priority: "high" | "medium" | "low";
+  // Optional deep-link CTA. Absent for purely informational alerts.
+  action?: AlertActionKind;
 }
 
 export type AlertItem = Alert;

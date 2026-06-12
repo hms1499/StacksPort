@@ -1168,6 +1168,19 @@
       "dca-open": "Set up DCA",
       "trade-swap": "Swap now",
       "view-assets": "View holdings"
+    },
+    "chat": {
+      "title": "Ask Stacks AI",
+      "disclaimer": "Informational only — not financial advice.",
+      "placeholder": "Ask about STX, your portfolio, or DCA…",
+      "send": "Send",
+      "error": "Something went wrong. Try asking again.",
+      "connectHint": "Connect your wallet for portfolio-specific answers.",
+      "suggestions": [
+        "What's STX doing today?",
+        "How are my DCA plans?",
+        "Is now a good time to DCA?"
+      ]
     }
   },
   "apps": {

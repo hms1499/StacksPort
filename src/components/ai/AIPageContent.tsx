@@ -11,6 +11,7 @@ import KOLSignalsCard from "./KOLSignalsCard";
 import SmartAlertsCard from "./SmartAlertsCard";
 import NewsDigestCard from "./NewsDigestCard";
 import YourPositionCard from "./YourPositionCard";
+import AskStacksAICard from "./AskStacksAICard";
 import { useWalletStore } from "@/store/walletStore";
 
 function timeAgo(iso: string, t: (key: string, values?: Record<string, number>) => string): string {
@@ -117,6 +118,9 @@ export default function AIPageContent() {
             <KOLSignalsCard data={data.kolSignals} />
             <div className="lg:col-span-2">
               <SmartAlertsCard items={data.alerts.items} />
+            </div>
+            <div className="lg:col-span-2">
+              <AskStacksAICard address={isConnected && stxAddress ? stxAddress : undefined} />
             </div>
           </div>
         )}

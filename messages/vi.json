@@ -1168,6 +1168,19 @@
       "dca-open": "Thiết lập DCA",
       "trade-swap": "Swap ngay",
       "view-assets": "Xem tài sản"
+    },
+    "chat": {
+      "title": "Hỏi Stacks AI",
+      "disclaimer": "Chỉ mang tính tham khảo — không phải lời khuyên đầu tư.",
+      "placeholder": "Hỏi về STX, danh mục của bạn, hoặc DCA…",
+      "send": "Gửi",
+      "error": "Đã có lỗi xảy ra. Thử hỏi lại nhé.",
+      "connectHint": "Kết nối ví để nhận câu trả lời theo danh mục của bạn.",
+      "suggestions": [
+        "Giá STX hôm nay thế nào?",
+        "DCA plan của tôi sao rồi?",
+        "Giờ có nên DCA không?"
+      ]
     }
   },
   "apps": {

@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { createPortal } from "react-dom";
-import { X, ArrowUpRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowUpRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { openSTXTransfer, openContractCall } from "@stacks/connect";
 import { uintCV, standardPrincipalCV, noneCV, PostConditionMode } from "@stacks/transactions";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { trackTx } from "@/lib/tx-tracker";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export interface SendTokenInfo {
   symbol: string;
@@ -103,31 +109,19 @@ export default function SendModal({ token, onClose }: Props) {
     }
   }
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="glass-card relative rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 z-10">
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-sm gap-0 rounded-2xl bg-popover p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
-              <ArrowUpRight size={16} className="text-green-600" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Send {token.symbol}</h2>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Balance: {maxHuman} {token.symbol}</p>
-            </div>
+        <DialogHeader className="mb-5 flex-row items-center gap-2 space-y-0 text-left">
+          <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+            <ArrowUpRight size={16} className="text-green-600" />
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
-          >
-            <X size={17} />
-          </button>
-        </div>
+          <div>
+            <DialogTitle className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Send {token.symbol}</DialogTitle>
+            <DialogDescription className="text-xs" style={{ color: 'var(--text-muted)' }}>Balance: {maxHuman} {token.symbol}</DialogDescription>
+          </div>
+        </DialogHeader>
 
         {status === "success" ? (
           <div className="flex flex-col items-center py-6 gap-3 text-center">
@@ -216,8 +210,7 @@ export default function SendModal({ token, onClose }: Props) {
             </button>
           </div>
         )}
-      </div>
-    </div>,
-    document.body
+      </DialogContent>
+    </Dialog>
   );
 }

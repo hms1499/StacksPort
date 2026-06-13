@@ -11,7 +11,7 @@ import { useAlertsHydration } from '@/hooks/useAlertsHydration';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useDcaExecutionWatcher } from '@/hooks/useDcaExecutionWatcher';
 import { useSmartDcaHydration } from '@/hooks/useSmartDca';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { useWalletStore } from '@/store/walletStore';
 import { usePriceAlertStore } from '@/store/priceAlertStore';
 
@@ -54,6 +54,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   }, []);
 
   return (
+    <MotionConfig reducedMotion="user">
     <ThemeProvider>
     <TooltipProvider>
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-base)' }}>
@@ -86,5 +87,6 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     </div>
     </TooltipProvider>
     </ThemeProvider>
+    </MotionConfig>
   );
 }

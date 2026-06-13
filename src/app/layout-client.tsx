@@ -6,6 +6,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import BottomNav from '@/components/layout/BottomNav';
 import ToastContainer from '@/components/notifications/ToastContainer';
 import ThemeProvider from '@/components/ThemeProvider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAlertsHydration } from '@/hooks/useAlertsHydration';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useDcaExecutionWatcher } from '@/hooks/useDcaExecutionWatcher';
@@ -54,6 +55,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
+    <TooltipProvider>
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-base)' }}>
       {/* Sidebar — hidden on home page, desktop only */}
       {!isHomePage && (
@@ -82,6 +84,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       <PushSyncer />
       <DcaExecutionWatcher />
     </div>
+    </TooltipProvider>
     </ThemeProvider>
   );
 }

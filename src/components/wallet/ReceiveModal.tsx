@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { createPortal } from "react-dom";
-import { X, Copy, Check, ArrowDownLeft } from "lucide-react";
+import { Copy, Check, ArrowDownLeft } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Props {
   onClose: () => void;
@@ -25,31 +31,19 @@ export default function ReceiveModal({ onClose }: Props) {
     ? `https://api.qrserver.com/v1/create-qr-code/?data=${stxAddress}&size=180x180&margin=10`
     : null;
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="glass-card relative rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 z-10">
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-sm gap-0 rounded-2xl bg-popover p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-              <ArrowDownLeft size={16} className="text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Receive</h2>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Scan or copy your address</p>
-            </div>
+        <DialogHeader className="mb-5 flex-row items-center gap-2 space-y-0 text-left">
+          <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+            <ArrowDownLeft size={16} className="text-blue-600" />
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
-          >
-            <X size={17} />
-          </button>
-        </div>
+          <div>
+            <DialogTitle className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Receive</DialogTitle>
+            <DialogDescription className="text-xs" style={{ color: 'var(--text-muted)' }}>Scan or copy your address</DialogDescription>
+          </div>
+        </DialogHeader>
 
         {/* Network badge */}
         <div className="flex justify-center mb-4">
@@ -94,8 +88,7 @@ export default function ReceiveModal({ onClose }: Props) {
         <p className="text-xs text-center mt-4" style={{ color: 'var(--text-muted)' }}>
           Only send Stacks (STX) and SIP-010 tokens to this address
         </p>
-      </div>
-    </div>,
-    document.body
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWalletStore } from "@/store/walletStore";
 import { connectWallet } from "@/lib/wallet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface ConnectWalletModalProps {
   isOpen: boolean;
@@ -31,28 +38,16 @@ export default function ConnectWalletModal({ isOpen, onClose }: ConnectWalletMod
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 z-10">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Connect Wallet</h2>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <X size={18} className="text-gray-500" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-sm gap-0 rounded-2xl bg-white p-6">
+        <DialogHeader className="mb-2 space-y-0 text-left">
+          <DialogTitle className="text-xl font-semibold text-gray-900">Connect Wallet</DialogTitle>
+        </DialogHeader>
 
-        <p className="text-sm text-gray-500 mb-5">
+        <DialogDescription className="text-sm text-gray-500 mb-5">
           Connect your Stacks wallet to view your portfolio
-        </p>
+        </DialogDescription>
 
         <div className="space-y-3">
           <WalletOption
@@ -85,8 +80,8 @@ export default function ConnectWalletModal({ isOpen, onClose }: ConnectWalletMod
         <p className="text-xs text-gray-400 text-center mt-5">
           By connecting, you agree to our Terms of Service
         </p>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

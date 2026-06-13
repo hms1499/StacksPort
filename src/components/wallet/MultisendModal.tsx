@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import {
-  X,
   Plus,
   Trash2,
   ArrowUpRight,
@@ -16,6 +14,13 @@ import {
 import { openSTXTransfer } from "@stacks/connect";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Recipient {
   id: string;
@@ -184,22 +189,13 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
     const successIds = recipients.filter((r) => rowStatuses[r.id] === "success");
     const failIds    = recipients.filter((r) => rowStatuses[r.id] === "error");
 
-    return createPortal(
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-        <div className="glass-card relative rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 z-10 max-h-[85vh] flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Multi-Send Complete</h2>
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg transition-colors"
-              style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
-            >
-              <X size={17} />
-            </button>
-          </div>
+    return (
+      <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
+        <DialogContent className="max-w-md gap-0 rounded-2xl bg-popover p-6 max-h-[85vh] flex flex-col">
+          <DialogHeader className="mb-4 space-y-0 text-left">
+            <DialogTitle className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Multi-Send Complete</DialogTitle>
+            <DialogDescription className="sr-only">Summary of your multi-send transaction results</DialogDescription>
+          </DialogHeader>
 
           <div className="flex gap-4 mb-5">
             <div className="flex-1 bg-green-50 rounded-xl p-3 text-center">
@@ -253,42 +249,27 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
           >
             Done
           </button>
-        </div>
-      </div>,
-      document.body
+        </DialogContent>
+      </Dialog>
     );
   }
 
   // ── Main form ─────────────────────────────────────────────────────────────
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={!isRunning ? onClose : undefined} />
-      <div className="glass-card relative rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 z-10 max-h-[90vh] flex flex-col">
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o && !isRunning) onClose(); }}>
+      <DialogContent showCloseButton={!isRunning} className="max-w-lg gap-0 rounded-2xl bg-popover p-6 max-h-[90vh] flex flex-col">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center">
-              <ArrowUpRight size={16} className="text-orange-500" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Multi-Send STX</h2>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Balance: {humanBalance(rawStxBalance)} STX</p>
-            </div>
+        <DialogHeader className="mb-5 flex-row items-center gap-2 space-y-0 text-left">
+          <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
+            <ArrowUpRight size={16} className="text-orange-500" />
           </div>
-          {!isRunning && (
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg transition-colors"
-              style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')}
-            >
-              <X size={17} />
-            </button>
-          )}
-        </div>
+          <div>
+            <DialogTitle className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Multi-Send STX</DialogTitle>
+            <DialogDescription className="text-xs" style={{ color: 'var(--text-muted)' }}>Balance: {humanBalance(rawStxBalance)} STX</DialogDescription>
+          </div>
+        </DialogHeader>
 
         {/* Column headers */}
         <div className="grid grid-cols-[1fr_140px_32px] gap-2 mb-2 px-1">
@@ -402,8 +383,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
             </>
           )}
         </button>
-      </div>
-    </div>,
-    document.body
+      </DialogContent>
+    </Dialog>
   );
 }

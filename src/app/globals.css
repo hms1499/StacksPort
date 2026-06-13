@@ -77,6 +77,11 @@
 
   --background: var(--bg-base);
   --foreground: var(--text-primary);
+
+  /* shadcn primitives read var(--radius) directly in a few arbitrary values.
+     Plain custom prop only — NOT the Tailwind --radius-sm/md/lg scale tokens,
+     so app-wide rounded-* utilities are untouched. */
+  --radius: 0.625rem;
 }
 
 .dark {
@@ -154,6 +159,38 @@
   --color-surface:      var(--bg-card);
   --color-sunken:       var(--border-subtle);
   --color-edge:         var(--border-default);
+}
+
+/* ══════════════════════════════════════════════════════
+   SHADCN TOKEN BRIDGE
+   Maps shadcn/ui's canonical color names onto Deep Cosmos tokens so shadcn
+   primitives (Dialog, Dropdown, Tooltip, …) inherit the app's light/dark
+   theme instead of shipping zinc defaults. `inline` emits var() refs, so the
+   .dark overrides above keep working at runtime.
+
+   DELIBERATELY OMITTED: --color-card / --color-card-foreground. `bg-card` is
+   used (inert) across ~57 files; defining it would activate them all at once —
+   an app-wide visual change with its own QA. The gap primitives we install do
+   NOT use bg-card (they use popover/background/muted), so they don't need it.
+══════════════════════════════════════════════════════ */
+@theme inline {
+  --color-background:           var(--bg-base);
+  --color-foreground:           var(--text-primary);
+  --color-popover:              var(--bg-card);
+  --color-popover-foreground:   var(--text-primary);
+  --color-primary:              var(--accent);
+  --color-primary-foreground:   #04140d;
+  --color-secondary:            var(--bg-elevated);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted:                var(--bg-elevated);
+  --color-muted-foreground:     var(--text-secondary);
+  --color-accent:               var(--bg-elevated);
+  --color-accent-foreground:    var(--text-primary);
+  --color-destructive:          var(--negative);
+  --color-destructive-foreground: #ffffff;
+  --color-border:               var(--border-default);
+  --color-input:                var(--border-default);
+  --color-ring:                 var(--accent);
 }
 
 /* ══════════════════════════════════════════════════════

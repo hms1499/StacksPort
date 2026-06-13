@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 interface AnimatedCounterProps {
   value: number;
@@ -20,6 +21,7 @@ export default function AnimatedCounter({
   const [display, setDisplay] = useState(value);
   const prevValue = useRef(value);
   const rafRef = useRef<number>(0);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const from = prevValue.current;
@@ -27,6 +29,12 @@ export default function AnimatedCounter({
     prevValue.current = value;
 
     if (from === to) return;
+
+    // Respect prefers-reduced-motion: jump straight to the final value.
+    if (reducedMotion) {
+      setDisplay(to);
+      return;
+    }
 
     const startTime = performance.now();
 
@@ -44,7 +52,7 @@ export default function AnimatedCounter({
 
     rafRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [value, duration]);
+  }, [value, duration, reducedMotion]);
 
   return <span className={className} style={style}>{formatFn(display)}</span>;
 }

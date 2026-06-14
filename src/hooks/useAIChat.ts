@@ -2,6 +2,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useLocale } from "next-intl";
 import { fetchChatStream, type ChatMessage } from "@/lib/ai-chat";
 
 interface UseAIChat {
@@ -14,6 +15,7 @@ interface UseAIChat {
 // Ephemeral: history lives only in component state and resets on unmount/refresh.
 // The full message list is resent to the server each turn (server trims it).
 export function useAIChat(address?: string): UseAIChat {
+  const locale = useLocale();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState(false);
@@ -38,7 +40,7 @@ export function useAIChat(address?: string): UseAIChat {
 
       try {
         let acc = "";
-        for await (const delta of fetchChatStream({ messages: history, address }, controller.signal)) {
+        for await (const delta of fetchChatStream({ messages: history, address, locale }, controller.signal)) {
           acc += delta;
           setMessages((prev) => {
             const next = [...prev];
@@ -54,7 +56,7 @@ export function useAIChat(address?: string): UseAIChat {
         setIsStreaming(false);
       }
     },
-    [messages, isStreaming, address]
+    [messages, isStreaming, address, locale]
   );
 
   return { messages, isStreaming, error, send };

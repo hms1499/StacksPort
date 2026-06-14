@@ -4,6 +4,7 @@
 // and bounds the conversation so token cost stays predictable.
 import type { ChatMessage, ChatRequest, ChatRole } from "@/lib/ai-chat";
 import { isValidStacksAddress } from "./portfolio-snapshot";
+import { chatLanguageDirective, normalizeAILocale } from "./ai-language";
 
 export const MAX_HISTORY = 10;
 
@@ -33,17 +34,20 @@ export function trimHistory(messages: ChatMessage[], max = MAX_HISTORY): ChatMes
 }
 
 /** Validate the POST body. Throws on no usable messages; drops a bad address. */
-export function validateChatRequest(body: unknown): { messages: ChatMessage[]; address?: string } {
+export function validateChatRequest(
+  body: unknown
+): { messages: ChatMessage[]; address?: string; locale: string } {
   const raw = (body as ChatRequest)?.messages;
   if (!Array.isArray(raw)) throw new Error("messages must be an array");
   const messages = trimHistory(raw as ChatMessage[]);
   if (messages.length === 0) throw new Error("no usable messages");
 
+  const locale = normalizeAILocale((body as ChatRequest)?.locale);
   const addrRaw = (body as ChatRequest)?.address;
   const address = typeof addrRaw === "string" ? addrRaw.trim() : "";
   return address && isValidStacksAddress(address)
-    ? { messages, address }
-    : { messages };
+    ? { messages, address, locale }
+    : { messages, locale };
 }
 
 interface GroqMessage {
@@ -51,10 +55,14 @@ interface GroqMessage {
   content: string;
 }
 
-/** Final Groq messages: system(prompt+context) then the conversation. */
-export function buildMessages(context: string, history: ChatMessage[]): GroqMessage[] {
+/** Final Groq messages: system(prompt+context+language) then the conversation. */
+export function buildMessages(
+  context: string,
+  history: ChatMessage[],
+  locale = "en"
+): GroqMessage[] {
   return [
-    { role: "system", content: `${SYSTEM_PROMPT}\n\n${context}` },
+    { role: "system", content: `${SYSTEM_PROMPT}\n\n${context}${chatLanguageDirective(locale)}` },
     ...history.map((m) => ({ role: m.role, content: m.content })),
   ];
 }

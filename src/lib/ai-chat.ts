@@ -12,6 +12,8 @@ export interface ChatMessage {
 export interface ChatRequest {
   messages: ChatMessage[];
   address?: string;
+  /** UI locale — the assistant replies in this language. */
+  locale?: string;
 }
 
 /**

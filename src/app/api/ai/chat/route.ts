@@ -14,7 +14,7 @@ const MAX_RESPONSE_TOKENS = 700;
 
 export async function POST(request: Request) {
   // 1. Validate the body.
-  let parsed: { messages: { role: "user" | "assistant"; content: string }[]; address?: string };
+  let parsed: { messages: { role: "user" | "assistant"; content: string }[]; address?: string; locale: string };
   try {
     parsed = validateChatRequest(await request.json());
   } catch {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     parsed.address ? getPortfolioSnapshot(parsed.address) : Promise.resolve(null),
   ]);
 
-  const messages = buildMessages(buildChatContext(market, portfolio), parsed.messages);
+  const messages = buildMessages(buildChatContext(market, portfolio), parsed.messages, parsed.locale);
   const groq = new Groq({ apiKey });
 
   // 5. Open the stream, falling back to the cheaper model on an initial throw.

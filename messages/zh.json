@@ -1,0 +1,1521 @@
+{
+  "nav": {
+    "home": "首页",
+    "bubbles": "泡泡图",
+    "assets": "我的资产",
+    "assetsShort": "资产",
+    "swap": "兑换",
+    "dcaVault": "定投金库",
+    "dcaShort": "定投",
+    "alerts": "提醒",
+    "stacksAi": "Stacks AI",
+    "aiShort": "AI",
+    "connectedApps": "已连接应用",
+    "appsShort": "应用",
+    "more": "更多",
+    "collapse": "收起"
+  },
+  "common": {
+    "language": "语言",
+    "english": "English",
+    "vietnamese": "Tiếng Việt",
+    "chinese": "中文",
+    "connectWallet": "连接钱包",
+    "connecting": "连接中…",
+    "connected": "已连接",
+    "copyAddress": "复制地址",
+    "copied": "已复制！",
+    "switchAccount": "切换账户",
+    "explore": "探索",
+    "disconnect": "断开连接",
+    "openAccountMenu": "打开账户菜单",
+    "switchToLight": "切换到浅色模式",
+    "switchToDark": "切换到深色模式",
+    "cmdk": {
+      "searchPlaceholder": "搜索...",
+      "inputPlaceholder": "输入命令或搜索...",
+      "noResults": "未找到结果。",
+      "recent": "最近",
+      "allCommands": "所有命令",
+      "enter": "回车",
+      "navigate": "导航",
+      "select": "选择",
+      "close": "关闭",
+      "themeLight": "切换到浅色模式",
+      "themeDark": "切换到深色模式",
+      "themeDesc": "切换主题",
+      "home": {
+        "label": "首页",
+        "desc": "投资组合概览"
+      },
+      "assets": {
+        "label": "我的资产",
+        "desc": "持仓与盈亏跟踪"
+      },
+      "swap": {
+        "label": "兑换代币",
+        "desc": "在 Bitflow DEX 交易"
+      },
+      "dca": {
+        "label": "定投金库",
+        "desc": "自动投资计划"
+      },
+      "notifications": {
+        "label": "通知",
+        "desc": "提醒与价格目标"
+      },
+      "ai": {
+        "label": "Stacks AI",
+        "desc": "AI 驱动的洞察"
+      }
+    }
+  },
+  "dashboard": {
+    "balance": {
+      "title": "投资组合价值",
+      "hideBreakdown": "隐藏明细",
+      "showBreakdown": "显示投资组合明细",
+      "other": "其他",
+      "noData": "暂无数据",
+      "noDataDesc": "投资组合数据尚不可用。请查看您的资产或接收 STX，开始在此跟踪真实余额。",
+      "viewAssets": "查看资产",
+      "swap": "兑换",
+      "demo": "演示",
+      "previewOnly": "仅预览 · 从横幅或顶栏连接钱包以加载真实余额、定投计划、提醒和活动。",
+      "historyPending": "余额加载后将显示投资组合历史。",
+      "loadingChart": "正在加载图表…"
+    },
+    "banner": {
+      "title": "连接您的钱包",
+      "connect": "连接",
+      "connecting": "连接中...",
+      "prop0": "实时查看您的 Stacks 投资组合",
+      "prop1": "自动化 STX → sBTC 定投 — 非托管",
+      "prop2": "跨 PoX 周期跟踪质押奖励",
+      "prop3": "通过 Bitflow 一键兑换",
+      "prop4": "价格突破目标时获得提醒"
+    },
+    "quickActions": {
+      "swap": "兑换",
+      "dca": "定投",
+      "receive": "接收",
+      "send": "发送",
+      "alert": "提醒",
+      "batch": "批量"
+    },
+    "footer": {
+      "poweredBy": "技术支持",
+      "contract": "合约",
+      "copyContract": "复制合约地址"
+    },
+    "dcaSummary": {
+      "title": "定投计划",
+      "manage": "管理",
+      "emptyTitle": "自动囤积聪",
+      "emptyDesc": "设置定期买入，剩下的交给 keeper 机器人 — 无需盯盘。",
+      "createFirst": "创建您的第一个计划",
+      "active": "活跃",
+      "balance": "余额",
+      "swapsDone": "已完成兑换",
+      "pausedCount": "{count} 个已暂停",
+      "planLabel": "计划 #{id}",
+      "perSwap": "{amount} STX/次",
+      "left": "剩余 {amount}",
+      "morePlans": "还有 {count} 个计划"
+    },
+    "social": {
+      "unavailable": "实时链上指标暂时不可用。",
+      "liveOnStacks": "在 Stacks 上实时",
+      "updated": "更新于 {time}",
+      "disclaimer": "来自两个定投金库的链上总额。USD 交易量使用当前市场价格，当所需数据源不可用时隐藏。",
+      "metric": {
+        "plansCreated": "已创建定投计划",
+        "volumeExecuted": "已执行交易量",
+        "swapsExecuted": "已执行兑换",
+        "avgSwapsPerPlan": "每计划平均兑换数"
+      }
+    },
+    "welcome": {
+      "swapLabel": "进行兑换",
+      "swapDesc": "在 Bitflow DEX 交易代币",
+      "dcaLabel": "创建定投计划",
+      "dcaDesc": "设置自动投资",
+      "alertLabel": "设置价格提醒",
+      "alertDesc": "达到目标时获得通知",
+      "allSet": "全部就绪！",
+      "next": "下一步：{step}",
+      "gettingStarted": "入门指南",
+      "allDoneDesc": "所有设置操作均已完成。",
+      "completed": "已完成 {done}/{total}",
+      "continue": "继续",
+      "dismiss": "关闭入门指南",
+      "recommended": "推荐"
+    },
+    "widgets": {
+      "cryptoNews": "加密新闻",
+      "trending": "热门",
+      "greedIndex": "贪婪指数",
+      "myAssets": "我的资产",
+      "send": "发送",
+      "receive": "接收"
+    },
+    "recent": {
+      "title": "最近活动",
+      "connectTitle": "连接以查看您的历史",
+      "connectDesc": "您的兑换、转账和定投执行将在此实时显示。",
+      "emptyTitle": "干净的起点",
+      "emptyDesc": "您的第一笔兑换、转账或定投执行将在此显示。"
+    },
+    "alertsPanel": {
+      "title": "价格提醒",
+      "fired": "{count} 个已触发",
+      "above": "高于",
+      "below": "低于",
+      "watching": "监控中",
+      "paused": "已暂停",
+      "rearm": "重新启用提醒",
+      "more": "还有 {count} 个"
+    },
+    "grid": {
+      "showHide": "显示或隐藏小组件",
+      "resetLayout": "重置为默认布局",
+      "finishEditing": "完成编辑",
+      "customizeLayout": "自定义布局",
+      "done": "完成",
+      "customize": "自定义",
+      "dismissTip": "关闭提示"
+    }
+  },
+  "trade": {
+    "swapTitle": "兑换",
+    "recentSwaps": "最近兑换",
+    "migrationTitle": "aeUSDC → USDCx 迁移",
+    "migrationDesc": "升级到 Stacks 上的原生 Circle USDC",
+    "routingTitle": "链上路由",
+    "routingDesc": "使用实时链上报价通过 Bitflow 资金池路由兑换，并由合约强制执行滑点保护。",
+    "yieldTitle": "真实收益",
+    "yieldDesc": "手续费直接归属流动性提供者 — 没有通胀性代币奖励。",
+    "tipsTitle": "兑换小贴士",
+    "tip1": "大多数兑换将滑点设为 0.5%。低流动性代币可提高到 1%。",
+    "tip2": "sBTC → USDCx 会自动经 STX 和 aeUSDC 多跳路由 — 路径固定，无需自行选择。",
+    "tip3": "在「资产」标签查看您的健康分，了解哪些代币需要再平衡。",
+    "tip4": "大额交易可能有更高的价格冲击 — 可考虑拆分为更小的兑换。",
+    "swap": {
+      "from": "从",
+      "to": "到",
+      "youReceive": "您将收到（预估）",
+      "connectToSwap": "连接钱包以兑换",
+      "waitingWallet": "等待钱包...",
+      "gettingQuote": "获取报价...",
+      "swapPair": "兑换 {from} → {to}",
+      "selectTokens": "选择代币",
+      "poweredBy": "技术支持",
+      "errQuote": "获取报价失败",
+      "errExpired": "报价已过期 — 正在刷新价格，请重试。",
+      "errFailed": "兑换失败"
+    }
+  },
+  "dca": {
+    "title": "定投金库",
+    "connectTitle": "连接钱包以开始",
+    "connectDesc": "连接 Leather 或 Xverse 钱包，创建和管理您的定投计划。",
+    "createInTitle": "创建定投买入计划",
+    "createOutTitle": "创建定投卖出计划",
+    "createStxOutTitle": "创建 STX→USDCx 定投计划",
+    "hero": {
+      "modeAria": "定投模式",
+      "expand": "展开横幅",
+      "collapse": "收起横幅",
+      "vault": "定投金库",
+      "activeCount": "{count} 个活跃",
+      "next": "下一次 {label}",
+      "tabIn": "定投买入",
+      "tabOut": "定投卖出",
+      "subtitleIn": "按计划用 STX 自动买入 sBTC · 由 Bitflow 提供支持",
+      "subtitleOut": "按计划自动将 sBTC 卖出为 USDCx · 由 Bitflow 提供支持"
+    },
+    "interval": {
+      "Daily": "每日",
+      "Weekly": "每周",
+      "Monthly": "每月"
+    },
+    "stats": {
+      "totalVolume": "总交易量",
+      "swapsExecuted": "已执行兑换",
+      "yourActivePlans": "您的活跃计划",
+      "nextSwap": "下一次兑换",
+      "viewPerformance": "查看表现与成本基础",
+      "connectPrompt": "连接钱包以查看您的活跃计划和下一次兑换。"
+    },
+    "info": {
+      "inDcaTitle": "平均成本法（定投）",
+      "inDcaDesc": "不论价格如何波动，按固定计划买入代币以分散风险。",
+      "inFeeTitle": "0.3% 协议费",
+      "inFeeDesc": "每次兑换的 0.3% 归入国库。其余 99.7% 用于通过 Bitflow 购买 sBTC。",
+      "inCustodyTitle": "非托管",
+      "inCustodyDesc": "STX 直接由智能合约持有。买入的代币直接发送到您的钱包。",
+      "outDcaTitle": "平均成本法卖出",
+      "outDcaDesc": "按固定计划逐步将 sBTC 卖出为 USDCx，随时间锁定价值。",
+      "outFeeTitle": "0.3% 协议费",
+      "outFeeDesc": "每次兑换的 0.3% 归入国库。其余 99.7% 通过 3 跳 Bitflow 路由兑换。",
+      "outSwapTitle": "3 跳兑换",
+      "outSwapDesc": "sBTC → STX → aeUSDC → USDCx。所有兑换均自动通过 Bitflow 资金池路由。"
+    },
+    "form": {
+      "heading": "创建定投计划",
+      "spend": "支出",
+      "buy": "买入",
+      "stxDesc": "原生 Stacks 代币",
+      "sbtcDesc": "Stacks 上的比特币",
+      "tokenRowLabel": "{label}（源代币）",
+      "amountPerSwap": "每次兑换金额",
+      "frequency": "频率",
+      "initialDeposit": "初始存入",
+      "balance": "余额：",
+      "max": "最大",
+      "createPlan": "创建计划",
+      "waitingWallet": "等待钱包…",
+      "footnote": "主网 · 每次兑换 0.3% 协议费",
+      "submitted": "计划已提交！",
+      "submittedTx": "交易：{txId}",
+      "submittedHint": "交易确认后（约 1-2 分钟）计划将出现。点击刷新以更新。",
+      "createNew": "+ 创建新计划",
+      "limitReached": "已达计划上限（{max}）。请先取消一个旧计划。",
+      "minSwap": "每次兑换至少 1 STX",
+      "minDeposit": "最低存入 2 STX",
+      "depositGteSwap": "初始存入必须 ≥ 每次兑换金额",
+      "insufficient": "STX 不足。当前余额：{balance} STX",
+      "submittedToast": "定投计划已提交 — 等待确认",
+      "createFailed": "创建计划失败",
+      "txLabelCreated": "定投计划已创建"
+    },
+    "preview": {
+      "livePreview": "实时预览",
+      "swaps": "兑换次数",
+      "ends": "结束 ~",
+      "estOutput": "预计产出",
+      "totalFee": "总手续费"
+    },
+    "plans": {
+      "myPlans": "我的计划",
+      "completed": "已完成",
+      "active": "活跃",
+      "secondsAgo": "{seconds} 秒前",
+      "noPlans": "暂无计划",
+      "noPlansDesc": "在左侧创建您的第一个定投计划，开始自动买入 sBTC。",
+      "tryPreset": "试试：{label}",
+      "preset10": "每周 10 STX",
+      "preset50": "每月 50 STX"
+    },
+    "smart": {
+      "unavailable": "智能定投（逢低买入）仅适用于 STX→sBTC 计划。",
+      "saveFailed": "保存失败",
+      "title": "智能定投 — 逢低买入",
+      "turnOff": "关闭",
+      "thresholdLabel": "仅当 1 STX 能换到比 {days} 天均值多 ≥ 此 % 的聪时才买入",
+      "windowLabel": "平均窗口（天）",
+      "maxDeferLabel": "按市价买入前最多跳过的检查次数",
+      "statusLine": "当前：相比均值 {pct}% — 需要 ≥ {need}%。",
+      "conditionMet": "已满足逢低条件。",
+      "waiting": "等待更好的入场点。",
+      "update": "更新",
+      "enable": "启用智能定投"
+    },
+    "card": {
+      "tabOverview": "概览",
+      "tabExecute": "执行",
+      "tabHistory": "历史",
+      "tabSmart": "智能定投",
+      "expandAria": "展开计划详情",
+      "collapseAria": "收起计划详情",
+      "statusActive": "活跃",
+      "statusPaused": "已暂停",
+      "statusDepleted": "已耗尽",
+      "summaryTitle": "已执行兑换 · 当前余额仍可负担的兑换次数",
+      "summary": "已完成 {done} · 可负担 {affordable} · 剩余 {left} STX",
+      "readyNow": "⏱ 现在就绪",
+      "pendingFirst": "⏱ 等待首次兑换",
+      "swapsLeft": "剩余 {count, plural, other {# 次兑换}}",
+      "lowBalanceTitle": "仅剩 {count, plural, other {# 次兑换}}的资金。没有充值操作 — 请创建新计划以继续。",
+      "execute": "执行",
+      "cancelRefund": "取消并退款",
+      "planNumber": "计划 #{id}",
+      "cancelConfirm": "确定吗？您将获得 <b>{amount} STX</b> 退款。",
+      "keepPlan": "保留计划",
+      "cancelSubmitted": "取消已提交 — 退款等待确认",
+      "cancelFailed": "取消计划失败",
+      "cancelTxLabel": "计划 #{id} 取消并退款"
+    },
+    "overview": {
+      "swapsDone": "已完成兑换",
+      "stxSpent": "已花费 STX",
+      "avgPerSwap": "每次兑换平均 STX",
+      "created": "创建于",
+      "addStx": "添加 STX",
+      "add": "添加",
+      "topUpHint": "至少再充值 {amount} STX，然后恢复计划以添加资金。",
+      "resumeHint": "恢复计划以添加资金。",
+      "pause": "暂停",
+      "resume": "恢复",
+      "cancelRefund": "取消并退款",
+      "depositedToast": "已存入 {amount} STX（交易 {tx}…）",
+      "depositTxLabel": "计划 #{id} 存入 +{amount} STX",
+      "pausedTxLabel": "计划 #{id} 已暂停",
+      "resumedTxLabel": "计划 #{id} 已恢复"
+    },
+    "execute": {
+      "paused": "计划已暂停。请在概览标签恢复。",
+      "insufficient": "余额不足。还需 {amount} STX。",
+      "pendingFirst": "等待首次兑换。",
+      "nextIn": "约 {count, plural, other {# 个区块}}后进行下一次。",
+      "notReady": "尚未可执行。{reason}",
+      "readyToExecute": "可执行",
+      "protocolFee": "0.3% 协议费",
+      "swapAmount": "兑换 {amount} STX",
+      "slip": "滑点",
+      "fetchingQuote": "获取报价…",
+      "failedQuote": "获取报价失败",
+      "minSats": "最少 {amount} 聪",
+      "routingVia": "路由经由",
+      "advanced": "高级",
+      "hide": "隐藏",
+      "routerPlaceholder": "SP….swap-router-contract",
+      "invalidContract": "不是有效的合约 ID（例如 SP….contract-name）。",
+      "customRouterWarn": "自定义路由 — 通过未经验证的合约执行可能耗尽您的兑换资金。仅在您了解该合约时使用。",
+      "resetDefault": "重置为默认",
+      "executing": "执行中…",
+      "execute": "执行",
+      "executedToast": "计划已执行！兑换完成",
+      "executedTxLabel": "计划 #{id} 已执行",
+      "executionFailed": "执行失败"
+    },
+    "history": {
+      "recentExecutions": "最近执行",
+      "refreshAria": "刷新历史",
+      "failedLoad": "加载历史失败",
+      "noExecutions": "暂无执行",
+      "noExecutionsDesc": "keeper 运行此计划后，兑换将在此显示。",
+      "awaitingConfirmation": "等待确认",
+      "block": "区块 #{height}",
+      "fee": "手续费 {amount}",
+      "pending": "待处理",
+      "statusSuccess": "成功",
+      "statusPending": "待处理",
+      "statusFailed": "失败",
+      "secondsAgo": "{n} 秒前",
+      "minutesAgo": "{n} 分钟前",
+      "hoursAgo": "{n} 小时前",
+      "daysAgo": "{n} 天前"
+    },
+    "outSourceSbtc": "卖出 sBTC",
+    "outSourceStx": "卖出 STX",
+    "out": {
+      "form": {
+        "heading": "创建定投卖出计划",
+        "spend": "支出",
+        "buy": "买入",
+        "sbtcDesc": "Stacks 上的比特币",
+        "usdcxDesc": "Stacks 上的美元稳定币",
+        "tokenRowLabel": "{label}（源代币）",
+        "amountPerSwap": "每次兑换金额",
+        "frequency": "频率",
+        "initialDeposit": "初始存入",
+        "balance": "余额：",
+        "max": "最大",
+        "createPlan": "创建计划",
+        "waitingWallet": "等待钱包…",
+        "footnote": "主网 · 每次兑换 0.3% 协议费 · 经 Bitflow 3 跳兑换",
+        "submitted": "计划已提交！",
+        "submittedTx": "交易：{txId}",
+        "submittedHint": "交易确认后（约 1-2 分钟）计划将出现。点击刷新以更新。",
+        "createNew": "+ 创建新计划",
+        "minSwap": "每次兑换至少 334 聪（0.00000334 sBTC）",
+        "minDeposit": "最低存入 668 聪",
+        "depositGteSwap": "初始存入必须 ≥ 每次兑换金额",
+        "insufficient": "sBTC 不足。当前余额：{balance} sBTC",
+        "createdToast": "计划已创建！交易：{tx}...",
+        "createFailed": "创建计划失败"
+      },
+      "plans": {
+        "myPlans": "我的计划",
+        "secondsAgo": "{seconds} 秒前",
+        "noPlans": "暂无计划",
+        "noPlansDesc": "在左侧创建您的第一个定投卖出计划，开始将 sBTC 卖出为 USDCx。",
+        "tryPreset": "试试：{label}",
+        "preset1": "每日 0.001 sBTC",
+        "preset2": "每周 0.005 sBTC"
+      },
+      "card": {
+        "statusActive": "活跃",
+        "statusPaused": "已暂停",
+        "statusDepleted": "已耗尽",
+        "readyNow": "⏱ 现在就绪",
+        "pendingFirst": "⏱ 等待首次兑换",
+        "next": "⏱ 下一次 {countdown}",
+        "execute": "执行",
+        "progress": "{done}/{total} · 剩余 {left}",
+        "swapsDone": "已完成兑换",
+        "sbtcSpent": "已花费 sBTC",
+        "blockCreated": "创建区块",
+        "targetToken": "目标代币",
+        "readyToExecute": "可执行",
+        "protocolFee": "0.3% 协议费",
+        "netSwap": "净兑换：{amount} sBTC",
+        "slip": "滑点",
+        "threeHop": "3 跳：sBTC → STX → aeUSDC → USDCx",
+        "swapRouter": "兑换路由",
+        "routerPlaceholder": "SP….swap-router-contract",
+        "executing": "执行中…",
+        "depositPlaceholder": "存入 sBTC",
+        "add": "添加",
+        "pause": "暂停",
+        "resume": "恢复",
+        "cancelRefund": "取消并退款",
+        "planNumber": "计划 #{id}",
+        "cancelConfirm": "确定吗？您将获得 <b>{amount} sBTC</b> 退款。",
+        "keepPlan": "保留计划",
+        "cancelledToast": "计划已取消并退款",
+        "cancelFailed": "取消计划失败",
+        "executedToast": "计划已执行！兑换完成",
+        "executionFailed": "执行失败"
+      },
+      "history": {
+        "recentExecutions": "最近执行",
+        "refreshAria": "刷新历史",
+        "failedLoad": "加载历史失败",
+        "noExecutions": "暂无执行",
+        "noExecutionsDesc": "keeper 运行此计划后，兑换将在此显示。",
+        "awaitingConfirmation": "等待确认",
+        "block": "区块 #{height}",
+        "pending": "待处理",
+        "statusSuccess": "成功",
+        "statusPending": "待处理",
+        "statusFailed": "失败",
+        "secondsAgo": "{n} 秒前",
+        "minutesAgo": "{n} 分钟前",
+        "hoursAgo": "{n} 小时前",
+        "daysAgo": "{n} 天前"
+      },
+      "stxPlans": {
+        "myPlans": "我的计划",
+        "secondsAgo": "{seconds} 秒前",
+        "noPlans": "暂无计划",
+        "noPlansDesc": "在左侧创建您的第一个 STX→USDCx 计划，开始将 STX 卖出为 USDCx。",
+        "tryPreset": "试试：{label}",
+        "preset1": "每周 10 STX",
+        "preset2": "每月 50 STX"
+      },
+      "stxCard": {
+        "stxSpent": "已花费 STX",
+        "netSwap": "净兑换：{amount} STX",
+        "directSwap": "STX → USDCx 经 Bitflow 路由",
+        "execute": "执行",
+        "depositPlaceholder": "存入 STX",
+        "cancelledToast": "计划已取消并退款",
+        "cancelFailed": "取消计划失败",
+        "executedToast": "计划已执行！兑换完成",
+        "executionFailed": "执行失败",
+        "cancelConfirm": "确定吗？您将获得 <b>{amount} STX</b> 退款。"
+      },
+      "stxForm": {
+        "heading": "创建 STX→USDCx 定投计划",
+        "spend": "支出",
+        "buy": "买入",
+        "stxDesc": "原生 Stacks 代币",
+        "usdcxDesc": "Stacks 上的美元稳定币",
+        "tokenRowLabel": "{label}（源代币）",
+        "amountPerSwap": "每次兑换金额",
+        "frequency": "频率",
+        "initialDeposit": "初始存入",
+        "balance": "余额：",
+        "max": "最大",
+        "createPlan": "创建计划",
+        "waitingWallet": "等待钱包…",
+        "footnote": "主网 · 每次兑换 0.3% 协议费",
+        "submitted": "计划已提交！",
+        "submittedTx": "交易：{txId}",
+        "submittedHint": "交易确认后（约 1-2 分钟）计划将出现。点击刷新以更新。",
+        "createNew": "+ 创建新计划",
+        "minSwap": "每次兑换至少 1 STX",
+        "minDeposit": "最低存入 2 STX",
+        "depositGteSwap": "初始存入必须 ≥ 每次兑换金额",
+        "insufficient": "STX 不足。当前余额：{balance} STX",
+        "createdToast": "计划已创建！交易：{tx}...",
+        "createFailed": "创建计划失败"
+      }
+    },
+    "perf": {
+      "content": {
+        "title": "定投表现",
+        "back": "返回计划"
+      },
+      "tabs": {
+        "in": "定投买入",
+        "out": "定投卖出",
+        "aria": "定投表现视图"
+      },
+      "common": {
+        "connectTitle": "连接钱包以查看表现",
+        "swapsAnalyzed": "已分析 {count, plural, other {# 次兑换}}",
+        "swapsExecuted": "已执行兑换",
+        "acrossPlans": "跨 {count, plural, other {# 个计划}}",
+        "noExecutions": "暂无执行",
+        "perPlanBreakdown": "各计划明细",
+        "planNumber": "计划 #{id}",
+        "everyCadence": "每 {cadence}",
+        "completed": "· 已完成",
+        "executions": "执行",
+        "latestExecution": "最近一次执行",
+        "atSpot": "{value}（按现价）",
+        "lastNDays": "最近 {days} 天"
+      },
+      "in": {
+        "connectDesc": "连接以查看所有定投计划的成本基础和执行历史。",
+        "noExecDesc": "您的计划尚未被 keeper 机器人执行。首次兑换完成后将显示表现指标。",
+        "stxInvested": "已投入 STX",
+        "sbtcAccumulated": "已累积 sBTC",
+        "avgCostBasis": "平均成本基础",
+        "per1Sbtc": "每 1 sBTC",
+        "basisVsSpot": "您的成本 vs 今日现价",
+        "basisVsSpotInfo": "将您在所有已执行兑换中按加权平均的每 sBTC 所需 STX，与当前 STX/sBTC 汇率（BTC USD / STX USD）进行比较。正 % 表示您每个 STX 换到的 sBTC 多于今日现价。",
+        "basisVsSpotAria": "关于：您的成本 vs 今日现价",
+        "spotLine": "现价：1 sBTC = <b>{spot}</b> STX · 您的均价：<b>{avg}</b> STX",
+        "cheaperThanSpot": "低于现价",
+        "aboveSpot": "高于现价",
+        "dcaVsLump": "定投 vs 一次性投入",
+        "dcaVsLumpInfo": "对每个计划，我们查找该计划首次执行当天的 STX-USD 和 BTC-USD 收盘价，并设问：如果您在第 0 天按当时现价将相同的 STX 总额一次性买入 sBTC，您会持有多少 sBTC？差额显示定投是跑赢还是跑输该假设买入。排除无法获取历史价格的计划。",
+        "dcaVsLumpAria": "关于：定投 vs 一次性投入",
+        "lumpSummary": "跨 {count, plural, other {# 个计划}} · 实际 <b>{actual}</b> sBTC vs 一次性 <b>{lump}</b> sBTC",
+        "lumpExcluded": "已排除 {count, plural, other {# 个计划}} — 历史价格不可用",
+        "deltaVsLump": "{delta} sBTC vs 一次性",
+        "lumpUnavailableTitle": "一次性投入对比不可用",
+        "lumpUnavailableDesc": "无法从 CoinGecko 获取您计划开始日期的历史 STX/BTC 价格。上方的「成本 vs 今日现价」条仍然有效。",
+        "cellStxIn": "投入 STX",
+        "cellSbtcOut": "产出 sBTC",
+        "cellAvgCost": "平均成本",
+        "satsSub": "{sats} 聪",
+        "nowSub": "≈ {usd} 现在",
+        "vsLumpLabel": "vs 一次性投入",
+        "vsLumpDetail": "于 {date} — 一次性会是 <b>{sbtc}</b> sBTC"
+      },
+      "out": {
+        "connectDesc": "连接以查看您的 sBTC→USDCx 卖出历史。",
+        "noPlans": "暂无定投卖出计划",
+        "noPlansDesc": "定投卖出按计划将 sBTC 转回 USDCx。适用于获利了结或定时退出。",
+        "createPlan": "创建定投卖出计划 →",
+        "noExecDesc": "您的定投卖出计划尚未被 keeper 机器人执行。",
+        "sbtcInvested": "已投入 sBTC",
+        "tokenReceived": "已收到 {token}",
+        "avgSellRate": "平均卖出汇率",
+        "per1Sbtc": "每 1 sBTC",
+        "sellVsSpot": "您的卖出汇率 vs 今日现价",
+        "sellVsSpotInfo": "各次执行中每 sBTC 收到的加权平均 USDCx，与当前 sBTC→USDCx 汇率（BTC USD，因 USDCx ≈ $1）比较。正 % 表示您以高于当前的汇率卖出。",
+        "sellVsSpotAria": "关于：您的卖出汇率 vs 今日现价",
+        "spotLine": "现价：1 sBTC ≈ <b>{spot}</b> {token} · 您的均价：<b>{avg}</b> {token}",
+        "soldAboveSpot": "高于现价卖出",
+        "soldBelowSpot": "低于现价卖出",
+        "cellSbtcIn": "投入 sBTC",
+        "cellTokenOut": "产出 {token}",
+        "cellAvgRate": "平均汇率",
+        "avgRateValue": "{rate} {token}/sBTC",
+        "sourceAria": "定投卖出来源",
+        "sourceSbtc": "sBTC 卖出",
+        "sourceStx": "STX 卖出",
+        "stxNoPlans": "暂无 STX→USDCx 定投计划",
+        "stxNoPlansDesc": "STX 卖出按计划将 STX 转换为 USDCx。",
+        "stxNoExecDesc": "您的 STX→USDCx 计划尚未被 keeper 机器人执行。",
+        "stxInvested": "已投入 STX",
+        "stxAvgSellRate": "平均卖出汇率",
+        "stxPer1Stx": "每 1 STX",
+        "stxSellVsSpot": "您的卖出汇率 vs 今日现价",
+        "stxSellVsSpotInfo": "各次执行中每 STX 收到的加权平均 USDCx，与当前 STX 价格（因 USDCx ≈ $1）比较。正 % 表示您以高于当前的汇率卖出。",
+        "stxSellVsSpotAria": "关于：您的 STX 卖出汇率 vs 今日现价",
+        "stxSpotLine": "现价：1 STX ≈ <b>{spot}</b> {token} · 您的均价：<b>{avg}</b> {token}",
+        "stxCellStxIn": "投入 STX",
+        "stxAvgRateValue": "{rate} {token}/STX"
+      },
+      "chart": {
+        "title": "成本基础随时间变化",
+        "need2": "至少需要 2 次不同日期的执行才能绘制有意义的成本基础图表。",
+        "pricesUnavailable": "历史 STX/BTC 价格不可用 — 无法绘制图表。",
+        "legendBasis": "您的累计成本基础",
+        "legendSpot": "现价 STX/sBTC",
+        "tooltipBasis": "成本",
+        "tooltipSpot": "现价"
+      },
+      "chartOut": {
+        "title": "卖出汇率随时间变化",
+        "need2": "至少需要 2 次不同日期的执行才能绘制有意义的卖出汇率图表。",
+        "pricesUnavailable": "历史 BTC 价格不可用 — 无法绘制图表。",
+        "legendBasis": "您的累计平均卖出汇率（每 sBTC 的 {token}）",
+        "legendSpot": "现价 {token}/sBTC",
+        "tooltipAvg": "您的均价",
+        "tooltipSpot": "现价"
+      }
+    }
+  },
+  "assets": {
+    "page": {
+      "title": "我的资产",
+      "tabsAria": "资产板块",
+      "tabOverview": "概览",
+      "tabHoldings": "持仓",
+      "tabPositions": "头寸",
+      "tabActivity": "活动"
+    },
+    "summary": {
+      "connectTitle": "投资组合概览",
+      "connectDesc": "连接钱包以查看您的净资产和资产配置。",
+      "netWorth": "净资产",
+      "other": "其他",
+      "h24": "24小时",
+      "portfolio24h": "投资组合 24小时",
+      "stx24h": "STX 24小时（投资组合历史仍在记录中）",
+      "assetsLine": "{balance} STX · {count} 项资产"
+    },
+    "health": {
+      "title": "投资组合健康分",
+      "connectMsg": "连接钱包以查看您的健康分",
+      "volatile": "波动性 {pct}%",
+      "stable": "稳定 {pct}%",
+      "outOf": "/ 100",
+      "levelExcellent": "优秀",
+      "levelGood": "良好",
+      "levelModerate": "中等",
+      "levelNeedsWork": "有待改进",
+      "levelUnbalanced": "不平衡",
+      "fallbackToken": "波动性资产",
+      "mVolatileConcentration": "波动性集中度",
+      "mAssetCount": "资产数量",
+      "mDistributionQuality": "分布质量",
+      "mStablecoinReserve": "稳定币储备",
+      "cNone": "无波动性资产 — 无集中风险",
+      "cExtreme": "{pct}% 的波动性资产集中于 {token} — 极高",
+      "cHigh": "{pct}% 的波动性资产集中于 {token} — 偏高",
+      "cModerate": "{pct}% 的波动性资产集中于 {token} — 中等",
+      "cManageable": "{pct}% 集中于最大波动性资产 — 可控",
+      "cWellSpread": "{pct}% 集中于最大波动性资产 — 分散良好",
+      "aNone": "无波动性资产 — 投资组合全部为稳定币",
+      "aOne": "1 项波动性资产 — 无分散",
+      "aTwo": "2 项波动性资产 — 分散极少",
+      "aModerate": "{n} 项波动性资产 — 中等分散",
+      "aGood": "{n} 项波动性资产 — 良好分散",
+      "aExcellent": "{n} 项波动性资产 — 优秀分散",
+      "hNone": "无可分布的波动性资产",
+      "hHighlyConcentrated": "波动性分布高度集中",
+      "hConcentrated": "波动性分布集中",
+      "hModerate": "波动性资产间分布中等",
+      "hGood": "波动性资产间分布良好",
+      "hExcellent": "波动性资产间分布优秀",
+      "sMostlyCash": "{pct}% 稳定币 — 多为现金，配置不足",
+      "sCautious": "{pct}% 稳定币 — 谨慎仓位",
+      "sHealthy": "{pct}% 稳定币 — 健康储备",
+      "sSmall": "{pct}% 稳定币 — 储备较少",
+      "sNone": "无稳定币储备",
+      "tipNoVolatile": "您的投资组合为 {pct}% 稳定币，无波动性资产。可考虑配置 Stacks 生态代币，如 STX、ALEX 或 Velar。",
+      "tipMostlyStable": "您 {pct}% 的投资组合为稳定币。大额现金仓位安全，但会限制增长敞口。",
+      "tipExtremeConc": "您 {pct}% 的波动性配置集中于 {token}。即使在另外 2–3 个 Stacks 代币上配置少量仓位，也能显著降低集中风险。",
+      "tipOneAsset": "您仅持有 1 项波动性资产（{token}）。再添加 2–3 个 Stacks 生态代币（如 ALEX、sBTC、Velar）可快速提升您的分数。",
+      "tipHighConc": "{token} 占您波动性投资组合的 {pct}%。逐步再平衡到其他资产可降低您的集中风险。",
+      "tipNoStable": "未检测到稳定币储备。持有 5–15% 的稳定币（如 USDCx）可在市场下行时提供缓冲。",
+      "tipHealthy": "您的投资组合在 Stacks 生态中分散健康。请继续保持均衡配置。",
+      "tipDefault": "可考虑逐步再平衡波动性资产，使权重分布更均匀，并保留稳定币储备。"
+    },
+    "holdings": {
+      "title": "代币持仓",
+      "flagged": "{count} 个已标记",
+      "assetsCount": "{count} 项资产",
+      "exportTitle": "导出 CSV",
+      "export": "导出",
+      "colToken": "代币",
+      "colBalance": "余额",
+      "colPrice": "价格",
+      "col7d": "7天",
+      "colValue": "价值",
+      "col24h": "24小时",
+      "noTokens": "未找到代币",
+      "noTokensDesc": "连接钱包或向其充值 STX，即可在此查看您的代币持仓。",
+      "flaggedToggle": "{count, plural, other {# 个已标记代币}}（垃圾 / 未验证）",
+      "suspicious": "可疑",
+      "unverified": "未验证",
+      "suspiciousTitle": "此代币没有已注册的元数据。可能是垃圾空投或诈骗代币。除非您信任来源，否则请勿互动。",
+      "unverifiedTitle": "此代币未列入任何已知价格源。它可能是合法的但未经验证。请谨慎操作。",
+      "send": "发送",
+      "receive": "接收",
+      "bannerSuspicious": "检测到 <b>{count, plural, other {# 个可疑代币}}</b> — 可能是没有已注册元数据的垃圾空投。 ",
+      "bannerUnverified": "发现 <b>{count, plural, other {# 个未验证代币}}</b> 没有价格数据。 ",
+      "bannerWarn": "除非您信任来源，否则请勿与未知代币互动。"
+    },
+    "perf": {
+      "title": "投资组合表现",
+      "connectTitle": "跟踪投资组合随时间变化",
+      "connectDesc": "连接钱包以记录净资产历史。从您首次访问开始跟踪。",
+      "all": "全部",
+      "over": "在 {period} 内",
+      "loading": "正在加载图表…",
+      "notEnough": "历史数据尚不足 — 每次访问都会记录净资产。一小时后回来查看您的第一个数据点。",
+      "trackingSince": "自 {date} 起跟踪",
+      "tooltipPortfolio": "投资组合"
+    },
+    "yield": {
+      "header": "让您的资产创造收益",
+      "estimatedApy": "预估 APY",
+      "active": "活跃",
+      "variable": "浮动",
+      "disclaimer": "APY 预估仅供参考 — 实际奖励随周期、资金池深度和市场状况而变化。",
+      "subline": "已执行 {count, plural, other {# 次兑换}} · {desc}",
+      "stackingLabel": "STX 质押 (PoX)",
+      "stackingDesc": "锁定 STX 以保护网络，并在每个周期赚取 BTC 奖励。",
+      "sbtcLabel": "sBTC 流动性",
+      "sbtcDesc": "向 DEX 资金池（Bitflow / ALEX）提供 sBTC 以赚取兑换手续费。浮动。",
+      "dcaLabel": "定期定投",
+      "dcaAsset": "策略",
+      "dcaDesc": "按计划平均买入 sBTC/USDC。回报取决于价格走势。",
+      "viewPosition": "查看头寸",
+      "startStacking": "开始质押",
+      "managePlans": "管理计划",
+      "createPlan": "创建计划",
+      "explore": "探索"
+    },
+    "pnl": {
+      "title": "盈亏跟踪",
+      "assets": "{count} 项资产",
+      "exportTitle": "导出 CSV",
+      "export": "导出",
+      "calculating": "计算中...",
+      "connect": "连接钱包以查看盈亏",
+      "loadError": "加载盈亏数据失败。",
+      "noData": "暂无盈亏数据",
+      "unrealized": "未实现盈亏",
+      "realized": "已实现盈亏",
+      "totalPnl": "总盈亏",
+      "colToken": "代币",
+      "colAvgCost": "平均成本",
+      "colCurPrice": "当前价格",
+      "colUnrealized": "未实现",
+      "colRealized": "已实现",
+      "colTotal": "总盈亏",
+      "disclaimer": "基于链上历史（最多 1,000 笔交易）。结果可能为近似值。"
+    },
+    "stacking": {
+      "title": "STX 质押",
+      "active": "活跃",
+      "notStacking": "未质押",
+      "cycle": "周期 #{id}",
+      "connect": "连接钱包以查看质押信息",
+      "lockedAmount": "锁定数量",
+      "cyclesRemaining": "剩余周期",
+      "cyclesValue": "{count, plural, other {# 个周期}}",
+      "unlocksIn": "约 {days} 天后解锁",
+      "unlockBlock": "解锁区块",
+      "btcBlocksLeft": "还剩 {count} 个 BTC 区块",
+      "rewardPhase": "周期 #{id} — 奖励阶段",
+      "blocksProgress": "{elapsed} / {total} 个区块",
+      "cycleStart": "周期开始",
+      "blocksUntilPrepare": "距准备阶段还有 {count} 个区块",
+      "networkShare": "网络占比：",
+      "totalStacked": "总质押：",
+      "viewTx": "查看 stack-stx 交易",
+      "minToStack": "质押最低要求：<b>{amount} STX</b>",
+      "nextCycle": "下一周期 #{id} 将在 <b>{blocks} 个区块</b>后开始（约 {days} 天）",
+      "totalStackedWide": "全网总质押：<b>{amount}</b>",
+      "explorePools": "探索质押池",
+      "learnStacking": "了解质押"
+    },
+    "sbtc": {
+      "title": "sBTC 头寸",
+      "about": "关于 sBTC",
+      "connect": "连接钱包以查看 sBTC 头寸",
+      "balance": "sBTC 余额",
+      "noPosition": "无头寸",
+      "btcPrice": "BTC 价格",
+      "reference": "参考",
+      "sbtcPrice": "sBTC 价格",
+      "coingecko": "CoinGecko",
+      "pegPegged": "锚定",
+      "pegSlight": "轻微偏离",
+      "pegDepegged": "脱锚风险",
+      "noSbtcText": "您还没有持有任何 sBTC。 ",
+      "bridgeLink": "跨链 BTC → sBTC",
+      "bridgeHistory": "跨链历史",
+      "transactions": "{count} 笔交易",
+      "noBridge": "未找到 sBTC 跨链交易",
+      "txDeposit": "存入",
+      "txWithdrawal": "提取",
+      "txTransfer": "转账",
+      "secondsAgo": "{n} 秒前",
+      "minutesAgo": "{n} 分钟前",
+      "hoursAgo": "{n} 小时前",
+      "daysAgo": "{n} 天前"
+    },
+    "history": {
+      "title": "交易历史",
+      "exportTitle": "导出 CSV",
+      "export": "导出",
+      "viewExplorer": "在浏览器中查看",
+      "filterAll": "全部",
+      "filterTransfer": "转账",
+      "filterContract": "合约",
+      "filterFailed": "失败",
+      "connect": "连接钱包以查看历史",
+      "noTx": "未找到交易",
+      "loadMore": "加载更多",
+      "loading": "加载中...",
+      "sentStx": "已发送 STX",
+      "receivedStx": "已接收 STX",
+      "to": "至 {addr}",
+      "from": "来自 {addr}",
+      "deployContract": "部署合约",
+      "coinbase": "Coinbase",
+      "block": "区块 {height}",
+      "secondsAgo": "{n} 秒前",
+      "minutesAgo": "{n} 分钟前",
+      "hoursAgo": "{n} 小时前",
+      "daysAgo": "{n} 天前"
+    },
+    "drawer": {
+      "main": {
+        "yourBalance": "您的余额",
+        "portfolioPct": "· 占投资组合 {pct}%",
+        "price": "价格",
+        "h24": "24小时",
+        "swap": "兑换",
+        "send": "发送",
+        "receive": "接收",
+        "alert": "提醒",
+        "alertUnsupportedTitle": "提醒支持 STX、BTC、WELSH、ALEX、VELAR、stSTX",
+        "tokenDetails": "代币详情",
+        "contract": "合约",
+        "nativeStx": "STX（原生）",
+        "decimals": "小数位",
+        "status": "状态",
+        "suspicious": "可疑",
+        "unverified": "未验证",
+        "closeDrawer": "关闭抽屉",
+        "close": "关闭",
+        "copyContract": "复制合约 ID"
+      },
+      "market": {
+        "high24h": "24小时最高",
+        "low24h": "24小时最低",
+        "vol24h": "24小时成交量",
+        "marketCap": "市值"
+      },
+      "pnl": {
+        "positionPnl": "头寸盈亏",
+        "avgCost": "平均成本",
+        "costBasis": "成本基础",
+        "unrealized": "未实现",
+        "realized": "已实现"
+      },
+      "chart": {
+        "unavailable": "价格历史不可用",
+        "rangeAria": "图表范围",
+        "via": "{range} · {arrow} 经 CoinGecko"
+      },
+      "qsend": {
+        "title": "快速发送",
+        "max": "最大",
+        "balance": "余额：{bal} {symbol}",
+        "exceeds": "超出余额",
+        "waiting": "等待钱包…",
+        "sendSymbol": "发送 {symbol}",
+        "submitted": "转账已提交",
+        "viewExplorer": "在浏览器中查看",
+        "newBtn": "新建",
+        "addrMustStart": "地址必须以「{prefix}」开头",
+        "invalidAddr": "无效地址",
+        "enterAmount": "请输入有效金额",
+        "amountExceeds": "金额超出余额",
+        "txFailed": "交易失败",
+        "transferSubmittedToast": "转账已提交：{amount} {symbol}",
+        "transferLabel": "转账 {amount} {symbol}",
+        "transferFailedToast": "转账失败：{msg}"
+      },
+      "qswap": {
+        "title": "快速兑换",
+        "max": "最大",
+        "balance": "余额：{bal} {symbol}",
+        "exceeds": "超出余额",
+        "quoting": "报价中…",
+        "quoteUnavailable": "报价不可用",
+        "continue": "继续兑换",
+        "enterAmount": "输入金额",
+        "approx": "≈ {out} {symbol}"
+      },
+      "tx": {
+        "recentActivity": "最近活动",
+        "all": "全部",
+        "noActivity": "暂无 {symbol} 活动",
+        "received": "已接收 {symbol}",
+        "sent": "已发送 {symbol}",
+        "from": "来自 {addr}",
+        "to": "至 {addr}",
+        "secondsAgo": "{n} 秒前",
+        "minutesAgo": "{n} 分钟前",
+        "hoursAgo": "{n} 小时前",
+        "daysAgo": "{n} 天前"
+      },
+      "yield": {
+        "yield": "收益",
+        "liquidStacking": "流动质押",
+        "viaStackingDao": "经 StackingDAO",
+        "stStxDesc": "stSTX 自动累积 PoX 奖励 — 其对 STX 的索取权每个周期都在增长。",
+        "stStxHolding": " 您持有约 <b>{amount}</b> stSTX。",
+        "manageStackingDao": "在 StackingDAO 管理",
+        "apyVaries": "APY 预估 · 随周期变化",
+        "sbtcLiquidity": "sBTC 流动性",
+        "bitflowAlex": "Bitflow / ALEX 资金池",
+        "pegStatus": "锚定状态",
+        "pegPegged": "锚定",
+        "pegSlight": "轻微偏离",
+        "pegDepegged": "已脱锚",
+        "sbtcDesc": "sBTC 本身不产生收益 — 将其提供给 DEX 资金池可赚取兑换手续费。",
+        "exploreSbtc": "探索 sBTC 资金池",
+        "apyPoolDepth": "APY 预估 · 取决于资金池深度"
+      },
+      "alert": {
+        "title": "设置价格提醒 — {symbol}",
+        "closeAlert": "关闭价格提醒",
+        "current": "当前：${price}",
+        "existing": "现有提醒（{count}）",
+        "above": "高于",
+        "below": "低于",
+        "active": "活跃",
+        "triggered": "已触发",
+        "deleteAlert": "删除提醒",
+        "quick": "快捷：",
+        "targetPrice": "目标价格（USD）",
+        "invalidPrice": "请输入大于 0 的有效价格",
+        "preview": "当 <b>{symbol}</b> {dir} <b>${price}</b> 时提醒",
+        "risesAbove": "升破",
+        "dropsBelow": "跌破",
+        "createAlert": "创建提醒",
+        "pushPrompt": "启用通知，即使应用关闭也能收到提醒",
+        "enable": "启用",
+        "enabling": "启用中...",
+        "dismiss": "关闭"
+      }
+    }
+  },
+  "notifications": {
+    "pageTitle": "通知",
+    "pageTabs": {
+      "activity": "活动",
+      "priceAlerts": "价格提醒",
+      "preferences": "偏好设置"
+    },
+    "tabs": {
+      "all": "全部",
+      "transactions": "交易",
+      "alerts": "提醒",
+      "dca": "定投",
+      "wallet": "钱包"
+    },
+    "search": "搜索...",
+    "filters": "筛选",
+    "sort": "排序",
+    "newestFirst": "最新优先",
+    "oldestFirst": "最早优先",
+    "delete": "删除（{count}）",
+    "unread": "{count} 条未读",
+    "selectAll": "全选（{count}）",
+    "deselectAll": "取消全选（{count}）",
+    "empty": {
+      "title": "暂无通知",
+      "desc": "当您进行兑换、定投执行或达到价格目标时，通知将在此显示。"
+    },
+    "date": {
+      "today": "今天",
+      "yesterday": "昨天"
+    },
+    "dismiss": "关闭",
+    "category": {
+      "dca": "定投金库",
+      "dcaOut": "定投卖出",
+      "wallet": "钱包",
+      "swap": "兑换",
+      "send": "发送",
+      "price": "价格提醒"
+    },
+    "plan": "计划 #{id}",
+    "unreadAria": "未读",
+    "drawer": {
+      "title": "通知",
+      "clearAll": "全部清除",
+      "empty": "暂无通知",
+      "viewAll": "查看全部"
+    },
+    "filterPanel": {
+      "title": "筛选",
+      "clear": "清除",
+      "close": "关闭筛选",
+      "type": "类型",
+      "category": "类别",
+      "dateRange": "日期范围",
+      "applied": "{count, plural, other {已应用 # 个筛选}}"
+    },
+    "type": {
+      "success": "成功",
+      "error": "错误",
+      "warning": "警告",
+      "info": "信息"
+    },
+    "filterCategory": {
+      "dca": "定投买入",
+      "dcaOut": "定投卖出",
+      "wallet": "钱包",
+      "swap": "兑换",
+      "send": "发送",
+      "price": "价格提醒"
+    },
+    "range": {
+      "hour": "最近一小时",
+      "day": "最近一天",
+      "week": "最近一周",
+      "all": "全部时间"
+    },
+    "prefs": {
+      "title": "通知偏好设置",
+      "subtitle": "无论这些设置如何，错误始终显示。",
+      "resetAll": "全部重置",
+      "footer": "偏好设置保存在本地，跨会话保留。",
+      "enable": "启用",
+      "disable": "禁用",
+      "toggleAria": "{action} {label} 通知",
+      "cat": {
+        "dca": {
+          "label": "定投买入",
+          "desc": "计划创建、执行、暂停、恢复、取消"
+        },
+        "dcaOut": {
+          "label": "定投卖出",
+          "desc": "sBTC→USDCx 计划事件"
+        },
+        "swap": {
+          "label": "兑换",
+          "desc": "兑换已提交并确认"
+        },
+        "send": {
+          "label": "转账",
+          "desc": "STX 和代币转账"
+        },
+        "price": {
+          "label": "价格提醒",
+          "desc": "达到代币价格目标"
+        },
+        "wallet": {
+          "label": "钱包",
+          "desc": "连接、断开、账户变更"
+        }
+      }
+    },
+    "toast": {
+      "dismiss": "关闭通知",
+      "region": "通知"
+    },
+    "badge": {
+      "aria": "{count, plural, =0 {通知} other {通知（# 条未读）}}"
+    }
+  },
+  "ai": {
+    "title": "Stacks AI",
+    "marketIntel": "市场情报",
+    "updated": "更新于 {time}",
+    "refresh": "刷新",
+    "retry": "重试",
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo": "{n} 分钟前",
+      "hoursAgo": "{n} 小时前"
+    },
+    "error": {
+      "title": "加载洞察失败",
+      "desc": "市场情报暂时不可用。请稍后重试。"
+    },
+    "sentiment": {
+      "title": "市场情绪",
+      "bullish": "看涨",
+      "bearish": "看跌",
+      "neutral": "中性",
+      "fearGreed": "恐惧与贪婪"
+    },
+    "kol": {
+      "title": "社交信号",
+      "empty": "暂无社交数据",
+      "vol": "成交量 {value}"
+    },
+    "news": {
+      "title": "新闻摘要",
+      "loading": "正在加载文章…",
+      "loadError": "无法加载文章内容。",
+      "readMore": "阅读全文"
+    },
+    "position": {
+      "title": "您的头寸",
+      "badge": "个性化",
+      "error": "无法加载您的提醒。请稍后刷新重试。",
+      "healthy": "您的投资组合看起来健康 — 目前没有提醒。"
+    },
+    "priority": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "smartAlerts": {
+      "title": "智能提醒"
+    },
+    "action": {
+      "dca-open": "设置定投",
+      "trade-swap": "立即兑换",
+      "view-assets": "查看持仓"
+    },
+    "chat": {
+      "title": "询问 Stacks AI",
+      "disclaimer": "仅供参考 — 非财务建议。",
+      "placeholder": "询问关于 STX、您的投资组合或定投…",
+      "send": "发送",
+      "error": "出了点问题。请重新提问。",
+      "connectHint": "连接钱包以获得针对您投资组合的回答。",
+      "suggestions": [
+        "STX 今天表现如何？",
+        "我的定投计划怎么样？",
+        "现在适合定投吗？"
+      ]
+    }
+  },
+  "apps": {
+    "title": "已连接应用",
+    "intro": "根据您最近 50 笔交易，您在 Stacks 上互动过的 DeFi 协议和合约。",
+    "connectPrompt": "连接钱包以查看您的应用历史",
+    "loadError": "加载应用历史失败。",
+    "retry": "重试",
+    "exploreHeading": "探索 Stacks 上的 DeFi",
+    "knownHeading": "已知协议",
+    "unverifiedHeading": "未验证合约",
+    "showLess": "收起",
+    "showMore": "显示另外 {count} 个",
+    "card": {
+      "unableFetch": "无法获取头寸",
+      "total": "总计",
+      "net": "净额",
+      "lastUsed": "上次使用 {time}",
+      "open": "打开",
+      "tryIt": "试用"
+    },
+    "explore": {
+      "stackingdao": "质押 STX 并获得 stSTX，一种赚取质押奖励的流动代币",
+      "lisa": "质押 STX 并获得 LiSTX，同时保持流动性",
+      "zest": "提供资产以赚取收益，或以您的加密资产作抵押借款",
+      "arkadiko": "通过锁定 STX 作为抵押品来铸造 USDA 稳定币",
+      "bitflow": "以低手续费在 Stacks 上兑换代币",
+      "alex": "在 Stacks DeFi 中交易、借出和借入",
+      "velar": "在 Stacks 上兑换和提供流动性"
+    },
+    "unknown": {
+      "unverified": "未验证",
+      "unverifiedTitle": "合约未被识别为已知 DeFi 协议",
+      "openSource": "开源",
+      "viewExplorer": "在 Stacks 浏览器中查看",
+      "openAria": "在 Stacks 浏览器中打开 {name}"
+    }
+  },
+  "landing": {
+    "common": {
+      "connectWallet": "连接钱包",
+      "connecting": "连接中...",
+      "exploreDashboard": "探索仪表盘"
+    },
+    "nav": {
+      "features": "功能",
+      "howItWorks": "工作原理",
+      "github": "GitHub",
+      "openMenu": "打开导航菜单",
+      "closeMenu": "关闭导航菜单"
+    },
+    "hero": {
+      "badge": "已在 Stacks 主网上线",
+      "titleLine1": "自动化您的",
+      "titleLine2": "比特币策略",
+      "subtitle": "按您掌控的计划将 STX 转换为 sBTC。每次定投执行都是非托管的、链上强制执行的，并可从您的钱包暂停或取消。",
+      "trust": {
+        "nonCustodial": "非托管",
+        "openSource": "开源合约",
+        "mainnet": "Stacks 主网"
+      },
+      "portfolioPreview": "投资组合预览",
+      "dcaPlan": "定投计划",
+      "running": "运行中",
+      "planMeta": "50 STX · 每 144 个区块",
+      "previewExecutions": "预览执行"
+    },
+    "walkthrough": {
+      "eyebrow": "一套工作流，端到端",
+      "heading": "从定期买入到投资组合洞察",
+      "intro": "StacksPort 连接自动化、执行和度量，而无需托管您的钱包。",
+      "steps": {
+        "automate": {
+          "eyebrow": "自动化",
+          "title": "构建 STX 到 sBTC 的计划",
+          "description": "选择金额和间隔，查看完整计划，并从您的钱包批准。金库仅持有分配给该计划的余额。",
+          "b1": "每日、每周或每月",
+          "b2": "随时暂停和恢复",
+          "b3": "每次兑换 0.3% 协议费"
+        },
+        "measure": {
+          "eyebrow": "度量",
+          "title": "跟踪成本基础和计划续航",
+          "description": "查看投资组合价值、定投执行历史、平均入场价格，以及您的剩余余额可支持的计划兑换次数。",
+          "b1": "实时 Stacks 余额",
+          "b2": "定投 vs 一次性投入表现",
+          "b3": "链上执行历史"
+        },
+        "act": {
+          "eyebrow": "行动",
+          "title": "直接兑换并保持知情",
+          "description": "使用 Bitflow 路由进行直接兑换，然后监控价格目标和定投执行，无需整天盯着仪表盘。",
+          "b1": "实时兑换报价",
+          "b2": "价格和执行提醒",
+          "b3": "感知投资组合的 AI 洞察"
+        }
+      },
+      "dcaPreview": {
+        "title": "创建定投计划",
+        "mainnet": "主网",
+        "spend": "支出",
+        "buy": "买入",
+        "everyWeek": "每周",
+        "confirmed": "已从您的钱包确认"
+      },
+      "perfPreview": {
+        "label": "定投表现",
+        "preview": "投资组合预览 · +4.8%",
+        "avgEntry": "平均入场",
+        "runway": "计划续航",
+        "swaps": "8 次兑换"
+      },
+      "alertsPreview": {
+        "quote": "兑换报价",
+        "viaBitflow": "经 Bitflow",
+        "execConfirmed": "定投执行已确认",
+        "execDesc": "您计划的 STX 到 sBTC 兑换已在 Stacks 上确认。"
+      }
+    },
+    "how": {
+      "eyebrow": "工作原理",
+      "heading": "三步实现自动化",
+      "steps": {
+        "s1": {
+          "title": "连接您的钱包",
+          "desc": "使用 Leather 或 Xverse。不共享助记词 — 您的密钥永不离开您的设备。"
+        },
+        "s2": {
+          "title": "创建定投计划",
+          "desc": "选择代币对，设置您的金额和间隔。存入 STX 或 sBTC 作为抵押。"
+        },
+        "s3": {
+          "title": "让机器人执行",
+          "desc": "我们的 keeper 机器人通过 GitHub Actions 运行，并在每个间隔在链上执行您的计划。随时暂停或取消。"
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "验证，而非信任",
+      "heading": "为透明自动化而构建",
+      "intro": "自动化通过部署在 Stacks 主网上的开源合约运行。在连接钱包前，请查看规则和实时合约活动。",
+      "points": {
+        "control": {
+          "title": "您保持掌控",
+          "desc": "存款和计划变更需要钱包批准。StacksPort 永不接收您的助记词或私钥。"
+        },
+        "automated": {
+          "title": "链上自动化",
+          "desc": "keeper 提交到期的执行，而金库合约强制执行计划余额、间隔和兑换记账。"
+        },
+        "pause": {
+          "title": "暂停或取消",
+          "desc": "计划始终由您的钱包掌控。暂停未来的执行，或取消并提取剩余的金库余额。"
+        },
+        "fees": {
+          "title": "透明费用",
+          "desc": "每次自动兑换收取 0.3% 协议费。网络和 DEX 执行成本另计。"
+        }
+      },
+      "contracts": {
+        "stxSbtc": "STX 到 sBTC 金库",
+        "sbtcUsdcx": "sBTC 到 USDCx 金库"
+      },
+      "explorerAria": "在 Stacks 浏览器中查看 {label}"
+    },
+    "cta": {
+      "titleLine1": "让您的 sBTC 计划",
+      "titleLine2": "按计划执行",
+      "subtitle": "选择金额和间隔，查看 0.3% 协议费，然后从您的 Stacks 钱包批准计划。"
+    },
+    "footer": {
+      "tagline": "Stacks 区块链上的非托管定投自动化与投资组合管理。",
+      "product": "产品",
+      "copyright": "© {year} StacksPort — 构建于 Stacks",
+      "mainnet": "主网"
+    }
+  },
+  "bubbles": {
+    "title": "加密泡泡图",
+    "searchShort": "搜索…",
+    "searchHint": "搜索…  ( / )",
+    "clearSearch": "清除搜索",
+    "failedLoad": "加载数据失败。",
+    "retry": "重试",
+    "stacksNote": "显示有 CoinGecko 价格源的 Stacks 代币 · 不含仅 DEX 代币",
+    "noMatch": "没有代币匹配「{q}」。",
+    "watchlistEmpty": "您的关注列表为空。点击任意泡泡上的 ⭐ 添加。",
+    "holdingsEmptyTracked": "您的持仓均不在跟踪的代币中。",
+    "holdingsConnect": "连接钱包以将您的持仓显示为泡泡。",
+    "noStacksTokens": "暂无 Stacks 生态代币。",
+    "browseAll": "浏览所有代币",
+    "dataOutdated": "数据可能已过时",
+    "updated": "更新于 {time}",
+    "time": {
+      "justNow": "刚刚",
+      "secondsAgo": "{n} 秒前",
+      "minutesAgo": "{n} 分钟前",
+      "hoursAgo": "{n} 小时前"
+    },
+    "scope": {
+      "all": "全部",
+      "stacks": "Stacks"
+    },
+    "view": {
+      "bubble": "泡泡视图",
+      "list": "列表视图"
+    },
+    "metric": {
+      "changeTitle": "按 % 变化调整大小",
+      "mcapTitle": "按市值调整大小",
+      "volTitle": "按 24 小时成交量调整大小"
+    },
+    "filter": {
+      "filters": "筛选",
+      "close": "关闭",
+      "marketCap": "市值",
+      "show": "显示",
+      "sortBy": "排序方式",
+      "moversOnly": "仅显示波动者",
+      "bubbleSize": "泡泡大小（{d}×）",
+      "excludeStables": "排除稳定币",
+      "resetAll": "全部重置",
+      "any": "任意",
+      "all": "全部",
+      "off": "关",
+      "sort": {
+        "mcap": "市值",
+        "volume": "成交量",
+        "gainers": "涨幅榜",
+        "losers": "跌幅榜",
+        "name": "名称（A-Z）"
+      }
+    },
+    "chips": {
+      "noStables": "无稳定币",
+      "sortPrefix": "排序：{label}",
+      "clearAll": "全部清除",
+      "sort": {
+        "mcap": "市值",
+        "volume": "成交量",
+        "gainers": "涨幅榜",
+        "losers": "跌幅榜",
+        "name": "A–Z"
+      }
+    },
+    "toolbar": {
+      "more": "更多操作",
+      "refreshing": "刷新中…",
+      "refresh": "刷新数据",
+      "resumeMotion": "恢复动画",
+      "pauseMotion": "暂停动画",
+      "saved": "已保存",
+      "downloadPng": "下载 PNG",
+      "linkCopied": "链接已复制",
+      "copyLink": "复制分享链接",
+      "shortcuts": "键盘快捷键"
+    },
+    "list": {
+      "token": "代币",
+      "price": "价格"
+    },
+    "tooltip": {
+      "setAlert": "设置价格提醒",
+      "addWatch": "添加到关注列表",
+      "removeWatch": "从关注列表移除",
+      "price7d": "7天价格",
+      "youHold": "您持有",
+      "swapBitflow": "在 Bitflow 兑换",
+      "tradeBitflow": "在 Bitflow 交易 ↗",
+      "viewCoingecko": "在 CoinGecko 查看"
+    },
+    "alert": {
+      "above": "高于",
+      "below": "低于",
+      "active": "活跃",
+      "triggered": "已触发",
+      "deleteAria": "删除 {condition} ${price} 提醒",
+      "quick": "快捷：",
+      "targetPrice": "目标价格",
+      "enterPrice": "请输入大于 0 的价格",
+      "createAlert": "创建提醒",
+      "pushPrompt": "启用通知，即使应用关闭也能获得提醒",
+      "enabling": "启用中…",
+      "enable": "启用",
+      "dismiss": "关闭"
+    },
+    "watchlistBar": {
+      "label": "关注列表：",
+      "tokenCount": "{n, plural, other {# 个代币}}",
+      "export": "导出",
+      "import": "导入",
+      "clearAll": "全部清除",
+      "invalidFile": "无效文件",
+      "invalidJson": "无效 JSON",
+      "imported": "已导入 {n}",
+      "confirmClear": "清除 {n, plural, other {# 个关注代币}}？"
+    },
+    "legend": {
+      "size": "大小",
+      "color": "颜色",
+      "metric": {
+        "change": "% 变化",
+        "marketCap": "市值",
+        "volume": "24 小时成交量"
+      }
+    },
+    "shortcuts": {
+      "title": "键盘快捷键",
+      "close": "关闭",
+      "rows": {
+        "search": "聚焦搜索",
+        "clear": "清除 / 关闭",
+        "metric": "指标：% · 市值 · 成交量",
+        "timeframe": "时间范围：1h · 24h · 7d · 30d · 1y",
+        "scope": "范围：全部 · Stacks · 关注列表 · 持仓",
+        "refresh": "刷新数据",
+        "pause": "暂停 / 恢复动画",
+        "list": "切换列表视图",
+        "help": "切换此帮助"
+      }
+    },
+    "buttons": {
+      "snapshotAria": "下载快照为 PNG",
+      "downloadPng": "下载 PNG",
+      "shareAria": "复制当前视图链接",
+      "copyShareLink": "复制分享链接",
+      "copied": "已复制",
+      "share": "分享",
+      "refreshAria": "刷新数据",
+      "refreshTitle": "刷新 (G)",
+      "resumeAnim": "恢复动画",
+      "pauseAnim": "暂停动画",
+      "resumeP": "恢复 (P)",
+      "pauseP": "暂停 (P)"
+    }
+  }
+}

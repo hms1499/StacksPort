@@ -13,6 +13,14 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
+  // Maps a locale code to its `common` label key so new locales only need a
+  // catalog entry — no edit here.
+  const labelKey: Record<string, string> = {
+    en: "english",
+    vi: "vietnamese",
+    zh: "chinese",
+  };
+
   function switchTo(next: string) {
     if (next === locale) return;
     startTransition(() => {
@@ -39,7 +47,7 @@ export default function LanguageSwitcher() {
               ? "bg-[var(--accent-dim)] text-[var(--accent)]"
               : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
           )}
-          title={loc === "en" ? t("english") : t("vietnamese")}
+          title={t(labelKey[loc] ?? loc)}
         >
           {loc}
         </button>

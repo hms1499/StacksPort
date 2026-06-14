@@ -50,6 +50,12 @@ describe("validateChatRequest", () => {
     const out = validateChatRequest({ messages: [{ role: "user", content: "hi" }], address: "not-an-address" });
     expect(out.address).toBeUndefined();
   });
+
+  it("normalizes the locale (default en, unknown → en)", () => {
+    expect(validateChatRequest({ messages: [{ role: "user", content: "hi" }], locale: "zh" }).locale).toBe("zh");
+    expect(validateChatRequest({ messages: [{ role: "user", content: "hi" }] }).locale).toBe("en");
+    expect(validateChatRequest({ messages: [{ role: "user", content: "hi" }], locale: "fr" }).locale).toBe("en");
+  });
 });
 
 describe("buildMessages", () => {
@@ -63,5 +69,12 @@ describe("buildMessages", () => {
     expect(out[0].content).toContain(SYSTEM_PROMPT);
     expect(out[0].content).toContain("CONTEXT-BLOCK");
     expect(out.slice(1).map((m) => m.content)).toEqual(["q1", "a1", "q2"]);
+  });
+
+  it("appends a Chinese language directive to the system message for zh", () => {
+    const en = buildMessages("CTX", [{ role: "user", content: "q" }]);
+    const zh = buildMessages("CTX", [{ role: "user", content: "q" }], "zh");
+    expect(en[0].content).not.toContain("Simplified Chinese");
+    expect(zh[0].content).toContain("Simplified Chinese");
   });
 });

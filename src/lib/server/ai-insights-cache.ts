@@ -32,24 +32,34 @@ function getRedis(): Redis | null {
   return redis;
 }
 
-/** Returns the cached insights if present and unexpired, else null. */
-export async function getCachedInsights(): Promise<AIInsightsResponse | null> {
+// Insights are localized per UI language (the model writes summaries in the
+// user's locale), so the cache is keyed by locale — otherwise the first-cached
+// language would be served to everyone for the next 5 minutes.
+const insightsKey = (locale: string) => `${CACHE_KEY}:${locale}`;
+
+/** Returns the cached insights for `locale` if present and unexpired, else null. */
+export async function getCachedInsights(
+  locale: string
+): Promise<AIInsightsResponse | null> {
   const r = getRedis();
   if (!r) return null;
   try {
     // @upstash/redis auto-deserializes JSON values written via set().
-    return (await r.get<AIInsightsResponse>(CACHE_KEY)) ?? null;
+    return (await r.get<AIInsightsResponse>(insightsKey(locale))) ?? null;
   } catch {
     return null;
   }
 }
 
-/** Stores insights with a Redis-managed TTL. No-op when Redis is absent. */
-export async function setCachedInsights(data: AIInsightsResponse): Promise<void> {
+/** Stores insights for `locale` with a Redis-managed TTL. No-op without Redis. */
+export async function setCachedInsights(
+  locale: string,
+  data: AIInsightsResponse
+): Promise<void> {
   const r = getRedis();
   if (!r) return;
   try {
-    await r.set(CACHE_KEY, data, { ex: CACHE_TTL_SECONDS });
+    await r.set(insightsKey(locale), data, { ex: CACHE_TTL_SECONDS });
   } catch {
     // best-effort cache; a write failure just means the next call regenerates
   }

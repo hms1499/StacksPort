@@ -74,8 +74,8 @@ export interface AIInsightsResponse {
   };
 }
 
-export async function fetchAIInsights(): Promise<AIInsightsResponse> {
-  const res = await fetch("/api/ai/insights");
+export async function fetchAIInsights(locale: string): Promise<AIInsightsResponse> {
+  const res = await fetch(`/api/ai/insights?locale=${encodeURIComponent(locale)}`);
   if (!res.ok) throw new Error("Failed to fetch AI insights");
   return res.json();
 }

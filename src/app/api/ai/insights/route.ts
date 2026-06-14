@@ -7,6 +7,7 @@ import {
 } from "@/lib/server/ai-insights-cache";
 import { parseInsights } from "@/lib/server/ai-insights-schema";
 import { completeJSON } from "@/lib/server/groq-client";
+import { languageDirective, normalizeAILocale } from "@/lib/server/ai-language";
 import { getMarketSnapshot, type MarketSnapshot } from "@/lib/server/market-snapshot";
 
 // ─── Data Fetchers ───────────────────────────────────────────────────────────
@@ -190,12 +191,13 @@ async function generateInsights(
   market: MarketData,
   fearGreed: FearGreed,
   news: NewsItem[],
-  lunarcrushCoins: LunarCrushCoin[]
+  lunarcrushCoins: LunarCrushCoin[],
+  locale: string
 ): Promise<AIInsightsResponse> {
   const parsed = parseInsights(
     await completeJSON({
       system: "You are a crypto market analyst. Respond with valid JSON only, no markdown fences.",
-      prompt: buildPrompt(market, fearGreed, news, lunarcrushCoins),
+      prompt: buildPrompt(market, fearGreed, news, lunarcrushCoins) + languageDirective(locale),
       maxTokens: 2048,
       label: "AI Insights",
     })
@@ -224,13 +226,16 @@ async function generateInsights(
 // ─── Route Handler ───────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
+  const locale = normalizeAILocale(new URL(request.url).searchParams.get("locale"));
+
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   if (await isRateLimited(ip)) {
     return NextResponse.json({ error: "Rate limited" }, { status: 429 });
   }
 
-  // Redis is the single shared cache (source of truth across all instances).
-  const fresh = await getCachedInsights();
+  // Redis is the single shared cache (source of truth across all instances),
+  // keyed per locale so each language has its own warm copy.
+  const fresh = await getCachedInsights(locale);
   if (fresh) {
     return NextResponse.json(fresh, {
       headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
@@ -248,9 +253,9 @@ export async function GET(request: Request) {
     const fearGreed = snapshot.fearGreed ?? { value: 50, classification: "Neutral" };
     const news = toNewsItems(snapshot);
 
-    const insights = await generateInsights(market, fearGreed, news, lunarcrushCoins);
+    const insights = await generateInsights(market, fearGreed, news, lunarcrushCoins, locale);
 
-    await setCachedInsights(insights);
+    await setCachedInsights(locale, insights);
 
     return NextResponse.json(insights, {
       headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },

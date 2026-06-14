@@ -146,6 +146,14 @@
    across the app but unmapped (no-ops); activating them is a separate,
    app-wide change with its own QA.
 ══════════════════════════════════════════════════════ */
+/* The `font-sans` utility (set on <body>) resolves here. Syne is the display
+   face for latin; Noto Sans SC backs CJK glyphs Syne lacks (per-glyph fallback),
+   then system fonts. Keep Syne first so latin text is byte-identical to before. */
+@theme inline {
+  --font-sans: var(--font-syne), var(--font-noto-sc), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
 @theme inline {
   --color-fg:           var(--text-primary);
   --color-fg-secondary: var(--text-secondary);

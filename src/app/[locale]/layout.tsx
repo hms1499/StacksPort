@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, JetBrains_Mono } from "next/font/google";
+import { Syne, JetBrains_Mono, Noto_Sans_SC } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -19,6 +19,17 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   weight: ["400", "500", "600"],
   display: "swap",
+});
+
+// CJK fallback. Syne/JetBrains ship latin only, so Chinese glyphs would hit the
+// system font. No `subsets` (CJK is delivered as many unicode-range chunks the
+// browser lazy-loads) and `preload: false` (the full face is large — don't block
+// first paint; it loads on demand when zh text is present).
+const notoSansSC = Noto_Sans_SC({
+  variable: "--font-noto-sc",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -70,7 +81,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${syne.variable} ${jetBrainsMono.variable} ${syne.className} antialiased`}
+        className={`${syne.variable} ${jetBrainsMono.variable} ${notoSansSC.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <NextIntlClientProvider>

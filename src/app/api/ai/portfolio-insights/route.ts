@@ -10,6 +10,7 @@ import {
   isPortfolioRateLimited,
 } from "@/lib/server/ai-insights-cache";
 import type { PortfolioInsightsResponse } from "@/lib/ai-portfolio";
+import { normalizeAILocale } from "@/lib/server/ai-language";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -17,10 +18,11 @@ export async function GET(request: Request) {
   if (!isValidStacksAddress(address)) {
     return NextResponse.json({ error: "invalid address" }, { status: 400 });
   }
+  const locale = normalizeAILocale(searchParams.get("locale"));
 
   // Serve from cache before charging the rate limit — a cache hit costs no
   // Groq/snapshot work, so refreshing into a warm cache shouldn't burn quota.
-  const cached = await getCachedPortfolioInsights(address);
+  const cached = await getCachedPortfolioInsights(address, locale);
   if (cached) return NextResponse.json(cached);
 
   // Only the expensive miss path (snapshots + Groq) is rate-limited.
@@ -44,13 +46,13 @@ export async function GET(request: Request) {
     const alerts = await generatePersonalAlerts(signals, {
       fearGreed: market.fearGreed,
       stxChange24h: market.stxStats?.change24h ?? null,
-    });
+    }, locale);
 
     const response: PortfolioInsightsResponse = {
       generatedAt: new Date().toISOString(),
       alerts,
     };
-    await setCachedPortfolioInsights(address, response);
+    await setCachedPortfolioInsights(address, locale, response);
     return NextResponse.json(response);
   } catch (err) {
     console.error("[Portfolio Insights] Error:", err);

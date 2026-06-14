@@ -7,6 +7,7 @@ import type { PersonalAlert } from "@/lib/ai-portfolio";
 import type { AlertActionKind } from "@/lib/ai";
 import { parsePersonalAlerts } from "./personal-alerts-schema";
 import { completeJSON } from "./groq-client";
+import { languageDirective } from "./ai-language";
 import type { PortfolioSignal, SignalKind } from "./portfolio-signals";
 import type { FearGreedLite } from "./portfolio-signals";
 
@@ -106,17 +107,20 @@ Rules:
 
 export async function generatePersonalAlerts(
   signals: PortfolioSignal[],
-  market: MarketContext
+  market: MarketContext,
+  locale = "en"
 ): Promise<PersonalAlert[]> {
   if (signals.length === 0) return [];
   // No API key → skip the (throwing) Groq call and use the deterministic copy.
+  // NOTE: that template fallback stays English; only the LLM-phrased path is
+  // localized (the templates interpolate numbers into fixed English strings).
   if (!process.env.GROQ_API_KEY) return templateAlerts(signals);
 
   try {
     const { alerts } = parsePersonalAlerts(
       await completeJSON({
         system: "You are a crypto portfolio analyst. Respond with valid JSON only.",
-        prompt: buildPrompt(signals, market),
+        prompt: buildPrompt(signals, market) + languageDirective(locale),
         maxTokens: 1024,
         label: "Portfolio Alerts",
       })

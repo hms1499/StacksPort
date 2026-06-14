@@ -12,10 +12,11 @@ export interface PortfolioInsightsResponse {
 }
 
 export async function fetchPortfolioInsights(
-  address: string
+  address: string,
+  locale: string
 ): Promise<PortfolioInsightsResponse> {
   const res = await fetch(
-    `/api/ai/portfolio-insights?address=${encodeURIComponent(address)}`
+    `/api/ai/portfolio-insights?address=${encodeURIComponent(address)}&locale=${encodeURIComponent(locale)}`
   );
   if (!res.ok) throw new Error("Failed to fetch portfolio insights");
   return res.json();

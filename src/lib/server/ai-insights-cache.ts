@@ -11,6 +11,7 @@
 import { Redis } from "@upstash/redis";
 import type { AIInsightsResponse } from "@/lib/ai";
 import type { PortfolioInsightsResponse } from "@/lib/ai-portfolio";
+import { AI_LOCALES } from "./ai-language";
 
 const CACHE_KEY = "ai-insights:v1:cache";
 const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes — Redis owns expiry
@@ -89,13 +90,19 @@ export async function isRateLimited(ip: string): Promise<boolean> {
 const PORTFOLIO_CACHE_PREFIX = "ai-portfolio:v1:";
 const PORTFOLIO_CACHE_TTL_SECONDS = 12 * 60; // 12 minutes
 
+// Personal alerts are phrased by the model in the UI language, so the cache is
+// keyed per address AND locale.
+const portfolioKey = (address: string, locale: string) =>
+  `${PORTFOLIO_CACHE_PREFIX}${address}:${locale}`;
+
 export async function getCachedPortfolioInsights(
-  address: string
+  address: string,
+  locale: string
 ): Promise<PortfolioInsightsResponse | null> {
   const r = getRedis();
   if (!r) return null;
   try {
-    return (await r.get<PortfolioInsightsResponse>(PORTFOLIO_CACHE_PREFIX + address)) ?? null;
+    return (await r.get<PortfolioInsightsResponse>(portfolioKey(address, locale))) ?? null;
   } catch {
     return null;
   }
@@ -103,23 +110,25 @@ export async function getCachedPortfolioInsights(
 
 export async function setCachedPortfolioInsights(
   address: string,
+  locale: string,
   data: PortfolioInsightsResponse
 ): Promise<void> {
   const r = getRedis();
   if (!r) return;
   try {
-    await r.set(PORTFOLIO_CACHE_PREFIX + address, data, { ex: PORTFOLIO_CACHE_TTL_SECONDS });
+    await r.set(portfolioKey(address, locale), data, { ex: PORTFOLIO_CACHE_TTL_SECONDS });
   } catch {
     // best-effort
   }
 }
 
-/** Bust a wallet's cached alerts (called after a tx confirms). */
+/** Bust a wallet's cached alerts across all locales (called after a tx confirms). */
 export async function deleteCachedPortfolioInsights(address: string): Promise<void> {
   const r = getRedis();
   if (!r) return;
   try {
-    await r.del(PORTFOLIO_CACHE_PREFIX + address);
+    // No wildcard del on Upstash without a scan — fan out over the known locales.
+    await Promise.all(AI_LOCALES.map((loc) => r.del(portfolioKey(address, loc))));
   } catch {
     // best-effort
   }

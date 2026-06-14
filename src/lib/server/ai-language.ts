@@ -13,6 +13,10 @@ const LANGUAGE_NAMES: Record<string, string> = {
   zh: "Simplified Chinese (简体中文)",
 };
 
+/** Every locale the AI cache may be keyed under (en + the localized ones). Used
+ *  to fan-out cache invalidation across languages for one address. */
+export const AI_LOCALES: readonly string[] = ["en", ...Object.keys(LANGUAGE_NAMES)];
+
 /** Normalize an arbitrary locale string to a supported one (default `"en"`). */
 export function normalizeAILocale(raw: string | null | undefined): string {
   return raw && raw in LANGUAGE_NAMES ? raw : "en";

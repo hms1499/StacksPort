@@ -25,6 +25,18 @@ test.describe("i18n", () => {
     ).toBeVisible();
   });
 
+  test("Chinese route renders with lang=zh", async ({ page }) => {
+    await page.goto("/zh/dashboard");
+    await expect(page.locator("html")).toHaveAttribute("lang", "zh");
+  });
+
+  test("Chinese nav shows translated label", async ({ page }) => {
+    await page.goto("/zh/dashboard");
+    await expect(
+      page.getByRole("link", { name: "首页" }).first()
+    ).toBeVisible();
+  });
+
   test("language switcher moves between locales and keeps the page", async ({
     page,
   }) => {

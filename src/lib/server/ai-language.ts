@@ -11,6 +11,7 @@
 const LANGUAGE_NAMES: Record<string, string> = {
   vi: "Vietnamese",
   zh: "Simplified Chinese (简体中文)",
+  ja: "Japanese (日本語)",
 };
 
 /** Every locale the AI cache may be keyed under (en + the localized ones). Used

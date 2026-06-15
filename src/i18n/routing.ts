@@ -1,7 +1,7 @@
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-  locales: ["en", "vi", "zh"],
+  locales: ["en", "vi", "zh", "ja"],
   defaultLocale: "en",
   // English keeps unprefixed URLs (/dashboard); other locales prefixed (/vi/dashboard)
   localePrefix: "as-needed",

@@ -19,6 +19,7 @@ export default function LanguageSwitcher() {
     en: "english",
     vi: "vietnamese",
     zh: "chinese",
+    ja: "japanese",
   };
 
   function switchTo(next: string) {

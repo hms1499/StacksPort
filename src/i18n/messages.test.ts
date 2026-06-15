@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import en from "../../messages/en.json";
 import vi from "../../messages/vi.json";
 import zh from "../../messages/zh.json";
+import ja from "../../messages/ja.json";
 
 type Json = Record<string, unknown>;
 
@@ -18,7 +19,7 @@ const enKeys = new Set(flatten(en as Json));
 
 // Every non-default catalog must be key-for-key identical to en — no missing
 // keys (untranslated holes) and no extras (stale keys). Add new locales here.
-const catalogs: Record<string, Json> = { vi, zh };
+const catalogs: Record<string, Json> = { vi, zh, ja };
 
 describe("message catalogs", () => {
   for (const [locale, messages] of Object.entries(catalogs)) {

@@ -72,6 +72,15 @@
     }
   },
   "dashboard": {
+    "backtest": {
+      "eyebrow": "如果你一直在定投",
+      "scenario": "每周 {stx} STX · 过去 12 个月",
+      "sbtcLabel": "累计 sBTC",
+      "valueLabel": "当前价值",
+      "vsLumpLabel": "对比一次性买入",
+      "cta": "开始你的计划",
+      "disclaimer": "基于过去 12 个月真实的 STX/BTC 价格。过往表现不代表未来收益。"
+    },
     "balance": {
       "title": "投资组合价值",
       "hideBreakdown": "隐藏明细",

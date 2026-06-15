@@ -72,6 +72,15 @@
     }
   },
   "dashboard": {
+    "backtest": {
+      "eyebrow": "If you'd been stacking",
+      "scenario": "{stx} STX every week · last 12 months",
+      "sbtcLabel": "sBTC accumulated",
+      "valueLabel": "Worth today",
+      "vsLumpLabel": "vs. one-time buy",
+      "cta": "Start your plan",
+      "disclaimer": "Based on real STX/BTC prices over the last 12 months. Past performance does not guarantee future results."
+    },
     "balance": {
       "title": "Portfolio Value",
       "hideBreakdown": "Hide breakdown",

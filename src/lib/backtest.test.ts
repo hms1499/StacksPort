@@ -27,7 +27,31 @@ describe("simulateBacktest", () => {
     expect(r.totalSbtcOut).toBeCloseTo(0.003, 8);
     expect(r.startDate).toBe("2025-01-01");
     expect(r.currentValueUsd).toBeCloseTo(300, 6);
+    // costUsd = 3 buys * 50 STX * $2 = $300; flat price → value == cost → 0% growth.
+    expect(r.costUsd).toBeCloseTo(300, 6);
+    expect(r.growthPct).toBeCloseTo(0, 6);
     expect(r.vsLump!.deltaPct).toBeCloseTo(0, 6);
+  });
+
+  it("reports positive growth when BTC rises, even though DCA trails a lump sum", () => {
+    // Days 0-6 btc=50000, 7-14 btc=100000 (stx flat $2). Buys: day0 0.002 +
+    // day7 0.001 + day14 0.001 = 0.004 sBTC. cost = 3*50*2 = $300; value =
+    // 0.004 * 100000 = $400 → +33.3% growth. Lump at start (btc 50k) = 0.006
+    // sBTC, so DCA (0.004) TRAILS lump → vsLump.deltaPct < 0. This is exactly
+    // why the widget shows growth (positive in a bull market) not vs-lump.
+    const days = Array.from({ length: 15 }, (_, i) => ({
+      stxUsd: 2,
+      btcUsd: i < 7 ? 50_000 : 100_000,
+    }));
+    const r = simulateBacktest(
+      { amountStx: 50, intervalDays: 7, lookbackDays: 15 },
+      series(days),
+    )!;
+    expect(r.totalSbtcOut).toBeCloseTo(0.004, 8);
+    expect(r.costUsd).toBeCloseTo(300, 6);
+    expect(r.currentValueUsd).toBeCloseTo(400, 6);
+    expect(r.growthPct).toBeCloseTo(33.3333, 3);
+    expect(r.vsLump!.deltaPct).toBeLessThan(0);
   });
 
   it("reports a positive vs-lump delta when BTC falls after the start", () => {

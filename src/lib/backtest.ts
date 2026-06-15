@@ -15,6 +15,8 @@ export interface BacktestResult {
   startDate: string;        // YYYY-MM-DD of first buy
   currentBtcUsd: number;    // BTC/USD at the latest series point
   currentValueUsd: number;  // totalSbtcOut * currentBtcUsd
+  costUsd: number;          // total USD spent across buys (Σ amountStx * stxUsd at each buy)
+  growthPct: number;        // (currentValueUsd - costUsd) / costUsd * 100
   vsLump: LumpSumScenario | null;
 }
 
@@ -44,6 +46,7 @@ export function simulateBacktest(
 
   let totalStxIn = 0;
   let totalSbtcOut = 0;
+  let costUsd = 0;
   let swaps = 0;
   let firstBuy: Price | null = null;
   let firstBuyDate: string | null = null;
@@ -54,6 +57,7 @@ export function simulateBacktest(
     if (!price) continue;
     if (!firstBuy) { firstBuy = price; firstBuyDate = iso; }
     totalSbtcOut += (params.amountStx * price.stxUsd) / price.btcUsd;
+    costUsd += params.amountStx * price.stxUsd;
     totalStxIn += params.amountStx;
     swaps += 1;
   }
@@ -62,6 +66,7 @@ export function simulateBacktest(
 
   // end came from priceSeries.keys(), so it is always present.
   const currentBtcUsd = priceSeries.get(end)!.btcUsd;
+  const currentValueUsd = totalSbtcOut * currentBtcUsd;
   const vsLump = computeLumpSum(
     { totalStxIn, totalSbtcOut },
     firstBuyDate!,
@@ -75,7 +80,9 @@ export function simulateBacktest(
     swaps,
     startDate: start,
     currentBtcUsd,
-    currentValueUsd: totalSbtcOut * currentBtcUsd,
+    currentValueUsd,
+    costUsd,
+    growthPct: costUsd > 0 ? ((currentValueUsd - costUsd) / costUsd) * 100 : 0,
     vsLump,
   };
 }

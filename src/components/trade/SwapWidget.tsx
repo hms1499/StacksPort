@@ -36,6 +36,7 @@ import {
 import { useSwapPrices } from "@/hooks/useMarketData";
 import SwapPairChart from "./SwapPairChart";
 import { trackTx } from "@/lib/tx-tracker";
+import { track } from "@/lib/telemetry";
 import { SimpleTokenSelector } from "./swap/TokenSelector";
 import { SwapSuccess } from "./swap/SwapSuccess";
 import { QuoteDetails } from "./swap/QuoteDetails";
@@ -292,6 +293,7 @@ export default function SwapWidget() {
         onFinish: ({ txId: id }) => {
           setTxId(id);
           setStatus("success");
+          track("swap_executed"); // funnel: alternate activation path
           setBalanceNonce((n) => n + 1); // refetch balance post-swap
           addNotification(
             `Swap submitted: ${fromToken.symbol} → ${toToken.symbol}`,

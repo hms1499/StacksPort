@@ -1,4 +1,5 @@
 import { connect as stacksConnect } from "@stacks/connect";
+import { track } from "./telemetry";
 
 interface AddressEntry {
   address: string;
@@ -22,5 +23,8 @@ export async function connectWallet(connect: (stxAddress: string, btcAddress: st
   const result = await stacksConnect();
   const { stxAddress, btcAddress } = parseWalletAddresses(result.addresses);
   connect(stxAddress, btcAddress);
+  // Funnel: single choke point for every connect entry (topbar, landing,
+  // modal, backtest hero CTA).
+  track("wallet_connected");
   return { stxAddress, btcAddress };
 }

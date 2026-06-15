@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { TrendingUp, Zap, Loader2 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { connectWallet } from "@/lib/wallet";
+import { track } from "@/lib/telemetry";
 import type { BacktestResult } from "@/lib/server/backtest-snapshot";
 
 interface Props {
@@ -33,6 +34,8 @@ export default function DcaBacktestHero({ backtest }: Props) {
   const positive = growthPct >= 0;
 
   async function handleConnect() {
+    // Attribution: did the backtest hero drive this connect? (Bet #1 conversion)
+    track("backtest_cta_clicked");
     setConnecting(true);
     try {
       await connectWallet(connect);

@@ -8,6 +8,7 @@ import { quoteSbtcForUstx, netUstxAfterFee } from "@/lib/dca-quote";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { trackTx } from "@/lib/tx-tracker";
+import { track } from "@/lib/telemetry";
 import LivePreviewCard from "./LivePreviewCard";
 
 const SBTC = TARGET_TOKENS[0].value;
@@ -101,6 +102,7 @@ export default function CreatePlanForm({ onCreated, existingPlanCount = 0 }: Pro
       ({ txId }) => {
         setTxId(txId);
         setLoading(false);
+        track("dca_plan_created"); // funnel: activation
         addNotification(
           t("submittedToast"),
           "info", "dca", 5000,

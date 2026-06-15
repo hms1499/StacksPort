@@ -11,7 +11,12 @@ export type TelemetryEvent =
   | "dashboard_edit_mode_off"
   | "dashboard_layout_mutated"
   | "dashboard_layout_reset"
-  | "dashboard_widget_error";
+  | "dashboard_widget_error"
+  // Activation funnel (viewed → connected → plan created; backtest CTA + swap)
+  | "wallet_connected"
+  | "backtest_cta_clicked"
+  | "dca_plan_created"
+  | "swap_executed";
 
 export function track(event: TelemetryEvent): void {
   if (typeof window === "undefined") return;

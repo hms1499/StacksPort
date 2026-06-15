@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
+import {
+  FUNNEL_EVENTS,
+  lastNDates,
+  assembleFunnel,
+} from "@/lib/server/telemetry-funnel";
 
 export const runtime = "nodejs";
 
@@ -10,7 +15,15 @@ const ALLOWED_EVENTS = new Set([
   "dashboard_edit_mode_off",
   "dashboard_layout_mutated",
   "dashboard_layout_reset",
+  "dashboard_widget_error",
+  // Activation funnel
+  "wallet_connected",
+  "backtest_cta_clicked",
+  "dca_plan_created",
+  "swap_executed",
 ]);
+
+const KEY_PREFIX = "telemetry:";
 
 const TTL_SECONDS = 60 * 60 * 24 * 60; // 60 days
 
@@ -48,7 +61,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, stored: false });
   }
 
-  const key = `telemetry:${event}:${today()}`;
+  const key = `${KEY_PREFIX}${event}:${today()}`;
   try {
     await redis.incr(key);
     await redis.expire(key, TTL_SECONDS);
@@ -58,4 +71,34 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ ok: true, stored: true });
+}
+
+// GET /api/telemetry?days=30 → the activation funnel over the last N days.
+// Returns per-event totals + a daily series. Aggregate counts only, no PII.
+export async function GET(request: Request) {
+  const daysParam = Number(new URL(request.url).searchParams.get("days"));
+  const days = Math.min(90, Math.max(1, Number.isFinite(daysParam) && daysParam > 0 ? Math.round(daysParam) : 30));
+  const dates = lastNDates(days);
+
+  const redis = getRedis();
+  if (!redis) {
+    return NextResponse.json({ available: false, ...assembleFunnel(dates, new Map()) });
+  }
+
+  // One MGET over the events × dates grid keeps this to a single round-trip.
+  const keys = dates.flatMap((d) => FUNNEL_EVENTS.map((e) => `${KEY_PREFIX}${e}:${d}`));
+  let values: (number | string | null)[] = [];
+  try {
+    values = keys.length ? await redis.mget<(number | string | null)[]>(...keys) : [];
+  } catch {
+    return NextResponse.json({ available: false, ...assembleFunnel(dates, new Map()) });
+  }
+
+  const counts = new Map<string, number>();
+  keys.forEach((k, i) => {
+    const n = Number(values[i] ?? 0);
+    if (n) counts.set(k.slice(KEY_PREFIX.length), n); // "<event>:<date>"
+  });
+
+  return NextResponse.json({ available: true, ...assembleFunnel(dates, counts) });
 }

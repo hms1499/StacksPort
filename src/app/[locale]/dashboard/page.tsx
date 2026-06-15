@@ -5,6 +5,8 @@ import AnimatedPage from "@/components/motion/AnimatedPage";
 import DashboardFooter from "@/components/dashboard/DashboardFooter";
 import DashboardGridClient from "@/components/dashboard/DashboardGridClient";
 import { getMarketSnapshot } from "@/lib/server/market-snapshot";
+import DcaBacktestHero from "@/components/dashboard/DcaBacktestHero";
+import { getBacktestSnapshot } from "@/lib/server/backtest-snapshot";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -23,12 +25,14 @@ export default async function DashboardPage() {
   // shared market data — the client SWR layer hydrates from it via fallback
   // and only refreshes in the background.
   const marketSnapshot = await getMarketSnapshot();
+  const backtest = await getBacktestSnapshot();
   const t = await getTranslations("nav");
 
   return (
     <div className="flex flex-col min-h-screen">
       <Topbar title={t("home")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
+        <DcaBacktestHero backtest={backtest} />
         <DashboardGridClient marketSnapshot={marketSnapshot} />
         <DashboardFooter />
       </AnimatedPage>

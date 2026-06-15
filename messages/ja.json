@@ -77,7 +77,7 @@
       "scenario": "毎週 {stx} STX · 過去12か月",
       "sbtcLabel": "積み立てたsBTC",
       "valueLabel": "現在の価値",
-      "vsLumpLabel": "一括購入との比較",
+      "growthLabel": "成長率",
       "cta": "プランを始める",
       "disclaimer": "過去12か月の実際のSTX/BTC価格に基づきます。過去の実績は将来の成果を保証しません。"
     },

@@ -77,7 +77,7 @@
       "scenario": "{stx} STX mỗi tuần · 12 tháng qua",
       "sbtcLabel": "sBTC tích luỹ",
       "valueLabel": "Giá trị hôm nay",
-      "vsLumpLabel": "so với mua một lần",
+      "growthLabel": "Tăng trưởng",
       "cta": "Bắt đầu kế hoạch của bạn",
       "disclaimer": "Dựa trên giá STX/BTC thực tế trong 12 tháng qua. Hiệu suất quá khứ không đảm bảo kết quả tương lai."
     },

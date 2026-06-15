@@ -27,10 +27,10 @@ export default function DcaBacktestHero({ backtest }: Props) {
 
   // Value only for not-yet-connected visitors; hidden once a wallet is on,
   // or when the backtest data is unavailable (never show a broken/empty widget).
-  if (isConnected || !backtest || !backtest.vsLump) return null;
+  if (isConnected || !backtest) return null;
 
-  const deltaPct = backtest.vsLump.deltaPct;
-  const positive = deltaPct >= 0;
+  const growthPct = backtest.growthPct;
+  const positive = growthPct >= 0;
 
   async function handleConnect() {
     setConnecting(true);
@@ -66,8 +66,8 @@ export default function DcaBacktestHero({ backtest }: Props) {
         <Stat label={t("sbtcLabel")} value={`${backtest.totalSbtcOut.toFixed(4)} sBTC`} />
         <Stat label={t("valueLabel")} value={`$${Math.round(backtest.currentValueUsd).toLocaleString()}`} />
         <Stat
-          label={t("vsLumpLabel")}
-          value={`${positive ? "+" : ""}${deltaPct.toFixed(1)}%`}
+          label={t("growthLabel")}
+          value={`${positive ? "+" : ""}${growthPct.toFixed(1)}%`}
           accent={positive ? "var(--positive)" : "var(--negative)"}
         />
       </div>

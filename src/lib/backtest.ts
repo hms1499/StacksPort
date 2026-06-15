@@ -46,12 +46,13 @@ export function simulateBacktest(
   let totalSbtcOut = 0;
   let swaps = 0;
   let firstBuy: Price | null = null;
+  let firstBuyDate: string | null = null;
 
   for (let ms = startMs; ms <= endMs; ms += stepMs) {
     const iso = new Date(ms).toISOString().slice(0, 10);
     const price = priceSeries.get(iso) ?? priceOnOrBefore(priceSeries, iso);
     if (!price) continue;
-    if (!firstBuy) firstBuy = price;
+    if (!firstBuy) { firstBuy = price; firstBuyDate = iso; }
     totalSbtcOut += (params.amountStx * price.stxUsd) / price.btcUsd;
     totalStxIn += params.amountStx;
     swaps += 1;
@@ -59,10 +60,11 @@ export function simulateBacktest(
 
   if (swaps === 0 || totalStxIn <= 0 || !firstBuy) return null;
 
+  // end came from priceSeries.keys(), so it is always present.
   const currentBtcUsd = priceSeries.get(end)!.btcUsd;
   const vsLump = computeLumpSum(
     { totalStxIn, totalSbtcOut },
-    start,
+    firstBuyDate!,
     firstBuy.stxUsd,
     firstBuy.btcUsd,
   );

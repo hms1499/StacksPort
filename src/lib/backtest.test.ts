@@ -16,6 +16,7 @@ function series(
 
 describe("simulateBacktest", () => {
   it("accumulates one buy per interval at the period price", () => {
+    // 15 days, flat price stxUsd=2 btcUsd=100000. Weekly buys land on day 0, 7, 14 → 3 swaps. Each buys 50*2/100000 = 0.001 sBTC → 0.003 total.
     const prices = series(Array(15).fill({ stxUsd: 2, btcUsd: 100_000 }));
     const r = simulateBacktest(
       { amountStx: 50, intervalDays: 7, lookbackDays: 15 },
@@ -30,6 +31,7 @@ describe("simulateBacktest", () => {
   });
 
   it("reports a positive vs-lump delta when BTC falls after the start", () => {
+    // Days 0-6 btc=100000, 7-14 btc=50000. Buys: day0 0.001 + day7 0.002 + day14 0.002 = 0.005 sBTC; lump at start = 0.003 → DCA beats lump.
     const days = Array.from({ length: 15 }, (_, i) => ({
       stxUsd: 2,
       btcUsd: i < 7 ? 100_000 : 50_000,

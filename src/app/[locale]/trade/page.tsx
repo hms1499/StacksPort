@@ -19,9 +19,10 @@ export const metadata: Metadata = {
 
 export default async function TradePage() {
   const t = await getTranslations("trade");
+  const tNav = await getTranslations("nav");
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="Trade" />
+      <Topbar title={tNav("swap")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-2xl mx-auto w-full">
         <StaggerChildren className="space-y-4 md:space-y-5">
 

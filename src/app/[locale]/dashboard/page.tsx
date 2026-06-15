@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Topbar from "@/components/layout/Topbar";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import DashboardFooter from "@/components/dashboard/DashboardFooter";
@@ -22,10 +23,11 @@ export default async function DashboardPage() {
   // shared market data — the client SWR layer hydrates from it via fallback
   // and only refreshes in the background.
   const marketSnapshot = await getMarketSnapshot();
+  const t = await getTranslations("nav");
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar title="Home" />
+      <Topbar title={t("home")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <DashboardGridClient marketSnapshot={marketSnapshot} />
         <DashboardFooter />

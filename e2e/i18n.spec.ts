@@ -37,6 +37,18 @@ test.describe("i18n", () => {
     ).toBeVisible();
   });
 
+  test("Japanese route renders with lang=ja", async ({ page }) => {
+    await page.goto("/ja/dashboard");
+    await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+  });
+
+  test("Japanese nav shows translated label", async ({ page }) => {
+    await page.goto("/ja/dashboard");
+    await expect(
+      page.getByRole("link", { name: "ホーム" }).first()
+    ).toBeVisible();
+  });
+
   test("language switcher moves between locales and keeps the page", async ({
     page,
   }) => {

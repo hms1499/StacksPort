@@ -9,6 +9,7 @@ describe("normalizeAILocale", () => {
   it("passes through supported non-en locales", () => {
     expect(normalizeAILocale("vi")).toBe("vi");
     expect(normalizeAILocale("zh")).toBe("zh");
+    expect(normalizeAILocale("ja")).toBe("ja");
   });
 
   it("falls back to en for en, unknown, and empty input", () => {
@@ -29,6 +30,7 @@ describe("languageDirective", () => {
   it("names the target language for supported locales", () => {
     expect(languageDirective("zh")).toContain("Simplified Chinese");
     expect(languageDirective("vi")).toContain("Vietnamese");
+    expect(languageDirective("ja")).toContain("Japanese");
   });
 
   it("instructs the model to preserve enum values and tickers", () => {
@@ -47,5 +49,6 @@ describe("chatLanguageDirective", () => {
   it("names the language and survives any user input language", () => {
     expect(chatLanguageDirective("zh")).toContain("Simplified Chinese");
     expect(chatLanguageDirective("zh")).toContain("regardless of the language");
+    expect(chatLanguageDirective("ja")).toContain("Japanese");
   });
 });

@@ -59,3 +59,45 @@ test.describe("i18n", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "vi");
   });
 });
+
+// Last-mile guard: every route's topbar title must come from the translation
+// system, not a hardcoded English literal. This is the class of bug that let
+// `<Topbar title="Home" />` / `title="Trade"` ship English titles on every
+// non-en locale. If a non-brand route's localized topbar equals the English
+// one, the title leaked outside next-intl. `/ai` is excluded — its title is
+// the brand "Stacks AI", identical in every locale by design.
+const LOCALIZED_ROUTES = [
+  "/dashboard",
+  "/trade",
+  "/dca",
+  "/assets",
+  "/notifications",
+  "/apps",
+  "/bubbles",
+];
+
+async function topbarTitle(page: import("@playwright/test").Page, path: string) {
+  await page.goto(path);
+  return ((await page.locator("header h1").first().textContent()) ?? "").trim();
+}
+
+test.describe("topbar titles are localized (not hardcoded English)", () => {
+  for (const route of LOCALIZED_ROUTES) {
+    test(`${route} topbar differs from English in vi/zh/ja`, async ({ page }) => {
+      const en = await topbarTitle(page, route);
+      expect(en.length, `English topbar for ${route} should not be empty`).toBeGreaterThan(0);
+
+      for (const locale of ["vi", "zh", "ja"]) {
+        const localized = await topbarTitle(page, `/${locale}${route}`);
+        expect(
+          localized.length,
+          `Topbar for /${locale}${route} should not be empty`
+        ).toBeGreaterThan(0);
+        expect(
+          localized,
+          `Topbar on /${locale}${route} ("${localized}") must be localized, not the English "${en}" — looks like a hardcoded title leaked outside next-intl.`
+        ).not.toBe(en);
+      }
+    });
+  }
+});

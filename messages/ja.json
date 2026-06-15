@@ -1,0 +1,1522 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "bubbles": "バブル",
+    "assets": "マイアセット",
+    "assetsShort": "資産",
+    "swap": "スワップ",
+    "dcaVault": "DCAボールト",
+    "dcaShort": "DCA",
+    "alerts": "アラート",
+    "stacksAi": "Stacks AI",
+    "aiShort": "AI",
+    "connectedApps": "連携アプリ",
+    "appsShort": "アプリ",
+    "more": "もっと見る",
+    "collapse": "折りたたむ"
+  },
+  "common": {
+    "language": "言語",
+    "english": "English",
+    "vietnamese": "Tiếng Việt",
+    "chinese": "中文",
+    "japanese": "日本語",
+    "connectWallet": "ウォレットを接続",
+    "connecting": "接続中…",
+    "connected": "接続済み",
+    "copyAddress": "アドレスをコピー",
+    "copied": "コピーしました！",
+    "switchAccount": "アカウントを切り替え",
+    "explore": "探索",
+    "disconnect": "切断",
+    "openAccountMenu": "アカウントメニューを開く",
+    "switchToLight": "ライトモードに切り替え",
+    "switchToDark": "ダークモードに切り替え",
+    "cmdk": {
+      "searchPlaceholder": "検索...",
+      "inputPlaceholder": "コマンドを入力または検索...",
+      "noResults": "結果が見つかりません。",
+      "recent": "最近",
+      "allCommands": "すべてのコマンド",
+      "enter": "Enter",
+      "navigate": "移動",
+      "select": "選択",
+      "close": "閉じる",
+      "themeLight": "ライトモードに切り替え",
+      "themeDark": "ダークモードに切り替え",
+      "themeDesc": "テーマを切り替え",
+      "home": {
+        "label": "ホーム",
+        "desc": "ポートフォリオ概要"
+      },
+      "assets": {
+        "label": "マイアセット",
+        "desc": "保有資産と損益トラッカー"
+      },
+      "swap": {
+        "label": "トークンをスワップ",
+        "desc": "Bitflow DEXで取引"
+      },
+      "dca": {
+        "label": "DCAボールト",
+        "desc": "自動投資プラン"
+      },
+      "notifications": {
+        "label": "通知",
+        "desc": "アラートと価格目標"
+      },
+      "ai": {
+        "label": "Stacks AI",
+        "desc": "AIによるインサイト"
+      }
+    }
+  },
+  "dashboard": {
+    "balance": {
+      "title": "ポートフォリオ評価額",
+      "hideBreakdown": "内訳を非表示",
+      "showBreakdown": "ポートフォリオの内訳を表示",
+      "other": "その他",
+      "noData": "データなし",
+      "noDataDesc": "ポートフォリオのデータはまだありません。資産を確認するか、STXを受け取ると、ここで実際の残高の追跡を開始できます。",
+      "viewAssets": "資産を表示",
+      "swap": "スワップ",
+      "demo": "デモ",
+      "previewOnly": "プレビューのみ · バナーまたはトップバーから接続すると、実際の残高・DCAプラン・アラート・アクティビティが読み込まれます。",
+      "historyPending": "残高の読み込み後にポートフォリオ履歴が表示されます。",
+      "loadingChart": "チャートを読み込み中…"
+    },
+    "banner": {
+      "title": "ウォレットを接続",
+      "connect": "接続",
+      "connecting": "接続中...",
+      "prop0": "Stacksポートフォリオをリアルタイムで表示",
+      "prop1": "STX → sBTC のDCAを自動化 — 非カストディアル",
+      "prop2": "PoXサイクルごとのステーキング報酬を追跡",
+      "prop3": "Bitflowでワンクリックスワップ",
+      "prop4": "価格が目標を超えたらアラートを受け取る"
+    },
+    "quickActions": {
+      "swap": "スワップ",
+      "dca": "DCA",
+      "receive": "受取",
+      "send": "送金",
+      "alert": "アラート",
+      "batch": "バッチ"
+    },
+    "footer": {
+      "poweredBy": "提供",
+      "contract": "コントラクト",
+      "copyContract": "コントラクトアドレスをコピー"
+    },
+    "dcaSummary": {
+      "title": "DCAプラン",
+      "manage": "管理",
+      "emptyTitle": "自動でサッツを積み立て",
+      "emptyDesc": "定期購入を設定すれば、あとはキーパーボットにお任せ — 手間はかかりません。",
+      "createFirst": "最初のプランを作成",
+      "active": "アクティブ",
+      "balance": "残高",
+      "swapsDone": "完了したスワップ",
+      "pausedCount": "{count}件停止中",
+      "planLabel": "プラン #{id}",
+      "perSwap": "{amount} STX/スワップ",
+      "left": "残り {amount}",
+      "morePlans": "他 {count}件のプラン"
+    },
+    "social": {
+      "unavailable": "ライブのオンチェーン指標は一時的に利用できません。",
+      "liveOnStacks": "Stacksでライブ",
+      "updated": "{time}に更新",
+      "disclaimer": "両方のDCAボールトのオンチェーン合計です。USD建ての取引量は現在の市場価格を使用し、必要なソースが利用できない場合は非表示になります。",
+      "metric": {
+        "plansCreated": "作成されたDCAプラン",
+        "volumeExecuted": "実行された取引量",
+        "swapsExecuted": "実行されたスワップ",
+        "avgSwapsPerPlan": "プランあたり平均スワップ数"
+      }
+    },
+    "welcome": {
+      "swapLabel": "スワップする",
+      "swapDesc": "Bitflow DEXでトークンを取引",
+      "dcaLabel": "DCAプランを作成",
+      "dcaDesc": "自動投資を設定",
+      "alertLabel": "価格アラートを設定",
+      "alertDesc": "目標達成時に通知を受け取る",
+      "allSet": "準備完了！",
+      "next": "次: {step}",
+      "gettingStarted": "はじめに",
+      "allDoneDesc": "すべてのセットアップが完了しました。",
+      "completed": "{done}/{total} 完了",
+      "continue": "続ける",
+      "dismiss": "はじめにを閉じる",
+      "recommended": "おすすめ"
+    },
+    "widgets": {
+      "cryptoNews": "仮想通貨ニュース",
+      "trending": "トレンド",
+      "greedIndex": "強欲指数",
+      "myAssets": "マイアセット",
+      "send": "送金",
+      "receive": "受取"
+    },
+    "recent": {
+      "title": "最近のアクティビティ",
+      "connectTitle": "接続して履歴を表示",
+      "connectDesc": "スワップ、送金、DCA実行がここにリアルタイムで表示されます。",
+      "emptyTitle": "まっさらな状態",
+      "emptyDesc": "最初のスワップ、送金、DCA実行がここに表示されます。"
+    },
+    "alertsPanel": {
+      "title": "価格アラート",
+      "fired": "{count}件発動",
+      "above": "以上",
+      "below": "以下",
+      "watching": "監視中",
+      "paused": "停止中",
+      "rearm": "アラートを再設定",
+      "more": "他 {count}件"
+    },
+    "grid": {
+      "showHide": "ウィジェットの表示/非表示",
+      "resetLayout": "デフォルトのレイアウトに戻す",
+      "finishEditing": "編集を終了",
+      "customizeLayout": "レイアウトをカスタマイズ",
+      "done": "完了",
+      "customize": "カスタマイズ",
+      "dismissTip": "ヒントを閉じる"
+    }
+  },
+  "trade": {
+    "swapTitle": "スワップ",
+    "recentSwaps": "最近のスワップ",
+    "migrationTitle": "aeUSDC → USDCx 移行",
+    "migrationDesc": "Stacks上のネイティブCircle USDCにアップグレード",
+    "routingTitle": "オンチェーンルーティング",
+    "routingDesc": "ライブのオンチェーン見積もりを使用してBitflowプール経由でスワップをルーティングし、スリッページ保護はコントラクトによって強制されます。",
+    "yieldTitle": "リアルイールド",
+    "yieldDesc": "手数料は流動性提供者に直接還元されます — インフレ型のトークン報酬はありません。",
+    "tipsTitle": "スワップのヒント",
+    "tip1": "ほとんどのスワップではスリッページを0.5%に設定します。流動性の低いトークンでは1%に引き上げてください。",
+    "tip2": "sBTC → USDCx はSTXとaeUSDCを経由して自動的にマルチホップでルーティングされます — 経路は固定で、選択はできません。",
+    "tip3": "資産タブでHealthScoreを確認し、どのトークンをリバランスすべきか把握しましょう。",
+    "tip4": "大口取引は価格への影響が大きくなる場合があります — 小分けにしたスワップを検討してください。",
+    "swap": {
+      "from": "支払い",
+      "to": "受取",
+      "youReceive": "受取額（概算）",
+      "connectToSwap": "スワップするにはウォレットを接続してください",
+      "waitingWallet": "ウォレットを待機中...",
+      "gettingQuote": "見積もりを取得中...",
+      "swapPair": "{from} → {to} をスワップ",
+      "selectTokens": "トークンを選択",
+      "poweredBy": "提供",
+      "errQuote": "見積もりの取得に失敗しました",
+      "errExpired": "見積もりの有効期限が切れました — 価格を更新中です。もう一度お試しください。",
+      "errFailed": "スワップに失敗しました"
+    }
+  },
+  "dca": {
+    "title": "DCAボールト",
+    "connectTitle": "ウォレットを接続して始める",
+    "connectDesc": "LeatherまたはXverseウォレットを接続して、DCAプランを作成・管理しましょう。",
+    "createInTitle": "DCA Inプランを作成",
+    "createOutTitle": "DCA Outプランを作成",
+    "createStxOutTitle": "STX→USDCx DCAプランを作成",
+    "hero": {
+      "modeAria": "DCAモード",
+      "expand": "ヒーローを展開",
+      "collapse": "ヒーローを折りたたむ",
+      "vault": "DCAボールト",
+      "activeCount": "{count}件アクティブ",
+      "next": "次の{label}",
+      "tabIn": "DCA In",
+      "tabOut": "DCA Out",
+      "subtitleIn": "STXでsBTCをスケジュールに沿って自動購入 · Bitflow提供",
+      "subtitleOut": "sBTCをUSDCxにスケジュールに沿って自動売却 · Bitflow提供"
+    },
+    "interval": {
+      "Daily": "毎日",
+      "Weekly": "毎週",
+      "Monthly": "毎月"
+    },
+    "stats": {
+      "totalVolume": "総取引量",
+      "swapsExecuted": "実行されたスワップ",
+      "yourActivePlans": "アクティブなプラン",
+      "nextSwap": "次のスワップ",
+      "viewPerformance": "パフォーマンスとコストベーシスを表示",
+      "connectPrompt": "ウォレットを接続して、アクティブなプランと次のスワップを確認しましょう。"
+    },
+    "info": {
+      "inDcaTitle": "ドルコスト平均法",
+      "inDcaDesc": "価格変動に関わらず一定のスケジュールでトークンを購入し、リスクを分散します。",
+      "inFeeTitle": "0.3%のプロトコル手数料",
+      "inFeeDesc": "各スワップの0.3%がトレジャリーに送られます。残りの99.7%でBitflowを通じてsBTCを購入します。",
+      "inCustodyTitle": "非カストディアル",
+      "inCustodyDesc": "STXはスマートコントラクトに直接保管されます。購入したトークンはあなたのウォレットに直接送られます。",
+      "outDcaTitle": "ドルコスト平均法（売却）",
+      "outDcaDesc": "一定のスケジュールでsBTCを徐々にUSDCxへ売却し、時間をかけて価値を確定します。",
+      "outFeeTitle": "0.3%のプロトコル手数料",
+      "outFeeDesc": "各スワップの0.3%がトレジャリーに送られます。残りの99.7%は3ホップのBitflowルートでスワップされます。",
+      "outSwapTitle": "3ホップスワップ",
+      "outSwapDesc": "sBTC → STX → aeUSDC → USDCx。すべてのスワップはBitflowプールを通じて自動的にルーティングされます。"
+    },
+    "form": {
+      "heading": "DCAプランを作成",
+      "spend": "支払う",
+      "buy": "購入",
+      "stxDesc": "ネイティブStacksトークン",
+      "sbtcDesc": "Stacks上のBitcoin",
+      "tokenRowLabel": "{label}（送出トークン）",
+      "amountPerSwap": "スワップあたりの金額",
+      "frequency": "頻度",
+      "initialDeposit": "初回デポジット",
+      "balance": "残高:",
+      "max": "最大",
+      "createPlan": "プランを作成",
+      "waitingWallet": "ウォレットを待機中…",
+      "footnote": "メインネット · スワップごとに0.3%のプロトコル手数料",
+      "submitted": "プランを送信しました！",
+      "submittedTx": "Tx: {txId}",
+      "submittedHint": "プランはトランザクション確認後（約1〜2分）に表示されます。更新ボタンをクリックして反映してください。",
+      "createNew": "+ 新しいプランを作成",
+      "limitReached": "プラン数の上限（{max}）に達しました。先に古いプランをキャンセルしてください。",
+      "minSwap": "スワップあたり最低1 STX",
+      "minDeposit": "最低デポジット2 STX",
+      "depositGteSwap": "初回デポジットはスワップあたりの金額以上である必要があります",
+      "insufficient": "STXが不足しています。現在の残高: {balance} STX",
+      "submittedToast": "DCAプランを送信しました — 確認待ち",
+      "createFailed": "プランの作成に失敗しました",
+      "txLabelCreated": "DCAプランを作成"
+    },
+    "preview": {
+      "livePreview": "ライブプレビュー",
+      "swaps": "スワップ",
+      "ends": "終了 〜",
+      "estOutput": "推定出力",
+      "totalFee": "合計手数料"
+    },
+    "plans": {
+      "myPlans": "マイプラン",
+      "completed": "完了",
+      "active": "アクティブ",
+      "secondsAgo": "{seconds}秒前",
+      "noPlans": "まだプランがありません",
+      "noPlansDesc": "左側で最初のDCAプランを作成して、sBTCの自動購入を始めましょう。",
+      "tryPreset": "試す: {label}",
+      "preset10": "10 STX 毎週",
+      "preset50": "50 STX 毎月"
+    },
+    "smart": {
+      "unavailable": "スマートDCA（押し目買い）はSTX→sBTCプランで利用できます。",
+      "saveFailed": "保存に失敗しました",
+      "title": "スマートDCA — 押し目買い",
+      "turnOff": "オフにする",
+      "thresholdLabel": "1 STXで{days}日間平均より≥この%多くのサッツを得られる場合のみ購入",
+      "windowLabel": "平均期間（日数）",
+      "maxDeferLabel": "成行で買う前にスキップできる最大チェック回数",
+      "statusLine": "現在: 平均比 {pct}% — ≥ {need}% が必要です。",
+      "conditionMet": "押し目の条件を満たしました。",
+      "waiting": "より良いエントリーを待っています。",
+      "update": "更新",
+      "enable": "スマートDCAを有効化"
+    },
+    "card": {
+      "tabOverview": "概要",
+      "tabExecute": "実行",
+      "tabHistory": "履歴",
+      "tabSmart": "スマートDCA",
+      "expandAria": "プランの詳細を展開",
+      "collapseAria": "プランの詳細を折りたたむ",
+      "statusActive": "アクティブ",
+      "statusPaused": "停止中",
+      "statusDepleted": "残高なし",
+      "summaryTitle": "実行済みスワップ · 現在の残高でまだ実行可能なスワップ",
+      "summary": "{done}件完了 · {affordable}件実行可能 · 残り {left} STX",
+      "readyNow": "⏱ 実行可能",
+      "pendingFirst": "⏱ 初回スワップ待ち",
+      "swapsLeft": "残り {count, plural, other {#件のスワップ}}",
+      "lowBalanceTitle": "残りの資金は {count, plural, other {#件のスワップ}} 分のみです。追加入金のアクションはありません — 続けるには新しいプランを作成してください。",
+      "execute": "実行",
+      "cancelRefund": "キャンセルして返金",
+      "planNumber": "プラン #{id}",
+      "cancelConfirm": "よろしいですか？<b>{amount} STX</b> が返金されます。",
+      "keepPlan": "プランを維持",
+      "cancelSubmitted": "キャンセルを送信しました — 返金の確認待ち",
+      "cancelFailed": "プランのキャンセルに失敗しました",
+      "cancelTxLabel": "プラン #{id} キャンセルと返金"
+    },
+    "overview": {
+      "swapsDone": "完了したスワップ",
+      "stxSpent": "使用したSTX",
+      "avgPerSwap": "スワップあたり平均STX",
+      "created": "作成日",
+      "addStx": "STXを追加",
+      "add": "追加",
+      "topUpHint": "あと最低 {amount} STX を入金し、再開して資金を追加してください。",
+      "resumeHint": "プランを再開して資金を追加してください。",
+      "pause": "停止",
+      "resume": "再開",
+      "cancelRefund": "キャンセルして返金",
+      "depositedToast": "{amount} STX を入金しました（tx {tx}…）",
+      "depositTxLabel": "プラン #{id} 入金 +{amount} STX",
+      "pausedTxLabel": "プラン #{id} 停止",
+      "resumedTxLabel": "プラン #{id} 再開"
+    },
+    "execute": {
+      "paused": "プランは停止中です。概要タブから再開してください。",
+      "insufficient": "残高が不足しています。あと {amount} STX 必要です。",
+      "pendingFirst": "初回スワップ待ちです。",
+      "nextIn": "次は約 {count, plural, other {#ブロック}} 後。",
+      "notReady": "実行の準備ができていません。{reason}",
+      "readyToExecute": "実行可能",
+      "protocolFee": "0.3%のプロトコル手数料",
+      "swapAmount": "{amount} STX をスワップ",
+      "slip": "スリップ",
+      "fetchingQuote": "見積もりを取得中…",
+      "failedQuote": "見積もりの取得に失敗しました",
+      "minSats": "最低 {amount} サッツ",
+      "routingVia": "ルート経由",
+      "advanced": "詳細設定",
+      "hide": "非表示",
+      "routerPlaceholder": "SP….swap-router-contract",
+      "invalidContract": "有効なコントラクトIDではありません（例: SP….contract-name）。",
+      "customRouterWarn": "カスタムルーター — 未検証のコントラクト経由の実行はスワップを枯渇させる可能性があります。コントラクトを理解している場合のみ使用してください。",
+      "resetDefault": "デフォルトに戻す",
+      "executing": "実行中…",
+      "execute": "実行",
+      "executedToast": "プランを実行しました！スワップが完了しました",
+      "executedTxLabel": "プラン #{id} 実行",
+      "executionFailed": "実行に失敗しました"
+    },
+    "history": {
+      "recentExecutions": "最近の実行",
+      "refreshAria": "履歴を更新",
+      "failedLoad": "履歴の読み込みに失敗しました",
+      "noExecutions": "まだ実行がありません",
+      "noExecutionsDesc": "キーパーがこのプランを実行すると、スワップがここに表示されます。",
+      "awaitingConfirmation": "確認待ち",
+      "block": "ブロック #{height}",
+      "fee": "手数料 {amount}",
+      "pending": "保留中",
+      "statusSuccess": "成功",
+      "statusPending": "保留中",
+      "statusFailed": "失敗",
+      "secondsAgo": "{n}秒前",
+      "minutesAgo": "{n}分前",
+      "hoursAgo": "{n}時間前",
+      "daysAgo": "{n}日前"
+    },
+    "outSourceSbtc": "sBTCを売却",
+    "outSourceStx": "STXを売却",
+    "out": {
+      "form": {
+        "heading": "DCA Outプランを作成",
+        "spend": "支払う",
+        "buy": "購入",
+        "sbtcDesc": "Stacks上のBitcoin",
+        "usdcxDesc": "Stacks上のUSD Coin",
+        "tokenRowLabel": "{label}（送出トークン）",
+        "amountPerSwap": "スワップあたりの金額",
+        "frequency": "頻度",
+        "initialDeposit": "初回デポジット",
+        "balance": "残高:",
+        "max": "最大",
+        "createPlan": "プランを作成",
+        "waitingWallet": "ウォレットを待機中…",
+        "footnote": "メインネット · スワップごとに0.3%のプロトコル手数料 · Bitflow経由の3ホップスワップ",
+        "submitted": "プランを送信しました！",
+        "submittedTx": "Tx: {txId}",
+        "submittedHint": "プランはトランザクション確認後（約1〜2分）に表示されます。更新ボタンをクリックして反映してください。",
+        "createNew": "+ 新しいプランを作成",
+        "minSwap": "スワップあたり最低334サトシ（0.00000334 sBTC）",
+        "minDeposit": "最低デポジット668サトシ",
+        "depositGteSwap": "初回デポジットはスワップあたりの金額以上である必要があります",
+        "insufficient": "sBTCが不足しています。現在の残高: {balance} sBTC",
+        "createdToast": "プランを作成しました！Tx: {tx}...",
+        "createFailed": "プランの作成に失敗しました"
+      },
+      "plans": {
+        "myPlans": "マイプラン",
+        "secondsAgo": "{seconds}秒前",
+        "noPlans": "まだプランがありません",
+        "noPlansDesc": "左側で最初のDCA Outプランを作成して、sBTCをUSDCxへ売却し始めましょう。",
+        "tryPreset": "試す: {label}",
+        "preset1": "0.001 sBTC 毎日",
+        "preset2": "0.005 sBTC 毎週"
+      },
+      "card": {
+        "statusActive": "アクティブ",
+        "statusPaused": "停止中",
+        "statusDepleted": "残高なし",
+        "readyNow": "⏱ 実行可能",
+        "pendingFirst": "⏱ 初回スワップ待ち",
+        "next": "⏱ 次 {countdown}",
+        "execute": "実行",
+        "progress": "{done}/{total} · 残り {left}",
+        "swapsDone": "完了したスワップ",
+        "sbtcSpent": "使用したsBTC",
+        "blockCreated": "作成ブロック",
+        "targetToken": "対象トークン",
+        "readyToExecute": "実行可能",
+        "protocolFee": "0.3%のプロトコル手数料",
+        "netSwap": "正味スワップ: {amount} sBTC",
+        "slip": "スリップ",
+        "threeHop": "3ホップ: sBTC → STX → aeUSDC → USDCx",
+        "swapRouter": "スワップルーター",
+        "routerPlaceholder": "SP….swap-router-contract",
+        "executing": "実行中…",
+        "depositPlaceholder": "sBTCを入金",
+        "add": "追加",
+        "pause": "停止",
+        "resume": "再開",
+        "cancelRefund": "キャンセルして返金",
+        "planNumber": "プラン #{id}",
+        "cancelConfirm": "よろしいですか？<b>{amount} sBTC</b> が返金されます。",
+        "keepPlan": "プランを維持",
+        "cancelledToast": "プランをキャンセルし返金しました",
+        "cancelFailed": "プランのキャンセルに失敗しました",
+        "executedToast": "プランを実行しました！スワップが完了しました",
+        "executionFailed": "実行に失敗しました"
+      },
+      "history": {
+        "recentExecutions": "最近の実行",
+        "refreshAria": "履歴を更新",
+        "failedLoad": "履歴の読み込みに失敗しました",
+        "noExecutions": "まだ実行がありません",
+        "noExecutionsDesc": "キーパーがこのプランを実行すると、スワップがここに表示されます。",
+        "awaitingConfirmation": "確認待ち",
+        "block": "ブロック #{height}",
+        "pending": "保留中",
+        "statusSuccess": "成功",
+        "statusPending": "保留中",
+        "statusFailed": "失敗",
+        "secondsAgo": "{n}秒前",
+        "minutesAgo": "{n}分前",
+        "hoursAgo": "{n}時間前",
+        "daysAgo": "{n}日前"
+      },
+      "stxPlans": {
+        "myPlans": "マイプラン",
+        "secondsAgo": "{seconds}秒前",
+        "noPlans": "まだプランがありません",
+        "noPlansDesc": "左側で最初のSTX→USDCxプランを作成して、STXをUSDCxへ売却し始めましょう。",
+        "tryPreset": "試す: {label}",
+        "preset1": "10 STX 毎週",
+        "preset2": "50 STX 毎月"
+      },
+      "stxCard": {
+        "stxSpent": "使用したSTX",
+        "netSwap": "正味スワップ: {amount} STX",
+        "directSwap": "STX → USDCx（Bitflowルーター経由）",
+        "execute": "実行",
+        "depositPlaceholder": "STXを入金",
+        "cancelledToast": "プランをキャンセルし返金しました",
+        "cancelFailed": "プランのキャンセルに失敗しました",
+        "executedToast": "プランを実行しました！スワップが完了しました",
+        "executionFailed": "実行に失敗しました",
+        "cancelConfirm": "よろしいですか？<b>{amount} STX</b> が返金されます。"
+      },
+      "stxForm": {
+        "heading": "STX→USDCx DCAプランを作成",
+        "spend": "支払う",
+        "buy": "購入",
+        "stxDesc": "ネイティブStacksトークン",
+        "usdcxDesc": "Stacks上のUSD Coin",
+        "tokenRowLabel": "{label}（送出トークン）",
+        "amountPerSwap": "スワップあたりの金額",
+        "frequency": "頻度",
+        "initialDeposit": "初回デポジット",
+        "balance": "残高:",
+        "max": "最大",
+        "createPlan": "プランを作成",
+        "waitingWallet": "ウォレットを待機中…",
+        "footnote": "メインネット · スワップごとに0.3%のプロトコル手数料",
+        "submitted": "プランを送信しました！",
+        "submittedTx": "Tx: {txId}",
+        "submittedHint": "プランはトランザクション確認後（約1〜2分）に表示されます。更新ボタンをクリックして反映してください。",
+        "createNew": "+ 新しいプランを作成",
+        "minSwap": "スワップあたり最低1 STX",
+        "minDeposit": "最低デポジット2 STX",
+        "depositGteSwap": "初回デポジットはスワップあたりの金額以上である必要があります",
+        "insufficient": "STXが不足しています。現在の残高: {balance} STX",
+        "createdToast": "プランを作成しました！Tx: {tx}...",
+        "createFailed": "プランの作成に失敗しました"
+      }
+    },
+    "perf": {
+      "content": {
+        "title": "DCAパフォーマンス",
+        "back": "プランに戻る"
+      },
+      "tabs": {
+        "in": "DCA In",
+        "out": "DCA Out",
+        "aria": "DCAパフォーマンス表示"
+      },
+      "common": {
+        "connectTitle": "ウォレットを接続してパフォーマンスを表示",
+        "swapsAnalyzed": "{count, plural, other {#件のスワップ}} を分析",
+        "swapsExecuted": "実行されたスワップ",
+        "acrossPlans": "{count, plural, other {#件のプラン}} 全体",
+        "noExecutions": "まだ実行がありません",
+        "perPlanBreakdown": "プランごとの内訳",
+        "planNumber": "プラン #{id}",
+        "everyCadence": "{cadence}ごと",
+        "completed": "· 完了",
+        "executions": "実行",
+        "latestExecution": "最新の実行",
+        "atSpot": "スポットで {value}",
+        "lastNDays": "直近{days}日間"
+      },
+      "in": {
+        "connectDesc": "接続して、すべてのDCAプランのコストベーシスと実行履歴を確認しましょう。",
+        "noExecDesc": "プランはまだキーパーボットによって実行されていません。最初のスワップが完了するとパフォーマンス指標が表示されます。",
+        "stxInvested": "投資したSTX",
+        "sbtcAccumulated": "積み立てたsBTC",
+        "avgCostBasis": "平均コストベーシス",
+        "per1Sbtc": "1 sBTCあたり",
+        "basisVsSpot": "ベーシス対本日スポット",
+        "basisVsSpotInfo": "実行済みの全スワップにおける加重平均のsBTCあたりSTXを、現在のSTX/sBTCレート（BTC USD / STX USD）と比較します。プラスの%は、本日のスポットよりもSTXあたり多くのsBTCを得たことを意味します。",
+        "basisVsSpotAria": "詳細: ベーシス対本日スポット",
+        "spotLine": "スポット: 1 sBTC = <b>{spot}</b> STX · あなたの平均: <b>{avg}</b> STX",
+        "cheaperThanSpot": "スポットより割安",
+        "aboveSpot": "スポットより割高",
+        "dcaVsLump": "DCA対一括投資",
+        "dcaVsLumpInfo": "各プランについて、そのプランの初回実行日のSTX-USDおよびBTC-USDの終値を参照し、同じ総STX投入額を0日目に当時のスポットレートでsBTCに一括投資していたら、どれだけのsBTCを保有していたかを問います。差分は、DCAがその仮想的な購入を上回ったか下回ったかを示します。過去価格を取得できなかったプランは除外されます。",
+        "dcaVsLumpAria": "詳細: DCA対一括投資",
+        "lumpSummary": "{count, plural, other {#件のプラン}} 全体 · 実際 <b>{actual}</b> sBTC 対 一括 <b>{lump}</b> sBTC",
+        "lumpExcluded": "{count, plural, other {#件のプラン}} を除外 — 過去価格が利用できません",
+        "deltaVsLump": "一括比 {delta} sBTC",
+        "lumpUnavailableTitle": "一括投資の比較は利用できません",
+        "lumpUnavailableDesc": "プラン開始日の過去のSTX/BTC価格をCoinGeckoから取得できませんでした。上記のベーシス対本日スポットのストリップは引き続き機能します。",
+        "cellStxIn": "STX投入",
+        "cellSbtcOut": "sBTC取得",
+        "cellAvgCost": "平均コスト",
+        "satsSub": "{sats} サッツ",
+        "nowSub": "≈ 現在 {usd}",
+        "vsLumpLabel": "一括投資比",
+        "vsLumpDetail": "{date}時点 — 一括なら <b>{sbtc}</b> sBTC"
+      },
+      "out": {
+        "connectDesc": "接続して、sBTC→USDCxの売却履歴を確認しましょう。",
+        "noPlans": "まだDCA Outプランがありません",
+        "noPlansDesc": "DCA Outはスケジュールに沿ってsBTCをUSDCxに戻します。利益確定や計画的な出口に役立ちます。",
+        "createPlan": "DCA Outプランを作成 →",
+        "noExecDesc": "DCA Outプランはまだキーパーボットによって実行されていません。",
+        "sbtcInvested": "投資したsBTC",
+        "tokenReceived": "受け取った{token}",
+        "avgSellRate": "平均売却レート",
+        "per1Sbtc": "1 sBTCあたり",
+        "sellVsSpot": "売却レート対本日スポット",
+        "sellVsSpotInfo": "実行全体でのsBTCあたり加重平均USDCx受取額を、現在のsBTC→USDCxレート（USDCx ≈ $1 のためBTC USD）と比較します。プラスの%は現在より良いレートで売却したことを意味します。",
+        "sellVsSpotAria": "詳細: 売却レート対本日スポット",
+        "spotLine": "スポット: 1 sBTC ≈ <b>{spot}</b> {token} · あなたの平均: <b>{avg}</b> {token}",
+        "soldAboveSpot": "スポットより高く売却",
+        "soldBelowSpot": "スポットより安く売却",
+        "cellSbtcIn": "sBTC投入",
+        "cellTokenOut": "{token}取得",
+        "cellAvgRate": "平均レート",
+        "avgRateValue": "{rate} {token}/sBTC",
+        "sourceAria": "DCA out ソース",
+        "sourceSbtc": "sBTC Out",
+        "sourceStx": "STX Out",
+        "stxNoPlans": "まだSTX→USDCx DCAプランがありません",
+        "stxNoPlansDesc": "STX Outはスケジュールに沿ってSTXをUSDCxに変換します。",
+        "stxNoExecDesc": "STX→USDCxプランはまだキーパーボットによって実行されていません。",
+        "stxInvested": "投資したSTX",
+        "stxAvgSellRate": "平均売却レート",
+        "stxPer1Stx": "1 STXあたり",
+        "stxSellVsSpot": "売却レート対本日スポット",
+        "stxSellVsSpotInfo": "実行全体でのSTXあたり加重平均USDCx受取額を、現在のSTX価格（USDCx ≈ $1 のため）と比較します。プラスの%は現在より良いレートで売却したことを意味します。",
+        "stxSellVsSpotAria": "詳細: STX売却レート対本日スポット",
+        "stxSpotLine": "スポット: 1 STX ≈ <b>{spot}</b> {token} · あなたの平均: <b>{avg}</b> {token}",
+        "stxCellStxIn": "STX投入",
+        "stxAvgRateValue": "{rate} {token}/STX"
+      },
+      "chart": {
+        "title": "時系列のコストベーシス",
+        "need2": "意味のあるコストベーシスチャートには、異なる日に少なくとも2回の実行が必要です。",
+        "pricesUnavailable": "過去のSTX/BTC価格が利用できません — チャートを描画できません。",
+        "legendBasis": "累積コストベーシス",
+        "legendSpot": "スポット STX/sBTC",
+        "tooltipBasis": "ベーシス",
+        "tooltipSpot": "スポット"
+      },
+      "chartOut": {
+        "title": "時系列の売却レート",
+        "need2": "意味のある売却レートチャートには、異なる日に少なくとも2回の実行が必要です。",
+        "pricesUnavailable": "過去のBTC価格が利用できません — チャートを描画できません。",
+        "legendBasis": "累積平均売却レート（sBTCあたり{token}）",
+        "legendSpot": "スポット {token}/sBTC",
+        "tooltipAvg": "あなたの平均",
+        "tooltipSpot": "スポット"
+      }
+    }
+  },
+  "assets": {
+    "page": {
+      "title": "マイアセット",
+      "tabsAria": "資産セクション",
+      "tabOverview": "概要",
+      "tabHoldings": "保有資産",
+      "tabPositions": "ポジション",
+      "tabActivity": "アクティビティ"
+    },
+    "summary": {
+      "connectTitle": "ポートフォリオ概要",
+      "connectDesc": "ウォレットを接続して、純資産と資産配分を確認しましょう。",
+      "netWorth": "純資産",
+      "other": "その他",
+      "h24": "24時間",
+      "portfolio24h": "ポートフォリオ 24時間",
+      "stx24h": "STX 24時間（ポートフォリオ履歴は記録中）",
+      "assetsLine": "{balance} STX · {count}件の資産"
+    },
+    "health": {
+      "title": "ポートフォリオ健全性スコア",
+      "connectMsg": "ウォレットを接続して健全性スコアを確認",
+      "volatile": "ボラティリティ {pct}%",
+      "stable": "安定 {pct}%",
+      "outOf": "/ 100",
+      "levelExcellent": "優秀",
+      "levelGood": "良好",
+      "levelModerate": "普通",
+      "levelNeedsWork": "要改善",
+      "levelUnbalanced": "不均衡",
+      "fallbackToken": "ボラティリティの高い資産",
+      "mVolatileConcentration": "ボラティリティ集中度",
+      "mAssetCount": "資産数",
+      "mDistributionQuality": "分散の質",
+      "mStablecoinReserve": "ステーブルコイン準備",
+      "cNone": "ボラティリティの高い資産なし — 集中リスクなし",
+      "cExtreme": "ボラティリティ資産の{pct}%が{token} — 極端",
+      "cHigh": "ボラティリティ資産の{pct}%が{token} — 高い",
+      "cModerate": "ボラティリティ資産の{pct}%が{token} — 中程度",
+      "cManageable": "最大のボラティリティ資産に{pct}% — 管理可能",
+      "cWellSpread": "最大のボラティリティ資産に{pct}% — よく分散",
+      "aNone": "ボラティリティの高い資産なし — ポートフォリオはすべてステーブルコイン",
+      "aOne": "ボラティリティ資産1件 — 分散なし",
+      "aTwo": "ボラティリティ資産2件 — 最小限の分散",
+      "aModerate": "ボラティリティ資産{n}件 — 中程度の分散",
+      "aGood": "ボラティリティ資産{n}件 — 良好な分散",
+      "aExcellent": "ボラティリティ資産{n}件 — 優秀な分散",
+      "hNone": "分散するボラティリティ資産なし",
+      "hHighlyConcentrated": "ボラティリティの分布が非常に集中",
+      "hConcentrated": "ボラティリティの分布が集中",
+      "hModerate": "ボラティリティ資産間で中程度のバランス",
+      "hGood": "ボラティリティ資産間で良好なバランス",
+      "hExcellent": "ボラティリティ資産間で優秀なバランス",
+      "sMostlyCash": "ステーブルコイン{pct}% — ほぼ現金、活用不足",
+      "sCautious": "ステーブルコイン{pct}% — 慎重なポジション",
+      "sHealthy": "ステーブルコイン{pct}% — 健全な準備",
+      "sSmall": "ステーブルコイン{pct}% — 小規模な準備",
+      "sNone": "ステーブルコインの準備なし",
+      "tipNoVolatile": "ポートフォリオは{pct}%がステーブルコインで、ボラティリティの高い資産がありません。STX、ALEX、VelarなどのStacksエコシステムトークンへの投資を検討しましょう。",
+      "tipMostlyStable": "ポートフォリオの{pct}%がステーブルコインです。大きな現金ポジションは安全ですが、成長機会が限られます。",
+      "tipExtremeConc": "ボラティリティ配分の{pct}%が{token}です。他の2〜3のStacksトークンに少額でも分散すれば、集中リスクを大幅に減らせます。",
+      "tipOneAsset": "ボラティリティの高い資産を1件（{token}）のみ保有しています。Stacksエコシステムのトークンをあと2〜3件（例: ALEX、sBTC、Velar）追加すると、スコアが素早く改善します。",
+      "tipHighConc": "{token}がボラティリティポートフォリオの{pct}%を占めています。他の資産へ徐々にリバランスすると、集中リスクを下げられます。",
+      "tipNoStable": "ステーブルコインの準備が検出されませんでした。USDCxのようなステーブルコインを5〜15%保有すると、相場下落時の緩衝になります。",
+      "tipHealthy": "ポートフォリオはStacksエコシステム全体で健全に分散されています。バランスの取れた配分を維持しましょう。",
+      "tipDefault": "ボラティリティの高い資産を徐々にリバランスして比重をより均等にし、ステーブルコインの準備を維持することを検討しましょう。"
+    },
+    "holdings": {
+      "title": "トークン保有",
+      "flagged": "{count}件フラグ付き",
+      "assetsCount": "{count}件の資産",
+      "exportTitle": "CSVをエクスポート",
+      "export": "エクスポート",
+      "colToken": "トークン",
+      "colBalance": "残高",
+      "colPrice": "価格",
+      "col7d": "7日",
+      "colValue": "評価額",
+      "col24h": "24時間",
+      "noTokens": "トークンが見つかりません",
+      "noTokensDesc": "ウォレットを接続するかSTXを入金すると、トークン保有がここに表示されます。",
+      "flaggedToggle": "{count, plural, other {#件のフラグ付きトークン}}（スパム / 未検証）",
+      "suspicious": "不審",
+      "unverified": "未検証",
+      "suspiciousTitle": "このトークンには登録済みのメタデータがありません。スパムのエアドロップや詐欺トークンの可能性があります。ソースを信頼できない限り操作しないでください。",
+      "unverifiedTitle": "このトークンは既知の価格フィードに登録されていません。正当なものかもしれませんが未検証です。注意してください。",
+      "send": "送金",
+      "receive": "受取",
+      "bannerSuspicious": "<b>{count, plural, other {#件の不審なトークン}}</b> を検出 — 登録済みメタデータのないスパムエアドロップの可能性があります。 ",
+      "bannerUnverified": "価格データのない <b>{count, plural, other {#件の未検証トークン}}</b> が見つかりました。 ",
+      "bannerWarn": "ソースを信頼できない限り、不明なトークンを操作しないでください。"
+    },
+    "perf": {
+      "title": "ポートフォリオパフォーマンス",
+      "connectTitle": "時系列でポートフォリオを追跡",
+      "connectDesc": "ウォレットを接続して純資産履歴を記録しましょう。追跡は初回訪問時に始まります。",
+      "all": "すべて",
+      "over": "{period}間",
+      "loading": "チャートを読み込み中…",
+      "notEnough": "まだ履歴が十分ではありません — 純資産は訪問のたびに記録されます。最初のデータポイントは1時間後に確認してください。",
+      "trackingSince": "{date}から追跡中",
+      "tooltipPortfolio": "ポートフォリオ"
+    },
+    "yield": {
+      "header": "資産を活用しよう",
+      "estimatedApy": "推定APY",
+      "active": "アクティブ",
+      "variable": "変動",
+      "disclaimer": "APYの推定はあくまで目安です — 実際の報酬はサイクル、プールの深さ、市場状況によって変動します。",
+      "subline": "{count, plural, other {#件のスワップ}} を実行 · {desc}",
+      "stackingLabel": "STXステーキング（PoX）",
+      "stackingDesc": "STXをロックしてネットワークを保護し、サイクルごとにBTC報酬を獲得します。",
+      "sbtcLabel": "sBTC流動性",
+      "sbtcDesc": "DEXプール（Bitflow / ALEX）にsBTCを供給してスワップ手数料を獲得します。変動制。",
+      "dcaLabel": "定期DCA",
+      "dcaAsset": "戦略",
+      "dcaDesc": "スケジュールに沿ってsBTC/USDCへ平均購入します。リターンは値動きに左右されます。",
+      "viewPosition": "ポジションを表示",
+      "startStacking": "ステーキングを開始",
+      "managePlans": "プランを管理",
+      "createPlan": "プランを作成",
+      "explore": "探索"
+    },
+    "pnl": {
+      "title": "損益トラッカー",
+      "assets": "{count}件の資産",
+      "exportTitle": "CSVをエクスポート",
+      "export": "エクスポート",
+      "calculating": "計算中...",
+      "connect": "ウォレットを接続して損益を表示",
+      "loadError": "損益データの読み込みに失敗しました。",
+      "noData": "損益データがありません",
+      "unrealized": "未実現損益",
+      "realized": "実現損益",
+      "totalPnl": "合計損益",
+      "colToken": "トークン",
+      "colAvgCost": "平均コスト",
+      "colCurPrice": "現在価格",
+      "colUnrealized": "未実現",
+      "colRealized": "実現",
+      "colTotal": "合計損益",
+      "disclaimer": "オンチェーン履歴（最大1,000件のトランザクション）に基づきます。結果は概算の場合があります。"
+    },
+    "stacking": {
+      "title": "STXステーキング",
+      "active": "アクティブ",
+      "notStacking": "ステーキングなし",
+      "cycle": "サイクル #{id}",
+      "connect": "ウォレットを接続してステーキング情報を表示",
+      "lockedAmount": "ロック額",
+      "cyclesRemaining": "残りサイクル",
+      "cyclesValue": "{count, plural, other {#サイクル}}",
+      "unlocksIn": "約{days}日後にアンロック",
+      "unlockBlock": "アンロックブロック",
+      "btcBlocksLeft": "残り{count} BTCブロック",
+      "rewardPhase": "サイクル #{id} — 報酬フェーズ",
+      "blocksProgress": "{elapsed} / {total} ブロック",
+      "cycleStart": "サイクル開始",
+      "blocksUntilPrepare": "準備フェーズまで{count}ブロック",
+      "networkShare": "ネットワークシェア:",
+      "totalStacked": "総ステーキング:",
+      "viewTx": "stack-stx トランザクションを表示",
+      "minToStack": "ステーキング最低額: <b>{amount} STX</b>",
+      "nextCycle": "次のサイクル #{id} は <b>{blocks}ブロック</b>後（約{days}日）に開始",
+      "totalStackedWide": "ネットワーク全体の総ステーキング: <b>{amount}</b>",
+      "explorePools": "ステーキングプールを探索",
+      "learnStacking": "ステーキングについて学ぶ"
+    },
+    "sbtc": {
+      "title": "sBTCポジション",
+      "about": "sBTCについて",
+      "connect": "ウォレットを接続してsBTCポジションを表示",
+      "balance": "sBTC残高",
+      "noPosition": "ポジションなし",
+      "btcPrice": "BTC価格",
+      "reference": "参考",
+      "sbtcPrice": "sBTC価格",
+      "coingecko": "CoinGecko",
+      "pegPegged": "ペッグ維持",
+      "pegSlight": "わずかな乖離",
+      "pegDepegged": "デペッグリスク",
+      "noSbtcText": "まだsBTCを保有していません。 ",
+      "bridgeLink": "BTC → sBTC ブリッジ",
+      "bridgeHistory": "ブリッジ履歴",
+      "transactions": "{count}件のトランザクション",
+      "noBridge": "sBTCブリッジのトランザクションが見つかりません",
+      "txDeposit": "入金",
+      "txWithdrawal": "出金",
+      "txTransfer": "送金",
+      "secondsAgo": "{n}秒前",
+      "minutesAgo": "{n}分前",
+      "hoursAgo": "{n}時間前",
+      "daysAgo": "{n}日前"
+    },
+    "history": {
+      "title": "トランザクション履歴",
+      "exportTitle": "CSVをエクスポート",
+      "export": "エクスポート",
+      "viewExplorer": "エクスプローラーで表示",
+      "filterAll": "すべて",
+      "filterTransfer": "送金",
+      "filterContract": "コントラクト",
+      "filterFailed": "失敗",
+      "connect": "ウォレットを接続して履歴を表示",
+      "noTx": "トランザクションが見つかりません",
+      "loadMore": "もっと読み込む",
+      "loading": "読み込み中...",
+      "sentStx": "STXを送金",
+      "receivedStx": "STXを受取",
+      "to": "宛先 {addr}",
+      "from": "送信元 {addr}",
+      "deployContract": "コントラクトをデプロイ",
+      "coinbase": "Coinbase",
+      "block": "ブロック {height}",
+      "secondsAgo": "{n}秒前",
+      "minutesAgo": "{n}分前",
+      "hoursAgo": "{n}時間前",
+      "daysAgo": "{n}日前"
+    },
+    "drawer": {
+      "main": {
+        "yourBalance": "あなたの残高",
+        "portfolioPct": "· ポートフォリオの{pct}%",
+        "price": "価格",
+        "h24": "24時間",
+        "swap": "スワップ",
+        "send": "送金",
+        "receive": "受取",
+        "alert": "アラート",
+        "alertUnsupportedTitle": "アラートはSTX、BTC、WELSH、ALEX、VELAR、stSTXで利用できます",
+        "tokenDetails": "トークン詳細",
+        "contract": "コントラクト",
+        "nativeStx": "STX（ネイティブ）",
+        "decimals": "小数点桁数",
+        "status": "ステータス",
+        "suspicious": "不審",
+        "unverified": "未検証",
+        "closeDrawer": "ドロワーを閉じる",
+        "close": "閉じる",
+        "copyContract": "コントラクトIDをコピー"
+      },
+      "market": {
+        "high24h": "24時間高値",
+        "low24h": "24時間安値",
+        "vol24h": "24時間出来高",
+        "marketCap": "時価総額"
+      },
+      "pnl": {
+        "positionPnl": "ポジション損益",
+        "avgCost": "平均コスト",
+        "costBasis": "コストベーシス",
+        "unrealized": "未実現",
+        "realized": "実現"
+      },
+      "chart": {
+        "unavailable": "価格履歴が利用できません",
+        "rangeAria": "チャート範囲",
+        "via": "{range} · {arrow} CoinGecko経由"
+      },
+      "qsend": {
+        "title": "クイック送金",
+        "max": "最大",
+        "balance": "残高: {bal} {symbol}",
+        "exceeds": "残高を超えています",
+        "waiting": "ウォレットを待機中…",
+        "sendSymbol": "{symbol}を送金",
+        "submitted": "送金を送信しました",
+        "viewExplorer": "エクスプローラーで表示",
+        "newBtn": "新規",
+        "addrMustStart": "アドレスは「{prefix}」で始まる必要があります",
+        "invalidAddr": "無効なアドレス",
+        "enterAmount": "有効な金額を入力してください",
+        "amountExceeds": "金額が残高を超えています",
+        "txFailed": "トランザクションに失敗しました",
+        "transferSubmittedToast": "送金を送信しました: {amount} {symbol}",
+        "transferLabel": "{amount} {symbol} を送金",
+        "transferFailedToast": "送金に失敗しました: {msg}"
+      },
+      "qswap": {
+        "title": "クイックスワップ",
+        "max": "最大",
+        "balance": "残高: {bal} {symbol}",
+        "exceeds": "残高を超えています",
+        "quoting": "見積もり中…",
+        "quoteUnavailable": "見積もりが利用できません",
+        "continue": "スワップに進む",
+        "enterAmount": "金額を入力",
+        "approx": "≈ {out} {symbol}"
+      },
+      "tx": {
+        "recentActivity": "最近のアクティビティ",
+        "all": "すべて",
+        "noActivity": "{symbol}のアクティビティはまだありません",
+        "received": "{symbol}を受取",
+        "sent": "{symbol}を送金",
+        "from": "送信元 {addr}",
+        "to": "宛先 {addr}",
+        "secondsAgo": "{n}秒前",
+        "minutesAgo": "{n}分前",
+        "hoursAgo": "{n}時間前",
+        "daysAgo": "{n}日前"
+      },
+      "yield": {
+        "yield": "イールド",
+        "liquidStacking": "リキッドステーキング",
+        "viaStackingDao": "StackingDAO経由",
+        "stStxDesc": "stSTXは自動的にPoX報酬を蓄積します — STXに対する請求権がサイクルごとに増加します。",
+        "stStxHolding": " 約 <b>{amount}</b> stSTX を保有しています。",
+        "manageStackingDao": "StackingDAOで管理",
+        "apyVaries": "APY推定 · サイクルにより変動",
+        "sbtcLiquidity": "sBTC流動性",
+        "bitflowAlex": "Bitflow / ALEX プール",
+        "pegStatus": "ペッグ状況",
+        "pegPegged": "ペッグ維持",
+        "pegSlight": "わずかな乖離",
+        "pegDepegged": "デペッグ",
+        "sbtcDesc": "sBTC自体は利回りを生みません — DEXプールに供給することでスワップ手数料を獲得します。",
+        "exploreSbtc": "sBTCプールを探索",
+        "apyPoolDepth": "APY推定 · プールの深さに依存"
+      },
+      "alert": {
+        "title": "価格アラートを設定 — {symbol}",
+        "closeAlert": "価格アラートを閉じる",
+        "current": "現在: ${price}",
+        "existing": "既存のアラート（{count}）",
+        "above": "以上",
+        "below": "以下",
+        "active": "アクティブ",
+        "triggered": "発動済み",
+        "deleteAlert": "アラートを削除",
+        "quick": "クイック:",
+        "targetPrice": "目標価格（USD）",
+        "invalidPrice": "0より大きい有効な価格を入力してください",
+        "preview": "<b>{symbol}</b> が <b>${price}</b> を{dir}らアラート",
+        "risesAbove": "上回った",
+        "dropsBelow": "下回った",
+        "createAlert": "アラートを作成",
+        "pushPrompt": "アプリを閉じていてもアラートを受け取るには通知を有効にしてください",
+        "enable": "有効化",
+        "enabling": "有効化中...",
+        "dismiss": "閉じる"
+      }
+    }
+  },
+  "notifications": {
+    "pageTitle": "通知",
+    "pageTabs": {
+      "activity": "アクティビティ",
+      "priceAlerts": "価格アラート",
+      "preferences": "設定"
+    },
+    "tabs": {
+      "all": "すべて",
+      "transactions": "トランザクション",
+      "alerts": "アラート",
+      "dca": "DCA",
+      "wallet": "ウォレット"
+    },
+    "search": "検索...",
+    "filters": "フィルター",
+    "sort": "並べ替え",
+    "newestFirst": "新しい順",
+    "oldestFirst": "古い順",
+    "delete": "削除（{count}）",
+    "unread": "{count}件未読",
+    "selectAll": "すべて選択（{count}）",
+    "deselectAll": "すべて選択解除（{count}）",
+    "empty": {
+      "title": "まだ通知がありません",
+      "desc": "スワップ、DCA実行、価格目標の達成時に、ここに通知が表示されます。"
+    },
+    "date": {
+      "today": "今日",
+      "yesterday": "昨日"
+    },
+    "dismiss": "閉じる",
+    "category": {
+      "dca": "DCAボールト",
+      "dcaOut": "DCA Out",
+      "wallet": "ウォレット",
+      "swap": "スワップ",
+      "send": "送金",
+      "price": "価格アラート"
+    },
+    "plan": "プラン #{id}",
+    "unreadAria": "未読",
+    "drawer": {
+      "title": "通知",
+      "clearAll": "すべてクリア",
+      "empty": "まだ通知がありません",
+      "viewAll": "すべて表示"
+    },
+    "filterPanel": {
+      "title": "フィルター",
+      "clear": "クリア",
+      "close": "フィルターを閉じる",
+      "type": "タイプ",
+      "category": "カテゴリ",
+      "dateRange": "期間",
+      "applied": "{count, plural, other {#件のフィルターを適用}}"
+    },
+    "type": {
+      "success": "成功",
+      "error": "エラー",
+      "warning": "警告",
+      "info": "情報"
+    },
+    "filterCategory": {
+      "dca": "DCA In",
+      "dcaOut": "DCA Out",
+      "wallet": "ウォレット",
+      "swap": "スワップ",
+      "send": "送金",
+      "price": "価格アラート"
+    },
+    "range": {
+      "hour": "直近1時間",
+      "day": "直近1日",
+      "week": "直近1週間",
+      "all": "全期間"
+    },
+    "prefs": {
+      "title": "通知設定",
+      "subtitle": "これらの設定に関わらず、エラーは常に表示されます。",
+      "resetAll": "すべてリセット",
+      "footer": "設定はローカルに保存され、セッションをまたいで保持されます。",
+      "enable": "有効化",
+      "disable": "無効化",
+      "toggleAria": "{label}通知を{action}",
+      "cat": {
+        "dca": {
+          "label": "DCA In",
+          "desc": "プランの作成・実行・停止・再開・キャンセル"
+        },
+        "dcaOut": {
+          "label": "DCA Out",
+          "desc": "sBTC→USDCxプランのイベント"
+        },
+        "swap": {
+          "label": "スワップ",
+          "desc": "スワップの送信と確認"
+        },
+        "send": {
+          "label": "送金",
+          "desc": "STXおよびトークンの送金"
+        },
+        "price": {
+          "label": "価格アラート",
+          "desc": "トークンの価格目標に到達"
+        },
+        "wallet": {
+          "label": "ウォレット",
+          "desc": "接続・切断・アカウント変更"
+        }
+      }
+    },
+    "toast": {
+      "dismiss": "通知を閉じる",
+      "region": "通知"
+    },
+    "badge": {
+      "aria": "{count, plural, =0 {通知} other {通知（#件の未読）}}"
+    }
+  },
+  "ai": {
+    "title": "Stacks AI",
+    "marketIntel": "マーケットインテリジェンス",
+    "updated": "{time}に更新",
+    "refresh": "更新",
+    "retry": "再試行",
+    "time": {
+      "justNow": "たった今",
+      "minutesAgo": "{n}分前",
+      "hoursAgo": "{n}時間前"
+    },
+    "error": {
+      "title": "インサイトの読み込みに失敗しました",
+      "desc": "マーケットインテリジェンスは一時的に利用できません。しばらくしてからもう一度お試しください。"
+    },
+    "sentiment": {
+      "title": "市場センチメント",
+      "bullish": "強気",
+      "bearish": "弱気",
+      "neutral": "中立",
+      "fearGreed": "恐怖と強欲"
+    },
+    "kol": {
+      "title": "ソーシャルシグナル",
+      "empty": "ソーシャルデータがありません",
+      "vol": "出来高 {value}"
+    },
+    "news": {
+      "title": "ニュースダイジェスト",
+      "loading": "記事を読み込み中…",
+      "loadError": "記事の内容を読み込めませんでした。",
+      "readMore": "記事全文を読む"
+    },
+    "position": {
+      "title": "あなたのポジション",
+      "badge": "パーソナライズ",
+      "error": "アラートを読み込めませんでした。しばらくしてから更新してください。",
+      "healthy": "ポートフォリオは健全です — 現在アラートはありません。"
+    },
+    "priority": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "smartAlerts": {
+      "title": "スマートアラート"
+    },
+    "action": {
+      "dca-open": "DCAを設定",
+      "trade-swap": "今すぐスワップ",
+      "view-assets": "保有資産を表示"
+    },
+    "chat": {
+      "title": "Stacks AIに質問",
+      "disclaimer": "情報提供のみ — 投資助言ではありません。",
+      "placeholder": "STX、ポートフォリオ、DCAについて質問…",
+      "send": "送信",
+      "error": "問題が発生しました。もう一度質問してください。",
+      "connectHint": "ポートフォリオ固有の回答を得るにはウォレットを接続してください。",
+      "suggestions": [
+        "STXは今日どう動いている？",
+        "私のDCAプランの状況は？",
+        "今はDCAに適したタイミング？"
+      ]
+    }
+  },
+  "apps": {
+    "title": "連携アプリ",
+    "intro": "直近50件のトランザクションに基づき、Stacksで操作したことのあるDeFiプロトコルとコントラクトです。",
+    "connectPrompt": "ウォレットを接続してアプリ履歴を表示",
+    "loadError": "アプリ履歴の読み込みに失敗しました。",
+    "retry": "再試行",
+    "exploreHeading": "StacksでDeFiを探索",
+    "knownHeading": "既知のプロトコル",
+    "unverifiedHeading": "未検証のコントラクト",
+    "showLess": "折りたたむ",
+    "showMore": "あと{count}件表示",
+    "card": {
+      "unableFetch": "ポジションを取得できません",
+      "total": "合計",
+      "net": "正味",
+      "lastUsed": "最終利用 {time}",
+      "open": "開く",
+      "tryIt": "試す"
+    },
+    "explore": {
+      "stackingdao": "STXをステーキングしてstSTXを受け取り、ステーキング報酬を得る流動性トークンを獲得",
+      "lisa": "STXをステーキングしてLiSTXを受け取り、流動性を維持",
+      "zest": "資産を供給して利回りを得るか、暗号資産を担保に借入",
+      "arkadiko": "STXを担保にロックしてUSDAステーブルコインを発行",
+      "bitflow": "低手数料でStacks上のトークンをスワップ",
+      "alex": "Stacks DeFi全体で取引・貸付・借入",
+      "velar": "Stacksでスワップと流動性提供"
+    },
+    "unknown": {
+      "unverified": "未検証",
+      "unverifiedTitle": "既知のDeFiプロトコルとして認識されていないコントラクト",
+      "openSource": "オープンソース",
+      "viewExplorer": "Stacks Explorerで表示",
+      "openAria": "Stacks Explorerで{name}を開く"
+    }
+  },
+  "landing": {
+    "common": {
+      "connectWallet": "ウォレットを接続",
+      "connecting": "接続中...",
+      "exploreDashboard": "ダッシュボードを見る"
+    },
+    "nav": {
+      "features": "機能",
+      "howItWorks": "仕組み",
+      "github": "GitHub",
+      "openMenu": "ナビゲーションメニューを開く",
+      "closeMenu": "ナビゲーションメニューを閉じる"
+    },
+    "hero": {
+      "badge": "Stacksメインネットで稼働中",
+      "titleLine1": "あなたの",
+      "titleLine2": "Bitcoin戦略を自動化",
+      "subtitle": "あなたがコントロールするスケジュールでSTXをsBTCに変えましょう。すべてのDCA実行は非カストディアルで、オンチェーンで強制され、ウォレットから一時停止やキャンセルが可能です。",
+      "trust": {
+        "nonCustodial": "非カストディアル",
+        "openSource": "オープンソースのコントラクト",
+        "mainnet": "Stacksメインネット"
+      },
+      "portfolioPreview": "ポートフォリオプレビュー",
+      "dcaPlan": "DCAプラン",
+      "running": "稼働中",
+      "planMeta": "50 STX · 144ブロックごと",
+      "previewExecutions": "実行プレビュー"
+    },
+    "walkthrough": {
+      "eyebrow": "1つのワークフローで端から端まで",
+      "heading": "定期購入からポートフォリオ分析まで",
+      "intro": "StacksPortは、ウォレットを預からずに自動化・実行・計測をつなぎます。",
+      "steps": {
+        "automate": {
+          "eyebrow": "自動化",
+          "title": "STXからsBTCへのスケジュールを構築",
+          "description": "金額と間隔を選び、プラン全体を確認して、ウォレットから承認します。ボールトはそのプランに割り当てた残高のみを保持します。",
+          "b1": "毎日・毎週・毎月",
+          "b2": "いつでも一時停止と再開",
+          "b3": "スワップごとに0.3%のプロトコル手数料"
+        },
+        "measure": {
+          "eyebrow": "計測",
+          "title": "コストベーシスとプランの残量を追跡",
+          "description": "ポートフォリオ評価額、DCA実行履歴、平均取得価格、残高で実行できる予定スワップ数を確認できます。",
+          "b1": "ライブのStacks残高",
+          "b2": "DCA対一括投資のパフォーマンス",
+          "b3": "オンチェーンの実行履歴"
+        },
+        "act": {
+          "eyebrow": "実行",
+          "title": "直接スワップして情報を把握",
+          "description": "Bitflowルートで直接スワップし、一日中ダッシュボードを見続けることなく価格目標とDCA実行を監視できます。",
+          "b1": "リアルタイムのスワップ見積もり",
+          "b2": "価格と実行のアラート",
+          "b3": "ポートフォリオを考慮したAIインサイト"
+        }
+      },
+      "dcaPreview": {
+        "title": "DCAプランを作成",
+        "mainnet": "メインネット",
+        "spend": "支払う",
+        "buy": "購入",
+        "everyWeek": "毎週",
+        "confirmed": "ウォレットから承認済み"
+      },
+      "perfPreview": {
+        "label": "DCAパフォーマンス",
+        "preview": "ポートフォリオプレビュー · +4.8%",
+        "avgEntry": "平均取得",
+        "runway": "プランの残量",
+        "swaps": "8スワップ"
+      },
+      "alertsPreview": {
+        "quote": "スワップ見積もり",
+        "viaBitflow": "Bitflow経由",
+        "execConfirmed": "DCA実行を確認",
+        "execDesc": "予定されていたSTXからsBTCへのスワップがStacksで確認されました。"
+      }
+    },
+    "how": {
+      "eyebrow": "仕組み",
+      "heading": "自動化までの3ステップ",
+      "steps": {
+        "s1": {
+          "title": "ウォレットを接続",
+          "desc": "LeatherまたはXverseを使用。シードフレーズは共有されません — 鍵があなたのデバイスから出ることはありません。"
+        },
+        "s2": {
+          "title": "DCAプランを作成",
+          "desc": "トークンペアを選び、金額と間隔を設定。担保としてSTXまたはsBTCを入金します。"
+        },
+        "s3": {
+          "title": "ボットに実行を任せる",
+          "desc": "当社のキーパーボットはGitHub Actions経由で稼働し、間隔ごとにオンチェーンでプランを実行します。いつでも一時停止やキャンセルが可能です。"
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "信頼せず、検証を",
+      "heading": "透明な自動化のために構築",
+      "intro": "自動化はStacksメインネットにデプロイされたオープンソースのコントラクトを通じて実行されます。ウォレットを接続する前に、ルールとライブのコントラクト活動を確認してください。",
+      "points": {
+        "control": {
+          "title": "あなたが主導権を保持",
+          "desc": "入金やプラン変更にはウォレットの承認が必要です。StacksPortがシードフレーズや秘密鍵を受け取ることはありません。"
+        },
+        "automated": {
+          "title": "オンチェーンで自動化",
+          "desc": "キーパーが実行期限の来た処理を送信し、ボールトコントラクトがプラン残高・間隔・スワップ会計を強制します。"
+        },
+        "pause": {
+          "title": "一時停止またはキャンセル",
+          "desc": "プランはあなたのウォレットの管理下にあります。今後の実行を一時停止するか、キャンセルして残りのボールト残高を引き出せます。"
+        },
+        "fees": {
+          "title": "透明な手数料",
+          "desc": "各自動スワップには0.3%のプロトコル手数料がかかります。ネットワークおよびDEXの実行コストは別途です。"
+        }
+      },
+      "contracts": {
+        "stxSbtc": "STX→sBTCボールト",
+        "sbtcUsdcx": "sBTC→USDCxボールト"
+      },
+      "explorerAria": "Stacks Explorer上の{label}"
+    },
+    "cta": {
+      "titleLine1": "sBTCプランを",
+      "titleLine2": "スケジュールに乗せる",
+      "subtitle": "金額と間隔を選び、0.3%のプロトコル手数料を確認して、Stacksウォレットからプランを承認しましょう。"
+    },
+    "footer": {
+      "tagline": "Stacksブロックチェーン上の非カストディアルなDCA自動化とポートフォリオ管理。",
+      "product": "プロダクト",
+      "copyright": "© {year} StacksPort — Stacksで構築",
+      "mainnet": "メインネット"
+    }
+  },
+  "bubbles": {
+    "title": "Crypto Bubbles",
+    "searchShort": "検索…",
+    "searchHint": "検索…  ( / )",
+    "clearSearch": "検索をクリア",
+    "failedLoad": "データの読み込みに失敗しました。",
+    "retry": "再試行",
+    "stacksNote": "CoinGecko価格フィードのあるStacksトークンを表示 · DEX専用トークンは含まれません",
+    "noMatch": "「{q}」に一致するトークンはありません。",
+    "watchlistEmpty": "ウォッチリストは空です。バブルの⭐をタップして追加してください。",
+    "holdingsEmptyTracked": "あなたの保有資産には追跡対象のトークンがありません。",
+    "holdingsConnect": "ウォレットを接続して、保有資産をバブルで表示しましょう。",
+    "noStacksTokens": "利用可能なStacksエコシステムトークンがありません。",
+    "browseAll": "すべてのトークンを見る",
+    "dataOutdated": "データが古い可能性があります",
+    "updated": "{time}に更新",
+    "time": {
+      "justNow": "たった今",
+      "secondsAgo": "{n}秒前",
+      "minutesAgo": "{n}分前",
+      "hoursAgo": "{n}時間前"
+    },
+    "scope": {
+      "all": "すべて",
+      "stacks": "Stacks"
+    },
+    "view": {
+      "bubble": "バブル表示",
+      "list": "リスト表示"
+    },
+    "metric": {
+      "changeTitle": "変動率でサイズ表示",
+      "mcapTitle": "時価総額でサイズ表示",
+      "volTitle": "24時間出来高でサイズ表示"
+    },
+    "filter": {
+      "filters": "フィルター",
+      "close": "閉じる",
+      "marketCap": "時価総額",
+      "show": "表示",
+      "sortBy": "並べ替え基準",
+      "moversOnly": "変動の大きい銘柄のみ",
+      "bubbleSize": "バブルサイズ（{d}×）",
+      "excludeStables": "ステーブルコインを除外",
+      "resetAll": "すべてリセット",
+      "any": "すべて",
+      "all": "すべて",
+      "off": "オフ",
+      "sort": {
+        "mcap": "時価総額",
+        "volume": "出来高",
+        "gainers": "上昇率上位",
+        "losers": "下落率上位",
+        "name": "名前（A-Z）"
+      }
+    },
+    "chips": {
+      "noStables": "ステーブルなし",
+      "sortPrefix": "並べ替え: {label}",
+      "clearAll": "すべてクリア",
+      "sort": {
+        "mcap": "時価総額",
+        "volume": "出来高",
+        "gainers": "上昇率上位",
+        "losers": "下落率上位",
+        "name": "A–Z"
+      }
+    },
+    "toolbar": {
+      "more": "その他の操作",
+      "refreshing": "更新中…",
+      "refresh": "データを更新",
+      "resumeMotion": "モーションを再開",
+      "pauseMotion": "モーションを一時停止",
+      "saved": "保存しました",
+      "downloadPng": "PNGをダウンロード",
+      "linkCopied": "リンクをコピーしました",
+      "copyLink": "共有リンクをコピー",
+      "shortcuts": "キーボードショートカット"
+    },
+    "list": {
+      "token": "トークン",
+      "price": "価格"
+    },
+    "tooltip": {
+      "setAlert": "価格アラートを設定",
+      "addWatch": "ウォッチリストに追加",
+      "removeWatch": "ウォッチリストから削除",
+      "price7d": "7日間の価格",
+      "youHold": "保有量",
+      "swapBitflow": "Bitflowでスワップ",
+      "tradeBitflow": "Bitflowで取引 ↗",
+      "viewCoingecko": "CoinGeckoで表示"
+    },
+    "alert": {
+      "above": "以上",
+      "below": "以下",
+      "active": "アクティブ",
+      "triggered": "発動済み",
+      "deleteAria": "{condition} ${price} のアラートを削除",
+      "quick": "クイック:",
+      "targetPrice": "目標価格",
+      "enterPrice": "0より大きい価格を入力してください",
+      "createAlert": "アラートを作成",
+      "pushPrompt": "アプリを閉じていてもアラートを受け取るには通知を有効にしてください",
+      "enabling": "有効化中…",
+      "enable": "有効化",
+      "dismiss": "閉じる"
+    },
+    "watchlistBar": {
+      "label": "ウォッチリスト:",
+      "tokenCount": "{n, plural, other {#件のトークン}}",
+      "export": "エクスポート",
+      "import": "インポート",
+      "clearAll": "すべてクリア",
+      "invalidFile": "無効なファイル",
+      "invalidJson": "無効なJSON",
+      "imported": "{n}件インポートしました",
+      "confirmClear": "{n, plural, other {#件のウォッチ中トークン}}をクリアしますか？"
+    },
+    "legend": {
+      "size": "サイズ",
+      "color": "色",
+      "metric": {
+        "change": "変動率",
+        "marketCap": "時価総額",
+        "volume": "24時間出来高"
+      }
+    },
+    "shortcuts": {
+      "title": "キーボードショートカット",
+      "close": "閉じる",
+      "rows": {
+        "search": "検索にフォーカス",
+        "clear": "クリア / 閉じる",
+        "metric": "指標: % · 時価総額 · 出来高",
+        "timeframe": "期間: 1h · 24h · 7d · 30d · 1y",
+        "scope": "範囲: すべて · Stacks · ウォッチリスト · 保有",
+        "refresh": "データを更新",
+        "pause": "モーションの一時停止 / 再開",
+        "list": "リスト表示を切り替え",
+        "help": "このヘルプを切り替え"
+      }
+    },
+    "buttons": {
+      "snapshotAria": "スナップショットをPNGでダウンロード",
+      "downloadPng": "PNGをダウンロード",
+      "shareAria": "現在のビューへのリンクをコピー",
+      "copyShareLink": "共有リンクをコピー",
+      "copied": "コピーしました",
+      "share": "共有",
+      "refreshAria": "データを更新",
+      "refreshTitle": "更新（G）",
+      "resumeAnim": "アニメーションを再開",
+      "pauseAnim": "アニメーションを一時停止",
+      "resumeP": "再開（P）",
+      "pauseP": "一時停止（P）"
+    }
+  }
+}

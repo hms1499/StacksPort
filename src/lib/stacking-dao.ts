@@ -12,7 +12,7 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 import { buildStakeParams } from "./domain/stacking/clarity";
-import { STACKING_DAO } from "./domain/stacking/contracts";
+import { STACKING_DAO, RESERVE } from "./domain/stacking/contracts";
 
 const HIRO_API = "https://api.hiro.so";
 const DUMMY_SENDER = "SP000000000000000000002Q6VF78";
@@ -43,27 +43,53 @@ function cvHex(cv: ClarityValue): string {
   return "0x" + (typeof r === "string" ? r : Buffer.from(r as Uint8Array).toString("hex"));
 }
 
+// Read-only call returning a uint, unwrapping an (ok uint) response if present.
+// Returns null on any failure.
+async function callReadUint(
+  address: string,
+  name: string,
+  fn: string,
+  args: string[]
+): Promise<number | null> {
+  const res = await fetch(
+    `${HIRO_API}/v2/contracts/call-read/${address}/${name}/${fn}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: DUMMY_SENDER, arguments: args }),
+      signal: AbortSignal.timeout(8_000),
+    }
+  );
+  const json = await res.json();
+  if (!json.okay) return null;
+  let cv = hexToCV(json.result) as { type: ClarityType; value?: unknown };
+  if (cv.type === ClarityType.ResponseOk) {
+    cv = cv.value as { type: ClarityType; value?: unknown };
+  }
+  if (cv.type === ClarityType.UInt) return Number((cv as { value: bigint }).value);
+  return null;
+}
+
 /**
  * Best-effort micro-STX value of 1 stSTX, used only to show an estimate
  * before signing. Returns null on any failure so the UI hides the estimate
- * without blocking staking. (Semantics verified in Step 1.)
+ * without blocking staking.
+ *
+ * `get-stx-per-ststx-helper` computes (stx-amount * 1e6) / ststx-supply and
+ * expects the TOTAL reserve STX as its argument (NOT an arbitrary amount —
+ * passing 1 STX returns 0). So we first read the reserve total, then feed it
+ * in to get micro-STX per stSTX.
  */
 export async function fetchStxPerStStx(): Promise<number | null> {
   try {
-    const res = await fetch(
-      `${HIRO_API}/v2/contracts/call-read/${STACKING_DAO.address}/${STACKING_DAO.name}/get-stx-per-ststx-helper`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: DUMMY_SENDER, arguments: [cvHex(uintCV(1_000_000))] }),
-        signal: AbortSignal.timeout(8_000),
-      }
+    const totalStx = await callReadUint(RESERVE.address, RESERVE.name, "get-total-stx", []);
+    if (totalStx === null || totalStx <= 0) return null;
+    return await callReadUint(
+      STACKING_DAO.address,
+      STACKING_DAO.name,
+      "get-stx-per-ststx-helper",
+      [cvHex(uintCV(totalStx))]
     );
-    const json = await res.json();
-    if (!json.okay) return null;
-    const cv = hexToCV(json.result) as { type: ClarityType; value?: unknown };
-    if (cv.type === ClarityType.UInt) return Number((cv as { value: bigint }).value);
-    return null;
   } catch {
     return null;
   }

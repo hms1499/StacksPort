@@ -81,10 +81,7 @@ function YieldOpportunities() {
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: tokens } = useTokensWithValues(addr);
   const [stakeOpen, setStakeOpen] = useState(false);
-  const stxAvailable = useMemo(
-    () => (tokens?.tokens ?? []).find((t) => t.symbol === "STX")?.balance ?? 0,
-    [tokens]
-  );
+  const stxAvailable = tokens?.stx?.balance ?? 0;
   const stStxStaked = useMemo(
     () => (tokens?.tokens ?? []).find((t) => t.symbol === "stSTX")?.balance ?? 0,
     [tokens]

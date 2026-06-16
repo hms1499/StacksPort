@@ -21,10 +21,7 @@ export default function IdleStxNudge() {
   const { data: tokens } = useTokensWithValues(addr);
   const [open, setOpen] = useState(false);
 
-  const stxAvailable = useMemo(
-    () => (tokens?.tokens ?? []).find((t) => t.symbol === "STX")?.balance ?? 0,
-    [tokens]
-  );
+  const stxAvailable = tokens?.stx?.balance ?? 0;
   const stStxStaked = useMemo(
     () => (tokens?.tokens ?? []).find((t) => t.symbol === "stSTX")?.balance ?? 0,
     [tokens]

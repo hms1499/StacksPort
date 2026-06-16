@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
+import StakeStxModal from "./StakeStxModal";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
@@ -46,7 +47,7 @@ const BASE_OPPORTUNITIES: Omit<Opportunity, "status" | "actionLabel">[] = [
     iconBg: "rgba(64, 138, 113, 0.14)",
     descKey: "stackingDesc",
     href: "https://stacking.club",
-    external: true,
+    external: false,
   },
   {
     id: "sbtc-yield",
@@ -79,6 +80,15 @@ function YieldOpportunities() {
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: tokens } = useTokensWithValues(addr);
+  const [stakeOpen, setStakeOpen] = useState(false);
+  const stxAvailable = useMemo(
+    () => (tokens?.tokens ?? []).find((t) => t.symbol === "STX")?.balance ?? 0,
+    [tokens]
+  );
+  const stStxStaked = useMemo(
+    () => (tokens?.tokens ?? []).find((t) => t.symbol === "stSTX")?.balance ?? 0,
+    [tokens]
+  );
   const { data: plans } = useUserDCAPlans(addr);
 
   // Liquid-stacking signal from token holdings (stSTX > 0).
@@ -207,7 +217,16 @@ function YieldOpportunities() {
                 >
                   {apyLabel}
                 </span>
-                {o.external ? (
+                {o.id === "stacking" ? (
+                  <button
+                    onClick={() => setStakeOpen(true)}
+                    className="flex items-center gap-1 text-[11px] font-semibold transition-colors hover:underline"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    {o.actionLabel}
+                    <ArrowUpRight size={10} />
+                  </button>
+                ) : o.external ? (
                   <a
                     href={o.href}
                     target="_blank"
@@ -240,6 +259,12 @@ function YieldOpportunities() {
       >
         {t("disclaimer")}
       </p>
+      <StakeStxModal
+        open={stakeOpen}
+        onClose={() => setStakeOpen(false)}
+        availableStx={stxAvailable}
+        stStxStakedStx={stStxStaked}
+      />
     </div>
   );
 }

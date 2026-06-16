@@ -13,6 +13,7 @@ import PortfolioSummary from "@/components/assets/PortfolioSummary";
 import HealthScore from "@/components/assets/HealthScore";
 import PortfolioPerformanceChart from "@/components/assets/PortfolioPerformanceChart";
 import YieldOpportunities from "@/components/assets/YieldOpportunities";
+import IdleStxNudge from "./IdleStxNudge";
 
 // Heavy widgets only mount when their tab is visited. SWR keeps the underlying
 // snapshot warm across mounts, so switching tabs is a render cost, not a fetch.
@@ -112,6 +113,7 @@ export default function AssetsPageContent() {
               <MotionCard>
                 <PortfolioPerformanceChart />
               </MotionCard>
+              <IdleStxNudge />
               <MotionCard>
                 <YieldOpportunities />
               </MotionCard>

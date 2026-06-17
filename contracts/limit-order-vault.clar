@@ -41,7 +41,7 @@
   fab:        uint
 })
 
-(define-map uids principal (list 10 uint))
+(define-map uids principal (list 200 uint))
 (define-map open-cnt principal uint)
 
 (define-private (protocol-fee (a uint)) (/ (* a PFBPS) BPSB))
@@ -50,7 +50,7 @@
 
 (define-private (add-uid (u principal) (id uint))
   (let ((ex (default-to (list) (map-get? uids u)))
-        (up (unwrap-panic (as-max-len? (append ex id) u10))))
+        (up (unwrap-panic (as-max-len? (append ex id) u200))))
     (map-set uids u up)))
 
 (define-public (create-order
@@ -96,6 +96,18 @@
              executor: tx-sender, net-swapped: net, protocol-fee: pf,
              min-out: min-amount-out })
     (ok { net-swapped: net, protocol-fee: pf })))
+
+(define-public (cancel-order (order-id uint))
+  (let ((o     (unwrap! (map-get? orders order-id) E101))
+        (owner (get owner o))
+        (amt   (get amt o)))
+    (asserts! (is-eq tx-sender owner)            E100)
+    (asserts! (is-eq (get status o) STATUS-OPEN) E102)
+    (as-contract (try! (stx-transfer? amt tx-sender owner)))
+    (map-set orders order-id (merge o { status: STATUS-CANCELLED }))
+    (map-set open-cnt owner (- (oc-of owner) u1))
+    (print { event: "order-cancelled", order-id: order-id, owner: owner, refunded: amt })
+    (ok amt)))
 
 (define-read-only (get-order (order-id uint)) (map-get? orders order-id))
 (define-read-only (get-user-orders (user principal)) (default-to (list) (map-get? uids user)))

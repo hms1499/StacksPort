@@ -104,3 +104,47 @@ describe("limit-order-vault: execute-order", () => {
     expect(res.result.type).toBe("ok");
   });
 });
+
+function cancelOrder(id: number, sender = deployer) {
+  return simnet.callPublicFn(VAULT, "cancel-order", [Cl.uint(id)], sender);
+}
+
+describe("limit-order-vault: cancel-order", () => {
+  it("refunds and decrements open-count", () => {
+    const id = extractId(createOrder(wallet1));
+    const openBefore = openCount(wallet1);
+    const res = cancelOrder(id);
+    expect(res.result.type).toBe("ok");
+    expect(Cl.prettyPrint(openCount(wallet1))).not.toBe(Cl.prettyPrint(openBefore));
+  });
+
+  it("only the owner can cancel", () => {
+    const id = extractId(createOrder(wallet1));
+    const res = cancelOrder(id, wallet2);
+    expect(res.result).toStrictEqual(Cl.error(Cl.uint(100)));
+  });
+
+  it("cannot cancel a filled order", () => {
+    const id = extractId(createOrder(wallet1));
+    executeOrder(id, 0);
+    const res = cancelOrder(id);
+    expect(res.result).toStrictEqual(Cl.error(Cl.uint(102)));
+  });
+});
+
+describe("limit-order-vault: open-order cap", () => {
+  it("rejects an 11th concurrently-open order then allows one after a fill frees a slot", () => {
+    // fresh principal — open-cnt starts at 0; fund with enough STX for >=11 orders
+    const u = "ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG";
+    simnet.transferSTX(30_000_000, u, deployer); // 30 STX — enough for 11×2 STX orders
+    // open 10
+    const ids: number[] = [];
+    for (let i = 0; i < 10; i++) ids.push(extractId(createOrder(u)));
+    // 11th rejected
+    expect(createOrder(u).result).toStrictEqual(Cl.error(Cl.uint(107)));
+    // fill one to free a slot
+    executeOrder(ids[0], 0);
+    // now one more is allowed
+    expect(createOrder(u).result.type).toBe("ok");
+  });
+});

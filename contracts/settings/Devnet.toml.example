@@ -1,0 +1,14 @@
+[network]
+name = "devnet"
+deployment_fee_rate = 10
+
+# Copy this file to Devnet.toml and fill in a mnemonic locally.
+# The simnet test harness reads settings/Devnet.toml to derive the deployer
+# account. Devnet.toml is gitignored so seed phrases never enter version control.
+# For local testing you may use the standard public Clarinet devnet mnemonic.
+[accounts.deployer]
+mnemonic = ""
+balance = 100_000_000_000_000
+
+[devnet]
+pox_stacking_orders = []

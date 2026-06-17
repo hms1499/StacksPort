@@ -1,0 +1,17 @@
+[network]
+name = "simnet"
+
+# Copy this file to Simnet.toml and fill in mnemonics locally.
+# Simnet.toml is gitignored so seed phrases never enter version control.
+# For local testing you may use the standard public Clarinet test mnemonics.
+[accounts.deployer]
+mnemonic = ""
+balance = 100_000_000_000_000
+
+[accounts.wallet_1]
+mnemonic = ""
+balance = 100_000_000_000_000
+
+[accounts.wallet_2]
+mnemonic = ""
+balance = 100_000_000_000_000

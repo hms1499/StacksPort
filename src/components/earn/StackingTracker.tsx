@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { ExternalLink, Lock, Unlock, Layers, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useWalletStore } from "@/store/walletStore";
 import { StackingStatus } from "@/lib/stacks";
 import { useStackingStatusSnap } from "@/hooks/usePortfolioSnapshot";
+import { useTokensWithValues } from "@/hooks/useMarketData";
+import { fetchStxPerStStx } from "@/lib/stacking-dao";
+import { summarizeStackingPosition } from "@/lib/domain/stacking/position";
 import { formatUSD } from "@/lib/utils";
 
 function formatSTXAmount(n: number): string {
@@ -203,6 +207,39 @@ function SkeletonLoader() {
   );
 }
 
+function LiquidStacking({
+  stStx,
+  valueStx,
+}: {
+  stStx: number;
+  valueStx: number | null;
+}) {
+  const t = useTranslations("assets.stacking");
+  return (
+    <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-lg bg-[#B0E4CC]/20 flex items-center justify-center">
+          <Lock size={14} className="text-[#285A48]" />
+        </div>
+        <div>
+          <p className="text-xs text-gray-400 font-medium">{t("liquidTitle")}</p>
+          <p className="text-sm font-bold text-gray-900">
+            {t("liquidStaked", { amount: formatSTXAmount(stStx) })}
+          </p>
+          {valueStx !== null && (
+            <p className="text-[11px] text-gray-400">
+              {t("liquidValue", { stx: formatSTXAmount(valueStx) })}
+            </p>
+          )}
+        </div>
+      </div>
+      <span className="text-[11px] font-semibold text-gray-300 cursor-not-allowed" aria-disabled="true">
+        {t("unstakeSoon")}
+      </span>
+    </div>
+  );
+}
+
 export default function StackingTracker() {
   const t = useTranslations("assets.stacking");
   const { stxAddress, isConnected } = useWalletStore();
@@ -213,6 +250,31 @@ export default function StackingTracker() {
   // SWR keeps the previous snapshot during background refresh.
   const loading = isLoading && !status;
 
+  const { data: tokenData } = useTokensWithValues(addr);
+  const stStxBalance = useMemo(
+    () => (tokenData?.tokens ?? []).find((tk) => tk.symbol === "stSTX")?.balance ?? 0,
+    [tokenData]
+  );
+
+  const [microStxPerStStx, setMicroStxPerStStx] = useState<number | null>(null);
+  useEffect(() => {
+    let active = true;
+    if (stStxBalance > 0) {
+      fetchStxPerStStx().then((r) => { if (active) setMicroStxPerStStx(r); });
+    }
+    return () => { active = false; };
+  }, [stStxBalance]);
+
+  const summary = useMemo(
+    () => summarizeStackingPosition({
+      stStxBalance,
+      microStxPerStStx,
+      poxLockedStx: status?.lockedSTX ?? 0,
+      poxIsStacking: status?.isStacking ?? false,
+    }),
+    [stStxBalance, microStxPerStStx, status]
+  );
+
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
       {/* Header */}
@@ -222,17 +284,17 @@ export default function StackingTracker() {
           {!loading && status && (
             <span
               className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                status.isStacking
+                summary.isEarning
                   ? "bg-[#B0E4CC]/20 text-[#285A48]"
                   : "bg-gray-100 text-gray-500"
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  status.isStacking ? "bg-[#408A71]" : "bg-gray-400"
+                  summary.isEarning ? "bg-[#408A71]" : "bg-gray-400"
                 }`}
               />
-              {status.isStacking ? t("active") : t("notStacking")}
+              {summary.isEarning ? t("active") : t("notStacking")}
             </span>
           )}
         </div>
@@ -251,8 +313,13 @@ export default function StackingTracker() {
         </div>
       ) : loading ? (
         <SkeletonLoader />
-      ) : status?.isStacking ? (
-        <ActiveStacking s={status} />
+      ) : summary.isEarning ? (
+        <div className="space-y-5">
+          {stStxBalance > 0 && (
+            <LiquidStacking stStx={stStxBalance} valueStx={summary.liquidStx} />
+          )}
+          {status?.isStacking && <ActiveStacking s={status} />}
+        </div>
       ) : status ? (
         <NotStacking s={status} />
       ) : null}

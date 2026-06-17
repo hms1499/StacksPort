@@ -868,7 +868,6 @@
       "liquidTitle": "Liquid Stacking",
       "liquidStaked": "{amount} stSTX",
       "liquidValue": "≈ {stx} STX",
-      "estApy": "APY ước tính",
       "unstakeSoon": "Rút (sắp có)"
     },
     "sbtc": {

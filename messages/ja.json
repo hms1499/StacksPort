@@ -868,7 +868,6 @@
       "liquidTitle": "リキッドステーキング",
       "liquidStaked": "{amount} stSTX",
       "liquidValue": "≈ {stx} STX",
-      "estApy": "予想 APY",
       "unstakeSoon": "アンステーク（近日対応）"
     },
     "sbtc": {

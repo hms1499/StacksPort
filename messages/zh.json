@@ -868,7 +868,6 @@
       "liquidTitle": "流动质押",
       "liquidStaked": "{amount} stSTX",
       "liquidValue": "≈ {stx} STX",
-      "estApy": "预估 APY",
       "unstakeSoon": "赎回（即将推出）"
     },
     "sbtc": {

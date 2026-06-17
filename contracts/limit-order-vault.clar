@@ -75,6 +75,28 @@
              token: target-token, amt: deposit-amount, target-usd: target-usd })
     (ok id)))
 
+(define-public (execute-order
+    (order-id       uint)
+    (swap-router    <dca-swap-trait>)
+    (min-amount-out uint))
+  (let ((o     (unwrap! (map-get? orders order-id) E101))
+        (amt   (get amt o))
+        (owner (get owner o))
+        (pf    (protocol-fee (get amt o)))
+        (net   (- (get amt o) (protocol-fee (get amt o)))))
+    (asserts! (is-eq (get status o) STATUS-OPEN) E102)
+    (as-contract (try! (stx-transfer? pf tx-sender TREASURY)))
+    (as-contract (try! (stx-transfer? net tx-sender (contract-of swap-router))))
+    (as-contract (try! (contract-call? swap-router swap-stx-for-token net min-amount-out owner)))
+    (map-set orders order-id (merge o { status: STATUS-FILLED, fab: stacks-block-height }))
+    (map-set open-cnt owner (- (oc-of owner) u1))
+    (var-set tvol (+ (var-get tvol) amt))
+    (var-set toe  (+ (var-get toe)  u1))
+    (print { event: "order-filled", order-id: order-id, owner: owner,
+             executor: tx-sender, net-swapped: net, protocol-fee: pf,
+             min-out: min-amount-out })
+    (ok { net-swapped: net, protocol-fee: pf })))
+
 (define-read-only (get-order (order-id uint)) (map-get? orders order-id))
 (define-read-only (get-user-orders (user principal)) (default-to (list) (map-get? uids user)))
 (define-read-only (get-open-order-count (user principal)) (oc-of user))

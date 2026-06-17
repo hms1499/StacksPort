@@ -57,3 +57,50 @@ describe("limit-order-vault: create-order", () => {
     expect(res.result).toStrictEqual(Cl.error(Cl.uint(105)));
   });
 });
+
+function executeOrder(id: number, minOut = 0, sender = deployer) {
+  return simnet.callPublicFn(
+    VAULT, "execute-order",
+    [Cl.uint(id), Cl.contractPrincipal(deployer, ROUTER), Cl.uint(minOut)],
+    sender
+  );
+}
+function sbtcBalance(who: string) {
+  return simnet.callReadOnlyFn(MOCK_SBTC, "get-balance", [Cl.principal(who)], deployer).result;
+}
+
+describe("limit-order-vault: execute-order", () => {
+  it("fills an open order, sends sBTC to owner, decrements open-count", () => {
+    const before = sbtcBalance(wallet1);
+    const id = extractId(createOrder(wallet1));
+    const openBefore = openCount(wallet1);
+    const res = executeOrder(id, 0);
+    expect(res.result.type).toBe("ok");
+    const after = sbtcBalance(wallet1);
+    expect(Cl.prettyPrint(after)).not.toBe(Cl.prettyPrint(before)); // owner got sBTC
+    expect(Cl.prettyPrint(openCount(wallet1))).not.toBe(Cl.prettyPrint(openBefore)); // decremented
+    // order is now filled (status u1)
+    const order = getOrder(id);
+    expect(order.type).toBe("some");
+  });
+
+  it("reverts when min-amount-out is not met", () => {
+    const id = extractId(createOrder(wallet1));
+    // mock mints amount-in (= net) 1:1; ask for far more than deposit
+    const res = executeOrder(id, MID * 10);
+    expect(res.result).toStrictEqual(Cl.error(Cl.uint(999)));
+  });
+
+  it("cannot execute an already-filled order", () => {
+    const id = extractId(createOrder(wallet1));
+    expect(executeOrder(id, 0).result.type).toBe("ok");
+    const res = executeOrder(id, 0);
+    expect(res.result).toStrictEqual(Cl.error(Cl.uint(102)));
+  });
+
+  it("is permissionless — a non-owner can execute", () => {
+    const id = extractId(createOrder(wallet1));
+    const res = executeOrder(id, 0, wallet2);
+    expect(res.result.type).toBe("ok");
+  });
+});

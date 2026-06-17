@@ -1,4 +1,4 @@
-// src/components/assets/StakeStxModal.tsx
+// src/components/earn/StakeStxModal.tsx
 "use client";
 
 import { useEffect, useState } from "react";

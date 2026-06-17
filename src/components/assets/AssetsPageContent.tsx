@@ -12,8 +12,7 @@ import MotionCard from "@/components/motion/MotionCard";
 import PortfolioSummary from "@/components/assets/PortfolioSummary";
 import HealthScore from "@/components/assets/HealthScore";
 import PortfolioPerformanceChart from "@/components/assets/PortfolioPerformanceChart";
-import YieldOpportunities from "@/components/assets/YieldOpportunities";
-import IdleStxNudge from "./IdleStxNudge";
+import EarnSummaryCard from "@/components/assets/EarnSummaryCard";
 
 // Heavy widgets only mount when their tab is visited. SWR keeps the underlying
 // snapshot warm across mounts, so switching tabs is a render cost, not a fetch.
@@ -23,10 +22,6 @@ const TokenHoldings = dynamic(
 );
 const PnLTracker = dynamic(
   () => import("@/components/assets/PnLTracker"),
-  { ssr: false }
-);
-const StackingTracker = dynamic(
-  () => import("@/components/assets/StackingTracker"),
   { ssr: false }
 );
 const SBTCMonitor = dynamic(
@@ -113,10 +108,7 @@ export default function AssetsPageContent() {
               <MotionCard>
                 <PortfolioPerformanceChart />
               </MotionCard>
-              <IdleStxNudge />
-              <MotionCard>
-                <YieldOpportunities />
-              </MotionCard>
+              <EarnSummaryCard />
             </>
           )}
 
@@ -132,11 +124,8 @@ export default function AssetsPageContent() {
           )}
 
           {tab === "positions" && (
-            <MotionCard disableHover>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                <StackingTracker />
-                <SBTCMonitor />
-              </div>
+            <MotionCard>
+              <SBTCMonitor />
             </MotionCard>
           )}
 

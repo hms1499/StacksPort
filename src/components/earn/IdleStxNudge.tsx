@@ -1,4 +1,4 @@
-// src/components/assets/IdleStxNudge.tsx
+// src/components/earn/IdleStxNudge.tsx
 "use client";
 
 import { useMemo, useState } from "react";

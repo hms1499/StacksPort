@@ -1,9 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import Topbar from "@/components/layout/Topbar";
 import AnimatedPage from "@/components/motion/AnimatedPage";
 import StaggerChildren from "@/components/motion/StaggerChildren";
+import MotionCard from "@/components/motion/MotionCard";
+import YieldOpportunities from "@/components/earn/YieldOpportunities";
+import IdleStxNudge from "@/components/earn/IdleStxNudge";
+
+// @stacks/* browser-only modules — skip SSR.
+const StackingTracker = dynamic(
+  () => import("@/components/earn/StackingTracker"),
+  { ssr: false }
+);
 
 export default function EarnPageContent() {
   const t = useTranslations("earn");
@@ -12,9 +22,13 @@ export default function EarnPageContent() {
       <Topbar title={t("title")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <StaggerChildren className="space-y-4 md:space-y-5">
-          <>
-            {/* Components mounted in Task 5 */}
-          </>
+          <MotionCard disableHover>
+            <StackingTracker />
+          </MotionCard>
+          <IdleStxNudge />
+          <MotionCard>
+            <YieldOpportunities />
+          </MotionCard>
         </StaggerChildren>
       </AnimatedPage>
     </div>

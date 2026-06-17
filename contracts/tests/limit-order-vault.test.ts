@@ -111,11 +111,12 @@ function cancelOrder(id: number, sender = deployer) {
 
 describe("limit-order-vault: cancel-order", () => {
   it("refunds and decrements open-count", () => {
-    const id = extractId(createOrder(wallet1));
-    const openBefore = openCount(wallet1);
+    const id = extractId(createOrder(wallet1)); // deposit = MID
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const before = Number((openCount(wallet1) as any).value);
     const res = cancelOrder(id);
-    expect(res.result.type).toBe("ok");
-    expect(Cl.prettyPrint(openCount(wallet1))).not.toBe(Cl.prettyPrint(openBefore));
+    expect(res.result).toStrictEqual(Cl.ok(Cl.uint(MID)));
+    expect(openCount(wallet1)).toStrictEqual(Cl.uint(before - 1));
   });
 
   it("only the owner can cancel", () => {
@@ -146,5 +147,24 @@ describe("limit-order-vault: open-order cap", () => {
     executeOrder(ids[0], 0);
     // now one more is allowed
     expect(createOrder(u).result.type).toBe("ok");
+  });
+});
+
+describe("limit-order-vault: E108 order-history-full", () => {
+  it("returns E108 when a principal's lifetime order list hits 200", () => {
+    // Fresh principal — fund with enough STX for 200 create+cancel cycles (each needs 2 STX)
+    // plus a final create attempt. 201 × 2 STX = 402 STX → 402_000_000 uSTX.
+    const u = "ST3PF13W7Z0RRM42A8VZRVFQ75SV1K26RXEP8YGKJ";
+    simnet.transferSTX(410_000_000, u, deployer);
+
+    // Create + immediately cancel 200 orders so open-cnt never exceeds MPPU=10
+    // but lifetime uids list fills to 200.
+    for (let i = 0; i < 200; i++) {
+      const id = extractId(createOrder(u));
+      cancelOrder(id, u);
+    }
+
+    // 201st create must return E108
+    expect(createOrder(u).result).toStrictEqual(Cl.error(Cl.uint(108)));
   });
 });

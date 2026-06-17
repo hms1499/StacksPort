@@ -15,6 +15,7 @@
 (define-constant E102 (err u102)) ;; order not open
 (define-constant E105 (err u105)) ;; invalid target-usd
 (define-constant E107 (err u107)) ;; max open orders reached
+(define-constant E108 (err u108)) ;; order history full
 (define-constant E109 (err u109)) ;; deposit too small
 
 (define-constant MID   u2000000)  ;; min initial deposit: 2 STX
@@ -49,9 +50,9 @@
 (define-private (oc-of (u principal)) (default-to u0 (map-get? open-cnt u)))
 
 (define-private (add-uid (u principal) (id uint))
-  (let ((ex (default-to (list) (map-get? uids u)))
-        (up (unwrap-panic (as-max-len? (append ex id) u200))))
-    (map-set uids u up)))
+  (match (as-max-len? (append (default-to (list) (map-get? uids u)) id) u200)
+    up (begin (map-set uids u up) (ok true))
+    (err u108)))
 
 (define-public (create-order
     (target-token  principal)
@@ -70,7 +71,7 @@
     })
     (var-set oc id)
     (map-set open-cnt tx-sender (+ n u1))
-    (add-uid tx-sender id)
+    (try! (add-uid tx-sender id))
     (print { event: "order-created", order-id: id, owner: tx-sender,
              token: target-token, amt: deposit-amount, target-usd: target-usd })
     (ok id)))

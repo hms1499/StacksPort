@@ -19,6 +19,7 @@ import {
   CornerDownLeft,
   ArrowUp,
   ArrowDown,
+  Sprout,
 } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
 
@@ -76,6 +77,7 @@ export default function CommandPalette() {
     { id: "assets",        label: t("assets.label"),        description: t("assets.desc"),        icon: <Wallet size={18} />,       action: () => navigate("/assets", "assets"),            keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
     { id: "swap",          label: t("swap.label"),          description: t("swap.desc"),          icon: <ArrowLeftRight size={18} />, action: () => navigate("/trade", "swap"),             keywords: ["swap", "trade", "exchange", "buy", "sell", "dex"] },
     { id: "dca",           label: t("dca.label"),           description: t("dca.desc"),           icon: <Repeat2 size={18} />,      action: () => navigate("/dca", "dca"),                  keywords: ["dca", "vault", "invest", "plan", "recurring", "auto"] },
+    { id: "earn",          label: t("earn.label"),          description: t("earn.desc"),          icon: <Sprout size={18} />,       action: () => navigate("/earn", "earn"),                keywords: ["earn", "stack", "stacking", "yield", "ststx", "apy"] },
     { id: "notifications", label: t("notifications.label"), description: t("notifications.desc"), icon: <Bell size={18} />,         action: () => navigate("/notifications", "notifications"), keywords: ["notifications", "alerts", "price", "targets"] },
     { id: "ai",            label: t("ai.label"),            description: t("ai.desc"),            icon: <Sparkles size={18} />,     action: () => navigate("/ai", "ai"),                    keywords: ["ai", "insights", "analysis", "intelligence"] },
     {

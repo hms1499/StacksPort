@@ -13,6 +13,7 @@ import {
   Globe,
   Circle,
   MoreHorizontal,
+  Sprout,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -25,6 +26,7 @@ const primaryNavItems = [
 ] as const;
 
 const moreNavItems = [
+  { href: "/earn",          key: "earn",      icon: Sprout },
   { href: "/bubbles",       key: "bubbles",   icon: Circle },
   { href: "/notifications", key: "alerts",    icon: Bell },
   { href: "/ai",            key: "aiShort",   icon: Sparkles },

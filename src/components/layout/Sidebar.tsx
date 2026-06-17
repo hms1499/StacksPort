@@ -16,6 +16,7 @@ import {
   Zap,
   Globe,
   Circle,
+  Sprout,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sidebarSpring } from "@/lib/animations";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/assets",        key: "assets",        icon: Wallet },
   { href: "/trade",         key: "swap",          icon: ArrowLeftRight },
   { href: "/dca",           key: "dcaVault",      icon: Repeat2 },
+  { href: "/earn",          key: "earn",          icon: Sprout },
   { href: "/notifications", key: "alerts",        icon: Bell },
   { href: "/ai",            key: "stacksAi",      icon: Sparkles },
   { href: "/apps",          key: "connectedApps", icon: Globe },

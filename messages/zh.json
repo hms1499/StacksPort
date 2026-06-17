@@ -4,6 +4,7 @@
     "bubbles": "泡泡图",
     "assets": "我的资产",
     "assetsShort": "资产",
+    "earn": "赚取",
     "swap": "兑换",
     "dcaVault": "定投金库",
     "dcaShort": "定投",
@@ -68,6 +69,10 @@
       "ai": {
         "label": "Stacks AI",
         "desc": "AI 驱动的洞察"
+      },
+      "earn": {
+        "label": "赚取",
+        "desc": "Stacking 与收益"
       }
     }
   },
@@ -787,6 +792,12 @@
       "createPlan": "创建计划",
       "explore": "探索"
     },
+    "earnSummary": {
+      "title": "收益中",
+      "earning": "~{amount} STX 正在生息",
+      "empty": "让闲置 STX 产生收益",
+      "cta": "赚取"
+    },
     "stake": {
       "title": "质押 STX",
       "subtitle": "获得流动性 stSTX —— 赚取质押收益，无锁仓。",
@@ -853,7 +864,12 @@
       "nextCycle": "下一周期 #{id} 将在 <b>{blocks} 个区块</b>后开始（约 {days} 天）",
       "totalStackedWide": "全网总质押：<b>{amount}</b>",
       "explorePools": "探索质押池",
-      "learnStacking": "了解质押"
+      "learnStacking": "了解质押",
+      "liquidTitle": "流动质押",
+      "liquidStaked": "{amount} stSTX",
+      "liquidValue": "≈ {stx} STX",
+      "estApy": "预估 APY",
+      "unstakeSoon": "赎回（即将推出）"
     },
     "sbtc": {
       "title": "sBTC 头寸",
@@ -1030,6 +1046,9 @@
         "dismiss": "关闭"
       }
     }
+  },
+  "earn": {
+    "title": "赚取"
   },
   "notifications": {
     "pageTitle": "通知",

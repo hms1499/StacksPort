@@ -4,6 +4,7 @@
     "bubbles": "Bubbles",
     "assets": "My Assets",
     "assetsShort": "Assets",
+    "earn": "Earn",
     "swap": "Swap",
     "dcaVault": "DCA Vault",
     "dcaShort": "DCA",
@@ -68,6 +69,10 @@
       "ai": {
         "label": "Stacks AI",
         "desc": "AI-powered insights"
+      },
+      "earn": {
+        "label": "Earn",
+        "desc": "Stacking & yield"
       }
     }
   },
@@ -787,6 +792,12 @@
       "createPlan": "Create plan",
       "explore": "Explore"
     },
+    "earnSummary": {
+      "title": "Earning",
+      "earning": "~{amount} STX at work",
+      "empty": "Put idle STX to work",
+      "cta": "Earn"
+    },
     "stake": {
       "title": "Stake STX",
       "subtitle": "Receive liquid stSTX — earn stacking yield with no lockup.",
@@ -853,7 +864,12 @@
       "nextCycle": "Next cycle #{id} starts in <b>{blocks} blocks</b> (~{days} days)",
       "totalStackedWide": "Total stacked network-wide: <b>{amount}</b>",
       "explorePools": "Explore stacking pools",
-      "learnStacking": "Learn about stacking"
+      "learnStacking": "Learn about stacking",
+      "liquidTitle": "Liquid Stacking",
+      "liquidStaked": "{amount} stSTX",
+      "liquidValue": "≈ {stx} STX",
+      "estApy": "Est. APY",
+      "unstakeSoon": "Unstake (coming soon)"
     },
     "sbtc": {
       "title": "sBTC Position",
@@ -1030,6 +1046,9 @@
         "dismiss": "Dismiss"
       }
     }
+  },
+  "earn": {
+    "title": "Earn"
   },
   "notifications": {
     "pageTitle": "Notifications",

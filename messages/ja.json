@@ -4,6 +4,7 @@
     "bubbles": "バブル",
     "assets": "マイアセット",
     "assetsShort": "資産",
+    "earn": "運用",
     "swap": "スワップ",
     "dcaVault": "DCAボールト",
     "dcaShort": "DCA",
@@ -68,6 +69,10 @@
       "ai": {
         "label": "Stacks AI",
         "desc": "AIによるインサイト"
+      },
+      "earn": {
+        "label": "運用",
+        "desc": "ステーキングと利回り"
       }
     }
   },
@@ -787,6 +792,12 @@
       "createPlan": "プランを作成",
       "explore": "探索"
     },
+    "earnSummary": {
+      "title": "運用中",
+      "earning": "~{amount} STX を運用中",
+      "empty": "余剰 STX を運用に回す",
+      "cta": "運用"
+    },
     "stake": {
       "title": "STXをステーク",
       "subtitle": "流動性のあるstSTXを受け取り、ロックなしでステーキング利回りを獲得。",
@@ -853,7 +864,12 @@
       "nextCycle": "次のサイクル #{id} は <b>{blocks}ブロック</b>後（約{days}日）に開始",
       "totalStackedWide": "ネットワーク全体の総ステーキング: <b>{amount}</b>",
       "explorePools": "ステーキングプールを探索",
-      "learnStacking": "ステーキングについて学ぶ"
+      "learnStacking": "ステーキングについて学ぶ",
+      "liquidTitle": "リキッドステーキング",
+      "liquidStaked": "{amount} stSTX",
+      "liquidValue": "≈ {stx} STX",
+      "estApy": "予想 APY",
+      "unstakeSoon": "アンステーク（近日対応）"
     },
     "sbtc": {
       "title": "sBTCポジション",
@@ -1030,6 +1046,9 @@
         "dismiss": "閉じる"
       }
     }
+  },
+  "earn": {
+    "title": "運用"
   },
   "notifications": {
     "pageTitle": "通知",

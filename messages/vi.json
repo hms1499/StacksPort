@@ -4,6 +4,7 @@
     "bubbles": "Bong bóng",
     "assets": "Tài sản của tôi",
     "assetsShort": "Tài sản",
+    "earn": "Kiếm lời",
     "swap": "Hoán đổi",
     "dcaVault": "Kho DCA",
     "dcaShort": "DCA",
@@ -68,6 +69,10 @@
       "ai": {
         "label": "Stacks AI",
         "desc": "Phân tích bằng AI"
+      },
+      "earn": {
+        "label": "Kiếm lời",
+        "desc": "Stacking & lợi suất"
       }
     }
   },
@@ -787,6 +792,12 @@
       "createPlan": "Tạo kế hoạch",
       "explore": "Khám phá"
     },
+    "earnSummary": {
+      "title": "Đang kiếm lời",
+      "earning": "~{amount} STX đang sinh lời",
+      "empty": "Cho STX nhàn rỗi sinh lời",
+      "cta": "Kiếm lời"
+    },
     "stake": {
       "title": "Stake STX",
       "subtitle": "Nhận stSTX thanh khoản — kiếm lợi suất stacking, không khóa vốn.",
@@ -853,7 +864,12 @@
       "nextCycle": "Chu kỳ #{id} kế tiếp bắt đầu sau <b>{blocks} block</b> (~{days} ngày)",
       "totalStackedWide": "Tổng đã stack toàn mạng: <b>{amount}</b>",
       "explorePools": "Khám phá pool stacking",
-      "learnStacking": "Tìm hiểu về stacking"
+      "learnStacking": "Tìm hiểu về stacking",
+      "liquidTitle": "Liquid Stacking",
+      "liquidStaked": "{amount} stSTX",
+      "liquidValue": "≈ {stx} STX",
+      "estApy": "APY ước tính",
+      "unstakeSoon": "Rút (sắp có)"
     },
     "sbtc": {
       "title": "Vị thế sBTC",
@@ -1030,6 +1046,9 @@
         "dismiss": "Bỏ qua"
       }
     }
+  },
+  "earn": {
+    "title": "Kiếm lời"
   },
   "notifications": {
     "pageTitle": "Thông báo",

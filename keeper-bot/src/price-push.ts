@@ -15,7 +15,7 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!
 );
 
-async function fetchPrices(geckoIds: string[]): Promise<Record<string, number>> {
+export async function fetchPrices(geckoIds: string[]): Promise<Record<string, number>> {
   if (geckoIds.length === 0) return {};
   try {
     const ids = [...new Set(geckoIds)].join(',');

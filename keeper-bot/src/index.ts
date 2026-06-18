@@ -11,6 +11,7 @@ import { log } from "./logger.js";
 import { readAllConfigs, readAllDefers, writeDefers } from "./smart-dca-store.js";
 import { fetchSatsPerStxSignal } from "./smart-dca-signal.js";
 import { decideBatch } from "./smart-dca.js";
+import { runLimitOrders } from "./limit-run.js";
 
 const LOW_BALANCE_WARN_USTX = 100_000; // 0.1 STX
 const MAX_BATCH_SIZE = 50;
@@ -69,6 +70,26 @@ async function runOnce(): Promise<number> {
       balanceSTX: (balance / 1_000_000).toFixed(6),
     });
   }
+
+  // Read push subscriptions once — shared by limit-order fills + DCA execution.
+  // If Redis is unavailable, push is skipped but execution still proceeds.
+  let allSubs: Awaited<ReturnType<typeof readAllSubs>> = {};
+  try {
+    allSubs = await readAllSubs();
+  } catch (err) {
+    log.warn("Could not read push subscriptions — execution notifications will be skipped", {
+      err: String(err),
+    });
+  }
+
+  // ── Limit orders ─────────────────────────────────────────────────────────
+  // Fill any open order whose USD target has been hit. Independent of DCA, so
+  // it runs every cron inside the same lock, after reconcile. One tx per order.
+  const limit = await runLimitOrders({ client, config, allSubs }).catch((err) => {
+    log.error("limit-order run failed", { msg: String(err) });
+    return { filled: 0 };
+  });
+  log.info("limit orders processed", { filled: limit.filled });
 
   // Scan all vaults for executable plans
   const plans = await client.getExecutablePlansForAllVaults();
@@ -129,17 +150,7 @@ async function runOnce(): Promise<number> {
   const chunks = chunkArray(executablePlans, MAX_BATCH_SIZE);
   log.info("Executing batches", { totalPlans: executablePlans.length, chunks: chunks.length });
 
-  // Đọc push subscriptions một lần trước khi execute để tránh gọi Redis nhiều lần.
-  // Nếu Redis không available thì push notification sẽ bị skip nhưng execution vẫn tiếp tục.
-  let allSubs: Awaited<ReturnType<typeof readAllSubs>> = {};
-  try {
-    allSubs = await readAllSubs();
-  } catch (err) {
-    log.warn("Could not read push subscriptions — execution notifications will be skipped", {
-      err: String(err),
-    });
-  }
-
+  // allSubs was read once above (shared with the limit-order fill step).
   let anyFailed = false;
   // Nonce management only needed when >50 plans (multiple chunks)
   let nonce: number | undefined = chunks.length > 1

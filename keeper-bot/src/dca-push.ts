@@ -38,6 +38,41 @@ function vaultBody(vaultType: 0 | 1 | 2, planLabel: string, boughtDip: boolean):
     : `${planLabel} Your scheduled STX → USDCx sell executed. Tap to view details.`;
 }
 
+// Gửi push cho owner sau khi một limit order được fill. Owner đã biết trực tiếp
+// (không cần reverse-lookup planId). allSubs: snapshot từ readAllSubs() đầu run.
+export async function sendLimitFillNotification(
+  owner: string,
+  orderId: number,
+  txid: string,
+  allSubs: Record<string, SubEntry>,
+): Promise<void> {
+  const entry = allSubs[owner];
+  if (!entry?.subscription?.endpoint) {
+    log.info('limit-push: no subscription for owner', { owner, orderId, txid });
+    return;
+  }
+
+  const payload = JSON.stringify({
+    title: 'Limit order filled — sBTC acquired ✓',
+    body: `Order #${orderId} executed at your target price. Tap to view details.`,
+    txid,
+    url: `${HIRO_EXPLORER}/txid/${txid}?chain=mainnet`,
+  });
+
+  try {
+    await webpush.sendNotification(entry.subscription, payload);
+    log.info('limit-push: sent', { owner, orderId, txid });
+  } catch (err: unknown) {
+    const statusCode = (err as { statusCode?: number }).statusCode;
+    if (statusCode === 410 || statusCode === 404) {
+      log.info('limit-push: subscription gone, removing', { owner });
+      await deleteSub(owner).catch(() => {});
+    } else {
+      log.warn('limit-push: send failed', { owner, err: String(err) });
+    }
+  }
+}
+
 // Gửi push cho tất cả wallet owners có plans trong batch vừa execute.
 // allSubs: snapshot từ readAllSubs() đầu run — tránh gọi Redis thêm lần nữa.
 export async function sendDcaExecutionNotifications(

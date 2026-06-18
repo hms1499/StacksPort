@@ -19,8 +19,10 @@ export interface BotConfig {
   stxVaultContract:      string; // "SP2CMK....dca-vault"
   sbtcVaultContract:     string; // "SP2CMK....dca-vault-sbtc-v2"
   stxUsdcxVaultContract: string; // "SP2CMK....dca-vault-stx-usdcx"
+  limitOrderVaultContract: string; // "SP2CMK....limit-order-vault"
   hiroApiUrl:            string;
   minAmountOut:          number;
+  limitSlippageBps:      number; // default 100 = 1%
 }
 
 function isMnemonic(value: string): boolean {
@@ -79,7 +81,12 @@ export async function loadConfig(): Promise<BotConfig> {
       "STX_USDCX_VAULT_CONTRACT",
       "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.dca-vault-stx-usdcx"
     ),
+    limitOrderVaultContract: optional(
+      "LIMIT_ORDER_VAULT_CONTRACT",
+      "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV.limit-order-vault"
+    ),
     hiroApiUrl:   optional("HIRO_API_URL", "https://api.hiro.so"),
     minAmountOut: Number(optional("MIN_AMOUNT_OUT", "1")),
+    limitSlippageBps: Number(optional("LIMIT_SLIPPAGE_BPS", "100")),
   };
 }

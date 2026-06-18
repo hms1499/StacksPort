@@ -1,8 +1,22 @@
 import { DCAVault } from "@stacksport/dca-sdk";
+import {
+  serializeCV,
+  hexToCV,
+  cvToValue,
+  uintCV,
+  type ClarityValue,
+} from "@stacks/transactions";
 import type { BotConfig } from "./config.js";
 import type { BatchPlan } from "./batch-executor.js";
 import { CircuitBreaker, CircuitOpenError } from "./circuit-breaker.js";
 import { log } from "./logger.js";
+
+export interface ExecutableLimitOrder {
+  orderId: number;
+  owner: string;
+  amt: number;
+  targetUsdMicro: number;
+}
 
 export { CircuitOpenError };
 
@@ -180,6 +194,79 @@ export class StacksClient {
     ];
 
     return plans;
+  }
+
+  // ─── Limit orders ──────────────────────────────────────────────────────────
+
+  private cvHex(cv: ClarityValue): string {
+    const result = serializeCV(cv);
+    return typeof result === "string"
+      ? "0x" + result
+      : "0x" + Buffer.from(result as Uint8Array).toString("hex");
+  }
+
+  private async callReadOnly(
+    contract: string,
+    fn: string,
+    args: string[] = []
+  ): Promise<ClarityValue> {
+    const [address, name] = contract.split(".");
+    const res = await fetch(
+      `${this.config.hiroApiUrl}/v2/contracts/call-read/${address}/${name}/${fn}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sender: address, arguments: args }),
+      }
+    );
+    const json = (await res.json()) as { okay: boolean; result?: string; cause?: string };
+    if (!json.okay || !json.result) throw new Error(json.cause ?? "read-only call failed");
+    return hexToCV(json.result);
+  }
+
+  // get-stats() -> { oc, tvol, toe }; we only need the order counter.
+  private async readOrderCounter(contract: string): Promise<number> {
+    const cv = await this.callReadOnly(contract, "get-stats");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const v = cvToValue(cv) as any;
+    return Number(v.oc?.value ?? v.oc ?? 0);
+  }
+
+  // get-order(id) -> (optional tuple). Returns null for none.
+  private async readOrder(
+    contract: string,
+    id: number
+  ): Promise<{ owner: string; amt: number; targetUsdMicro: number; status: number } | null> {
+    const cv = await this.callReadOnly(contract, "get-order", [this.cvHex(uintCV(id))]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const some = cvToValue(cv) as any; // some(tuple) -> { value: {...} } | null
+    const t = some?.value ?? some;
+    if (!t || t.owner === undefined) return null;
+    return {
+      owner: String(t.owner.value ?? t.owner),
+      amt: Number(t.amt.value ?? t.amt),
+      targetUsdMicro: Number(t["target-usd"].value ?? t["target-usd"]),
+      status: Number(t.status.value ?? t.status),
+    };
+  }
+
+  // Walk 1..oc, keep OPEN orders (status 0).
+  async getExecutableLimitOrders(): Promise<ExecutableLimitOrder[]> {
+    const contract = this.config.limitOrderVaultContract;
+    const oc = await this.hiroBreaker.exec(() => this.readOrderCounter(contract));
+    const out: ExecutableLimitOrder[] = [];
+    for (let id = 1; id <= oc; id++) {
+      const order = await this.hiroBreaker.exec(() => this.readOrder(contract, id));
+      if (order && order.status === 0) {
+        out.push({
+          orderId: id,
+          owner: order.owner,
+          amt: order.amt,
+          targetUsdMicro: order.targetUsdMicro,
+        });
+      }
+    }
+    return out;
   }
 }
 

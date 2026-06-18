@@ -13,6 +13,8 @@ import {
   type SBTCData,
 } from "@/lib/stacks";
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
+import { getUserLimitOrders } from "./limit-orders-read";
+import type { LimitOrder } from "@/lib/limit-orders";
 import { recordSnapshot } from "./portfolio-history";
 
 // Top-N transactions cached in the snapshot. Callers slice client-side to the
@@ -42,6 +44,7 @@ export interface PortfolioSnapshot {
   pnl: PnLData | null;
   stackingStatus: StackingStatus | null;
   sbtcData: SBTCData | null;
+  limitOrders: LimitOrder[] | null;
 }
 
 function timeout<T>(p: Promise<T>, ms: number): Promise<T> {
@@ -78,6 +81,7 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     pnl,
     stackingStatus,
     sbtcData,
+    limitOrders,
   ] = await Promise.all([
     safe(getPortfolioValue(address)),
     safe(getFungibleTokens(address)),
@@ -87,6 +91,7 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     safe(getPnLData(address)),
     safe(getStackingStatus(address)),
     safe(getSBTCData(address)),
+    safe(getUserLimitOrders(address)),
   ]);
 
   if (tokensWithValues && tokensWithValues.totalUsd > 0) {
@@ -110,6 +115,7 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     pnl,
     stackingStatus,
     sbtcData,
+    limitOrders,
   };
 }
 

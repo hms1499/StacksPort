@@ -8,7 +8,9 @@ import AnimatedPage from "@/components/motion/AnimatedPage";
 import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 import RecentSwaps from "@/components/trade/RecentSwaps";
-import { ArrowLeftRight, Zap, Shield, RefreshCw, History } from "lucide-react";
+import CreateLimitOrderForm from "@/components/limit/CreateLimitOrderForm";
+import MyLimitOrders from "@/components/limit/MyLimitOrders";
+import { ArrowLeftRight, Zap, Shield, RefreshCw, History, Target } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Swap STX, sBTC & USDCx",
@@ -39,6 +41,28 @@ export default async function TradePage() {
             </div>
             <Suspense fallback={null}>
               <SwapWidget />
+            </Suspense>
+          </MotionCard>
+
+          {/* Limit Orders */}
+          <MotionCard className="glass-card rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-2.5 mb-5">
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: 'var(--accent-dim)' }}
+              >
+                <Target size={15} style={{ color: 'var(--accent)' }} />
+              </div>
+              <div>
+                <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("limitTitle")}</h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{t("limitDesc")}</p>
+              </div>
+            </div>
+            <Suspense fallback={null}>
+              <CreateLimitOrderForm />
+              <div className="mt-4">
+                <MyLimitOrders />
+              </div>
             </Suspense>
           </MotionCard>
 

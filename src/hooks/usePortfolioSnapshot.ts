@@ -14,6 +14,7 @@ import type {
   SBTCData,
 } from "@/lib/stacks";
 import type { DCAPlan } from "@/lib/dca";
+import type { LimitOrder } from "@/lib/limit-orders";
 
 const REFRESH_MS = 30_000;
 
@@ -86,6 +87,17 @@ export function useTransactionsSnap(
     };
   }
   return { data: tx, isLoading, error };
+}
+
+// Open limit orders (status 0). Derives the open count for the create-form cap.
+export function useLimitOrders(address: string | undefined): {
+  orders: LimitOrder[];
+  openCount: number;
+  isLoading: boolean;
+} {
+  const { data, isLoading } = usePortfolioSnapshot(address);
+  const orders: LimitOrder[] = data?.limitOrders ?? [];
+  return { orders, openCount: orders.length, isLoading };
 }
 
 export type { PortfolioSnapshot };

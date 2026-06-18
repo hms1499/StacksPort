@@ -201,8 +201,22 @@
       "dismissTip": "Dismiss tip"
     }
   },
+  "limit": {
+    "depositLabel": "Deposit (STX)",
+    "targetLabel": "Buy when sBTC ≤ (USD)",
+    "submit": "Create limit order",
+    "connectFirst": "Connect wallet",
+    "empty": "No open limit orders",
+    "buyTitle": "Buy with {stx} STX",
+    "targetLine": "Target ${usd}",
+    "createLabel": "Create limit order",
+    "cancelLabel": "Cancel order #{id}",
+    "cancelAria": "Cancel order"
+  },
   "trade": {
     "swapTitle": "Swap",
+    "limitTitle": "Limit Orders",
+    "limitDesc": "Auto-buy sBTC when the price drops to your target.",
     "recentSwaps": "Recent Swaps",
     "migrationTitle": "aeUSDC → USDCx Migration",
     "migrationDesc": "Upgrade to native Circle USDC on Stacks",

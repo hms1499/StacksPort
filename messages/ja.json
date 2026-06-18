@@ -201,8 +201,22 @@
       "dismissTip": "ヒントを閉じる"
     }
   },
+  "limit": {
+    "depositLabel": "預入 (STX)",
+    "targetLabel": "sBTC が (USD) 以下で買う",
+    "submit": "指値注文を作成",
+    "connectFirst": "ウォレット接続",
+    "empty": "未約定の指値注文はありません",
+    "buyTitle": "{stx} STX で買う",
+    "targetLine": "目標 ${usd}",
+    "createLabel": "指値注文を作成",
+    "cancelLabel": "注文 #{id} をキャンセル",
+    "cancelAria": "注文をキャンセル"
+  },
   "trade": {
     "swapTitle": "スワップ",
+    "limitTitle": "指値注文",
+    "limitDesc": "価格が目標まで下がったら sBTC を自動で買います。",
     "recentSwaps": "最近のスワップ",
     "migrationTitle": "aeUSDC → USDCx 移行",
     "migrationDesc": "Stacks上のネイティブCircle USDCにアップグレード",

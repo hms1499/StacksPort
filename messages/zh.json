@@ -201,8 +201,22 @@
       "dismissTip": "关闭提示"
     }
   },
+  "limit": {
+    "depositLabel": "存入 (STX)",
+    "targetLabel": "当 sBTC ≤ (USD) 时买入",
+    "submit": "创建限价单",
+    "connectFirst": "连接钱包",
+    "empty": "暂无未成交限价单",
+    "buyTitle": "用 {stx} STX 买入",
+    "targetLine": "目标 ${usd}",
+    "createLabel": "创建限价单",
+    "cancelLabel": "取消订单 #{id}",
+    "cancelAria": "取消订单"
+  },
   "trade": {
     "swapTitle": "兑换",
+    "limitTitle": "限价单",
+    "limitDesc": "当价格跌至你的目标时自动买入 sBTC。",
     "recentSwaps": "最近兑换",
     "migrationTitle": "aeUSDC → USDCx 迁移",
     "migrationDesc": "升级到 Stacks 上的原生 Circle USDC",

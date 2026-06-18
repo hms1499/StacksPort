@@ -201,8 +201,22 @@
       "dismissTip": "Bỏ qua gợi ý"
     }
   },
+  "limit": {
+    "depositLabel": "Nạp (STX)",
+    "targetLabel": "Mua khi sBTC ≤ (USD)",
+    "submit": "Tạo lệnh chờ",
+    "connectFirst": "Kết nối ví",
+    "empty": "Chưa có lệnh chờ nào",
+    "buyTitle": "Mua bằng {stx} STX",
+    "targetLine": "Mục tiêu ${usd}",
+    "createLabel": "Tạo lệnh chờ",
+    "cancelLabel": "Huỷ lệnh #{id}",
+    "cancelAria": "Huỷ lệnh"
+  },
   "trade": {
     "swapTitle": "Hoán đổi",
+    "limitTitle": "Lệnh chờ",
+    "limitDesc": "Tự động mua sBTC khi giá giảm về mục tiêu của bạn.",
     "recentSwaps": "Hoán đổi gần đây",
     "migrationTitle": "Chuyển đổi aeUSDC → USDCx",
     "migrationDesc": "Nâng cấp lên USDC gốc của Circle trên Stacks",

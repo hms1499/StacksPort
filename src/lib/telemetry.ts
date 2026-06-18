@@ -16,7 +16,9 @@ export type TelemetryEvent =
   | "wallet_connected"
   | "backtest_cta_clicked"
   | "dca_plan_created"
-  | "swap_executed";
+  | "swap_executed"
+  | "limit_order_created"
+  | "limit_order_cancelled";
 
 export function track(event: TelemetryEvent): void {
   if (typeof window === "undefined") return;

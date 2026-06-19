@@ -120,11 +120,9 @@ export default function Sidebar() {
         className="px-2 py-4 space-y-2"
         style={{ borderTop: '1px solid var(--border-subtle)' }}
       >
-        {!collapsed && (
-          <div className="px-1">
-            <LanguageSwitcher />
-          </div>
-        )}
+        <div className={cn(!collapsed && "px-1")}>
+          <LanguageSwitcher collapsed={collapsed} />
+        </div>
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={cn(

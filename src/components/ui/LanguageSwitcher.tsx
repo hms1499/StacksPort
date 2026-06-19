@@ -26,7 +26,11 @@ const labelKey: Record<string, string> = {
   pt: "portuguese",
 };
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({
+  collapsed = false,
+}: {
+  collapsed?: boolean;
+}) {
   const t = useTranslations("common");
   const locale = useLocale();
   const pathname = usePathname();
@@ -45,24 +49,35 @@ export default function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={t("language")}
+        // When collapsed the label isn't visible, so surface it on hover.
+        title={collapsed ? t(labelKey[locale] ?? locale) : undefined}
         className={cn(
-          "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium outline-none",
+          "w-full flex items-center px-3 py-2 rounded-xl text-sm font-medium outline-none",
           "text-[var(--text-secondary)] transition-colors",
           "hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]",
           "data-[state=open]:bg-[var(--accent-dim)] data-[state=open]:text-[var(--accent)]",
+          collapsed ? "justify-center" : "gap-2",
           isPending && "opacity-60",
         )}
       >
         <Flag locale={locale} />
-        <span className="truncate">{t(labelKey[locale] ?? locale)}</span>
-        <ChevronDown size={15} className="ml-auto shrink-0 opacity-70" />
+        {!collapsed && (
+          <>
+            <span className="truncate">{t(labelKey[locale] ?? locale)}</span>
+            <ChevronDown size={15} className="ml-auto shrink-0 opacity-70" />
+          </>
+        )}
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        align="start"
-        side="top"
+        align={collapsed ? "end" : "start"}
+        side={collapsed ? "right" : "top"}
         sideOffset={6}
-        className="min-w-[var(--radix-dropdown-menu-trigger-width)]"
+        className={cn(
+          collapsed
+            ? "min-w-[9rem]"
+            : "min-w-[var(--radix-dropdown-menu-trigger-width)]",
+        )}
       >
         {routing.locales.map((loc) => (
           <DropdownMenuItem

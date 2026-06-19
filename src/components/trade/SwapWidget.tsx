@@ -92,7 +92,6 @@ export default function SwapWidget() {
   const toTokens = getValidDestinations(fromToken.id);
 
   // Fetch from-token balance when token or address changes
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (!stxAddress) {
       setFromBalance(null);
@@ -113,7 +112,6 @@ export default function SwapWidget() {
   // value sane; it is intentionally NOT in the deps (fromBalance read there is
   // best-effort and irrelevant to the banner), which avoids a doubled STX
   // fetch every time the non-STX balance resolves.
-  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => {
     if (!stxAddress) {
       setStxBalance(null);
@@ -128,6 +126,8 @@ export default function SwapWidget() {
       .then((b) => { if (!cancelled) setStxBalance(b); })
       .catch(() => { if (!cancelled) setStxBalance(null); });
     return () => { cancelled = true; };
+    // fromBalance intentionally omitted — see comment above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromToken.id, stxAddress, balanceNonce]);
 
   function setPercent(pct: number) {
@@ -167,7 +167,6 @@ export default function SwapWidget() {
     [t]
   );
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     const amt = parseFloat(amountIn);
     if (!toToken || !amountIn || isNaN(amt)) {

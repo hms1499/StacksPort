@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Generated test artifacts (also in .gitignore) — never lint these.
     "playwright-report/**",
     "test-results/**",
+    // Compiled output (keeper-bot/dist etc.) — lint the TS sources, not the build.
+    "**/dist/**",
   ]),
   {
     rules: {
@@ -24,6 +26,12 @@ const eslintConfig = defineConfig([
       "react-hooks/purity": "off",
       // Downgrade unused-expressions to warning
       "@typescript-eslint/no-unused-expressions": "warn",
+      // Allow intentionally-unused identifiers prefixed with _ (e.g. params
+      // kept for signature compatibility).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
+      ],
     },
   },
 ]);

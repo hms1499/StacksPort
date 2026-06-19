@@ -14,6 +14,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ja: "Japanese (日本語)",
   ko: "Korean (한국어)",
   es: "Spanish (Español)",
+  pt: "Brazilian Portuguese (Português do Brasil)",
 };
 
 /** Every locale the AI cache may be keyed under (en + the localized ones). Used

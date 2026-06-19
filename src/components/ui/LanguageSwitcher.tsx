@@ -22,6 +22,7 @@ export default function LanguageSwitcher() {
     ja: "japanese",
     ko: "korean",
     es: "spanish",
+    pt: "portuguese",
   };
 
   function switchTo(next: string) {

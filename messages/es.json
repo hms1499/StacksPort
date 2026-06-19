@@ -1,0 +1,1599 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "bubbles": "Burbujas",
+    "assets": "Mis activos",
+    "assetsShort": "Activos",
+    "earn": "Ganar",
+    "swap": "Intercambiar",
+    "dcaVault": "Bóveda DCA",
+    "dcaShort": "DCA",
+    "alerts": "Alertas",
+    "stacksAi": "Stacks AI",
+    "aiShort": "AI",
+    "connectedApps": "Apps conectadas",
+    "appsShort": "Apps",
+    "more": "Más",
+    "collapse": "Contraer"
+  },
+  "common": {
+    "language": "Idioma",
+    "english": "English",
+    "vietnamese": "Tiếng Việt",
+    "chinese": "中文",
+    "japanese": "日本語",
+    "korean": "한국어",
+    "spanish": "Español",
+    "connectWallet": "Conectar billetera",
+    "connecting": "Conectando…",
+    "connected": "Conectado",
+    "copyAddress": "Copiar dirección",
+    "copied": "¡Copiado!",
+    "switchAccount": "Cambiar de cuenta",
+    "explore": "Explorar",
+    "disconnect": "Desconectar",
+    "openAccountMenu": "Abrir menú de cuenta",
+    "switchToLight": "Cambiar a modo claro",
+    "switchToDark": "Cambiar a modo oscuro",
+    "cmdk": {
+      "searchPlaceholder": "Buscar...",
+      "inputPlaceholder": "Escribe un comando o busca...",
+      "noResults": "No se encontraron resultados.",
+      "recent": "Reciente",
+      "allCommands": "Todos los comandos",
+      "enter": "Enter",
+      "navigate": "Navegar",
+      "select": "Seleccionar",
+      "close": "Cerrar",
+      "themeLight": "Cambiar a modo claro",
+      "themeDark": "Cambiar a modo oscuro",
+      "themeDesc": "Alternar tema",
+      "wallet": {
+        "connectLabel": "Conectar billetera",
+        "connectDesc": "Vincular Leather o Xverse",
+        "disconnectLabel": "Desconectar billetera",
+        "disconnectDesc": "Cerrar sesión de tu billetera",
+        "copyLabel": "Copiar dirección de billetera"
+      },
+      "language": {
+        "label": "Cambiar a {lang}",
+        "desc": "Cambiar el idioma de la app"
+      },
+      "home": {
+        "label": "Inicio",
+        "desc": "Resumen del portafolio"
+      },
+      "assets": {
+        "label": "Mis activos",
+        "desc": "Tenencias y seguimiento de P&L"
+      },
+      "swap": {
+        "label": "Intercambiar tokens",
+        "desc": "Opera en Bitflow DEX"
+      },
+      "dca": {
+        "label": "Bóveda DCA",
+        "desc": "Planes de inversión automática"
+      },
+      "notifications": {
+        "label": "Notificaciones",
+        "desc": "Alertas y precios objetivo"
+      },
+      "ai": {
+        "label": "Stacks AI",
+        "desc": "Análisis con IA"
+      },
+      "earn": {
+        "label": "Ganar",
+        "desc": "Stacking y rendimiento"
+      }
+    }
+  },
+  "dashboard": {
+    "backtest": {
+      "eyebrow": "Si hubieras estado acumulando",
+      "scenario": "{stx} STX cada semana · últimos 12 meses",
+      "sbtcLabel": "sBTC acumulado",
+      "valueLabel": "Valor hoy",
+      "growthLabel": "Crecimiento",
+      "cta": "Inicia tu plan",
+      "disclaimer": "Basado en precios reales STX/BTC de los últimos 12 meses. El rendimiento pasado no garantiza resultados futuros."
+    },
+    "balance": {
+      "title": "Valor del portafolio",
+      "hideBreakdown": "Ocultar desglose",
+      "showBreakdown": "Mostrar desglose del portafolio",
+      "other": "otros",
+      "noData": "Sin datos",
+      "noDataDesc": "Los datos del portafolio aún no están disponibles. Revisa tus activos o recibe STX para empezar a rastrear saldos reales aquí.",
+      "viewAssets": "Ver activos",
+      "swap": "Intercambiar",
+      "demo": "Demo",
+      "previewOnly": "Solo vista previa · Conéctate desde el banner o la barra superior para cargar saldos reales, planes DCA, alertas y actividad.",
+      "historyPending": "El historial del portafolio aparecerá tras cargar los saldos.",
+      "loadingChart": "Cargando gráfico…"
+    },
+    "banner": {
+      "title": "Conecta tu billetera",
+      "connect": "Conectar",
+      "connecting": "Conectando...",
+      "prop0": "Mira tu portafolio de Stacks en tiempo real",
+      "prop1": "Automatiza DCA de STX → sBTC — sin custodia",
+      "prop2": "Rastrea recompensas de stacking entre ciclos PoX",
+      "prop3": "Intercambia con Bitflow en un clic",
+      "prop4": "Recibe alertas cuando los precios superen tus objetivos"
+    },
+    "quickActions": {
+      "swap": "Intercambiar",
+      "dca": "DCA",
+      "receive": "Recibir",
+      "send": "Enviar",
+      "alert": "Alerta",
+      "batch": "Lote"
+    },
+    "footer": {
+      "poweredBy": "Impulsado por",
+      "contract": "contrato",
+      "copyContract": "Copiar dirección del contrato"
+    },
+    "dcaSummary": {
+      "title": "Planes DCA",
+      "manage": "Gestionar",
+      "emptyTitle": "Acumula sats en piloto automático",
+      "emptyDesc": "Configura una compra recurrente y deja que el bot keeper haga el resto — sin necesidad de supervisión.",
+      "createFirst": "Crea tu primer plan",
+      "active": "Activo",
+      "balance": "Saldo",
+      "swapsDone": "Intercambios hechos",
+      "pausedCount": "{count} en pausa",
+      "planLabel": "Plan #{id}",
+      "perSwap": "{amount} STX/intercambio",
+      "left": "{amount} restante",
+      "morePlans": "+{count} planes más"
+    },
+    "social": {
+      "unavailable": "Las métricas on-chain en vivo no están disponibles temporalmente.",
+      "liveOnStacks": "En vivo en Stacks",
+      "updated": "actualizado {time}",
+      "disclaimer": "Totales on-chain de ambas bóvedas DCA. El volumen en USD usa precios de mercado actuales y se oculta cuando una fuente requerida no está disponible.",
+      "metric": {
+        "plansCreated": "Planes DCA creados",
+        "volumeExecuted": "Volumen ejecutado",
+        "swapsExecuted": "Intercambios ejecutados",
+        "avgSwapsPerPlan": "Prom. intercambios / plan"
+      }
+    },
+    "welcome": {
+      "swapLabel": "Haz un intercambio",
+      "swapDesc": "Opera tokens en Bitflow DEX",
+      "dcaLabel": "Crear plan DCA",
+      "dcaDesc": "Configura inversión automática",
+      "alertLabel": "Configurar alerta de precio",
+      "alertDesc": "Recibe avisos sobre objetivos",
+      "allSet": "¡Todo listo!",
+      "next": "Siguiente: {step}",
+      "gettingStarted": "Primeros pasos",
+      "allDoneDesc": "Todas las acciones de configuración están hechas.",
+      "completed": "{done}/{total} completado",
+      "continue": "Continuar",
+      "dismiss": "Descartar primeros pasos",
+      "recommended": "Recomendado"
+    },
+    "widgets": {
+      "cryptoNews": "Noticias cripto",
+      "trending": "Tendencias",
+      "greedIndex": "Índice de codicia",
+      "myAssets": "Mis activos",
+      "send": "Enviar",
+      "receive": "Recibir"
+    },
+    "recent": {
+      "title": "Actividad reciente",
+      "connectTitle": "Conéctate para ver tu historial",
+      "connectDesc": "Tus intercambios, transferencias y ejecuciones DCA aparecerán aquí en tiempo real.",
+      "emptyTitle": "Borrón y cuenta nueva",
+      "emptyDesc": "Tu primer intercambio, transferencia o ejecución DCA aparecerá aquí."
+    },
+    "alertsPanel": {
+      "title": "Alertas de precio",
+      "fired": "{count} activadas",
+      "above": "por encima",
+      "below": "por debajo",
+      "watching": "Vigilando",
+      "paused": "En pausa",
+      "rearm": "Rearmar alerta",
+      "more": "+{count} más"
+    },
+    "grid": {
+      "showHide": "Mostrar u ocultar widgets",
+      "resetLayout": "Restablecer al diseño predeterminado",
+      "finishEditing": "Terminar edición",
+      "customizeLayout": "Personalizar diseño",
+      "done": "Listo",
+      "customize": "Personalizar",
+      "dismissTip": "Descartar sugerencia"
+    }
+  },
+  "limit": {
+    "depositLabel": "Depósito (STX)",
+    "targetLabel": "Comprar cuando sBTC ≤ (USD)",
+    "submit": "Crear orden límite",
+    "connectFirst": "Conectar billetera",
+    "empty": "Sin órdenes límite abiertas",
+    "buyTitle": "Comprar con {stx} STX",
+    "targetLine": "Objetivo ${usd}",
+    "createLabel": "Crear orden límite",
+    "cancelLabel": "Cancelar orden #{id}",
+    "cancelAria": "Cancelar orden"
+  },
+  "trade": {
+    "swapTitle": "Intercambiar",
+    "limitTitle": "Órdenes límite",
+    "limitDesc": "Compra sBTC automáticamente cuando el precio baje a tu objetivo.",
+    "recentSwaps": "Intercambios recientes",
+    "migrationTitle": "Migración aeUSDC → USDCx",
+    "migrationDesc": "Actualiza al USDC nativo de Circle en Stacks",
+    "routingTitle": "Enrutamiento on-chain",
+    "routingDesc": "Enruta los intercambios a través de los pools de Bitflow usando cotizaciones on-chain en vivo, con protección de slippage aplicada por el contrato.",
+    "yieldTitle": "Rendimiento real",
+    "yieldDesc": "Las comisiones van directamente a los proveedores de liquidez — sin recompensas inflacionarias de tokens.",
+    "tipsTitle": "Consejos de intercambio",
+    "tip1": "Configura el slippage en 0.5% para la mayoría de los intercambios. Súbelo a 1% para tokens de baja liquidez.",
+    "tip2": "sBTC → USDCx se enruta automáticamente en varios saltos a través de STX y aeUSDC — la ruta es fija, no la eliges tú.",
+    "tip3": "Revisa tu HealthScore en la pestaña Activos para ver qué tokens rebalancear.",
+    "tip4": "Las operaciones grandes pueden tener mayor impacto en el precio — considera dividirlas en intercambios más pequeños.",
+    "swap": {
+      "from": "Desde",
+      "to": "Hacia",
+      "youReceive": "Recibes (estimado)",
+      "connectToSwap": "Conecta tu billetera para intercambiar",
+      "waitingWallet": "Esperando a la billetera...",
+      "gettingQuote": "Obteniendo cotización...",
+      "swapPair": "Intercambiar {from} → {to}",
+      "selectTokens": "Selecciona tokens",
+      "poweredBy": "Impulsado por",
+      "errQuote": "No se pudo obtener la cotización",
+      "errExpired": "Cotización expirada — actualizando precio, inténtalo de nuevo.",
+      "errFailed": "Intercambio fallido"
+    }
+  },
+  "dca": {
+    "title": "Bóveda DCA",
+    "connectTitle": "Conecta tu billetera para comenzar",
+    "connectDesc": "Conecta una billetera Leather o Xverse para crear y gestionar tus planes DCA.",
+    "createInTitle": "Crear plan DCA In",
+    "createOutTitle": "Crear plan DCA Out",
+    "createStxOutTitle": "Crear plan DCA STX→USDCx",
+    "hero": {
+      "modeAria": "Modo DCA",
+      "expand": "Expandir hero",
+      "collapse": "Contraer hero",
+      "vault": "Bóveda DCA",
+      "activeCount": "{count} activos",
+      "next": "Siguiente {label}",
+      "tabIn": "DCA In",
+      "tabOut": "DCA Out",
+      "subtitleIn": "Compra sBTC automáticamente según un calendario con STX · Impulsado por Bitflow",
+      "subtitleOut": "Vende sBTC por USDCx automáticamente según un calendario · Impulsado por Bitflow"
+    },
+    "interval": {
+      "Daily": "Diario",
+      "Weekly": "Semanal",
+      "Monthly": "Mensual"
+    },
+    "stats": {
+      "totalVolume": "Volumen total",
+      "swapsExecuted": "Intercambios ejecutados",
+      "yourActivePlans": "Tus planes activos",
+      "nextSwap": "Próximo intercambio",
+      "viewPerformance": "Ver rendimiento y costo base",
+      "connectPrompt": "Conecta tu billetera para ver tus planes activos y el próximo intercambio."
+    },
+    "info": {
+      "inDcaTitle": "Promedio de costo (DCA)",
+      "inDcaDesc": "Distribuye tu riesgo comprando tokens según un calendario fijo, sin importar las fluctuaciones de precio.",
+      "inFeeTitle": "Comisión de protocolo 0.3%",
+      "inFeeDesc": "El 0.3% de cada intercambio va a la tesorería. El 99.7% restante se usa para comprar sBTC vía Bitflow.",
+      "inCustodyTitle": "Sin custodia",
+      "inCustodyDesc": "El STX se mantiene directamente en el contrato inteligente. Los tokens comprados se envían directo a tu billetera.",
+      "outDcaTitle": "Promedio de costo de salida (DCA Out)",
+      "outDcaDesc": "Vende sBTC por USDCx gradualmente según un calendario fijo para asegurar valor con el tiempo.",
+      "outFeeTitle": "Comisión de protocolo 0.3%",
+      "outFeeDesc": "El 0.3% de cada intercambio va a la tesorería. El 99.7% restante se intercambia por la ruta de 3 saltos de Bitflow.",
+      "outSwapTitle": "Intercambio de 3 saltos",
+      "outSwapDesc": "sBTC → STX → aeUSDC → USDCx. Todos los intercambios se enrutan por los pools de Bitflow automáticamente."
+    },
+    "form": {
+      "heading": "Crear plan DCA",
+      "spend": "Gastar",
+      "buy": "Comprar",
+      "stxDesc": "Token nativo de Stacks",
+      "sbtcDesc": "Bitcoin en Stacks",
+      "tokenRowLabel": "{label} (token de origen)",
+      "amountPerSwap": "Monto por intercambio",
+      "frequency": "Frecuencia",
+      "initialDeposit": "Depósito inicial",
+      "balance": "Saldo:",
+      "max": "Máx",
+      "createPlan": "Crear plan",
+      "waitingWallet": "Esperando a la billetera…",
+      "footnote": "Mainnet · comisión de protocolo 0.3% por intercambio",
+      "submitted": "¡Plan enviado!",
+      "submittedTx": "Tx: {txId}",
+      "submittedHint": "El plan aparecerá tras confirmarse la transacción (~1-2 min). Haz clic en actualizar.",
+      "createNew": "+ Crear nuevo plan",
+      "limitReached": "Límite de planes alcanzado ({max}). Cancela primero un plan antiguo.",
+      "minSwap": "Mínimo 1 STX por intercambio",
+      "minDeposit": "Depósito mínimo 2 STX",
+      "depositGteSwap": "El depósito inicial debe ser ≥ al monto por intercambio",
+      "insufficient": "STX insuficiente. Saldo actual: {balance} STX",
+      "submittedToast": "Plan DCA enviado — esperando confirmación",
+      "createFailed": "No se pudo crear el plan",
+      "txLabelCreated": "Plan DCA creado"
+    },
+    "preview": {
+      "livePreview": "Vista previa en vivo",
+      "swaps": "Intercambios",
+      "ends": "Termina ~",
+      "estOutput": "Salida est.",
+      "totalFee": "Comisión total"
+    },
+    "plans": {
+      "myPlans": "Mis planes",
+      "completed": "Completado",
+      "active": "Activo",
+      "secondsAgo": "hace {seconds}s",
+      "noPlans": "Aún no hay planes",
+      "noPlansDesc": "Crea tu primer plan DCA a la izquierda para empezar a comprar sBTC automáticamente.",
+      "tryPreset": "Prueba: {label}",
+      "preset10": "10 STX semanal",
+      "preset50": "50 STX mensual"
+    },
+    "smart": {
+      "unavailable": "Smart DCA (comprar la caída) está disponible en planes STX→sBTC.",
+      "saveFailed": "No se pudo guardar",
+      "title": "Smart DCA — comprar la caída",
+      "turnOff": "Desactivar",
+      "thresholdLabel": "Comprar solo cuando 1 STX obtenga ≥ este % más de sats que el promedio de {days} días",
+      "windowLabel": "Ventana de promedio (días)",
+      "maxDeferLabel": "Máx. de verificaciones a omitir antes de comprar a mercado",
+      "statusLine": "Ahora: {pct}% vs promedio — se necesita ≥ {need}%.",
+      "conditionMet": "Condición de caída cumplida.",
+      "waiting": "Esperando una mejor entrada.",
+      "update": "Actualizar",
+      "enable": "Activar Smart DCA"
+    },
+    "card": {
+      "tabOverview": "Resumen",
+      "tabExecute": "Ejecutar",
+      "tabHistory": "Historial",
+      "tabSmart": "Smart DCA",
+      "expandAria": "Expandir detalles del plan",
+      "collapseAria": "Contraer detalles del plan",
+      "statusActive": "Activo",
+      "statusPaused": "En pausa",
+      "statusDepleted": "Agotado",
+      "summaryTitle": "Intercambios ejecutados · intercambios que el saldo actual aún puede costear",
+      "summary": "{done} hechos · {affordable} costeables · {left} STX restantes",
+      "readyNow": "⏱ Listo ahora",
+      "pendingFirst": "⏱ Primer intercambio pendiente",
+      "swapsLeft": "{count, plural, one {# intercambio restante} other {# intercambios restantes}}",
+      "lowBalanceTitle": "Solo queda financiación para {count, plural, one {# intercambio} other {# intercambios}}. No hay opción de recarga — crea un nuevo plan para continuar.",
+      "execute": "Ejecutar",
+      "cancelRefund": "Cancelar y reembolsar",
+      "planNumber": "Plan #{id}",
+      "cancelConfirm": "¿Estás seguro? Se te reembolsarán <b>{amount} STX</b>.",
+      "keepPlan": "Mantener plan",
+      "cancelSubmitted": "Cancelación enviada — reembolso pendiente de confirmación",
+      "cancelFailed": "No se pudo cancelar el plan",
+      "cancelTxLabel": "Plan #{id} cancelar y reembolsar"
+    },
+    "overview": {
+      "swapsDone": "Intercambios hechos",
+      "stxSpent": "STX gastado",
+      "avgPerSwap": "Prom. STX / intercambio",
+      "created": "Creado",
+      "addStx": "Agregar STX",
+      "add": "Agregar",
+      "topUpHint": "Recarga al menos {amount} STX más, luego reanuda para agregar fondos.",
+      "resumeHint": "Reanuda el plan para agregar fondos.",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "cancelRefund": "Cancelar y reembolsar",
+      "depositedToast": "Depositados {amount} STX (tx {tx}…)",
+      "depositTxLabel": "Plan #{id} depósito +{amount} STX",
+      "pausedTxLabel": "Plan #{id} pausado",
+      "resumedTxLabel": "Plan #{id} reanudado"
+    },
+    "execute": {
+      "paused": "El plan está en pausa. Reanúdalo desde la pestaña Resumen.",
+      "insufficient": "Saldo insuficiente. Se necesitan {amount} STX más.",
+      "pendingFirst": "Primer intercambio pendiente.",
+      "nextIn": "Próximo en ~{count, plural, one {# bloque} other {# bloques}}.",
+      "notReady": "No está listo para ejecutar. {reason}",
+      "readyToExecute": "Listo para ejecutar",
+      "protocolFee": "comisión de protocolo 0.3%",
+      "swapAmount": "Intercambiar {amount} STX",
+      "slip": "slip",
+      "fetchingQuote": "Obteniendo cotización…",
+      "failedQuote": "No se pudo obtener la cotización",
+      "minSats": "mín {amount} sats",
+      "routingVia": "Enrutando vía",
+      "advanced": "Avanzado",
+      "hide": "Ocultar",
+      "routerPlaceholder": "SP….swap-router-contract",
+      "invalidContract": "No es un id de contrato válido (ej. SP….contract-name).",
+      "customRouterWarn": "Router personalizado — las ejecuciones a través de contratos no verificados pueden vaciar tu intercambio. Úsalo solo si conoces el contrato.",
+      "resetDefault": "Restablecer al predeterminado",
+      "executing": "Ejecutando…",
+      "execute": "Ejecutar",
+      "executedToast": "¡Plan ejecutado! Intercambio completado",
+      "executedTxLabel": "Plan #{id} ejecutado",
+      "executionFailed": "Ejecución fallida"
+    },
+    "history": {
+      "recentExecutions": "Ejecuciones recientes",
+      "refreshAria": "Actualizar historial",
+      "failedLoad": "No se pudo cargar el historial",
+      "noExecutions": "Aún no hay ejecuciones",
+      "noExecutionsDesc": "Los intercambios aparecerán aquí una vez que el keeper ejecute este plan.",
+      "awaitingConfirmation": "Esperando confirmación",
+      "block": "Bloque #{height}",
+      "fee": "comisión {amount}",
+      "pending": "pendiente",
+      "statusSuccess": "éxito",
+      "statusPending": "pendiente",
+      "statusFailed": "fallido",
+      "secondsAgo": "hace {n}s",
+      "minutesAgo": "hace {n}m",
+      "hoursAgo": "hace {n}h",
+      "daysAgo": "hace {n}d"
+    },
+    "outSourceSbtc": "Vender sBTC",
+    "outSourceStx": "Vender STX",
+    "out": {
+      "form": {
+        "heading": "Crear plan DCA Out",
+        "spend": "Gastar",
+        "buy": "Comprar",
+        "sbtcDesc": "Bitcoin en Stacks",
+        "usdcxDesc": "USD Coin en Stacks",
+        "tokenRowLabel": "{label} (token de origen)",
+        "amountPerSwap": "Monto por intercambio",
+        "frequency": "Frecuencia",
+        "initialDeposit": "Depósito inicial",
+        "balance": "Saldo:",
+        "max": "Máx",
+        "createPlan": "Crear plan",
+        "waitingWallet": "Esperando a la billetera…",
+        "footnote": "Mainnet · comisión de protocolo 0.3% por intercambio · intercambio de 3 saltos vía Bitflow",
+        "submitted": "¡Plan enviado!",
+        "submittedTx": "Tx: {txId}",
+        "submittedHint": "El plan aparecerá tras confirmarse la transacción (~1-2 min). Haz clic en actualizar.",
+        "createNew": "+ Crear nuevo plan",
+        "minSwap": "Mínimo 334 satoshis por intercambio (0.00000334 sBTC)",
+        "minDeposit": "Depósito mínimo 668 satoshis",
+        "depositGteSwap": "El depósito inicial debe ser ≥ al monto por intercambio",
+        "insufficient": "sBTC insuficiente. Saldo actual: {balance} sBTC",
+        "createdToast": "¡Plan creado! Tx: {tx}...",
+        "createFailed": "No se pudo crear el plan"
+      },
+      "plans": {
+        "myPlans": "Mis planes",
+        "secondsAgo": "hace {seconds}s",
+        "noPlans": "Aún no hay planes",
+        "noPlansDesc": "Crea tu primer plan DCA Out a la izquierda para empezar a vender sBTC por USDCx.",
+        "tryPreset": "Prueba: {label}",
+        "preset1": "0.001 sBTC diario",
+        "preset2": "0.005 sBTC semanal"
+      },
+      "card": {
+        "statusActive": "Activo",
+        "statusPaused": "En pausa",
+        "statusDepleted": "Agotado",
+        "readyNow": "⏱ Listo ahora",
+        "pendingFirst": "⏱ Primer intercambio pendiente",
+        "next": "⏱ Siguiente {countdown}",
+        "execute": "Ejecutar",
+        "progress": "{done}/{total} · {left} restante",
+        "swapsDone": "Intercambios hechos",
+        "sbtcSpent": "sBTC gastado",
+        "blockCreated": "Bloque creado",
+        "targetToken": "Token objetivo",
+        "readyToExecute": "Listo para ejecutar",
+        "protocolFee": "comisión de protocolo 0.3%",
+        "netSwap": "Intercambio neto: {amount} sBTC",
+        "slip": "slip",
+        "threeHop": "3 saltos: sBTC → STX → aeUSDC → USDCx",
+        "swapRouter": "Router de intercambio",
+        "routerPlaceholder": "SP….swap-router-contract",
+        "executing": "Ejecutando…",
+        "depositPlaceholder": "Depositar sBTC",
+        "add": "Agregar",
+        "pause": "Pausar",
+        "resume": "Reanudar",
+        "cancelRefund": "Cancelar y reembolsar",
+        "planNumber": "Plan #{id}",
+        "cancelConfirm": "¿Estás seguro? Se te reembolsarán <b>{amount} sBTC</b>.",
+        "keepPlan": "Mantener plan",
+        "cancelledToast": "Plan cancelado y reembolsado",
+        "cancelFailed": "No se pudo cancelar el plan",
+        "executedToast": "¡Plan ejecutado! Intercambio completado",
+        "executionFailed": "Ejecución fallida"
+      },
+      "history": {
+        "recentExecutions": "Ejecuciones recientes",
+        "refreshAria": "Actualizar historial",
+        "failedLoad": "No se pudo cargar el historial",
+        "noExecutions": "Aún no hay ejecuciones",
+        "noExecutionsDesc": "Los intercambios aparecerán aquí una vez que el keeper ejecute este plan.",
+        "awaitingConfirmation": "Esperando confirmación",
+        "block": "Bloque #{height}",
+        "pending": "pendiente",
+        "statusSuccess": "éxito",
+        "statusPending": "pendiente",
+        "statusFailed": "fallido",
+        "secondsAgo": "hace {n}s",
+        "minutesAgo": "hace {n}m",
+        "hoursAgo": "hace {n}h",
+        "daysAgo": "hace {n}d"
+      },
+      "stxPlans": {
+        "myPlans": "Mis planes",
+        "secondsAgo": "hace {seconds}s",
+        "noPlans": "Aún no hay planes",
+        "noPlansDesc": "Crea tu primer plan STX→USDCx a la izquierda para empezar a vender STX por USDCx.",
+        "tryPreset": "Prueba: {label}",
+        "preset1": "10 STX semanal",
+        "preset2": "50 STX mensual"
+      },
+      "stxCard": {
+        "stxSpent": "STX gastado",
+        "netSwap": "Intercambio neto: {amount} STX",
+        "directSwap": "STX → USDCx vía router de Bitflow",
+        "execute": "Ejecutar",
+        "depositPlaceholder": "Depositar STX",
+        "cancelledToast": "Plan cancelado y reembolsado",
+        "cancelFailed": "No se pudo cancelar el plan",
+        "executedToast": "¡Plan ejecutado! Intercambio completado",
+        "executionFailed": "Ejecución fallida",
+        "cancelConfirm": "¿Estás seguro? Se te reembolsarán <b>{amount} STX</b>."
+      },
+      "stxForm": {
+        "heading": "Crear plan DCA STX→USDCx",
+        "spend": "Gastar",
+        "buy": "Comprar",
+        "stxDesc": "Token nativo de Stacks",
+        "usdcxDesc": "USD Coin en Stacks",
+        "tokenRowLabel": "{label} (token de origen)",
+        "amountPerSwap": "Monto por intercambio",
+        "frequency": "Frecuencia",
+        "initialDeposit": "Depósito inicial",
+        "balance": "Saldo:",
+        "max": "Máx",
+        "createPlan": "Crear plan",
+        "waitingWallet": "Esperando a la billetera…",
+        "footnote": "Mainnet · comisión de protocolo 0.3% por intercambio",
+        "submitted": "¡Plan enviado!",
+        "submittedTx": "Tx: {txId}",
+        "submittedHint": "El plan aparecerá tras confirmarse la transacción (~1-2 min). Haz clic en actualizar.",
+        "createNew": "+ Crear nuevo plan",
+        "minSwap": "Mínimo 1 STX por intercambio",
+        "minDeposit": "Depósito mínimo 2 STX",
+        "depositGteSwap": "El depósito inicial debe ser ≥ al monto por intercambio",
+        "insufficient": "STX insuficiente. Saldo actual: {balance} STX",
+        "createdToast": "¡Plan creado! Tx: {tx}...",
+        "createFailed": "No se pudo crear el plan"
+      }
+    },
+    "perf": {
+      "content": {
+        "title": "Rendimiento DCA",
+        "back": "Volver a los planes"
+      },
+      "tabs": {
+        "in": "DCA In",
+        "out": "DCA Out",
+        "aria": "Vista de rendimiento DCA"
+      },
+      "common": {
+        "connectTitle": "Conecta tu billetera para ver el rendimiento",
+        "swapsAnalyzed": "{count, plural, one {# intercambio analizado} other {# intercambios analizados}}",
+        "swapsExecuted": "Intercambios ejecutados",
+        "acrossPlans": "en {count, plural, one {# plan} other {# planes}}",
+        "noExecutions": "Aún no hay ejecuciones",
+        "perPlanBreakdown": "Desglose por plan",
+        "planNumber": "Plan #{id}",
+        "everyCadence": "cada {cadence}",
+        "completed": "· completado",
+        "executions": "Ejecuciones",
+        "latestExecution": "Última ejecución",
+        "atSpot": "{value} al contado",
+        "lastNDays": "últimos {days} días"
+      },
+      "in": {
+        "connectDesc": "Conéctate para ver el costo base y el historial de ejecuciones de todos tus planes DCA.",
+        "noExecDesc": "El bot keeper aún no ha ejecutado tus planes. Las métricas de rendimiento aparecerán cuando se complete el primer intercambio.",
+        "stxInvested": "STX invertido",
+        "sbtcAccumulated": "sBTC acumulado",
+        "avgCostBasis": "Costo base prom.",
+        "per1Sbtc": "por 1 sBTC",
+        "basisVsSpot": "Tu costo base vs el spot de hoy",
+        "basisVsSpotInfo": "Compara tu promedio ponderado de STX por sBTC en todos los intercambios ejecutados con la tasa actual STX/sBTC (BTC USD / STX USD). Un % positivo significa que obtuviste más sBTC por STX que lo que daría el spot de hoy.",
+        "basisVsSpotAria": "Acerca de: Tu costo base vs el spot de hoy",
+        "spotLine": "Spot: 1 sBTC = <b>{spot}</b> STX · Tu prom.: <b>{avg}</b> STX",
+        "cheaperThanSpot": "más barato que el spot",
+        "aboveSpot": "por encima del spot",
+        "dcaVsLump": "DCA vs suma única",
+        "dcaVsLumpInfo": "Para cada plan, consultamos los precios de cierre STX-USD y BTC-USD del día de la primera ejecución de ese plan y preguntamos: si hubieras volcado el mismo total de STX en sBTC el día 0 a la tasa spot de entonces, ¿cuánto sBTC tendrías? La diferencia muestra si el DCA superó o quedó por debajo de esa compra hipotética. Excluye planes cuyos precios históricos no se pudieron obtener.",
+        "dcaVsLumpAria": "Acerca de: DCA vs suma única",
+        "lumpSummary": "En {count, plural, one {# plan} other {# planes}} · real <b>{actual}</b> sBTC vs suma única <b>{lump}</b> sBTC",
+        "lumpExcluded": "{count, plural, one {# plan excluido} other {# planes excluidos}} — precio histórico no disponible",
+        "deltaVsLump": "{delta} sBTC vs suma única",
+        "lumpUnavailableTitle": "Comparación de suma única no disponible",
+        "lumpUnavailableDesc": "No se pudieron obtener de CoinGecko los precios históricos STX/BTC de las fechas de inicio de tus planes. La franja de costo base vs el spot de hoy de arriba sigue funcionando.",
+        "cellStxIn": "STX entrada",
+        "cellSbtcOut": "sBTC salida",
+        "cellAvgCost": "Costo prom.",
+        "satsSub": "{sats} sats",
+        "nowSub": "≈ {usd} ahora",
+        "vsLumpLabel": "vs suma única",
+        "vsLumpDetail": "el {date} — la suma única habría sido <b>{sbtc}</b> sBTC"
+      },
+      "out": {
+        "connectDesc": "Conéctate para ver tu historial de ventas sBTC→USDCx.",
+        "noPlans": "Aún no hay planes DCA Out",
+        "noPlansDesc": "DCA Out convierte sBTC de vuelta a USDCx según un calendario. Útil para tomar ganancias o salidas programadas.",
+        "createPlan": "Crear un plan DCA Out →",
+        "noExecDesc": "El bot keeper aún no ha ejecutado tus planes DCA Out.",
+        "sbtcInvested": "sBTC invertido",
+        "tokenReceived": "{token} recibido",
+        "avgSellRate": "Tasa de venta prom.",
+        "per1Sbtc": "por 1 sBTC",
+        "sellVsSpot": "Tu tasa de venta vs el spot de hoy",
+        "sellVsSpotInfo": "Promedio ponderado de USDCx recibido por sBTC en las ejecuciones vs la tasa actual sBTC→USDCx (BTC USD, ya que USDCx ≈ $1). Un % positivo significa que vendiste a mejores tasas que la actual.",
+        "sellVsSpotAria": "Acerca de: Tu tasa de venta vs el spot de hoy",
+        "spotLine": "Spot: 1 sBTC ≈ <b>{spot}</b> {token} · Tu prom.: <b>{avg}</b> {token}",
+        "soldAboveSpot": "vendido por encima del spot",
+        "soldBelowSpot": "vendido por debajo del spot",
+        "cellSbtcIn": "sBTC entrada",
+        "cellTokenOut": "{token} salida",
+        "cellAvgRate": "Tasa prom.",
+        "avgRateValue": "{rate} {token}/sBTC",
+        "sourceAria": "Origen de DCA out",
+        "sourceSbtc": "sBTC Out",
+        "sourceStx": "STX Out",
+        "stxNoPlans": "Aún no hay planes DCA STX→USDCx",
+        "stxNoPlansDesc": "STX Out convierte STX a USDCx según un calendario.",
+        "stxNoExecDesc": "El bot keeper aún no ha ejecutado tus planes STX→USDCx.",
+        "stxInvested": "STX invertido",
+        "stxAvgSellRate": "Tasa de venta prom.",
+        "stxPer1Stx": "por 1 STX",
+        "stxSellVsSpot": "Tu tasa de venta vs el spot de hoy",
+        "stxSellVsSpotInfo": "Promedio ponderado de USDCx recibido por STX en las ejecuciones vs el precio actual de STX (ya que USDCx ≈ $1). Un % positivo significa que vendiste a mejores tasas que la actual.",
+        "stxSellVsSpotAria": "Acerca de: Tu tasa de venta de STX vs el spot de hoy",
+        "stxSpotLine": "Spot: 1 STX ≈ <b>{spot}</b> {token} · Tu prom.: <b>{avg}</b> {token}",
+        "stxCellStxIn": "STX entrada",
+        "stxAvgRateValue": "{rate} {token}/STX"
+      },
+      "chart": {
+        "title": "Costo base a lo largo del tiempo",
+        "need2": "Se necesitan al menos 2 ejecuciones en días distintos para un gráfico de costo base significativo.",
+        "pricesUnavailable": "Precios históricos STX/BTC no disponibles — no se puede dibujar el gráfico.",
+        "legendBasis": "Tu costo base acumulado",
+        "legendSpot": "Spot STX/sBTC",
+        "tooltipBasis": "Costo base",
+        "tooltipSpot": "Spot"
+      },
+      "chartOut": {
+        "title": "Tasa de venta a lo largo del tiempo",
+        "need2": "Se necesitan al menos 2 ejecuciones en días distintos para un gráfico de tasa de venta significativo.",
+        "pricesUnavailable": "Precios históricos de BTC no disponibles — no se puede dibujar el gráfico.",
+        "legendBasis": "Tu tasa de venta prom. acumulada ({token} por sBTC)",
+        "legendSpot": "Spot {token}/sBTC",
+        "tooltipAvg": "Tu prom.",
+        "tooltipSpot": "Spot"
+      }
+    }
+  },
+  "assets": {
+    "page": {
+      "title": "Mis activos",
+      "tabsAria": "Secciones de activos",
+      "tabOverview": "Resumen",
+      "tabHoldings": "Tenencias",
+      "tabPositions": "Posiciones",
+      "tabActivity": "Actividad"
+    },
+    "summary": {
+      "connectTitle": "Resumen del portafolio",
+      "connectDesc": "Conecta tu billetera para ver tu patrimonio neto y la asignación de activos.",
+      "netWorth": "Patrimonio neto",
+      "other": "Otros",
+      "h24": "24h",
+      "portfolio24h": "Portafolio 24h",
+      "stx24h": "STX 24h (el historial del portafolio aún se está registrando)",
+      "assetsLine": "{balance} STX · {count} activos"
+    },
+    "health": {
+      "title": "Puntaje de salud del portafolio",
+      "connectMsg": "Conecta tu billetera para ver tu puntaje de salud",
+      "volatile": "Volátil {pct}%",
+      "stable": "Estable {pct}%",
+      "outOf": "/ 100",
+      "levelExcellent": "Excelente",
+      "levelGood": "Bueno",
+      "levelModerate": "Moderado",
+      "levelNeedsWork": "Necesita mejorar",
+      "levelUnbalanced": "Desequilibrado",
+      "fallbackToken": "activos volátiles",
+      "mVolatileConcentration": "Concentración volátil",
+      "mAssetCount": "Cantidad de activos",
+      "mDistributionQuality": "Calidad de distribución",
+      "mStablecoinReserve": "Reserva de stablecoins",
+      "cNone": "Sin activos volátiles — sin riesgo de concentración",
+      "cExtreme": "{pct}% de los activos volátiles en {token} — extremo",
+      "cHigh": "{pct}% de los activos volátiles en {token} — alto",
+      "cModerate": "{pct}% de los activos volátiles en {token} — moderado",
+      "cManageable": "{pct}% en el activo volátil principal — manejable",
+      "cWellSpread": "{pct}% en el activo volátil principal — bien distribuido",
+      "aNone": "Sin activos volátiles — el portafolio está totalmente en stablecoins",
+      "aOne": "1 activo volátil — sin diversificación",
+      "aTwo": "2 activos volátiles — diversificación mínima",
+      "aModerate": "{n} activos volátiles — diversificación moderada",
+      "aGood": "{n} activos volátiles — buena diversificación",
+      "aExcellent": "{n} activos volátiles — excelente diversificación",
+      "hNone": "Sin activos volátiles para distribuir",
+      "hHighlyConcentrated": "Distribución volátil muy concentrada",
+      "hConcentrated": "Distribución volátil concentrada",
+      "hModerate": "Equilibrio moderado entre activos volátiles",
+      "hGood": "Buen equilibrio entre activos volátiles",
+      "hExcellent": "Excelente equilibrio entre activos volátiles",
+      "sMostlyCash": "{pct}% stablecoins — mayormente efectivo, infrautilizado",
+      "sCautious": "{pct}% stablecoins — posición cautelosa",
+      "sHealthy": "{pct}% stablecoins — reserva saludable",
+      "sSmall": "{pct}% stablecoins — reserva pequeña",
+      "sNone": "Sin reserva de stablecoins",
+      "tipNoVolatile": "Tu portafolio es {pct}% stablecoins sin activos volátiles. Considera desplegar en tokens del ecosistema Stacks como STX, ALEX o Velar.",
+      "tipMostlyStable": "El {pct}% de tu portafolio está en stablecoins. Una gran posición en efectivo es segura pero limita la exposición al crecimiento.",
+      "tipExtremeConc": "El {pct}% de tu asignación volátil está en {token}. Incluso posiciones pequeñas en 2–3 otros tokens de Stacks reducirían mucho el riesgo de concentración.",
+      "tipOneAsset": "Tienes solo 1 activo volátil ({token}). Agregar 2–3 tokens más del ecosistema Stacks (ej. ALEX, sBTC, Velar) mejoraría tu puntaje rápidamente.",
+      "tipHighConc": "{token} representa el {pct}% de tu portafolio volátil. Rebalancear gradualmente hacia otros activos podría reducir tu riesgo de concentración.",
+      "tipNoStable": "No se detectó reserva de stablecoins. Mantener un 5–15% en una stablecoin como USDCx ofrece un colchón en caídas del mercado.",
+      "tipHealthy": "Tu portafolio muestra una diversificación saludable en el ecosistema Stacks. Sigue manteniendo una asignación equilibrada.",
+      "tipDefault": "Considera rebalancear gradualmente los activos volátiles para repartir el peso de forma más uniforme y mantener una reserva de stablecoins."
+    },
+    "holdings": {
+      "title": "Tenencias de tokens",
+      "flagged": "{count} marcados",
+      "assetsCount": "{count} activos",
+      "exportTitle": "Exportar CSV",
+      "export": "Exportar",
+      "colToken": "Token",
+      "colBalance": "Saldo",
+      "colPrice": "Precio",
+      "col7d": "7d",
+      "colValue": "Valor",
+      "col24h": "24h",
+      "noTokens": "No se encontraron tokens",
+      "noTokensDesc": "Conecta tu billetera o fóndéala con STX para ver aquí tus tenencias de tokens.",
+      "flaggedToggle": "{count, plural, one {# token marcado} other {# tokens marcados}} (spam / no verificado)",
+      "suspicious": "Sospechoso",
+      "unverified": "No verificado",
+      "suspiciousTitle": "Este token no tiene metadatos registrados. Podría ser un airdrop de spam o un token estafa. No interactúes a menos que confíes en la fuente.",
+      "unverifiedTitle": "Este token no figura en ningún feed de precios conocido. Podría ser legítimo pero no verificado. Procede con cautela.",
+      "send": "Enviar",
+      "receive": "Recibir",
+      "bannerSuspicious": "<b>{count, plural, one {# token sospechoso} other {# tokens sospechosos}}</b> detectado — probablemente airdrops de spam sin metadatos registrados. ",
+      "bannerUnverified": "<b>{count, plural, one {# token no verificado} other {# tokens no verificados}}</b> sin datos de precio. ",
+      "bannerWarn": "No interactúes con tokens desconocidos a menos que confíes en la fuente."
+    },
+    "perf": {
+      "title": "Rendimiento del portafolio",
+      "connectTitle": "Rastrea el portafolio a lo largo del tiempo",
+      "connectDesc": "Conecta tu billetera para registrar el historial de patrimonio neto. El seguimiento empieza en tu primera visita.",
+      "all": "Todo",
+      "over": "en {period}",
+      "loading": "Cargando gráfico…",
+      "notEnough": "Aún no hay suficiente historial — el patrimonio neto se registra cada vez que visitas. Vuelve en una hora para tu primer punto de datos.",
+      "trackingSince": "Rastreando desde {date}",
+      "tooltipPortfolio": "Portafolio"
+    },
+    "yield": {
+      "header": "Pon tus activos a trabajar",
+      "estimatedApy": "APY estimado",
+      "active": "Activo",
+      "variable": "Variable",
+      "disclaimer": "Las estimaciones de APY son indicativas — las recompensas reales varían según el ciclo, la profundidad del pool y las condiciones del mercado.",
+      "subline": "{count, plural, one {# intercambio ejecutado} other {# intercambios ejecutados}} · {desc}",
+      "stackingLabel": "Stacking líquido (stSTX)",
+      "stackingDesc": "Haz stacking de STX por stSTX líquido — gana rendimiento de stacking sin bloqueo.",
+      "sbtcLabel": "Liquidez sBTC",
+      "sbtcDesc": "Provee sBTC a pools de DEX (Bitflow / ALEX) para ganar comisiones de intercambio. Variable.",
+      "dcaLabel": "DCA recurrente",
+      "dcaAsset": "Estrategia",
+      "dcaDesc": "Promedia hacia sBTC/USDC según un calendario. Los retornos dependen de la acción del precio.",
+      "viewPosition": "Ver posición",
+      "startStacking": "Iniciar stacking",
+      "managePlans": "Gestionar planes",
+      "createPlan": "Crear plan",
+      "explore": "Explorar"
+    },
+    "earnSummary": {
+      "title": "Ganando",
+      "earning": "~{amount} STX trabajando",
+      "empty": "Pon tu STX inactivo a trabajar",
+      "cta": "Ganar"
+    },
+    "stake": {
+      "title": "Stake de STX",
+      "subtitle": "Recibe stSTX líquido — gana rendimiento de stacking sin bloqueo.",
+      "amountLabel": "Monto a hacer stake",
+      "balance": "Disponible: {balance} STX",
+      "max": "Máx",
+      "estReceive": "Recibirás ≈ {amount} stSTX",
+      "estNote": "El monto final lo fija la tasa de cambio en vivo.",
+      "minError": "El stake mínimo es {min} STX.",
+      "balanceError": "El monto supera tu STX disponible.",
+      "submit": "Stake de STX",
+      "submitting": "Confirmando…",
+      "submittedTitle": "Stake enviado",
+      "submittedDesc": "Tu stSTX aparecerá cuando se confirme la transacción.",
+      "txConfirmed": "STX en stake",
+      "txLabel": "Stake de STX",
+      "unstake": "Retirar stake (intercambiar stSTX → STX)",
+      "currentPosition": "En stake: {amount} STX",
+      "connectFirst": "Conecta tu billetera para hacer stake.",
+      "nudgeTitle": "{amount} STX inactivo",
+      "nudgeBody": "Hazle stake como stSTX para ganar ~{apy}% sin bloqueo.",
+      "nudgeCta": "Hacer stake ahora"
+    },
+    "pnl": {
+      "title": "Seguimiento de P&L",
+      "assets": "{count} activos",
+      "exportTitle": "Exportar CSV",
+      "export": "Exportar",
+      "calculating": "Calculando...",
+      "connect": "Conecta tu billetera para ver el P&L",
+      "loadError": "No se pudieron cargar los datos de P&L.",
+      "noData": "No hay datos de P&L disponibles",
+      "unrealized": "P&L no realizado",
+      "realized": "P&L realizado",
+      "totalPnl": "P&L total",
+      "colToken": "Token",
+      "colAvgCost": "Costo prom.",
+      "colCurPrice": "Precio act.",
+      "colUnrealized": "No realizado",
+      "colRealized": "Realizado",
+      "colTotal": "P&L total",
+      "disclaimer": "Basado en el historial on-chain (máx. 1.000 txs). Los resultados pueden ser aproximados."
+    },
+    "stacking": {
+      "title": "Stacking de STX",
+      "active": "Activo",
+      "notStacking": "Sin stacking",
+      "cycle": "Ciclo #{id}",
+      "connect": "Conecta tu billetera para ver la info de stacking",
+      "lockedAmount": "Monto bloqueado",
+      "cyclesRemaining": "Ciclos restantes",
+      "cyclesValue": "{count, plural, one {# ciclo} other {# ciclos}}",
+      "unlocksIn": "Se desbloquea en ~{days} días",
+      "unlockBlock": "Bloque de desbloqueo",
+      "btcBlocksLeft": "{count} bloques de BTC restantes",
+      "rewardPhase": "Ciclo #{id} — Fase de recompensa",
+      "blocksProgress": "{elapsed} / {total} bloques",
+      "cycleStart": "Inicio del ciclo",
+      "blocksUntilPrepare": "{count} bloques hasta la fase de preparación",
+      "networkShare": "Cuota de red:",
+      "totalStacked": "Total en stacking:",
+      "viewTx": "Ver tx de stack-stx",
+      "minToStack": "Mínimo para hacer stacking: <b>{amount} STX</b>",
+      "nextCycle": "El próximo ciclo #{id} empieza en <b>{blocks} bloques</b> (~{days} días)",
+      "totalStackedWide": "Total en stacking en toda la red: <b>{amount}</b>",
+      "explorePools": "Explorar pools de stacking",
+      "learnStacking": "Aprende sobre stacking",
+      "liquidTitle": "Stacking líquido",
+      "liquidStaked": "{amount} stSTX",
+      "liquidValue": "≈ {stx} STX",
+      "unstakeSoon": "Retirar stake (próximamente)"
+    },
+    "sbtc": {
+      "title": "Posición sBTC",
+      "about": "Acerca de sBTC",
+      "connect": "Conecta tu billetera para ver la posición sBTC",
+      "balance": "Saldo sBTC",
+      "noPosition": "Sin posición",
+      "btcPrice": "Precio BTC",
+      "reference": "Referencia",
+      "sbtcPrice": "Precio sBTC",
+      "coingecko": "CoinGecko",
+      "pegPegged": "Anclado",
+      "pegSlight": "Ligera desviación",
+      "pegDepegged": "Riesgo de desanclaje",
+      "noSbtcText": "Aún no tienes sBTC. ",
+      "bridgeLink": "Puente BTC → sBTC",
+      "bridgeHistory": "Historial del puente",
+      "transactions": "{count} transacciones",
+      "noBridge": "No se encontraron transacciones de puente sBTC",
+      "txDeposit": "Depósito",
+      "txWithdrawal": "Retiro",
+      "txTransfer": "Transferencia",
+      "secondsAgo": "hace {n}s",
+      "minutesAgo": "hace {n}m",
+      "hoursAgo": "hace {n}h",
+      "daysAgo": "hace {n}d"
+    },
+    "history": {
+      "title": "Historial de transacciones",
+      "exportTitle": "Exportar CSV",
+      "export": "Exportar",
+      "viewExplorer": "Ver en el Explorer",
+      "filterAll": "Todo",
+      "filterTransfer": "Transferencia",
+      "filterContract": "Contrato",
+      "filterFailed": "Fallido",
+      "connect": "Conecta tu billetera para ver el historial",
+      "noTx": "No se encontraron transacciones",
+      "loadMore": "Cargar más",
+      "loading": "Cargando...",
+      "sentStx": "STX enviado",
+      "receivedStx": "STX recibido",
+      "to": "A {addr}",
+      "from": "De {addr}",
+      "deployContract": "Desplegar contrato",
+      "coinbase": "Coinbase",
+      "block": "Bloque {height}",
+      "secondsAgo": "hace {n}s",
+      "minutesAgo": "hace {n}m",
+      "hoursAgo": "hace {n}h",
+      "daysAgo": "hace {n}d"
+    },
+    "drawer": {
+      "main": {
+        "yourBalance": "Tu saldo",
+        "portfolioPct": "· {pct}% del portafolio",
+        "price": "Precio",
+        "h24": "24h",
+        "swap": "Intercambiar",
+        "send": "Enviar",
+        "receive": "Recibir",
+        "alert": "Alerta",
+        "alertUnsupportedTitle": "Alertas disponibles para STX, BTC, WELSH, ALEX, VELAR, stSTX",
+        "tokenDetails": "Detalles del token",
+        "contract": "Contrato",
+        "nativeStx": "STX (nativo)",
+        "decimals": "Decimales",
+        "status": "Estado",
+        "suspicious": "Sospechoso",
+        "unverified": "No verificado",
+        "closeDrawer": "Cerrar panel",
+        "close": "Cerrar",
+        "copyContract": "Copiar id del contrato"
+      },
+      "market": {
+        "high24h": "Máx 24h",
+        "low24h": "Mín 24h",
+        "vol24h": "Volumen 24h",
+        "marketCap": "Capitalización"
+      },
+      "pnl": {
+        "positionPnl": "P&L de la posición",
+        "avgCost": "Costo prom.",
+        "costBasis": "Costo base",
+        "unrealized": "No realizado",
+        "realized": "Realizado"
+      },
+      "chart": {
+        "unavailable": "Historial de precios no disponible",
+        "rangeAria": "Rango del gráfico",
+        "via": "{range} · {arrow} vía CoinGecko"
+      },
+      "qsend": {
+        "title": "Envío rápido",
+        "max": "MÁX",
+        "balance": "Saldo: {bal} {symbol}",
+        "exceeds": "Supera el saldo",
+        "waiting": "Esperando a la billetera…",
+        "sendSymbol": "Enviar {symbol}",
+        "submitted": "Transferencia enviada",
+        "viewExplorer": "Ver en el Explorer",
+        "newBtn": "Nuevo",
+        "addrMustStart": "La dirección debe empezar con \"{prefix}\"",
+        "invalidAddr": "Dirección inválida",
+        "enterAmount": "Ingresa un monto válido",
+        "amountExceeds": "El monto supera el saldo",
+        "txFailed": "Transacción fallida",
+        "transferSubmittedToast": "Transferencia enviada: {amount} {symbol}",
+        "transferLabel": "Transferir {amount} {symbol}",
+        "transferFailedToast": "Transferencia fallida: {msg}"
+      },
+      "qswap": {
+        "title": "Intercambio rápido",
+        "max": "MÁX",
+        "balance": "Saldo: {bal} {symbol}",
+        "exceeds": "Supera el saldo",
+        "quoting": "Cotizando…",
+        "quoteUnavailable": "Cotización no disponible",
+        "continue": "Continuar al intercambio",
+        "enterAmount": "Ingresa un monto",
+        "approx": "≈ {out} {symbol}"
+      },
+      "tx": {
+        "recentActivity": "Actividad reciente",
+        "all": "Todo",
+        "noActivity": "Aún no hay actividad de {symbol}",
+        "received": "{symbol} recibido",
+        "sent": "{symbol} enviado",
+        "from": "De {addr}",
+        "to": "A {addr}",
+        "secondsAgo": "hace {n}s",
+        "minutesAgo": "hace {n}m",
+        "hoursAgo": "hace {n}h",
+        "daysAgo": "hace {n}d"
+      },
+      "yield": {
+        "yield": "Rendimiento",
+        "liquidStacking": "Stacking líquido",
+        "viaStackingDao": "vía StackingDAO",
+        "stStxDesc": "stSTX acumula recompensas PoX automáticamente — su derecho sobre STX crece cada ciclo.",
+        "stStxHolding": " Tienes ~<b>{amount}</b> stSTX.",
+        "manageStackingDao": "Gestionar en StackingDAO",
+        "apyVaries": "APY estimado · varía por ciclo",
+        "sbtcLiquidity": "Liquidez sBTC",
+        "bitflowAlex": "Pools de Bitflow / ALEX",
+        "pegStatus": "Estado del anclaje",
+        "pegPegged": "Anclado",
+        "pegSlight": "Ligera deriva",
+        "pegDepegged": "Desanclado",
+        "sbtcDesc": "sBTC no genera rendimiento por sí solo — proveerlo a un pool de DEX gana comisiones de intercambio.",
+        "exploreSbtc": "Explorar pools de sBTC",
+        "apyPoolDepth": "APY estimado · depende de la profundidad del pool"
+      },
+      "alert": {
+        "title": "Configurar alerta de precio — {symbol}",
+        "closeAlert": "Cerrar alerta de precio",
+        "current": "Actual: ${price}",
+        "existing": "Alertas existentes ({count})",
+        "above": "Por encima",
+        "below": "Por debajo",
+        "active": "Activa",
+        "triggered": "Activada",
+        "deleteAlert": "Eliminar alerta",
+        "quick": "Rápido:",
+        "targetPrice": "Precio objetivo (USD)",
+        "invalidPrice": "Ingresa un precio válido mayor que 0",
+        "preview": "Alerta cuando <b>{symbol}</b> {dir} <b>${price}</b>",
+        "risesAbove": "suba por encima de",
+        "dropsBelow": "baje por debajo de",
+        "createAlert": "Crear alerta",
+        "pushPrompt": "Activa las notificaciones para recibir alertas incluso con la app cerrada",
+        "enable": "Activar",
+        "enabling": "Activando...",
+        "dismiss": "Descartar"
+      }
+    }
+  },
+  "earn": {
+    "title": "Ganar"
+  },
+  "notifications": {
+    "pageTitle": "Notificaciones",
+    "pageTabs": {
+      "activity": "Actividad",
+      "priceAlerts": "Alertas de precio",
+      "preferences": "Preferencias"
+    },
+    "tabs": {
+      "all": "Todo",
+      "transactions": "Transacciones",
+      "alerts": "Alertas",
+      "dca": "DCA",
+      "wallet": "Billetera"
+    },
+    "search": "Buscar...",
+    "filters": "Filtros",
+    "sort": "Ordenar",
+    "newestFirst": "Más recientes primero",
+    "oldestFirst": "Más antiguas primero",
+    "delete": "Eliminar ({count})",
+    "unread": "{count} sin leer",
+    "selectAll": "Seleccionar todo ({count})",
+    "deselectAll": "Deseleccionar todo ({count})",
+    "empty": {
+      "title": "Aún no hay notificaciones",
+      "desc": "Las notificaciones aparecerán aquí cuando hagas intercambios, ejecuciones DCA o alcances precios objetivo."
+    },
+    "date": {
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    },
+    "dismiss": "Descartar",
+    "category": {
+      "dca": "Bóveda DCA",
+      "dcaOut": "DCA Out",
+      "wallet": "Billetera",
+      "swap": "Intercambio",
+      "send": "Envío",
+      "price": "Alerta de precio"
+    },
+    "plan": "Plan #{id}",
+    "unreadAria": "Sin leer",
+    "drawer": {
+      "title": "Notificaciones",
+      "clearAll": "Borrar todo",
+      "empty": "Aún no hay notificaciones",
+      "viewAll": "Ver todo"
+    },
+    "filterPanel": {
+      "title": "Filtros",
+      "clear": "Limpiar",
+      "close": "Cerrar filtros",
+      "type": "Tipo",
+      "category": "Categoría",
+      "dateRange": "Rango de fechas",
+      "applied": "{count, plural, one {# filtro aplicado} other {# filtros aplicados}}"
+    },
+    "type": {
+      "success": "Éxito",
+      "error": "Error",
+      "warning": "Advertencia",
+      "info": "Info"
+    },
+    "filterCategory": {
+      "dca": "DCA In",
+      "dcaOut": "DCA Out",
+      "wallet": "Billetera",
+      "swap": "Intercambio",
+      "send": "Envío",
+      "price": "Alerta de precio"
+    },
+    "range": {
+      "hour": "Última hora",
+      "day": "Último día",
+      "week": "Última semana",
+      "all": "Todo el tiempo"
+    },
+    "prefs": {
+      "title": "Preferencias de notificación",
+      "subtitle": "Los errores siempre se muestran sin importar estos ajustes.",
+      "resetAll": "Restablecer todo",
+      "footer": "Las preferencias se guardan localmente y persisten entre sesiones.",
+      "enable": "Activar",
+      "disable": "Desactivar",
+      "toggleAria": "{action} notificaciones de {label}",
+      "cat": {
+        "dca": {
+          "label": "DCA In",
+          "desc": "Plan creado, ejecutado, pausado, reanudado, cancelado"
+        },
+        "dcaOut": {
+          "label": "DCA Out",
+          "desc": "Eventos del plan sBTC→USDCx"
+        },
+        "swap": {
+          "label": "Intercambio",
+          "desc": "Intercambio enviado y confirmado"
+        },
+        "send": {
+          "label": "Transferencia",
+          "desc": "Transferencias de STX y tokens"
+        },
+        "price": {
+          "label": "Alertas de precio",
+          "desc": "Precio objetivo del token alcanzado"
+        },
+        "wallet": {
+          "label": "Billetera",
+          "desc": "Conexión, desconexión, cambios de cuenta"
+        }
+      }
+    },
+    "toast": {
+      "dismiss": "Descartar notificación",
+      "region": "Notificaciones"
+    },
+    "badge": {
+      "aria": "{count, plural, =0 {Notificaciones} other {Notificaciones (# sin leer)}}"
+    }
+  },
+  "ai": {
+    "title": "Stacks AI",
+    "marketIntel": "Inteligencia de mercado",
+    "updated": "Actualizado {time}",
+    "refresh": "Actualizar",
+    "retry": "Reintentar",
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {n}m",
+      "hoursAgo": "hace {n}h"
+    },
+    "error": {
+      "title": "No se pudieron cargar los análisis",
+      "desc": "La inteligencia de mercado no está disponible temporalmente. Inténtalo de nuevo en un momento."
+    },
+    "sentiment": {
+      "title": "Sentimiento del mercado",
+      "bullish": "Alcista",
+      "bearish": "Bajista",
+      "neutral": "Neutral",
+      "fearGreed": "Miedo y codicia"
+    },
+    "kol": {
+      "title": "Señales sociales",
+      "empty": "No hay datos sociales disponibles",
+      "vol": "Vol {value}"
+    },
+    "news": {
+      "title": "Resumen de noticias",
+      "loading": "Cargando artículo…",
+      "loadError": "No se pudo cargar el contenido del artículo.",
+      "readMore": "Leer artículo completo"
+    },
+    "position": {
+      "title": "Tu posición",
+      "badge": "Personalizado",
+      "error": "No se pudieron cargar tus alertas. Intenta actualizar en un momento.",
+      "healthy": "Tu portafolio se ve saludable — no hay alertas por ahora."
+    },
+    "priority": {
+      "high": "alta",
+      "medium": "media",
+      "low": "baja"
+    },
+    "smartAlerts": {
+      "title": "Alertas inteligentes"
+    },
+    "action": {
+      "dca-open": "Configurar DCA",
+      "trade-swap": "Intercambiar ahora",
+      "view-assets": "Ver tenencias"
+    },
+    "chat": {
+      "title": "Pregunta a Stacks AI",
+      "disclaimer": "Solo informativo — no es asesoría financiera.",
+      "placeholder": "Pregunta sobre STX, tu portafolio o DCA…",
+      "send": "Enviar",
+      "error": "Algo salió mal. Intenta preguntar de nuevo.",
+      "connectHint": "Conecta tu billetera para respuestas específicas de tu portafolio.",
+      "suggestions": [
+        "¿Cómo está STX hoy?",
+        "¿Cómo van mis planes DCA?",
+        "¿Es buen momento para hacer DCA?"
+      ]
+    }
+  },
+  "apps": {
+    "title": "Apps conectadas",
+    "intro": "Protocolos y contratos DeFi con los que has interactuado en Stacks, según tus 50 transacciones más recientes.",
+    "connectPrompt": "Conecta tu billetera para ver tu historial de apps",
+    "loadError": "No se pudo cargar el historial de apps.",
+    "retry": "Reintentar",
+    "exploreHeading": "Explora DeFi en Stacks",
+    "knownHeading": "Protocolos conocidos",
+    "unverifiedHeading": "Contratos no verificados",
+    "showLess": "Mostrar menos",
+    "showMore": "Mostrar {count} más",
+    "card": {
+      "unableFetch": "No se pudo obtener la posición",
+      "total": "Total",
+      "net": "Neto",
+      "lastUsed": "Último uso {time}",
+      "open": "Abrir",
+      "tryIt": "Pruébalo"
+    },
+    "explore": {
+      "stackingdao": "Haz stake de STX y recibe stSTX, un token líquido que gana recompensas de stacking",
+      "lisa": "Haz stake de STX y recibe LiSTX manteniendo la liquidez",
+      "zest": "Provee activos para ganar rendimiento o pide prestado contra tu cripto",
+      "arkadiko": "Acuña la stablecoin USDA bloqueando STX como colateral",
+      "bitflow": "Intercambia tokens en Stacks con comisiones bajas",
+      "alex": "Opera, presta y pide prestado en el DeFi de Stacks",
+      "velar": "Intercambia y provee liquidez en Stacks"
+    },
+    "unknown": {
+      "unverified": "No verificado",
+      "unverifiedTitle": "Contrato no reconocido como un protocolo DeFi conocido",
+      "openSource": "Código abierto",
+      "viewExplorer": "Ver en el Stacks Explorer",
+      "openAria": "Abrir {name} en el Stacks Explorer"
+    }
+  },
+  "landing": {
+    "common": {
+      "connectWallet": "Conectar billetera",
+      "connecting": "Conectando...",
+      "exploreDashboard": "Explorar dashboard"
+    },
+    "nav": {
+      "features": "Funciones",
+      "howItWorks": "Cómo funciona",
+      "github": "GitHub",
+      "openMenu": "Abrir menú de navegación",
+      "closeMenu": "Cerrar menú de navegación"
+    },
+    "hero": {
+      "badge": "En vivo en la Mainnet de Stacks",
+      "titleLine1": "Automatiza tu",
+      "titleLine2": "estrategia Bitcoin",
+      "subtitle": "Convierte STX en sBTC según un calendario que tú controlas. Cada ejecución DCA es sin custodia, aplicada on-chain, y puede pausarse o cancelarse desde tu billetera.",
+      "trust": {
+        "nonCustodial": "Sin custodia",
+        "openSource": "Contratos de código abierto",
+        "mainnet": "Mainnet de Stacks"
+      },
+      "portfolioPreview": "Vista previa del portafolio",
+      "dcaPlan": "Plan DCA",
+      "running": "En ejecución",
+      "planMeta": "50 STX · cada 144 bloques",
+      "previewExecutions": "Vista previa de ejecuciones"
+    },
+    "walkthrough": {
+      "eyebrow": "Un flujo de trabajo, de principio a fin",
+      "heading": "De la compra recurrente al análisis del portafolio",
+      "intro": "StacksPort conecta automatización, ejecución y medición sin tomar custodia de tu billetera.",
+      "steps": {
+        "automate": {
+          "eyebrow": "Automatiza",
+          "title": "Crea un calendario de STX a sBTC",
+          "description": "Elige un monto y un intervalo, revisa el plan completo y apruébalo desde tu billetera. La bóveda solo guarda el saldo asignado a ese plan.",
+          "b1": "Diario, semanal o mensual",
+          "b2": "Pausa y reanuda cuando quieras",
+          "b3": "Comisión de protocolo 0.3% por intercambio"
+        },
+        "measure": {
+          "eyebrow": "Mide",
+          "title": "Rastrea el costo base y la autonomía del plan",
+          "description": "Ve el valor del portafolio, el historial de ejecuciones DCA, el precio de entrada promedio y la cantidad de intercambios programados que tu saldo restante puede soportar.",
+          "b1": "Saldos de Stacks en vivo",
+          "b2": "Rendimiento DCA vs suma única",
+          "b3": "Historial de ejecuciones on-chain"
+        },
+        "act": {
+          "eyebrow": "Actúa",
+          "title": "Intercambia directo y mantente informado",
+          "description": "Usa las rutas de Bitflow para intercambios directos, luego monitorea precios objetivo y ejecuciones DCA sin mirar el dashboard todo el día.",
+          "b1": "Cotizaciones de intercambio en tiempo real",
+          "b2": "Alertas de precio y ejecución",
+          "b3": "Análisis con IA consciente del portafolio"
+        }
+      },
+      "dcaPreview": {
+        "title": "Crear plan DCA",
+        "mainnet": "Mainnet",
+        "spend": "Gastar",
+        "buy": "Comprar",
+        "everyWeek": "Cada semana",
+        "confirmed": "Confirmado desde tu billetera"
+      },
+      "perfPreview": {
+        "label": "Rendimiento DCA",
+        "preview": "Vista previa del portafolio · +4.8%",
+        "avgEntry": "Entrada promedio",
+        "runway": "Autonomía del plan",
+        "swaps": "8 intercambios"
+      },
+      "alertsPreview": {
+        "quote": "Cotización de intercambio",
+        "viaBitflow": "Vía Bitflow",
+        "execConfirmed": "Ejecución DCA confirmada",
+        "execDesc": "Tu intercambio programado de STX a sBTC fue confirmado en Stacks."
+      }
+    },
+    "how": {
+      "eyebrow": "Cómo funciona",
+      "heading": "Tres pasos para automatizar",
+      "steps": {
+        "s1": {
+          "title": "Conecta tu billetera",
+          "desc": "Usa Leather o Xverse. No se comparten frases semilla — tus llaves nunca salen de tu dispositivo."
+        },
+        "s2": {
+          "title": "Crea un plan DCA",
+          "desc": "Elige un par de tokens, define tu monto e intervalo. Deposita STX o sBTC como colateral."
+        },
+        "s3": {
+          "title": "Deja que el bot ejecute",
+          "desc": "Nuestro bot keeper se ejecuta vía GitHub Actions y ejecuta tu plan on-chain en cada intervalo. Pausa o cancela cuando quieras."
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "Verifica, no confíes",
+      "heading": "Diseñado para una automatización transparente",
+      "intro": "La automatización corre a través de contratos de código abierto desplegados en la mainnet de Stacks. Revisa las reglas y la actividad del contrato en vivo antes de conectar una billetera.",
+      "points": {
+        "control": {
+          "title": "Tú mantienes el control",
+          "desc": "Se requiere la aprobación de la billetera para depósitos y cambios de plan. StacksPort nunca recibe tu frase semilla ni tu llave privada."
+        },
+        "automated": {
+          "title": "Automatizado on-chain",
+          "desc": "Un keeper envía las ejecuciones que vencen, mientras los contratos de la bóveda aplican saldos, intervalos y contabilidad de intercambios."
+        },
+        "pause": {
+          "title": "Pausa o cancela",
+          "desc": "Los planes permanecen bajo el control de tu billetera. Pausa ejecuciones futuras o cancela y retira el saldo restante de la bóveda."
+        },
+        "fees": {
+          "title": "Comisiones transparentes",
+          "desc": "Cada intercambio automatizado cobra una comisión de protocolo de 0.3%. Los costos de red y de ejecución del DEX son aparte."
+        }
+      },
+      "contracts": {
+        "stxSbtc": "Bóveda STX a sBTC",
+        "sbtcUsdcx": "Bóveda sBTC a USDCx"
+      },
+      "explorerAria": "{label} en el Stacks Explorer"
+    },
+    "cta": {
+      "titleLine1": "Pon tu plan de sBTC",
+      "titleLine2": "en un calendario",
+      "subtitle": "Elige un monto e intervalo, revisa la comisión de protocolo de 0.3%, luego aprueba el plan desde tu billetera de Stacks."
+    },
+    "footer": {
+      "tagline": "Automatización DCA sin custodia y gestión de portafolio en la blockchain de Stacks.",
+      "product": "Producto",
+      "copyright": "© {year} StacksPort — Construido en Stacks",
+      "mainnet": "Mainnet"
+    }
+  },
+  "bubbles": {
+    "title": "Burbujas cripto",
+    "searchShort": "Buscar…",
+    "searchHint": "Buscar…  ( / )",
+    "clearSearch": "Limpiar búsqueda",
+    "failedLoad": "No se pudieron cargar los datos.",
+    "retry": "Reintentar",
+    "stacksNote": "Mostrando tokens de Stacks con feed de precio de CoinGecko · tokens solo de DEX no incluidos",
+    "noMatch": "Ningún token coincide con \"{q}\".",
+    "watchlistEmpty": "Tu lista de seguimiento está vacía. Toca la ⭐ en cualquier burbuja para agregarla.",
+    "holdingsEmptyTracked": "Ninguna de tus tenencias está entre los tokens rastreados.",
+    "holdingsConnect": "Conecta tu billetera para ver tus tenencias como burbujas.",
+    "noStacksTokens": "No hay tokens del ecosistema Stacks disponibles.",
+    "browseAll": "Explorar todos los tokens",
+    "dataOutdated": "Los datos pueden estar desactualizados",
+    "updated": "Actualizado {time}",
+    "time": {
+      "justNow": "ahora mismo",
+      "secondsAgo": "hace {n}s",
+      "minutesAgo": "hace {n}m",
+      "hoursAgo": "hace {n}h"
+    },
+    "scope": {
+      "all": "Todo",
+      "stacks": "Stacks"
+    },
+    "view": {
+      "bubble": "Vista de burbujas",
+      "list": "Vista de lista"
+    },
+    "metric": {
+      "changeTitle": "Tamaño por % de cambio",
+      "mcapTitle": "Tamaño por capitalización",
+      "volTitle": "Tamaño por volumen 24h"
+    },
+    "filter": {
+      "filters": "Filtros",
+      "close": "Cerrar",
+      "marketCap": "Capitalización",
+      "show": "Mostrar",
+      "sortBy": "Ordenar por",
+      "moversOnly": "Solo con movimiento",
+      "bubbleSize": "Tamaño de burbuja ({d}×)",
+      "excludeStables": "Excluir stablecoins",
+      "resetAll": "Restablecer todo",
+      "any": "Cualquiera",
+      "all": "Todo",
+      "off": "Apagado",
+      "sort": {
+        "mcap": "Capitalización",
+        "volume": "Volumen",
+        "gainers": "Mayores ganadores",
+        "losers": "Mayores perdedores",
+        "name": "Nombre (A-Z)"
+      }
+    },
+    "chips": {
+      "noStables": "Sin stables",
+      "sortPrefix": "Orden: {label}",
+      "clearAll": "Limpiar todo",
+      "sort": {
+        "mcap": "Capitalización",
+        "volume": "Volumen",
+        "gainers": "Mayores ganadores",
+        "losers": "Mayores perdedores",
+        "name": "A–Z"
+      }
+    },
+    "toolbar": {
+      "more": "Más acciones",
+      "refreshing": "Actualizando…",
+      "refresh": "Actualizar datos",
+      "resumeMotion": "Reanudar movimiento",
+      "pauseMotion": "Pausar movimiento",
+      "saved": "Guardado",
+      "downloadPng": "Descargar PNG",
+      "linkCopied": "Enlace copiado",
+      "copyLink": "Copiar enlace para compartir",
+      "shortcuts": "Atajos de teclado"
+    },
+    "list": {
+      "token": "Token",
+      "price": "Precio"
+    },
+    "tooltip": {
+      "setAlert": "Configurar alerta de precio",
+      "addWatch": "Agregar a la lista de seguimiento",
+      "removeWatch": "Quitar de la lista de seguimiento",
+      "price7d": "Precio 7d",
+      "youHold": "Tienes",
+      "swapBitflow": "Intercambiar en Bitflow",
+      "tradeBitflow": "Operar en Bitflow ↗",
+      "viewCoingecko": "Ver en CoinGecko"
+    },
+    "alert": {
+      "above": "Por encima",
+      "below": "Por debajo",
+      "active": "Activa",
+      "triggered": "Activada",
+      "deleteAria": "Eliminar alerta {condition} ${price}",
+      "quick": "Rápido:",
+      "targetPrice": "Precio objetivo",
+      "enterPrice": "Ingresa un precio mayor que 0",
+      "createAlert": "Crear alerta",
+      "pushPrompt": "Activa las notificaciones para recibir alertas incluso con la app cerrada",
+      "enabling": "Activando…",
+      "enable": "Activar",
+      "dismiss": "Descartar"
+    },
+    "watchlistBar": {
+      "label": "Lista de seguimiento:",
+      "tokenCount": "{n, plural, one {# token} other {# tokens}}",
+      "export": "Exportar",
+      "import": "Importar",
+      "clearAll": "Limpiar todo",
+      "invalidFile": "Archivo inválido",
+      "invalidJson": "JSON inválido",
+      "imported": "Importados {n}",
+      "confirmClear": "¿Borrar {n, plural, one {# token en seguimiento} other {# tokens en seguimiento}}?"
+    },
+    "legend": {
+      "size": "Tamaño",
+      "color": "Color",
+      "metric": {
+        "change": "% de cambio",
+        "marketCap": "capitalización",
+        "volume": "volumen 24h"
+      }
+    },
+    "shortcuts": {
+      "title": "Atajos de teclado",
+      "close": "Cerrar",
+      "rows": {
+        "search": "Enfocar búsqueda",
+        "clear": "Limpiar / cerrar",
+        "metric": "Métrica: % · Cap · Vol",
+        "timeframe": "Periodo: 1h · 24h · 7d · 30d · 1a",
+        "scope": "Alcance: Todo · Stacks · Seguimiento · Tenencias",
+        "refresh": "Actualizar datos",
+        "pause": "Pausar / reanudar movimiento",
+        "list": "Alternar vista de lista",
+        "help": "Alternar esta ayuda"
+      }
+    },
+    "buttons": {
+      "snapshotAria": "Descargar captura como PNG",
+      "downloadPng": "Descargar PNG",
+      "shareAria": "Copiar enlace de la vista actual",
+      "copyShareLink": "Copiar enlace para compartir",
+      "copied": "Copiado",
+      "share": "Compartir",
+      "refreshAria": "Actualizar datos",
+      "refreshTitle": "Actualizar (G)",
+      "resumeAnim": "Reanudar animación",
+      "pauseAnim": "Pausar animación",
+      "resumeP": "Reanudar (P)",
+      "pauseP": "Pausar (P)"
+    }
+  }
+}

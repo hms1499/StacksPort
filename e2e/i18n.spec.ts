@@ -89,8 +89,9 @@ test.describe("i18n", () => {
     page,
   }) => {
     await page.goto("/dashboard");
-    const switcher = page.getByRole("group", { name: /language|ngôn ngữ/i });
-    await switcher.getByRole("button", { name: "vi" }).click();
+    // The switcher is a flag dropdown: open the trigger, then pick a language.
+    await page.getByRole("button", { name: /language|idioma|ngôn ngữ/i }).click();
+    await page.getByRole("menuitem", { name: "Tiếng Việt" }).click();
     await expect(page).toHaveURL(/\/vi\/dashboard/);
     await expect(page.locator("html")).toHaveAttribute("lang", "vi");
   });

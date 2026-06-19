@@ -46,6 +46,16 @@
       "themeLight": "Switch to Light Mode",
       "themeDark": "Switch to Dark Mode",
       "themeDesc": "Toggle theme",
+      "wallet": {
+        "connectLabel": "Connect Wallet",
+        "connectDesc": "Link Leather or Xverse",
+        "disconnectLabel": "Disconnect Wallet",
+        "disconnectDesc": "Sign out of your wallet"
+      },
+      "language": {
+        "label": "Switch to {lang}",
+        "desc": "Change app language"
+      },
       "home": {
         "label": "Home",
         "desc": "Portfolio overview"

@@ -46,6 +46,16 @@
       "themeLight": "ライトモードに切り替え",
       "themeDark": "ダークモードに切り替え",
       "themeDesc": "テーマを切り替え",
+      "wallet": {
+        "connectLabel": "ウォレットを接続",
+        "connectDesc": "Leather または Xverse を連携",
+        "disconnectLabel": "ウォレットを切断",
+        "disconnectDesc": "ウォレットからサインアウト"
+      },
+      "language": {
+        "label": "{lang} に切り替え",
+        "desc": "アプリの言語を変更"
+      },
       "home": {
         "label": "ホーム",
         "desc": "ポートフォリオ概要"

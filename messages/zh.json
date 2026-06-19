@@ -46,6 +46,16 @@
       "themeLight": "切换到浅色模式",
       "themeDark": "切换到深色模式",
       "themeDesc": "切换主题",
+      "wallet": {
+        "connectLabel": "连接钱包",
+        "connectDesc": "连接 Leather 或 Xverse",
+        "disconnectLabel": "断开钱包",
+        "disconnectDesc": "退出您的钱包"
+      },
+      "language": {
+        "label": "切换到 {lang}",
+        "desc": "更改应用语言"
+      },
       "home": {
         "label": "首页",
         "desc": "投资组合概览"

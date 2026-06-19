@@ -46,6 +46,16 @@
       "themeLight": "Chuyển sang chế độ sáng",
       "themeDark": "Chuyển sang chế độ tối",
       "themeDesc": "Đổi giao diện",
+      "wallet": {
+        "connectLabel": "Kết nối ví",
+        "connectDesc": "Liên kết Leather hoặc Xverse",
+        "disconnectLabel": "Ngắt kết nối ví",
+        "disconnectDesc": "Đăng xuất khỏi ví của bạn"
+      },
+      "language": {
+        "label": "Chuyển sang {lang}",
+        "desc": "Đổi ngôn ngữ ứng dụng"
+      },
       "home": {
         "label": "Trang chủ",
         "desc": "Tổng quan danh mục"

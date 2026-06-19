@@ -73,6 +73,18 @@ test.describe("i18n", () => {
     ).toBeVisible();
   });
 
+  test("Portuguese route renders with lang=pt", async ({ page }) => {
+    await page.goto("/pt/dashboard");
+    await expect(page.locator("html")).toHaveAttribute("lang", "pt");
+  });
+
+  test("Portuguese nav shows translated label", async ({ page }) => {
+    await page.goto("/pt/dashboard");
+    await expect(
+      page.getByRole("link", { name: "Início" }).first()
+    ).toBeVisible();
+  });
+
   test("language switcher moves between locales and keeps the page", async ({
     page,
   }) => {
@@ -107,11 +119,11 @@ async function topbarTitle(page: import("@playwright/test").Page, path: string) 
 
 test.describe("topbar titles are localized (not hardcoded English)", () => {
   for (const route of LOCALIZED_ROUTES) {
-    test(`${route} topbar differs from English in vi/zh/ja/ko/es`, async ({ page }) => {
+    test(`${route} topbar differs from English in vi/zh/ja/ko/es/pt`, async ({ page }) => {
       const en = await topbarTitle(page, route);
       expect(en.length, `English topbar for ${route} should not be empty`).toBeGreaterThan(0);
 
-      for (const locale of ["vi", "zh", "ja", "ko", "es"]) {
+      for (const locale of ["vi", "zh", "ja", "ko", "es", "pt"]) {
         const localized = await topbarTitle(page, `/${locale}${route}`);
         expect(
           localized.length,

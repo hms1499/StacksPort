@@ -21,6 +21,7 @@ export default function LanguageSwitcher() {
     zh: "chinese",
     ja: "japanese",
     ko: "korean",
+    es: "spanish",
   };
 
   function switchTo(next: string) {

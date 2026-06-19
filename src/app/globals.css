@@ -277,28 +277,33 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Opt-out wrapper for sections that shouldn't lift (e.g. dense rows
-   or banners that already own a strong CTA). */
-.no-hover-lift .glass-card:hover,
-.glass-card.no-hover-lift:hover {
-  transform: none;
-  box-shadow: none;
-}
+/* Hover lift only on devices with a real pointer — guards against the
+   "sticky hover" footgun on touch screens, where a tapped card would
+   otherwise stay lifted/glowing until the next tap elsewhere. */
+@media (hover: hover) {
+  /* Opt-out wrapper for sections that shouldn't lift (e.g. dense rows
+     or banners that already own a strong CTA). */
+  .no-hover-lift .glass-card:hover,
+  .glass-card.no-hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
 
-/* Per-card accent override — set `--card-accent: <hex>` inline on the
-   card to tint its hover lift in that color. Defaults to brand accent. */
-.glass-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--card-accent, var(--accent)) 22%, var(--border-subtle));
-  box-shadow:
-    0 6px 18px -8px rgba(0, 0, 0, 0.18),
-    0 0 0 1px color-mix(in srgb, var(--card-accent, var(--accent)) 10%, transparent);
-}
+  /* Per-card accent override — set `--card-accent: <hex>` inline on the
+     card to tint its hover lift in that color. Defaults to brand accent. */
+  .glass-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--card-accent, var(--accent)) 22%, var(--border-subtle));
+    box-shadow:
+      0 6px 18px -8px rgba(0, 0, 0, 0.18),
+      0 0 0 1px color-mix(in srgb, var(--card-accent, var(--accent)) 10%, transparent);
+  }
 
-.dark .glass-card:hover {
-  box-shadow:
-    0 8px 24px -10px rgba(0, 0, 0, 0.55),
-    0 0 18px color-mix(in srgb, var(--card-accent, var(--accent)) 18%, transparent);
+  .dark .glass-card:hover {
+    box-shadow:
+      0 8px 24px -10px rgba(0, 0, 0, 0.55),
+      0 0 18px color-mix(in srgb, var(--card-accent, var(--accent)) 18%, transparent);
+  }
 }
 
 /* ══════════════════════════════════════════════════════

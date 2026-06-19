@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { TrendingUp, TrendingDown, BarChart3, Info, Download } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { usePnLData } from "@/hooks/useMarketData";
-import { type PnLData, type PnLEntry } from "@/lib/stacks";
+import { type PnLEntry } from "@/lib/stacks";
 import { formatUSD } from "@/lib/utils";
 import { downloadCSV, csvDate } from "@/lib/export";
 import { TokenImage } from "@/components/ui";

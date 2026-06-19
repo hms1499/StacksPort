@@ -6,7 +6,6 @@ import { initSimnet } from "@hirosystems/clarinet-sdk";
 const simnet = await initSimnet();
 const accounts = simnet.getAccounts();
 const deployer = accounts.get("deployer")!;
-const wallet1  = accounts.get("wallet_1")!;
 
 describe("batch-dca-executor", () => {
   it("returns ERR-EMPTY-LIST (u100) when passed empty list", () => {

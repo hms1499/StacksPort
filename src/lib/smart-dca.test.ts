@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateConfigInput, premium, SMART_DCA_LIMITS } from "./smart-dca";
+import { validateConfigInput, premium } from "./smart-dca";
 
 describe("validateConfigInput", () => {
   const ok = { planId: 1, thresholdBps: 500, windowDays: 7, maxDeferIntervals: 2 };

@@ -14,28 +14,6 @@ import { DEFAULT_PREFERENCES } from '@/types/notifications';
 // Helper to generate unique IDs
 const generateId = () => `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-// Helper to check if notification falls within date range
-const isWithinDateRange = (timestamp: number, range: 'hour' | 'day' | 'week' | 'all'): boolean => {
-  const now = Date.now();
-  const diff = now - timestamp;
-  const oneHour = 60 * 60 * 1000;
-  const oneDay = 24 * oneHour;
-  const oneWeek = 7 * oneDay;
-
-  switch (range) {
-    case 'hour':
-      return diff <= oneHour;
-    case 'day':
-      return diff <= oneDay;
-    case 'week':
-      return diff <= oneWeek;
-    case 'all':
-      return true;
-    default:
-      return true;
-  }
-};
-
 export const useNotificationStore = create<NotificationStoreState>()(
   persist(
     (set, get) => ({

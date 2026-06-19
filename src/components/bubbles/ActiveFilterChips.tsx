@@ -5,7 +5,6 @@ import { X } from "lucide-react";
 import {
   DEFAULT_FILTERS,
   type BubbleFilters,
-  type SortBy,
 } from "./FilterMenu";
 
 interface ActiveFilterChipsProps {

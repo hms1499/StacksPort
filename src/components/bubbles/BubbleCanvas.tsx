@@ -560,6 +560,9 @@ export default function BubbleCanvas({
       if (animRef.current) cancelAnimationFrame(animRef.current);
       animRef.current = null;
     };
+    // Load-bearing: with the React Compiler lint, a react-hooks disable makes
+    // the plugin skip this whole component — removing it surfaces ref-write
+    // diagnostics elsewhere in the component. Keep it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeframe, tokens.length, paused]);
 

@@ -51,7 +51,6 @@ export default function ReloadProgressBar({ tokens, isRefreshing }: Props) {
     return () => {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Restart when tokens object reference changes (= new SWR data arrived)
@@ -60,7 +59,6 @@ export default function ReloadProgressBar({ tokens, isRefreshing }: Props) {
       tokensRef.current = tokens;
       startAnimation();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokens]);
 
   return (

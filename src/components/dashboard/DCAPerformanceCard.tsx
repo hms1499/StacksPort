@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Repeat2, Activity, Coins, BarChart3, ArrowUpRight } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useUserDCAPlans, useSTXMarketStats } from "@/hooks/useMarketData";
-import { microToSTX } from "@/lib/dca";
 import { formatUSD } from "@/lib/utils";
 
 export default function DCAPerformanceCard() {

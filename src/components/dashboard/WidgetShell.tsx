@@ -71,10 +71,10 @@ export default function WidgetShell({
     const shift = e.shiftKey;
     let dx = 0, dy = 0, dw = 0, dh = 0;
     switch (e.key) {
-      case "ArrowUp":    shift ? (dh = -1) : (dy = -1); break;
-      case "ArrowDown":  shift ? (dh =  1) : (dy =  1); break;
-      case "ArrowLeft":  shift ? (dw = -1) : (dx = -1); break;
-      case "ArrowRight": shift ? (dw =  1) : (dx =  1); break;
+      case "ArrowUp":    if (shift) dh = -1; else dy = -1; break;
+      case "ArrowDown":  if (shift) dh =  1; else dy =  1; break;
+      case "ArrowLeft":  if (shift) dw = -1; else dx = -1; break;
+      case "ArrowRight": if (shift) dw =  1; else dx =  1; break;
       case "Escape":     (e.currentTarget as HTMLButtonElement).blur(); return;
       default: return;
     }

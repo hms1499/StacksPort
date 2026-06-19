@@ -86,7 +86,10 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
     fetchData();
     return () => {
       abortRef.current?.abort();
-      // Bump so any in-flight resolves see themselves as stale.
+      // Bump so any in-flight resolves see themselves as stale. requestIdRef is
+      // a plain counter (not a DOM ref), so the exhaustive-deps ref-cleanup
+      // caution is a false positive here.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       requestIdRef.current++;
     };
   }, [fetchData]);

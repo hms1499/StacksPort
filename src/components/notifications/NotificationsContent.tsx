@@ -6,7 +6,6 @@ import { Search, Trash2, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { useNotificationStore } from '@/store/notificationStore';
 import NotificationFilters from './NotificationFilters';
 import NotificationCard from './NotificationCard';
-import { cn } from '@/lib/utils';
 import EmptyState from '@/components/motion/EmptyState';
 import AnimatedPage from '@/components/motion/AnimatedPage';
 import { Bell } from 'lucide-react';

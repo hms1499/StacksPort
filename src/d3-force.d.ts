@@ -13,8 +13,8 @@ declare module 'd3-force' {
     restart(): Simulation<NodeDatum>;
     stop(): Simulation<NodeDatum>;
     tick(): Simulation<NodeDatum>;
-    force(name: string): Force<NodeDatum> | undefined;
-    force(name: string, force: Force<NodeDatum> | null): Simulation<NodeDatum>;
+    force(name: string): Force | undefined;
+    force(name: string, force: Force | null): Simulation<NodeDatum>;
     velocityDecay(): number;
     velocityDecay(decay: number): Simulation<NodeDatum>;
     alpha(): number;
@@ -31,7 +31,7 @@ declare module 'd3-force' {
     find(x: number, y: number, radius?: number): NodeDatum | undefined;
   }
 
-  export interface Force<NodeDatum extends SimulationNodeDatum> {
+  export interface Force {
     (alpha: number): void;
   }
 

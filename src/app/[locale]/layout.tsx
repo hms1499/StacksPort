@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, JetBrains_Mono, Noto_Sans_SC } from "next/font/google";
+import { Syne, JetBrains_Mono, Noto_Sans_SC, Noto_Sans_KR } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -27,6 +27,16 @@ const jetBrainsMono = JetBrains_Mono({
 // first paint; it loads on demand when zh text is present).
 const notoSansSC = Noto_Sans_SC({
   variable: "--font-noto-sc",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+// Korean fallback. Hangul syllables (U+AC00–D7AF) are NOT in the Noto Sans SC
+// unicode-range, so ko text would otherwise hit the system font. Same lazy
+// strategy as SC: no `subsets`, `preload: false`.
+const notoSansKR = Noto_Sans_KR({
+  variable: "--font-noto-kr",
   weight: ["400", "500", "600", "700"],
   display: "swap",
   preload: false,
@@ -81,7 +91,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${syne.variable} ${jetBrainsMono.variable} ${notoSansSC.variable} font-sans antialiased`}
+        className={`${syne.variable} ${jetBrainsMono.variable} ${notoSansSC.variable} ${notoSansKR.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <NextIntlClientProvider>

@@ -151,10 +151,12 @@
 ══════════════════════════════════════════════════════ */
 /* The `font-sans` utility (set on <body>) resolves here. Syne is the display
    face for latin; Noto Sans SC backs CJK glyphs Syne lacks (per-glyph fallback),
-   then system fonts. Keep Syne first so latin text is byte-identical to before. */
+   Noto Sans KR backs Hangul (not in the SC unicode-range), then system fonts.
+   Keep Syne first so latin text is byte-identical to before. */
 @theme inline {
-  --font-sans: var(--font-syne), var(--font-noto-sc), ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-sans: var(--font-syne), var(--font-noto-sc), var(--font-noto-kr),
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
 @theme inline {

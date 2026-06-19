@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -20,8 +20,13 @@ import {
   ArrowUp,
   ArrowDown,
   Sprout,
+  LogOut,
+  Languages,
 } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
+import { useWalletStore } from "@/store/walletStore";
+import { connectWallet } from "@/lib/wallet";
+import { routing } from "@/i18n/routing";
 
 interface CommandItem {
   id: string;
@@ -34,6 +39,12 @@ interface CommandItem {
 
 const RECENTS_KEY = "stacksport_cmdk_recents";
 const RECENTS_MAX = 3;
+
+// Locale code → its `common` label key (mirrors LanguageSwitcher) so adding a
+// locale needs only a catalog entry, not an edit here.
+const LANG_LABEL_KEY: Record<string, string> = {
+  en: "english", vi: "vietnamese", zh: "chinese", ja: "japanese",
+};
 
 function readRecents(): string[] {
   if (typeof window === "undefined") return [];
@@ -53,7 +64,11 @@ export default function CommandPalette() {
   const [recents, setRecents] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
   const { theme, toggleTheme } = useThemeStore();
+  const tc = useTranslations("common");
+  const { isConnected, connect, disconnect } = useWalletStore();
 
   function pushRecent(id: string) {
     setRecents((prev) => {
@@ -72,6 +87,21 @@ export default function CommandPalette() {
     [router]
   );
 
+  // pathname from @/i18n/navigation is locale-agnostic; the router applies the
+  // new locale (mirrors LanguageSwitcher).
+  const switchLocale = (next: string) => {
+    pushRecent(`lang-${next}`);
+    router.replace(pathname, { locale: next });
+    setOpen(false);
+  };
+
+  const walletAction = () => {
+    pushRecent("wallet");
+    setOpen(false);
+    if (isConnected) disconnect();
+    else void connectWallet(connect);
+  };
+
   const commands: CommandItem[] = [
     { id: "dashboard",     label: t("home.label"),          description: t("home.desc"),          icon: <Home size={18} />,         action: () => navigate("/dashboard", "dashboard"),      keywords: ["home", "portfolio", "overview", "dashboard"] },
     { id: "assets",        label: t("assets.label"),        description: t("assets.desc"),        icon: <Wallet size={18} />,       action: () => navigate("/assets", "assets"),            keywords: ["assets", "holdings", "balance", "tokens", "pnl"] },
@@ -88,6 +118,28 @@ export default function CommandPalette() {
       action: () => { pushRecent("theme"); toggleTheme(); setOpen(false); },
       keywords: ["theme", "dark", "light", "mode", "toggle"],
     },
+    {
+      id: "wallet",
+      label: isConnected ? t("wallet.disconnectLabel") : t("wallet.connectLabel"),
+      description: isConnected ? t("wallet.disconnectDesc") : t("wallet.connectDesc"),
+      icon: isConnected ? <LogOut size={18} /> : <Wallet size={18} />,
+      action: walletAction,
+      keywords: isConnected
+        ? ["disconnect", "wallet", "logout", "sign out"]
+        : ["connect", "wallet", "leather", "xverse", "login"],
+    },
+    // One entry per non-active locale — switching to the current language is a
+    // no-op, so it's omitted to avoid a dead row.
+    ...routing.locales
+      .filter((loc) => loc !== locale)
+      .map((loc) => ({
+        id: `lang-${loc}`,
+        label: t("language.label", { lang: tc(LANG_LABEL_KEY[loc] ?? loc) }),
+        description: t("language.desc"),
+        icon: <Languages size={18} />,
+        action: () => switchLocale(loc),
+        keywords: ["language", "locale", "translate", loc, LANG_LABEL_KEY[loc] ?? loc],
+      })),
   ];
 
   // When no query, surface recent commands at the top followed by the rest.

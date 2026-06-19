@@ -45,7 +45,7 @@ const RECENTS_MAX = 3;
 // Locale code → its `common` label key (mirrors LanguageSwitcher) so adding a
 // locale needs only a catalog entry, not an edit here.
 const LANG_LABEL_KEY: Record<string, string> = {
-  en: "english", vi: "vietnamese", zh: "chinese", ja: "japanese",
+  en: "english", vi: "vietnamese", zh: "chinese", ja: "japanese", ko: "korean",
 };
 
 function readRecents(): string[] {

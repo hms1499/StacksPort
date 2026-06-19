@@ -20,6 +20,7 @@ export default function LanguageSwitcher() {
     vi: "vietnamese",
     zh: "chinese",
     ja: "japanese",
+    ko: "korean",
   };
 
   function switchTo(next: string) {

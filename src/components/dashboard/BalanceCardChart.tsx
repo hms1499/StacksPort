@@ -53,7 +53,7 @@ export default function BalanceCardChart({
           </defs>
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: isDark ? "#2A4060" : "#8AA0BE", fontFamily: "var(--font-mono)" }}
+            tick={{ fontSize: 10, fill: isDark ? "#5E7798" : "#8AA0BE", fontFamily: "var(--font-mono)" }}
             axisLine={false}
             tickLine={false}
           />

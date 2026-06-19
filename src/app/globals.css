@@ -101,7 +101,10 @@
 
   --text-primary:   #DDE8F8;
   --text-secondary: #5A82B0;
-  --text-muted:     #2A4060;
+  /* #5E7798 clears WCAG AA-large (>=3:1) on every dark surface while staying
+     below --text-secondary in prominence. The previous #2A4060 sat at ~1.6:1
+     (failing) — muted captions/timestamps were near-invisible in dark mode. */
+  --text-muted:     #5E7798;
 
   --positive: #00E5A0;
   --negative: #FF5B6E;

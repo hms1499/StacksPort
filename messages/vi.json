@@ -50,7 +50,8 @@
         "connectLabel": "Kết nối ví",
         "connectDesc": "Liên kết Leather hoặc Xverse",
         "disconnectLabel": "Ngắt kết nối ví",
-        "disconnectDesc": "Đăng xuất khỏi ví của bạn"
+        "disconnectDesc": "Đăng xuất khỏi ví của bạn",
+        "copyLabel": "Sao chép địa chỉ ví"
       },
       "language": {
         "label": "Chuyển sang {lang}",

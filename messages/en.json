@@ -50,7 +50,8 @@
         "connectLabel": "Connect Wallet",
         "connectDesc": "Link Leather or Xverse",
         "disconnectLabel": "Disconnect Wallet",
-        "disconnectDesc": "Sign out of your wallet"
+        "disconnectDesc": "Sign out of your wallet",
+        "copyLabel": "Copy Wallet Address"
       },
       "language": {
         "label": "Switch to {lang}",

@@ -40,6 +40,7 @@ const portfolio: PortfolioSnapshot = {
   },
   stackingStatus: null,
   sbtcData: null,
+  limitOrders: null,
 };
 
 describe("buildChatContext", () => {

@@ -22,10 +22,12 @@ import {
   Sprout,
   LogOut,
   Languages,
+  Copy,
 } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
 import { connectWallet } from "@/lib/wallet";
+import { shortenAddress } from "@/lib/utils";
 import { routing } from "@/i18n/routing";
 
 interface CommandItem {
@@ -68,7 +70,7 @@ export default function CommandPalette() {
   const locale = useLocale();
   const { theme, toggleTheme } = useThemeStore();
   const tc = useTranslations("common");
-  const { isConnected, connect, disconnect } = useWalletStore();
+  const { isConnected, stxAddress, connect, disconnect } = useWalletStore();
 
   function pushRecent(id: string) {
     setRecents((prev) => {
@@ -128,6 +130,21 @@ export default function CommandPalette() {
         ? ["disconnect", "wallet", "logout", "sign out"]
         : ["connect", "wallet", "leather", "xverse", "login"],
     },
+    // Copy address only makes sense while connected.
+    ...(isConnected && stxAddress
+      ? [{
+          id: "copy-address",
+          label: t("wallet.copyLabel"),
+          description: shortenAddress(stxAddress),
+          icon: <Copy size={18} />,
+          action: () => {
+            pushRecent("copy-address");
+            void navigator.clipboard.writeText(stxAddress);
+            setOpen(false);
+          },
+          keywords: ["copy", "address", "wallet", "clipboard", "stx"],
+        }]
+      : []),
     // One entry per non-active locale — switching to the current language is a
     // no-op, so it's omitted to avoid a dead row.
     ...routing.locales

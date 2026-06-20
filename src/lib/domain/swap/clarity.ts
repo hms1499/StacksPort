@@ -54,7 +54,7 @@ export { hexToCV };
 
 const SBTC_ASSET = `${SBTC.address}.${SBTC.name}` as const;
 const USDCX_ASSET = `${USDCX.address}.${USDCX.name}` as const;
-const USDCX_TOKEN_NAME = "usdcx-token";
+const USDCX_TOKEN_NAME = "usdcx-token" as const;
 
 /**
  * Post-condition guaranteeing the sender parts with EXACTLY `amountInRaw` of

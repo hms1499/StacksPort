@@ -117,6 +117,7 @@ describe("buildSwapParams characterization (current wiring)", () => {
     expect(ser(p.functionArgs)).toEqual(
       ser([uintCV(5_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
     );
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
   });
 
   it("USDCx → sBTC: stacksport-swap-router.swap-usdcx-for-sbtc", () => {
@@ -126,6 +127,7 @@ describe("buildSwapParams characterization (current wiring)", () => {
     expect(ser(p.functionArgs)).toEqual(
       ser([uintCV(5_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
     );
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
   });
 
   it("throws for an unsupported pair", () => {

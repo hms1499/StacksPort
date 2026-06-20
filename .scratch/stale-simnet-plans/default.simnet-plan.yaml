@@ -1,0 +1,204 @@
+id: 0
+name: Simulated deployment, used as a default for `clarinet console`, `clarinet test` and `clarinet check`
+network: simnet
+genesis:
+  wallets:
+  - name: deployer
+    address: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+    balance: '100000000000000'
+    sbtc-balance: '1000000000'
+  contracts:
+  - genesis
+  - lockup
+  - bns
+  - cost-voting
+  - costs
+  - pox
+  - costs-2
+  - pox-2
+  - costs-3
+  - pox-3
+  - pox-4
+  - signers
+  - signers-voting
+  - costs-4
+plan:
+  batches:
+  - id: 0
+    transactions:
+    - transaction-type: emulated-contract-publish
+      contract-name: sip-010-trait-ft-standard
+      emulated-sender: SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE
+      path: .cache/requirements/SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.clar
+      clarity-version: 1
+    epoch: '2.0'
+  - id: 1
+    transactions:
+    - transaction-type: emulated-contract-publish
+      contract-name: ownable-trait
+      emulated-sender: SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K
+      path: .cache/requirements/SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.ownable-trait.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: bridge-token-trait
+      emulated-sender: SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K
+      path: .cache/requirements/SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.bridge-token-trait.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: token-aeusdc
+      emulated-sender: SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K
+      path: .cache/requirements/SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc.clar
+      clarity-version: 2
+    epoch: '2.4'
+  - id: 2
+    transactions:
+    - transaction-type: emulated-contract-publish
+      contract-name: sip-010-trait-ft-standard-v-1-1
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.sip-010-trait-ft-standard-v-1-1.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: token-stx-v-1-2
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.token-stx-v-1-2.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: xyk-pool-trait-v-1-2
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-trait-v-1-2.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: xyk-core-v-1-2
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-core-v-1-2.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: xyk-pool-stx-aeusdc-v-1-2
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-stx-aeusdc-v-1-2.clar
+      clarity-version: 2
+    epoch: '2.5'
+  - id: 3
+    transactions:
+    - transaction-type: emulated-contract-publish
+      contract-name: sbtc-registry
+      emulated-sender: SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4
+      path: .cache/requirements/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-registry.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: sbtc-token
+      emulated-sender: SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4
+      path: .cache/requirements/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: sbtc-deposit
+      emulated-sender: SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4
+      path: .cache/requirements/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-deposit.clar
+      clarity-version: 3
+    epoch: '3.0'
+  - id: 4
+    transactions:
+    - transaction-type: emulated-contract-publish
+      contract-name: stableswap-pool-trait-v-1-4
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-pool-trait-v-1-4.clar
+      clarity-version: 2
+    - transaction-type: emulated-contract-publish
+      contract-name: stableswap-core-v-1-4
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-core-v-1-4.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: xyk-pool-sbtc-stx-v-1-1
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-sbtc-stx-v-1-1.clar
+      clarity-version: 2
+    epoch: '3.1'
+  - id: 5
+    transactions:
+    - transaction-type: emulated-contract-publish
+      contract-name: stableswap-pool-aeusdc-usdcx-v-1-1
+      emulated-sender: SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR
+      path: .cache/requirements/SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-pool-aeusdc-usdcx-v-1-1.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: usdcx
+      emulated-sender: SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE
+      path: .cache/requirements/SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE.usdcx.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: batch-dca-executor
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: batch-dca-executor.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: batch-dca-executor-v2
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: batch-dca-executor-v2.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: dca-vault
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: dca-vault.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: bitflow-sbtc-swap-router
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: bitflow-sbtc-swap-router.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: dca-vault-stx-usdcx
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: dca-vault-stx-usdcx.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: bitflow-usdcx-from-stx-router
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: bitflow-usdcx-from-stx-router.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: bitflow-usdcx-swap-router
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: bitflow-usdcx-swap-router.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: dca-vault-sbtc-v2
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: dca-vault-sbtc.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: dca-vault-v2
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: dca-vault-v2.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: limit-order-vault
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: limit-order-vault.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: mock-sbtc
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: mock-sbtc.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: mock-usdcx
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: mock-usdcx.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: test-dca-vault-sbtc
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: test-dca-vault-sbtc.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: mock-sbtc-swap-router
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: mock-sbtc-swap-router.clar
+      clarity-version: 3
+    - transaction-type: emulated-contract-publish
+      contract-name: stacksport-swap-router
+      emulated-sender: ST18GQ5APPBQ0QF1ZR2CTCW6AV63EKT6T4FSMA9T0
+      path: stacksport-swap-router.clar
+      clarity-version: 3
+    epoch: '3.3'

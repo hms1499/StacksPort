@@ -9,10 +9,6 @@
 ;; enforces `min-amount-out`. token-stx-v-1-2 is a native-STX SIP-010 facade,
 ;; so "wSTX" output is native STX (forwarded with stx-transfer?).
 
-(use-trait sip-010-trait 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.sip-010-trait-ft-standard-v-1-1.sip-010-trait)
-(use-trait xyk-pool-trait 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-trait-v-1-2.xyk-pool-trait)
-(use-trait ss-pool-trait  'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.stableswap-pool-trait-v-1-4.stableswap-pool-trait)
-
 ;; STX -> aeUSDC -> USDCx
 (define-public (swap-stx-for-usdcx
     (amount-in uint) (min-amount-out uint) (recipient principal))

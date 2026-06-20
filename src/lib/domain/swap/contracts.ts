@@ -21,6 +21,7 @@ export const POOL_AEUSDC_USDCX: TokenRef = { address: "SM1793C4R5PZ4NS4VQ4WMP7SK
 // Routers
 export const ROUTER_STX_SBTC: TokenRef = { address: "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV", name: "bitflow-sbtc-swap-router" };
 export const ROUTER_SBTC_USDCX: TokenRef = { address: "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV", name: "bitflow-usdcx-swap-router" };
+// StacksPort user-callable multi-hop router (USDCx in/out + sBTC↔USDCx user swaps)
 export const ROUTER_STACKSPORT: TokenRef = { address: "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV", name: "stacksport-swap-router" };
 
 // Tokens

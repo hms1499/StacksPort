@@ -27,6 +27,8 @@ import {
   formatUsd,
   SWAP_PRICE_GECKO_IDS,
   quoteSecondsLeft,
+  getValidDestinations,
+  getSwappableFromTokens,
 } from "./direct-swap";
 
 // ─── Characterization: lock down buildSwapParams wiring before refactor ───────
@@ -477,5 +479,46 @@ describe("quoteSecondsLeft", () => {
 
   it("clock skew (now < quotedAt) clamps to the full window", () => {
     expect(quoteSecondsLeft(t0, t0 - 5000)).toBe(30);
+  });
+});
+
+// ─── Route reachability: verify the bidirectional + USDCx-exit route set ──────
+// These assert the data-driven ROUTE_TABLE exposes the correct destinations for
+// each source token and that USDCx is now a valid swap source (USDCx-exit
+// feature). If any of these fail the ROUTE_TABLE is missing an entry.
+
+describe("ROUTE_TABLE reachability (USDCx-exit and bidirectional STX↔USDCx)", () => {
+  it("getValidDestinations('usdcx') returns stx and sbtc", () => {
+    const ids = getValidDestinations("usdcx").map((t) => t.id);
+    expect(ids).toContain("stx");
+    expect(ids).toContain("sbtc");
+    expect(ids).toHaveLength(2);
+  });
+
+  it("getValidDestinations('stx') returns sbtc and usdcx", () => {
+    const ids = getValidDestinations("stx").map((t) => t.id);
+    expect(ids).toContain("sbtc");
+    expect(ids).toContain("usdcx");
+    expect(ids).toHaveLength(2);
+  });
+
+  it("getValidDestinations('sbtc') returns stx and usdcx", () => {
+    const ids = getValidDestinations("sbtc").map((t) => t.id);
+    expect(ids).toContain("stx");
+    expect(ids).toContain("usdcx");
+    expect(ids).toHaveLength(2);
+  });
+
+  it("getSwappableFromTokens() includes usdcx as a valid source", () => {
+    const ids = getSwappableFromTokens().map((t) => t.id);
+    expect(ids).toContain("usdcx");
+  });
+
+  it("getSwappableFromTokens() includes all three tokens (stx, sbtc, usdcx)", () => {
+    const ids = getSwappableFromTokens().map((t) => t.id);
+    expect(ids).toContain("stx");
+    expect(ids).toContain("sbtc");
+    expect(ids).toContain("usdcx");
+    expect(ids).toHaveLength(3);
   });
 });

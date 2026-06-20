@@ -9,6 +9,7 @@ import {
   POOL_SBTC_STX,
   POOL_STX_AEUSDC,
   ROUTER_SBTC_USDCX,
+  ROUTER_STACKSPORT,
   SBTC,
   SS_CORE_ADDRESS,
   SS_CORE_NAME,
@@ -140,9 +141,43 @@ export const ROUTE_TABLE: RouteSpec[] = [
     ],
     exec: {
       kind: "router",
-      contract: ROUTER_SBTC_USDCX,
-      fn: "swap-sbtc-for-token",
+      contract: ROUTER_STACKSPORT,
+      fn: "swap-sbtc-for-usdcx",
     },
+  },
+  {
+    from: "stx",
+    to: "usdcx",
+    method: "router",
+    hops: ["STX", "aeUSDC", "USDCx"],
+    quote: [
+      { coreAddress: XYK_CORE_ADDRESS, coreName: XYK_CORE_NAME, fn: "get-dy", pool: POOL_STX_AEUSDC, xToken: WSTX, yToken: AEUSDC },
+      { coreAddress: SS_CORE_ADDRESS, coreName: SS_CORE_NAME, fn: "get-dy", pool: POOL_AEUSDC_USDCX, xToken: AEUSDC, yToken: USDCX },
+    ],
+    exec: { kind: "router", contract: ROUTER_STACKSPORT, fn: "swap-stx-for-usdcx" },
+  },
+  {
+    from: "usdcx",
+    to: "stx",
+    method: "router",
+    hops: ["USDCx", "aeUSDC", "STX"],
+    quote: [
+      { coreAddress: SS_CORE_ADDRESS, coreName: SS_CORE_NAME, fn: "get-dx", pool: POOL_AEUSDC_USDCX, xToken: AEUSDC, yToken: USDCX },
+      { coreAddress: XYK_CORE_ADDRESS, coreName: XYK_CORE_NAME, fn: "get-dx", pool: POOL_STX_AEUSDC, xToken: WSTX, yToken: AEUSDC },
+    ],
+    exec: { kind: "router", contract: ROUTER_STACKSPORT, fn: "swap-usdcx-for-stx" },
+  },
+  {
+    from: "usdcx",
+    to: "sbtc",
+    method: "router",
+    hops: ["USDCx", "aeUSDC", "STX", "sBTC"],
+    quote: [
+      { coreAddress: SS_CORE_ADDRESS, coreName: SS_CORE_NAME, fn: "get-dx", pool: POOL_AEUSDC_USDCX, xToken: AEUSDC, yToken: USDCX },
+      { coreAddress: XYK_CORE_ADDRESS, coreName: XYK_CORE_NAME, fn: "get-dx", pool: POOL_STX_AEUSDC, xToken: WSTX, yToken: AEUSDC },
+      { coreAddress: XYK_CORE_ADDRESS, coreName: XYK_CORE_NAME, fn: "get-dx", pool: POOL_SBTC_STX, xToken: SBTC, yToken: WSTX },
+    ],
+    exec: { kind: "router", contract: ROUTER_STACKSPORT, fn: "swap-usdcx-for-sbtc" },
   },
 ];
 

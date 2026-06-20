@@ -38,6 +38,7 @@ const ser = (args: ClarityValue[]) => args.map((a) => serializeCV(a));
 
 // Production constants (the spec of what each route must call)
 const ROUTER = "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
+const STACKSPORT_ROUTER = "stacksport-swap-router";
 const XYK_CORE_ADDR = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
 const XYK_CORE = "xyk-core-v-1-2";
 const POOL_SBTC_STX_ADDR = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
@@ -85,19 +86,48 @@ describe("buildSwapParams characterization (current wiring)", () => {
     expect(p.postConditionMode).toBe(PostConditionMode.Deny);
   });
 
-  it("sBTC → USDCx: bitflow-usdcx-swap-router.swap-sbtc-for-token", () => {
+  it("sBTC → USDCx: stacksport-swap-router.swap-sbtc-for-usdcx (user router, replaces DCA router)", () => {
     const p = buildSwapParams("sbtc", "usdcx", 0.01, MIN_OUT, SENDER);
     expect(p.contractAddress).toBe(ROUTER);
-    expect(p.contractName).toBe("bitflow-usdcx-swap-router");
-    expect(p.functionName).toBe("swap-sbtc-for-token");
+    expect(p.contractName).toBe(STACKSPORT_ROUTER);
+    expect(p.functionName).toBe("swap-sbtc-for-usdcx");
     expect(ser(p.functionArgs)).toEqual(
       ser([uintCV(1_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
     );
     expect(p.postConditionMode).toBe(PostConditionMode.Deny);
   });
 
+  it("STX → USDCx: stacksport-swap-router.swap-stx-for-usdcx", () => {
+    const p = buildSwapParams("stx", "usdcx", 1, MIN_OUT, SENDER);
+    expect(p.contractAddress).toBe(ROUTER);
+    expect(p.contractName).toBe(STACKSPORT_ROUTER);
+    expect(p.functionName).toBe("swap-stx-for-usdcx");
+    expect(ser(p.functionArgs)).toEqual(
+      ser([uintCV(1_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
+    );
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
+  });
+
+  it("USDCx → STX: stacksport-swap-router.swap-usdcx-for-stx", () => {
+    const p = buildSwapParams("usdcx", "stx", 5, MIN_OUT, SENDER);
+    expect(p.contractName).toBe(STACKSPORT_ROUTER);
+    expect(p.functionName).toBe("swap-usdcx-for-stx");
+    expect(ser(p.functionArgs)).toEqual(
+      ser([uintCV(5_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
+    );
+  });
+
+  it("USDCx → sBTC: stacksport-swap-router.swap-usdcx-for-sbtc", () => {
+    const p = buildSwapParams("usdcx", "sbtc", 5, MIN_OUT, SENDER);
+    expect(p.contractName).toBe(STACKSPORT_ROUTER);
+    expect(p.functionName).toBe("swap-usdcx-for-sbtc");
+    expect(ser(p.functionArgs)).toEqual(
+      ser([uintCV(5_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
+    );
+  });
+
   it("throws for an unsupported pair", () => {
-    expect(() => buildSwapParams("usdcx", "stx", 1, MIN_OUT, SENDER)).toThrow();
+    expect(() => buildSwapParams("usdcx", "usdcx", 1, MIN_OUT, SENDER)).toThrow();
   });
 });
 
@@ -281,6 +311,7 @@ describe("applySlippageFloor", () => {
 
 const SENDER = "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
 const SBTC_ASSET = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token";
+const USDCX_ASSET = "SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE.usdcx::usdcx-token";
 
 describe("buildSwapParams post-conditions", () => {
   it("STX → sBTC: Deny mode + exact uSTX outgoing post-condition from sender", () => {
@@ -321,6 +352,19 @@ describe("buildSwapParams post-conditions", () => {
       condition: "eq",
       amount: "1000000", // 0.01 sBTC, 8 decimals
       asset: SBTC_ASSET,
+    });
+  });
+
+  it("USDCx → STX: Deny mode + exact USDCx FT outgoing post-condition from sender", () => {
+    const p = buildSwapParams("usdcx", "stx", 5, 1000000, SENDER);
+    expect(p.postConditionMode).toBe(PostConditionMode.Deny);
+    expect(p.postConditions).toHaveLength(1);
+    expect(p.postConditions[0]).toMatchObject({
+      type: "ft-postcondition",
+      address: SENDER,
+      condition: "eq",
+      amount: "5000000", // 5 USDCx, 6 decimals
+      asset: USDCX_ASSET,
     });
   });
 });

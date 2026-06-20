@@ -119,11 +119,20 @@ contract's **native STX**, and forwarding to the user is a plain
 
 ## Testing
 
-- **Clarity** (`cd contracts && clarinet check` + `clarinet test`): unit tests
-  for all 4 functions against mock pools (follow existing `mock-*` pattern).
-  Assert: input pulled from caller, correct output token forwarded to
-  recipient, `min-amount-out` enforced on the final hop (reverts when output
-  too low).
+- **Clarity** (`cd contracts && clarinet check` + `clarinet test`): the
+  contract must compile (`clarinet check`, no new errors) and must not regress
+  the existing suites (`clarinet test`, 77/77).
+  - **Deviation (decided 2026-06-20, implementation):** the originally-planned
+    clarinet mock-pool unit tests for the 4 functions were **not** written.
+    The Bitflow cores/pools are mainnet-only and not in simnet, so a mock-pool
+    test exercises hand-written mock math (our own code), not the real pool
+    orderings or `token-stx-v-1-2` native-STX delivery the functions depend on
+    — the same posture under which the existing DCA routers were validated on
+    mainnet rather than simnet. The authoritative contract gate is therefore
+    the **per-direction mainnet smoke swap** in the Deployment & Verification
+    section, which the whole-branch review confirmed is the real ground truth.
+    The cross-layer quote/exec direction correctness was verified by review
+    against the on-chain pool orderings.
 - **Frontend (TDD, `npm test`)**: extend `src/lib/direct-swap.test.ts`
   characterization suite:
   - per route: `exec` contract/fn, Deny mode, exact outgoing post-condition for

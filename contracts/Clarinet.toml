@@ -110,3 +110,8 @@ epoch = '3.3'
 path = 'limit-order-vault.clar'
 clarity_version = 3
 epoch = '3.3'
+
+[contracts.stacksport-swap-router]
+path = 'stacksport-swap-router.clar'
+clarity_version = 3
+epoch = '3.3'

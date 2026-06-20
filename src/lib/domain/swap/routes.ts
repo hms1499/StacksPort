@@ -9,7 +9,6 @@ import {
   POOL_SBTC_STX,
   POOL_STX_AEUSDC,
   ROUTER_SBTC_USDCX,
-  ROUTER_STX_SBTC,
   SBTC,
   SS_CORE_ADDRESS,
   SS_CORE_NAME,
@@ -63,7 +62,7 @@ export const ROUTE_TABLE: RouteSpec[] = [
   {
     from: "stx",
     to: "sbtc",
-    method: "router",
+    method: "direct",
     hops: ["STX", "sBTC"],
     quote: [
       {
@@ -75,7 +74,14 @@ export const ROUTE_TABLE: RouteSpec[] = [
         yToken: WSTX,
       },
     ],
-    exec: { kind: "router", contract: ROUTER_STX_SBTC, fn: "swap-stx-for-token" },
+    exec: {
+      kind: "direct",
+      contract: XYK_CORE,
+      fn: "swap-y-for-x",
+      pool: POOL_SBTC_STX,
+      xToken: SBTC,
+      yToken: WSTX,
+    },
   },
   {
     from: "sbtc",

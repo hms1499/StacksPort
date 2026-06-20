@@ -47,13 +47,23 @@ const WSTX_ADDR = "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR";
 const MIN_OUT = 5_000_000n;
 
 describe("buildSwapParams characterization (current wiring)", () => {
-  it("STX → sBTC: bitflow-sbtc-swap-router.swap-stx-for-token", () => {
+  // Phase 0 fix: STX→sBTC is a single pool (xyk-pool-sbtc-stx) and never
+  // needed a router. Re-pointed from the DCA router (which can't pull user
+  // funds) to a direct xyk-core swap-y-for-x. This intentionally changes the
+  // signed call — see spec 2026-06-20-reverse-routes-usdcx-exit-design.md.
+  it("STX → sBTC: xyk-core.swap-y-for-x (direct, pool+token args)", () => {
     const p = buildSwapParams("stx", "sbtc", 1, MIN_OUT, SENDER);
-    expect(p.contractAddress).toBe(ROUTER);
-    expect(p.contractName).toBe("bitflow-sbtc-swap-router");
-    expect(p.functionName).toBe("swap-stx-for-token");
+    expect(p.contractAddress).toBe(XYK_CORE_ADDR);
+    expect(p.contractName).toBe(XYK_CORE);
+    expect(p.functionName).toBe("swap-y-for-x");
     expect(ser(p.functionArgs)).toEqual(
-      ser([uintCV(1_000_000n), uintCV(MIN_OUT), standardPrincipalCV(SENDER)])
+      ser([
+        contractPrincipalCV(POOL_SBTC_STX_ADDR, POOL_SBTC_STX_NAME),
+        contractPrincipalCV(SBTC_ADDR, "sbtc-token"),
+        contractPrincipalCV(WSTX_ADDR, "token-stx-v-1-2"),
+        uintCV(1_000_000n),
+        uintCV(MIN_OUT),
+      ])
     );
     expect(p.postConditionMode).toBe(PostConditionMode.Deny);
   });

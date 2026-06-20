@@ -15,7 +15,7 @@ import {
   type ClarityValue,
 } from "@stacks/transactions";
 
-import { SBTC } from "./contracts";
+import { SBTC, USDCX } from "./contracts";
 import { ROUTE_TABLE } from "./routes";
 import { SWAP_TOKENS } from "./tokens";
 import { toRawAmount } from "./amount";
@@ -53,6 +53,8 @@ export function unwrapOkUint(cv: ClarityValue): number {
 export { hexToCV };
 
 const SBTC_ASSET = `${SBTC.address}.${SBTC.name}` as const;
+const USDCX_ASSET = `${USDCX.address}.${USDCX.name}` as const;
+const USDCX_TOKEN_NAME = "usdcx-token";
 
 /**
  * Post-condition guaranteeing the sender parts with EXACTLY `amountInRaw` of
@@ -74,6 +76,11 @@ function senderSpendPostCondition(
     return Pc.principal(senderAddress)
       .willSendEq(amountInRaw)
       .ft(SBTC_ASSET, SBTC.name);
+  }
+  if (fromId === "usdcx") {
+    return Pc.principal(senderAddress)
+      .willSendEq(amountInRaw)
+      .ft(USDCX_ASSET, USDCX_TOKEN_NAME);
   }
   throw new Error(`No post-condition rule for input token ${fromId}`);
 }

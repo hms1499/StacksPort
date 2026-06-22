@@ -1082,7 +1082,8 @@
       "estYearly": "Rendimento anual est.",
       "empty": "Nenhuma posição de rendimento ativa",
       "perYear": "/ano",
-      "connectPrompt": "Conecte sua carteira para ver seu rendimento"
+      "connectPrompt": "Conecte sua carteira para ver seu rendimento",
+      "disclaimer": "Projetado pelo APY atual — o rendimento real varia."
     },
     "positions": {
       "header": "Suas posições",

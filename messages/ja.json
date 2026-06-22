@@ -1082,7 +1082,8 @@
       "estYearly": "年間推定利回り",
       "empty": "アクティブな利回りポジションがありません",
       "perYear": "/年",
-      "connectPrompt": "ウォレットを接続して利回りを表示"
+      "connectPrompt": "ウォレットを接続して利回りを表示",
+      "disclaimer": "現在のAPYに基づく推定 — 実際の利回りは変動します。"
     },
     "positions": {
       "header": "あなたのポジション",

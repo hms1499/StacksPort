@@ -1082,7 +1082,8 @@
       "estYearly": "연간 예상 수익",
       "empty": "활성 수익 포지션 없음",
       "perYear": "/년",
-      "connectPrompt": "지갑을 연결하여 수익률 보기"
+      "connectPrompt": "지갑을 연결하여 수익률 보기",
+      "disclaimer": "현재 APY 기준 추정치 — 실제 수익률은 다를 수 있습니다."
     },
     "positions": {
       "header": "내 포지션",

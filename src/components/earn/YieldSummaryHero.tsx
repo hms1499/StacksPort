@@ -44,6 +44,7 @@ export default function YieldSummaryHero() {
         ) : loading ? (
           <div className="h-8 w-48 rounded skeleton mt-1.5" />
         ) : totalAtWork > 0 ? (
+          <>
           <div className="flex items-end justify-between gap-3 mt-1 flex-wrap">
             <div>
               <AnimatedCounter
@@ -71,6 +72,10 @@ export default function YieldSummaryHero() {
               </div>
             )}
           </div>
+          {annualYield !== null && (
+            <p className="text-[10px] mt-2" style={{ color: "var(--text-muted)" }}>{t("disclaimer")}</p>
+          )}
+          </>
         ) : (
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{t("empty")}</p>
         )}

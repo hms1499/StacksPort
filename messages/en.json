@@ -1082,7 +1082,8 @@
       "estYearly": "Est. yearly yield",
       "empty": "No active yield positions yet",
       "perYear": "/yr",
-      "connectPrompt": "Connect your wallet to see your yield"
+      "connectPrompt": "Connect your wallet to see your yield",
+      "disclaimer": "Projected from current APY — actual yield varies."
     },
     "positions": {
       "header": "Your Positions",

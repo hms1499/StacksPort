@@ -1082,7 +1082,8 @@
       "estYearly": "Rendimiento anual est.",
       "empty": "Sin posiciones de rendimiento activas",
       "perYear": "/año",
-      "connectPrompt": "Conecta tu billetera para ver tu rendimiento"
+      "connectPrompt": "Conecta tu billetera para ver tu rendimiento",
+      "disclaimer": "Proyectado según el APY actual — el rendimiento real varía."
     },
     "positions": {
       "header": "Tus posiciones",

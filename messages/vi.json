@@ -1082,7 +1082,8 @@
       "estYearly": "Ước tính hàng năm",
       "empty": "Chưa có vị thế lợi nhuận nào",
       "perYear": "/năm",
-      "connectPrompt": "Kết nối ví để xem lợi suất của bạn"
+      "connectPrompt": "Kết nối ví để xem lợi suất của bạn",
+      "disclaimer": "Ước tính theo APY hiện tại — lợi suất thực tế có thể khác."
     },
     "positions": {
       "header": "Vị thế của bạn",

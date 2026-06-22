@@ -1075,7 +1075,18 @@
     }
   },
   "earn": {
-    "title": "Ganar"
+    "title": "Ganar",
+    "summary": {
+      "header": "Tu rendimiento",
+      "atWork": "Valor en trabajo",
+      "estYearly": "Rendimiento anual est.",
+      "empty": "Sin posiciones de rendimiento activas"
+    },
+    "positions": {
+      "header": "Tus posiciones",
+      "empty": "No se detectaron posiciones DeFi.",
+      "apy": "{value}% APY"
+    }
   },
   "notifications": {
     "pageTitle": "Notificaciones",

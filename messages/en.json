@@ -1075,7 +1075,18 @@
     }
   },
   "earn": {
-    "title": "Earn"
+    "title": "Earn",
+    "summary": {
+      "header": "Your Yield",
+      "atWork": "Value at work",
+      "estYearly": "Est. yearly yield",
+      "empty": "No active yield positions yet"
+    },
+    "positions": {
+      "header": "Your Positions",
+      "empty": "No DeFi positions detected.",
+      "apy": "{value}% APY"
+    }
   },
   "notifications": {
     "pageTitle": "Notifications",

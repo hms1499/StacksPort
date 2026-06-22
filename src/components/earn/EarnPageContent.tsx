@@ -8,6 +8,8 @@ import StaggerChildren from "@/components/motion/StaggerChildren";
 import MotionCard from "@/components/motion/MotionCard";
 import YieldOpportunities from "@/components/earn/YieldOpportunities";
 import IdleStxNudge from "@/components/earn/IdleStxNudge";
+import YieldSummaryHero from "@/components/earn/YieldSummaryHero";
+import YieldPositions from "@/components/earn/YieldPositions";
 
 // @stacks/* browser-only modules — skip SSR.
 const StackingTracker = dynamic(
@@ -22,9 +24,11 @@ export default function EarnPageContent() {
       <Topbar title={t("title")} />
       <AnimatedPage className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <StaggerChildren className="space-y-4 md:space-y-5">
+          <YieldSummaryHero />
           <MotionCard disableHover>
             <StackingTracker />
           </MotionCard>
+          <YieldPositions />
           <IdleStxNudge />
           <MotionCard>
             <YieldOpportunities />

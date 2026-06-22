@@ -1075,7 +1075,18 @@
     }
   },
   "earn": {
-    "title": "수익"
+    "title": "수익",
+    "summary": {
+      "header": "내 수익률",
+      "atWork": "운용 중인 자산",
+      "estYearly": "연간 예상 수익",
+      "empty": "활성 수익 포지션 없음"
+    },
+    "positions": {
+      "header": "내 포지션",
+      "empty": "DeFi 포지션이 감지되지 않았습니다.",
+      "apy": "{value}% APY"
+    }
   },
   "notifications": {
     "pageTitle": "알림",

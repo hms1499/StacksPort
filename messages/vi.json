@@ -1075,7 +1075,18 @@
     }
   },
   "earn": {
-    "title": "Kiếm lời"
+    "title": "Kiếm lời",
+    "summary": {
+      "header": "Lợi nhuận của bạn",
+      "atWork": "Giá trị đang hoạt động",
+      "estYearly": "Ước tính hàng năm",
+      "empty": "Chưa có vị thế lợi nhuận nào"
+    },
+    "positions": {
+      "header": "Vị thế của bạn",
+      "empty": "Không phát hiện vị thế DeFi.",
+      "apy": "{value}% APY"
+    }
   },
   "notifications": {
     "pageTitle": "Thông báo",

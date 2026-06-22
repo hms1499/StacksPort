@@ -1075,7 +1075,18 @@
     }
   },
   "earn": {
-    "title": "赚取"
+    "title": "赚取",
+    "summary": {
+      "header": "您的收益",
+      "atWork": "运作中的资产",
+      "estYearly": "预计年收益",
+      "empty": "暂无活跃收益仓位"
+    },
+    "positions": {
+      "header": "您的仓位",
+      "empty": "未检测到 DeFi 仓位。",
+      "apy": "{value}% APY"
+    }
   },
   "notifications": {
     "pageTitle": "通知",

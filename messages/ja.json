@@ -1075,7 +1075,18 @@
     }
   },
   "earn": {
-    "title": "運用"
+    "title": "運用",
+    "summary": {
+      "header": "あなたの利回り",
+      "atWork": "稼働中の資産",
+      "estYearly": "年間推定利回り",
+      "empty": "アクティブな利回りポジションがありません"
+    },
+    "positions": {
+      "header": "あなたのポジション",
+      "empty": "DeFiポジションが検出されませんでした。",
+      "apy": "{value}% APY"
+    }
   },
   "notifications": {
     "pageTitle": "通知",

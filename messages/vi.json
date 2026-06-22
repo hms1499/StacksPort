@@ -1080,7 +1080,8 @@
       "header": "Lợi nhuận của bạn",
       "atWork": "Giá trị đang hoạt động",
       "estYearly": "Ước tính hàng năm",
-      "empty": "Chưa có vị thế lợi nhuận nào"
+      "empty": "Chưa có vị thế lợi nhuận nào",
+      "perYear": "/năm"
     },
     "positions": {
       "header": "Vị thế của bạn",

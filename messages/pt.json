@@ -1080,7 +1080,8 @@
       "header": "Seu rendimento",
       "atWork": "Valor em trabalho",
       "estYearly": "Rendimento anual est.",
-      "empty": "Nenhuma posição de rendimento ativa"
+      "empty": "Nenhuma posição de rendimento ativa",
+      "perYear": "/ano"
     },
     "positions": {
       "header": "Suas posições",

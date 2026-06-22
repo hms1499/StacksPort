@@ -1080,7 +1080,8 @@
       "header": "Tu rendimiento",
       "atWork": "Valor en trabajo",
       "estYearly": "Rendimiento anual est.",
-      "empty": "Sin posiciones de rendimiento activas"
+      "empty": "Sin posiciones de rendimiento activas",
+      "perYear": "/año"
     },
     "positions": {
       "header": "Tus posiciones",

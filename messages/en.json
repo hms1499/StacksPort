@@ -1080,7 +1080,8 @@
       "header": "Your Yield",
       "atWork": "Value at work",
       "estYearly": "Est. yearly yield",
-      "empty": "No active yield positions yet"
+      "empty": "No active yield positions yet",
+      "perYear": "/yr"
     },
     "positions": {
       "header": "Your Positions",

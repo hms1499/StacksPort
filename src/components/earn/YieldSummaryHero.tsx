@@ -41,7 +41,7 @@ export default function YieldSummaryHero() {
             </span>
             {annualYield !== null && (
               <span className="text-sm font-bold font-data" style={{ color: "var(--accent)" }}>
-                ~${annualYield.toLocaleString(undefined, { maximumFractionDigits: 2 })}/yr
+                ~${annualYield.toLocaleString(undefined, { maximumFractionDigits: 2 })}{t("perYear")}
                 <span className="text-[11px] font-normal ml-1" style={{ color: "var(--text-muted)" }}>{t("estYearly")}</span>
               </span>
             )}

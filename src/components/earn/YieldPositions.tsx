@@ -43,15 +43,15 @@ export default function YieldPositions() {
                   ${pos!.totalUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <ul className="mt-1 space-y-0.5">
-                {pos!.lines.map((line, i) => {
+              <ul className="mt-1 space-y-0.5" aria-label={name}>
+                {pos!.lines.map((line) => {
                   const zestApy =
                     name === "Zest Protocol"
                       ? yieldSnap?.zest?.[symbolOf(line.tokenAmount)]
                       : undefined;
                   return (
                     <li
-                      key={i}
+                      key={`${line.label}-${line.tokenAmount}`}
                       className="flex items-center justify-between text-[11px]"
                       style={{ color: "var(--text-muted)" }}
                     >

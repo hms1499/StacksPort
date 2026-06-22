@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Sprout } from "lucide-react";
+import AnimatedCounter from "@/components/motion/AnimatedCounter";
 import { useWalletStore } from "@/store/walletStore";
 import { useConnectedApps, useProtocolPositions } from "@/hooks/useMarketData";
 import { useYieldSnapshot } from "@/hooks/useYieldSnapshot";
@@ -45,12 +46,19 @@ export default function YieldSummaryHero() {
         ) : totalAtWork > 0 ? (
           <div className="flex items-baseline gap-4 mt-1 flex-wrap">
             <span className="text-lg font-bold font-data" style={{ color: "var(--text-primary)" }}>
-              ${totalAtWork.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              <AnimatedCounter
+                value={totalAtWork}
+                formatFn={(v) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+              />
               <span className="text-[11px] font-normal ml-1" style={{ color: "var(--text-muted)" }}>{t("atWork")}</span>
             </span>
             {annualYield !== null && (
               <span className="text-sm font-bold font-data" style={{ color: "var(--accent)" }}>
-                ~${annualYield.toLocaleString(undefined, { maximumFractionDigits: 2 })}{t("perYear")}
+                <AnimatedCounter
+                  value={annualYield}
+                  formatFn={(v) => `~$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+                />
+                {t("perYear")}
                 <span className="text-[11px] font-normal ml-1" style={{ color: "var(--text-muted)" }}>{t("estYearly")}</span>
               </span>
             )}

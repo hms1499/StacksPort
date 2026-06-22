@@ -10,6 +10,10 @@ function symbolOf(tokenAmount: string): string {
   return (parts[parts.length - 1] ?? "").toUpperCase();
 }
 
+// Below this APY (percent) the badge reads as broken ("0.01% APY") rather than
+// informative — hide it instead of showing a near-zero figure.
+const MIN_DISPLAY_APY = 0.05;
+
 export default function YieldPositions() {
   const t = useTranslations("earn.positions");
   const { stxAddress, isConnected } = useWalletStore();
@@ -73,7 +77,7 @@ export default function YieldPositions() {
                       style={{ color: "var(--text-muted)" }}
                     >
                       <span>{line.label}: {line.tokenAmount}</span>
-                      {typeof zestApy === "number" && (
+                      {typeof zestApy === "number" && zestApy >= MIN_DISPLAY_APY && (
                         <span
                           className="text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-md shrink-0"
                           style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}

@@ -74,7 +74,10 @@ export default function YieldPositions() {
                     >
                       <span>{line.label}: {line.tokenAmount}</span>
                       {typeof zestApy === "number" && (
-                        <span style={{ color: "var(--accent)" }}>
+                        <span
+                          className="text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-md shrink-0"
+                          style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                        >
                           {t("apy", { value: zestApy.toFixed(2) })}
                         </span>
                       )}

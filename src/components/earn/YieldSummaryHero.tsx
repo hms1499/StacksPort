@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Sprout } from "lucide-react";
+import { Sprout, TrendingUp } from "lucide-react";
 import AnimatedCounter from "@/components/motion/AnimatedCounter";
 import { useWalletStore } from "@/store/walletStore";
 import { useConnectedApps, useProtocolPositions } from "@/hooks/useMarketData";
@@ -28,7 +28,7 @@ export default function YieldSummaryHero() {
   const loading = appsLoading || positionsLoading;
 
   return (
-    <div className="glass-card rounded-2xl p-5 shadow-sm flex items-center gap-4">
+    <div className="glass-card rounded-2xl p-5 shadow-sm flex items-start gap-4">
       <div
         className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
         style={{ backgroundColor: "var(--accent-dim)", color: "var(--accent)" }}
@@ -42,25 +42,33 @@ export default function YieldSummaryHero() {
         {!isConnected ? (
           <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{t("connectPrompt")}</p>
         ) : loading ? (
-          <div className="h-6 w-44 rounded skeleton mt-1.5" />
+          <div className="h-8 w-48 rounded skeleton mt-1.5" />
         ) : totalAtWork > 0 ? (
-          <div className="flex items-baseline gap-4 mt-1 flex-wrap">
-            <span className="text-lg font-bold font-data" style={{ color: "var(--text-primary)" }}>
+          <div className="flex items-end justify-between gap-3 mt-1 flex-wrap">
+            <div>
               <AnimatedCounter
                 value={totalAtWork}
                 formatFn={(v) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+                className="text-3xl font-bold font-data"
+                style={{ color: "var(--text-primary)" }}
               />
-              <span className="text-[11px] font-normal ml-1" style={{ color: "var(--text-muted)" }}>{t("atWork")}</span>
-            </span>
+              <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{t("atWork")}</p>
+            </div>
             {annualYield !== null && (
-              <span className="text-sm font-bold font-data" style={{ color: "var(--accent)" }}>
-                <AnimatedCounter
-                  value={annualYield}
-                  formatFn={(v) => `~$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
-                />
-                {t("perYear")}
-                <span className="text-[11px] font-normal ml-1" style={{ color: "var(--text-muted)" }}>{t("estYearly")}</span>
-              </span>
+              <div className="flex flex-col items-end gap-0.5">
+                <span
+                  className="flex items-center gap-1 text-xs font-bold font-data px-2 py-1 rounded-lg"
+                  style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                >
+                  <TrendingUp size={12} />
+                  <AnimatedCounter
+                    value={annualYield}
+                    formatFn={(v) => `~$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+                  />
+                  {t("perYear")}
+                </span>
+                <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>{t("estYearly")}</span>
+              </div>
             )}
           </div>
         ) : (

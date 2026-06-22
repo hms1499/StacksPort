@@ -17,19 +17,7 @@ import { useWalletStore } from "@/store/walletStore";
 import { useUserDCAPlans, useTokensWithValues } from "@/hooks/useMarketData";
 import { useStackingStatusSnap } from "@/hooks/usePortfolioSnapshot";
 import { useStackingApy } from "@/hooks/useYieldSnapshot";
-
-/**
- * APY label for the stacking row: live StackingDAO APY when known, otherwise
- * the hardcoded estimate range. Live value formatted to one decimal.
- */
-export function stackingApyLabel(
-  liveApy: number | undefined,
-  estimateRange: [number, number]
-): string {
-  if (liveApy !== undefined) return `~${liveApy.toFixed(1)}%`;
-  const [lo, hi] = estimateRange;
-  return lo === hi ? `~${lo}%` : `${lo}–${hi}%`;
-}
+import { stackingApyLabel } from "@/lib/stacking-apy-label";
 
 type Opportunity = {
   id: string;

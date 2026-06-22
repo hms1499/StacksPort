@@ -1081,12 +1081,14 @@
       "atWork": "Value at work",
       "estYearly": "Est. yearly yield",
       "empty": "No active yield positions yet",
-      "perYear": "/yr"
+      "perYear": "/yr",
+      "connectPrompt": "Connect your wallet to see your yield"
     },
     "positions": {
       "header": "Your Positions",
       "empty": "No DeFi positions detected.",
-      "apy": "{value}% APY"
+      "apy": "{value}% APY",
+      "connectPrompt": "Connect your wallet to see your positions"
     }
   },
   "notifications": {

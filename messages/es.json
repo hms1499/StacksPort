@@ -1081,12 +1081,14 @@
       "atWork": "Valor en trabajo",
       "estYearly": "Rendimiento anual est.",
       "empty": "Sin posiciones de rendimiento activas",
-      "perYear": "/año"
+      "perYear": "/año",
+      "connectPrompt": "Conecta tu billetera para ver tu rendimiento"
     },
     "positions": {
       "header": "Tus posiciones",
       "empty": "No se detectaron posiciones DeFi.",
-      "apy": "{value}% APY"
+      "apy": "{value}% APY",
+      "connectPrompt": "Conecta tu billetera para ver tus posiciones"
     }
   },
   "notifications": {

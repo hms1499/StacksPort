@@ -1081,12 +1081,14 @@
       "atWork": "Valor em trabalho",
       "estYearly": "Rendimento anual est.",
       "empty": "Nenhuma posição de rendimento ativa",
-      "perYear": "/ano"
+      "perYear": "/ano",
+      "connectPrompt": "Conecte sua carteira para ver seu rendimento"
     },
     "positions": {
       "header": "Suas posições",
       "empty": "Nenhuma posição DeFi detectada.",
-      "apy": "{value}% APY"
+      "apy": "{value}% APY",
+      "connectPrompt": "Conecte sua carteira para ver suas posições"
     }
   },
   "notifications": {

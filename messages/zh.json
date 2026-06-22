@@ -1081,12 +1081,14 @@
       "atWork": "运作中的资产",
       "estYearly": "预计年收益",
       "empty": "暂无活跃收益仓位",
-      "perYear": "/年"
+      "perYear": "/年",
+      "connectPrompt": "连接钱包以查看您的收益"
     },
     "positions": {
       "header": "您的仓位",
       "empty": "未检测到 DeFi 仓位。",
-      "apy": "{value}% APY"
+      "apy": "{value}% APY",
+      "connectPrompt": "连接钱包以查看您的仓位"
     }
   },
   "notifications": {

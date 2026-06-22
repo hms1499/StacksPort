@@ -14,13 +14,19 @@ export default function YieldPositions() {
   const t = useTranslations("earn.positions");
   const { stxAddress, isConnected } = useWalletStore();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
-  const { data: apps } = useConnectedApps(addr);
-  const { data: positionsMap } = useProtocolPositions(addr, apps?.knownProtocols ?? []);
+  const { data: apps, isLoading: appsLoading } = useConnectedApps(addr);
+  const { data: positionsMap, isLoading: positionsLoading } = useProtocolPositions(
+    addr,
+    apps?.knownProtocols ?? []
+  );
   const { data: yieldSnap } = useYieldSnapshot();
 
   const entries = positionsMap
     ? Array.from(positionsMap.entries()).filter(([, pos]) => pos && pos.totalUsd > 0)
     : [];
+  // Distinguish "still fetching" from "genuinely empty" so a connected user with
+  // positions never sees the empty copy flash before data arrives.
+  const loading = appsLoading || positionsLoading;
 
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -31,7 +37,18 @@ export default function YieldPositions() {
         {t("header")}
       </h3>
 
-      {entries.length === 0 ? (
+      {!isConnected ? (
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("connectPrompt")}</p>
+      ) : loading ? (
+        <ul className="space-y-3" aria-hidden="true">
+          {[0, 1].map((i) => (
+            <li key={i} className="flex items-center justify-between">
+              <div className="h-3 w-28 rounded skeleton" />
+              <div className="h-3 w-16 rounded skeleton" />
+            </li>
+          ))}
+        </ul>
+      ) : entries.length === 0 ? (
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("empty")}</p>
       ) : (
         <ul className="space-y-3">

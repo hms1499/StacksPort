@@ -1081,12 +1081,14 @@
       "atWork": "稼働中の資産",
       "estYearly": "年間推定利回り",
       "empty": "アクティブな利回りポジションがありません",
-      "perYear": "/年"
+      "perYear": "/年",
+      "connectPrompt": "ウォレットを接続して利回りを表示"
     },
     "positions": {
       "header": "あなたのポジション",
       "empty": "DeFiポジションが検出されませんでした。",
-      "apy": "{value}% APY"
+      "apy": "{value}% APY",
+      "connectPrompt": "ウォレットを接続してポジションを表示"
     }
   },
   "notifications": {

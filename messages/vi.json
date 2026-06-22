@@ -1081,12 +1081,14 @@
       "atWork": "Giá trị đang hoạt động",
       "estYearly": "Ước tính hàng năm",
       "empty": "Chưa có vị thế lợi nhuận nào",
-      "perYear": "/năm"
+      "perYear": "/năm",
+      "connectPrompt": "Kết nối ví để xem lợi suất của bạn"
     },
     "positions": {
       "header": "Vị thế của bạn",
       "empty": "Không phát hiện vị thế DeFi.",
-      "apy": "{value}% APY"
+      "apy": "{value}% APY",
+      "connectPrompt": "Kết nối ví để xem vị thế của bạn"
     }
   },
   "notifications": {

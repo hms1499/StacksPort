@@ -1090,6 +1090,24 @@
       "empty": "DeFiポジションが検出されませんでした。",
       "apy": "{value}% APY",
       "connectPrompt": "ウォレットを接続してポジションを表示"
+    },
+    "zest": {
+      "supplyTitle": "sBTC を Zest に供給",
+      "withdrawTitle": "sBTC を引き出す",
+      "amountLabel": "数量",
+      "available": "利用可能",
+      "supplied": "供給済み",
+      "max": "最大",
+      "receiveEst": "≈ {amount} zsBTC を受け取る",
+      "supplyCta": "供給",
+      "withdrawCta": "引き出す",
+      "errZero": "金額を入力してください",
+      "errBelowMin": "最低金額を下回っています",
+      "errInsufficient": "sBTC 残高が不足しています",
+      "errExceeds": "供給済み残高を超えています",
+      "pending": "ウォレットで確認してください…",
+      "submitted": "トランザクションが送信されました",
+      "estimateNote": "推定値 — 実際の利回りは変動します"
     }
   },
   "notifications": {

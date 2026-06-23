@@ -1090,6 +1090,24 @@
       "empty": "未检测到 DeFi 仓位。",
       "apy": "{value}% APY",
       "connectPrompt": "连接钱包以查看您的仓位"
+    },
+    "zest": {
+      "supplyTitle": "向 Zest 存入 sBTC",
+      "withdrawTitle": "提取 sBTC",
+      "amountLabel": "数量",
+      "available": "可用",
+      "supplied": "已存入",
+      "max": "最大",
+      "receiveEst": "≈ 收到 {amount} zsBTC",
+      "supplyCta": "存入",
+      "withdrawCta": "提取",
+      "errZero": "请输入金额",
+      "errBelowMin": "低于最低金额",
+      "errInsufficient": "sBTC 余额不足",
+      "errExceeds": "超出已存入余额",
+      "pending": "请在钱包中确认…",
+      "submitted": "交易已提交",
+      "estimateNote": "估算值 — 实际收益会有所不同"
     }
   },
   "notifications": {

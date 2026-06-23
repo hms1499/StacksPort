@@ -1090,6 +1090,24 @@
       "empty": "Không phát hiện vị thế DeFi.",
       "apy": "{value}% APY",
       "connectPrompt": "Kết nối ví để xem vị thế của bạn"
+    },
+    "zest": {
+      "supplyTitle": "Cung cấp sBTC cho Zest",
+      "withdrawTitle": "Rút sBTC",
+      "amountLabel": "Số lượng",
+      "available": "Khả dụng",
+      "supplied": "Đã cung cấp",
+      "max": "Tối đa",
+      "receiveEst": "≈ nhận {amount} zsBTC",
+      "supplyCta": "Cung cấp",
+      "withdrawCta": "Rút",
+      "errZero": "Nhập số lượng",
+      "errBelowMin": "Dưới mức tối thiểu",
+      "errInsufficient": "Số dư sBTC không đủ",
+      "errExceeds": "Vượt quá số dư đã cung cấp",
+      "pending": "Xác nhận trong ví của bạn…",
+      "submitted": "Giao dịch đã được gửi",
+      "estimateNote": "Ước tính — lợi suất thực tế có thể khác"
     }
   },
   "notifications": {

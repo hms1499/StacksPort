@@ -1090,6 +1090,24 @@
       "empty": "DeFi 포지션이 감지되지 않았습니다.",
       "apy": "{value}% APY",
       "connectPrompt": "지갑을 연결하여 포지션 보기"
+    },
+    "zest": {
+      "supplyTitle": "Zest에 sBTC 공급",
+      "withdrawTitle": "sBTC 출금",
+      "amountLabel": "수량",
+      "available": "사용 가능",
+      "supplied": "공급됨",
+      "max": "최대",
+      "receiveEst": "≈ {amount} zsBTC 수령",
+      "supplyCta": "공급",
+      "withdrawCta": "출금",
+      "errZero": "금액을 입력하세요",
+      "errBelowMin": "최소 금액 미만입니다",
+      "errInsufficient": "sBTC 잔액이 부족합니다",
+      "errExceeds": "공급된 잔액을 초과합니다",
+      "pending": "지갑에서 확인해 주세요…",
+      "submitted": "트랜잭션이 제출되었습니다",
+      "estimateNote": "추정값 — 실제 수익률은 다를 수 있습니다"
     }
   },
   "notifications": {

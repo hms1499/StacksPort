@@ -1090,6 +1090,24 @@
       "empty": "Nenhuma posição DeFi detectada.",
       "apy": "{value}% APY",
       "connectPrompt": "Conecte sua carteira para ver suas posições"
+    },
+    "zest": {
+      "supplyTitle": "Depositar sBTC no Zest",
+      "withdrawTitle": "Retirar sBTC",
+      "amountLabel": "Valor",
+      "available": "Disponível",
+      "supplied": "Depositado",
+      "max": "Máx",
+      "receiveEst": "≈ receber {amount} zsBTC",
+      "supplyCta": "Depositar",
+      "withdrawCta": "Retirar",
+      "errZero": "Insira um valor",
+      "errBelowMin": "Abaixo do mínimo",
+      "errInsufficient": "Saldo de sBTC insuficiente",
+      "errExceeds": "Acima do seu saldo depositado",
+      "pending": "Confirme na sua carteira…",
+      "submitted": "Transação enviada",
+      "estimateNote": "Estimado — o rendimento real varia"
     }
   },
   "notifications": {

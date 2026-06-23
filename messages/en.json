@@ -1090,6 +1090,24 @@
       "empty": "No DeFi positions detected.",
       "apy": "{value}% APY",
       "connectPrompt": "Connect your wallet to see your positions"
+    },
+    "zest": {
+      "supplyTitle": "Supply sBTC to Zest",
+      "withdrawTitle": "Withdraw sBTC",
+      "amountLabel": "Amount",
+      "available": "Available",
+      "supplied": "Supplied",
+      "max": "Max",
+      "receiveEst": "≈ receive {amount} zsBTC",
+      "supplyCta": "Supply",
+      "withdrawCta": "Withdraw",
+      "errZero": "Enter an amount",
+      "errBelowMin": "Below the minimum",
+      "errInsufficient": "Insufficient sBTC balance",
+      "errExceeds": "More than your supplied balance",
+      "pending": "Confirm in your wallet…",
+      "submitted": "Transaction submitted",
+      "estimateNote": "Estimated — actual yield varies"
     }
   },
   "notifications": {

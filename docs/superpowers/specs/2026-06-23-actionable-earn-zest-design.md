@@ -1,8 +1,19 @@
 # Actionable Earn — Zest Supply/Withdraw Design
 
 **Date:** 2026-06-23
-**Status:** Approved (brainstorm) — pending implementation plan
+**Status:** Approved (brainstorm); re-scoped after on-chain verification — see Update
 **Surface:** `/earn`
+
+> **Update (2026-06-23, post-verification):** On-chain verification revealed Zest is an
+> **Aave-style protocol** (`borrow-helper-v2-0`) whose supply/withdraw/collateral calls
+> take **trait references** (lp a-token, pool-reserve, asset, oracle) and, for
+> withdraw/collateral, a full **list of the user's collateral reserves** — materially
+> heavier than the "mirror StakeStxModal" assumption below. Also, the Zest "USDC" market
+> is **ambiguous**: DefiLlama lists `usdcx` as the underlying, but live supply txs use
+> **aeUSDC** (`token-aeusdc` → `zaeusdc-v2-0`). **Decision:** the first implementation
+> plan is re-scoped to **sBTC only, supply + withdraw** (collateral toggle and USDC
+> deferred). Verified sBTC constants and the task breakdown live in
+> `docs/superpowers/plans/2026-06-23-actionable-earn-zest-sbtc.md`.
 
 ## Goal & Scope
 

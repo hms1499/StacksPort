@@ -15,6 +15,8 @@ import {
 import { getUserPlans, type DCAPlan } from "@/lib/dca";
 import { getUserLimitOrders } from "./limit-orders-read";
 import type { LimitOrder } from "@/lib/limit-orders";
+import { getZestSbtcPosition } from "./zest-read";
+import type { ZestPosition } from "@/lib/domain/zest/position";
 import { recordSnapshot } from "./portfolio-history";
 
 // Top-N transactions cached in the snapshot. Callers slice client-side to the
@@ -45,6 +47,7 @@ export interface PortfolioSnapshot {
   stackingStatus: StackingStatus | null;
   sbtcData: SBTCData | null;
   limitOrders: LimitOrder[] | null;
+  zestSbtc: ZestPosition | null;
 }
 
 function timeout<T>(p: Promise<T>, ms: number): Promise<T> {
@@ -82,6 +85,7 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     stackingStatus,
     sbtcData,
     limitOrders,
+    zestSbtc,
   ] = await Promise.all([
     safe(getPortfolioValue(address)),
     safe(getFungibleTokens(address)),
@@ -92,6 +96,7 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     safe(getStackingStatus(address)),
     safe(getSBTCData(address)),
     safe(getUserLimitOrders(address)),
+    safe(getZestSbtcPosition(address)),
   ]);
 
   if (tokensWithValues && tokensWithValues.totalUsd > 0) {
@@ -116,6 +121,7 @@ export async function getPortfolioSnapshot(address: string): Promise<PortfolioSn
     stackingStatus,
     sbtcData,
     limitOrders,
+    zestSbtc,
   };
 }
 

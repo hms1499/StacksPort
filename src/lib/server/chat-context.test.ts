@@ -41,6 +41,7 @@ const portfolio: PortfolioSnapshot = {
   stackingStatus: null,
   sbtcData: null,
   limitOrders: null,
+  zestSbtc: null,
 };
 
 describe("buildChatContext", () => {

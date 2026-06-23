@@ -15,6 +15,7 @@ import type {
 } from "@/lib/stacks";
 import type { DCAPlan } from "@/lib/dca";
 import type { LimitOrder } from "@/lib/limit-orders";
+import type { ZestPosition } from "@/lib/domain/zest/position";
 
 const REFRESH_MS = 30_000;
 
@@ -63,6 +64,7 @@ export const useStackingStatusSnap = selector<StackingStatus>(
   (s) => s.stackingStatus
 );
 export const useSBTCDataSnap = selector<SBTCData>((s) => s.sbtcData);
+export const useZestSbtcPosition = selector<ZestPosition>((s) => s.zestSbtc);
 
 // Transactions: snapshot caches top 20; consumers slice to their own limit.
 export function useTransactionsSnap(

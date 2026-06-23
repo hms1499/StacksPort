@@ -2,6 +2,8 @@
 
 import { memo, useMemo, useState } from "react";
 import StakeStxModal from "./StakeStxModal";
+import SupplyZestModal from "./SupplyZestModal";
+import WithdrawZestModal from "./WithdrawZestModal";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
@@ -15,7 +17,7 @@ import {
 } from "lucide-react";
 import { useWalletStore } from "@/store/walletStore";
 import { useUserDCAPlans, useTokensWithValues } from "@/hooks/useMarketData";
-import { useStackingStatusSnap } from "@/hooks/usePortfolioSnapshot";
+import { useStackingStatusSnap, useZestSbtcPosition } from "@/hooks/usePortfolioSnapshot";
 import { useStackingApy } from "@/hooks/useYieldSnapshot";
 import { stackingApyLabel } from "@/lib/stacking-apy-label";
 
@@ -79,14 +81,22 @@ const BASE_OPPORTUNITIES: Omit<Opportunity, "status" | "actionLabel">[] = [
 
 function YieldOpportunities() {
   const t = useTranslations("assets.yield");
+  const tz = useTranslations("earn");
   const { stxAddress, isConnected } = useWalletStore();
   const { data: liveStackingApy } = useStackingApy();
   const addr = isConnected && stxAddress ? stxAddress : undefined;
   const { data: tokens } = useTokensWithValues(addr);
   const [stakeOpen, setStakeOpen] = useState(false);
+  const [supplyOpen, setSupplyOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const { data: zest } = useZestSbtcPosition(addr);
   const stxAvailable = tokens?.stx?.balance ?? 0;
   const stStxStaked = useMemo(
     () => (tokens?.tokens ?? []).find((t) => t.symbol === "stSTX")?.balance ?? 0,
+    [tokens]
+  );
+  const sbtcAvailable = useMemo(
+    () => (tokens?.tokens ?? []).find((t) => t.symbol === "sBTC")?.balance ?? 0,
     [tokens]
   );
   const { data: plans } = useUserDCAPlans(addr);
@@ -125,9 +135,16 @@ function YieldOpportunities() {
           actionLabel: hasDca ? t("managePlans") : t("createPlan"),
         };
       }
+      if (o.id === "sbtc-yield") {
+        return {
+          ...o,
+          status: zest ? "active" : "available",
+          actionLabel: t("explore"),
+        };
+      }
       return { ...o, status: "available" as const, actionLabel: t("explore") };
     });
-  }, [isStacking, hasDca, t]);
+  }, [isStacking, hasDca, zest, t]);
 
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm">
@@ -168,6 +185,8 @@ function YieldOpportunities() {
 
           const subline = isDca && o.status === "active"
             ? t("subline", { count: dcaExecutions, desc: t(o.descKey) })
+            : o.id === "sbtc-yield" && zest
+            ? `${tz("zest.supplied")}: ${zest.suppliedSbtc.toFixed(8)} sBTC`
             : t(o.descKey);
 
           return (
@@ -228,6 +247,26 @@ function YieldOpportunities() {
                     {o.actionLabel}
                     <ArrowUpRight size={10} />
                   </button>
+                ) : o.id === "sbtc-yield" ? (
+                  <div className="flex items-center gap-2">
+                    {zest && (
+                      <button
+                        onClick={() => setWithdrawOpen(true)}
+                        className="text-[11px] font-semibold transition-colors hover:underline"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {tz("zest.withdrawCta")}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setSupplyOpen(true)}
+                      className="flex items-center gap-1 text-[11px] font-semibold transition-colors hover:underline"
+                      style={{ color: "var(--accent)" }}
+                    >
+                      {tz("zest.supplyCta")}
+                      <ArrowUpRight size={10} />
+                    </button>
+                  </div>
                 ) : o.external ? (
                   <a
                     href={o.href}
@@ -266,6 +305,16 @@ function YieldOpportunities() {
         onClose={() => setStakeOpen(false)}
         availableStx={stxAvailable}
         stStxStakedStx={stStxStaked}
+      />
+      <SupplyZestModal
+        open={supplyOpen}
+        onClose={() => setSupplyOpen(false)}
+        availableSbtc={sbtcAvailable}
+      />
+      <WithdrawZestModal
+        open={withdrawOpen}
+        onClose={() => setWithdrawOpen(false)}
+        suppliedSbtc={zest?.suppliedSbtc ?? 0}
       />
     </div>
   );

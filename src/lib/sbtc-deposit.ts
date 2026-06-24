@@ -44,6 +44,9 @@ export function validateDepositAmount(
 // If a 33-byte compressed ECDSA key (66 hex chars) is passed, the leading
 // parity prefix byte (02/03) is stripped to yield the 32-byte x-coordinate.
 function toSchnorrHex(hex: string): string {
+  if (hex.length !== 64 && hex.length !== 66) {
+    throw new Error(`Unexpected pubkey length ${hex.length} (expected 64 or 66 hex chars)`);
+  }
   return hex.length === 66 ? hex.slice(2) : hex;
 }
 

@@ -58,4 +58,13 @@ describe("buildDepositParams", () => {
     expect(typeof out.depositScript).toBe("string");
     expect(typeof out.reclaimScript).toBe("string");
   });
+
+  it("throws on a malformed reclaim public key length", async () => {
+    const fakeClient = { fetchSignersPublicKey: async () => "02".padEnd(66, "a") };
+    await expect(buildDepositParams({
+      stacksAddress: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
+      reclaimPublicKey: "abc", // 3 chars — invalid
+      client: fakeClient,
+    })).rejects.toThrow(/Unexpected pubkey length/);
+  });
 });

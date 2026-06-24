@@ -164,12 +164,14 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
           <>
             <div className="flex flex-col gap-1">
               <label
+                htmlFor="sbtc-amount"
                 className="text-xs font-medium"
                 style={{ color: "var(--text-muted)" }}
               >
                 {t("amountLabel")}
               </label>
               <input
+                id="sbtc-amount"
                 inputMode="numeric"
                 value={amount || ""}
                 onChange={(e) => {

@@ -4,6 +4,7 @@ import { track } from "./telemetry";
 interface AddressEntry {
   address: string;
   symbol?: string;
+  publicKey?: string;
 }
 
 export function parseWalletAddresses(addresses: AddressEntry[]) {
@@ -16,15 +17,18 @@ export function parseWalletAddresses(addresses: AddressEntry[]) {
   return {
     stxAddress: stxEntry?.address ?? addresses[0]?.address ?? "",
     btcAddress: btcEntry?.address ?? "",
+    btcPublicKey: btcEntry?.publicKey ?? "",
   };
 }
 
-export async function connectWallet(connect: (stxAddress: string, btcAddress: string) => void) {
+export async function connectWallet(
+  connect: (stxAddress: string, btcAddress: string, btcPublicKey: string) => void
+) {
   const result = await stacksConnect();
-  const { stxAddress, btcAddress } = parseWalletAddresses(result.addresses);
-  connect(stxAddress, btcAddress);
+  const { stxAddress, btcAddress, btcPublicKey } = parseWalletAddresses(result.addresses);
+  connect(stxAddress, btcAddress, btcPublicKey);
   // Funnel: single choke point for every connect entry (topbar, landing,
   // modal, backtest hero CTA).
   track("wallet_connected");
-  return { stxAddress, btcAddress };
+  return { stxAddress, btcAddress, btcPublicKey };
 }

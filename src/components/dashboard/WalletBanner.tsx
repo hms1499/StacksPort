@@ -35,7 +35,11 @@ export default function WalletBanner() {
       const btcEntry = result.addresses.find(
         (a) => a.symbol === "BTC" || (!a.address.startsWith("SP") && !a.address.startsWith("ST"))
       );
-      connect(stxEntry?.address ?? result.addresses[0]?.address ?? "", btcEntry?.address ?? "");
+      connect(
+        stxEntry?.address ?? result.addresses[0]?.address ?? "",
+        btcEntry?.address ?? "",
+        (btcEntry as { publicKey?: string } | undefined)?.publicKey ?? ""
+      );
     } catch {
       // user cancelled or error — do nothing
     } finally {

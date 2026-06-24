@@ -36,12 +36,11 @@ export function useWalletSync() {
         if (!provider) return;
 
         const response = await provider.request("getAddresses");
-        const { stxAddress: newStx, btcAddress: newBtc } = parseWalletAddresses(
-          response.result.addresses
-        );
+        const { stxAddress: newStx, btcAddress: newBtc, btcPublicKey: newPub } =
+          parseWalletAddresses(response.result.addresses);
 
         if (newStx && newStx !== stxAddress) {
-          connect(newStx, newBtc);
+          connect(newStx, newBtc, newPub);
         }
       } catch {
         // Provider unavailable or user has not granted permission — silently ignore

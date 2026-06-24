@@ -1629,5 +1629,26 @@
       "resumeP": "Resume (P)",
       "pauseP": "Pause (P)"
     }
+  },
+  "sbtc": {
+    "modalTitle": "Get sBTC",
+    "stepAmount": "Amount",
+    "stepReview": "Review",
+    "stepTrack": "Track",
+    "amountLabel": "Amount to deposit (sats)",
+    "youReceive": "You receive ≈",
+    "signerFee": "Signer fee",
+    "belowMin": "Minimum is {min} sats (dust + signer fee).",
+    "depositAddress": "Send BTC to",
+    "eta": "Minting takes ~30+ min (3 Bitcoin confirmations).",
+    "sign": "Sign & send BTC",
+    "broadcasting": "Broadcasting…",
+    "tracking": "Tracking your deposit",
+    "statusBroadcast": "Broadcast — waiting for the mempool",
+    "statusNotified": "Notified signers — awaiting mint",
+    "statusMinted": "Minted ✓",
+    "noWallet": "Connect a BTC-capable wallet (Leather or Xverse) to deposit.",
+    "unsupported": "Your wallet can't send BTC here. Use the bridge instead.",
+    "close": "Close"
   }
 }

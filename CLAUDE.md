@@ -120,6 +120,10 @@ Frontend (`.env.local`):
 - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — Redis (push subs, keeper health, price alerts). Without these, `/api/keeper/health` and `/api/price-alerts` fall back to empty/error responses.
 - `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` — Web push delivery
 - `KEEPER_HEALTH_MAX_RUN_AGE_SECONDS` (default 900), `KEEPER_HEALTH_ABORT_TAIL_LIMIT` (default 3) — tune health endpoint thresholds
+- `SBTC_NETWORK` (`testnet` | `mainnet`, default `mainnet`) — network for the BTC→sBTC deposit on-ramp. Build & smoke on `testnet` first.
+- `SBTC_EMILY_API_URL` — Emily deposit-status API base (defaults to `https://sbtc-emily.com`); used by the reconcile cron to poll mint completion.
+- `SBTC_MEMPOOL_API_URL` — optional mempool.space API base override (defaults to `https://mempool.space/api`) for the reconcile mempool check.
+- `CRON_SECRET` — bearer token guarding `GET /api/cron/sbtc-reconcile` (the external scheduler calls it with `Authorization: Bearer <CRON_SECRET>`). Without it the route 401s.
 
 Keeper bot (`keeper-bot/.env`):
 - `KEEPER_PRIVATE_KEY`, `KEEPER_ADDRESS` — Bot wallet credentials

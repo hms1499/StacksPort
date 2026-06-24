@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { SendResult } from "web-push";
 
 vi.mock("web-push");
 vi.mock("../push-redis");
@@ -21,7 +22,7 @@ describe("sendPushToAddress", () => {
       alerts: [],
       updatedAt: Date.now(),
     });
-    vi.mocked(webpush.sendNotification).mockResolvedValue({ statusCode: 201, body: "", headers: {} } as any);
+    vi.mocked(webpush.sendNotification).mockResolvedValue({ statusCode: 201, body: "", headers: {} } as SendResult);
     const ok = await sendPushToAddress("SP1", { title: "t", body: "b" });
     expect(ok).toBe(true);
     expect(vi.mocked(webpush.sendNotification)).toHaveBeenCalledOnce();

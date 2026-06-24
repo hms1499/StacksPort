@@ -1649,6 +1649,7 @@
     "statusMinted": "Minted ✓",
     "noWallet": "Connect a BTC-capable wallet (Leather or Xverse) to deposit.",
     "unsupported": "Your wallet can't send BTC here. Use the bridge instead.",
-    "close": "Close"
+    "close": "Close",
+    "error": "Something went wrong. Please try again."
   }
 }

@@ -33,6 +33,7 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
   } | null>(null);
   const [busy, setBusy] = useState(false);
   const [txid, setTxid] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { deposits } = useSbtcDeposits(stxAddress ?? undefined);
 
@@ -44,6 +45,7 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
       setDeposit(null);
       setBusy(false);
       setTxid(null);
+      setError(null);
     }
   }, [open]);
 
@@ -52,19 +54,29 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
   const check = validateDepositAmount(amount);
 
   async function goReview() {
+    if (busy) return;
     if (!stxAddress || !btcPublicKey) return;
-    const d = await buildDepositParams({
-      stacksAddress: stxAddress,
-      reclaimPublicKey: btcPublicKey,
-    });
-    setDeposit(d);
-    setStep("review");
+    setBusy(true);
+    setError(null);
+    try {
+      const d = await buildDepositParams({
+        stacksAddress: stxAddress,
+        reclaimPublicKey: btcPublicKey,
+      });
+      setDeposit(d);
+      setStep("review");
+    } catch {
+      setError(t("error"));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function signAndSend() {
     if (!deposit || !stxAddress) return;
     setBusy(true);
     try {
+      setError(null);
       const res = await request("sendTransfer", {
         recipients: [{ address: deposit.address, amount: String(amount) }],
       });
@@ -92,6 +104,8 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
 
       setTxid(resolvedTxid);
       setStep("track");
+    } catch {
+      setError(t("error"));
     } finally {
       setBusy(false);
     }
@@ -158,9 +172,10 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
               <input
                 inputMode="numeric"
                 value={amount || ""}
-                onChange={(e) =>
-                  setAmount(Math.floor(Number(e.target.value)))
-                }
+                onChange={(e) => {
+                  setAmount(Math.floor(Number(e.target.value)));
+                  setError(null);
+                }}
                 placeholder="0"
                 className="w-full rounded-xl px-3 py-2 text-sm bg-transparent border"
                 style={{
@@ -190,13 +205,17 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
               </div>
             )}
 
+            {error && (
+              <p className="text-[11px]" style={{ color: "#ef4444" }}>{error}</p>
+            )}
+
             <button
-              disabled={!check.ok}
+              disabled={!check.ok || busy}
               onClick={goReview}
               className="w-full rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50"
               style={{ background: "var(--accent)", color: "#04130d" }}
             >
-              {t("stepReview")}
+              {busy ? t("broadcasting") : t("stepReview")}
             </button>
           </>
         ) : step === "review" ? (
@@ -233,6 +252,10 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
                 {t("eta")}
               </p>
             </div>
+
+            {error && (
+              <p className="text-[11px]" style={{ color: "#ef4444" }}>{error}</p>
+            )}
 
             <button
               disabled={busy}

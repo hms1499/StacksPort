@@ -1,5 +1,6 @@
 // src/app/api/cron/sbtc-reconcile/route.ts
 import { NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
 import {
   listAllAddresses, listForAddress, updateStatus, removeDeposit, type PendingDeposit,
 } from "@/lib/server/sbtc-pending";
@@ -7,6 +8,17 @@ import { decideNext } from "@/lib/server/sbtc-reconcile";
 import { makeEmilyStatusClient } from "@/lib/server/emily-status";
 import { makeSbtcClient } from "@/lib/sbtc-deposit";
 import { sendPushToAddress } from "@/lib/server/push-send";
+
+const LOCK_KEY = "sbtc-reconcile:run-lock";
+const LOCK_TTL = 120; // seconds
+
+let _redis: Redis | null | undefined;
+function getRedis(): Redis | null {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
+  if (_redis !== undefined) return _redis;
+  try { _redis = Redis.fromEnv(); } catch { _redis = null; }
+  return _redis;
+}
 
 interface Deps {
   listAllAddresses: () => Promise<string[]>;
@@ -73,6 +85,15 @@ export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  // Redis run-lock: prevent overlapping cron invocations (mirrors keeper-bot:run-lock).
+  // If Redis is unconfigured (null), skip the lock and proceed (safe for local/dev).
+  const r = getRedis();
+  if (r) {
+    const acquired = await r.set(LOCK_KEY, "1", { nx: true, ex: LOCK_TTL });
+    if (!acquired) {
+      return NextResponse.json({ skipped: "locked" });
+    }
   }
   const client = makeSbtcClient();
   const result = await runReconcile({

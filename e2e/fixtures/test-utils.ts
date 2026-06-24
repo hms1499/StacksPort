@@ -3,6 +3,9 @@ import { type Page } from "@playwright/test";
 // Mock wallet address (Stacks mainnet format)
 export const MOCK_STX_ADDRESS = "SP2CMK69QNY60HBG8BJ4X5TD7XX2ZT4XB62V13SV";
 export const MOCK_BTC_ADDRESS = "bc1qtest1234567890abcdef";
+// Compressed secp256k1 public key (02 prefix + 64 hex chars = 66 chars total)
+export const MOCK_BTC_PUBLIC_KEY =
+  "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798";
 
 /**
  * Inject connected wallet state into Zustand persisted store
@@ -10,19 +13,20 @@ export const MOCK_BTC_ADDRESS = "bc1qtest1234567890abcdef";
  */
 export async function mockWalletConnected(page: Page) {
   await page.addInitScript(
-    ({ stxAddress, btcAddress }) => {
+    ({ stxAddress, btcAddress, btcPublicKey }) => {
       const state = {
         state: {
           isConnected: true,
           stxAddress,
           btcAddress,
+          btcPublicKey,
           network: "mainnet",
         },
         version: 0,
       };
       localStorage.setItem("stacks-wallet", JSON.stringify(state));
     },
-    { stxAddress: MOCK_STX_ADDRESS, btcAddress: MOCK_BTC_ADDRESS }
+    { stxAddress: MOCK_STX_ADDRESS, btcAddress: MOCK_BTC_ADDRESS, btcPublicKey: MOCK_BTC_PUBLIC_KEY }
   );
 }
 

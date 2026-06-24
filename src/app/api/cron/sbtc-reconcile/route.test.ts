@@ -1,6 +1,6 @@
 // src/app/api/cron/sbtc-reconcile/route.test.ts
 import { describe, it, expect, vi } from "vitest";
-import { runReconcile } from "./route";
+import { runReconcile } from "./reconcile-run";
 
 describe("runReconcile", () => {
   it("notifies a mempool-confirmed broadcast and marks minted on Emily confirm", async () => {

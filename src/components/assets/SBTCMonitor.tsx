@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -16,6 +17,7 @@ import { useWalletStore } from "@/store/walletStore";
 import { SBTCData, SBTCBridgeTx } from "@/lib/stacks";
 import { useSBTCDataSnap } from "@/hooks/usePortfolioSnapshot";
 import { formatUSD } from "@/lib/utils";
+import GetSbtcModal from "@/components/sbtc/GetSbtcModal";
 
 type SbtcT = ReturnType<typeof useTranslations<"assets.sbtc">>;
 
@@ -225,6 +227,7 @@ export default function SBTCMonitor() {
   const { data: snap, isLoading } = useSBTCDataSnap(addr);
   const data: SBTCData | null = snap ?? null;
   const loading = isLoading && !data;
+  const [getOpen, setGetOpen] = useState(false);
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
@@ -298,17 +301,12 @@ export default function SBTCMonitor() {
           {/* No sBTC hint */}
           {data.balance === 0 && (
             <div className="text-center py-2">
-              <p className="text-xs text-gray-400">
-                {t("noSbtcText")}
-                <a
-                  href="https://app.stacks.co"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#408A71] hover:underline"
-                >
-                  {t("bridgeLink")}
-                </a>
-              </p>
+              <button
+                onClick={() => setGetOpen(true)}
+                className="text-[#408A71] hover:underline text-xs font-medium"
+              >
+                {t("noSbtcText")} {t("bridgeLink")}
+              </button>
             </div>
           )}
 
@@ -338,6 +336,8 @@ export default function SBTCMonitor() {
           </div>
         </div>
       )}
+
+      <GetSbtcModal open={getOpen} onOpenChange={setGetOpen} />
     </div>
   );
 }

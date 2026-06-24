@@ -1629,5 +1629,27 @@
       "resumeP": "恢复 (P)",
       "pauseP": "暂停 (P)"
     }
+  },
+  "sbtc": {
+    "modalTitle": "获取 sBTC",
+    "stepAmount": "金额",
+    "stepReview": "确认",
+    "stepTrack": "追踪",
+    "amountLabel": "充值金额（sats）",
+    "youReceive": "您将收到 ≈",
+    "signerFee": "签名者费用",
+    "belowMin": "最低为 {min} sats（尘埃 + 签名者费用）。",
+    "depositAddress": "将 BTC 发送至",
+    "eta": "铸造约需 30 分钟以上（3 个比特币确认）。",
+    "sign": "签名并发送 BTC",
+    "broadcasting": "广播中…",
+    "tracking": "正在追踪您的充值",
+    "statusBroadcast": "已广播 — 等待内存池",
+    "statusNotified": "已通知签名者 — 等待铸造",
+    "statusMinted": "已铸造 ✓",
+    "noWallet": "请连接支持 BTC 的钱包（Leather 或 Xverse）以进行充值。",
+    "unsupported": "您的钱包无法在此发送 BTC，请使用跨链桥代替。",
+    "close": "关闭",
+    "error": "出现错误，请重试。"
   }
 }

@@ -1629,5 +1629,27 @@
       "resumeP": "再開（P）",
       "pauseP": "一時停止（P）"
     }
+  },
+  "sbtc": {
+    "modalTitle": "sBTCを入手",
+    "stepAmount": "金額",
+    "stepReview": "確認",
+    "stepTrack": "追跡",
+    "amountLabel": "入金額（sats）",
+    "youReceive": "受取予定 ≈",
+    "signerFee": "署名者手数料",
+    "belowMin": "最低 {min} sats 必要です（ダスト + 署名者手数料）。",
+    "depositAddress": "BTCの送り先",
+    "eta": "ミントには約30分以上かかります（Bitcoinの確認3回）。",
+    "sign": "署名してBTCを送信",
+    "broadcasting": "ブロードキャスト中…",
+    "tracking": "入金を追跡中",
+    "statusBroadcast": "ブロードキャスト済み — メンプール待ち",
+    "statusNotified": "署名者に通知済み — ミント待ち",
+    "statusMinted": "ミント完了 ✓",
+    "noWallet": "入金するにはBTC対応ウォレット（LeatherまたはXverse）を接続してください。",
+    "unsupported": "お使いのウォレットはここでBTCを送信できません。代わりにブリッジをご利用ください。",
+    "close": "閉じる",
+    "error": "エラーが発生しました。もう一度お試しください。"
   }
 }

@@ -1629,5 +1629,27 @@
       "resumeP": "재개 (P)",
       "pauseP": "일시정지 (P)"
     }
+  },
+  "sbtc": {
+    "modalTitle": "sBTC 받기",
+    "stepAmount": "금액",
+    "stepReview": "확인",
+    "stepTrack": "추적",
+    "amountLabel": "입금액 (sats)",
+    "youReceive": "수령 예정 ≈",
+    "signerFee": "서명자 수수료",
+    "belowMin": "최소 {min} sats 이상이어야 합니다 (더스트 + 서명자 수수료).",
+    "depositAddress": "BTC 전송 주소",
+    "eta": "민팅은 약 30분 이상 소요됩니다 (비트코인 3회 확인).",
+    "sign": "서명 후 BTC 전송",
+    "broadcasting": "브로드캐스팅 중…",
+    "tracking": "입금 추적 중",
+    "statusBroadcast": "브로드캐스트 완료 — 멤풀 대기 중",
+    "statusNotified": "서명자 알림 완료 — 민팅 대기 중",
+    "statusMinted": "민팅 완료 ✓",
+    "noWallet": "입금하려면 BTC 지원 지갑(Leather 또는 Xverse)을 연결하세요.",
+    "unsupported": "현재 지갑은 여기서 BTC를 전송할 수 없습니다. 브리지를 이용해 주세요.",
+    "close": "닫기",
+    "error": "오류가 발생했습니다. 다시 시도해 주세요."
   }
 }

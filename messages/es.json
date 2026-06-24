@@ -1629,5 +1629,27 @@
       "resumeP": "Reanudar (P)",
       "pauseP": "Pausar (P)"
     }
+  },
+  "sbtc": {
+    "modalTitle": "Obtener sBTC",
+    "stepAmount": "Cantidad",
+    "stepReview": "Revisar",
+    "stepTrack": "Rastrear",
+    "amountLabel": "Cantidad a depositar (sats)",
+    "youReceive": "Recibirás ≈",
+    "signerFee": "Comisión del firmante",
+    "belowMin": "El mínimo es {min} sats (polvo + comisión del firmante).",
+    "depositAddress": "Envía BTC a",
+    "eta": "La acuñación tarda ~30+ min (3 confirmaciones de Bitcoin).",
+    "sign": "Firmar y enviar BTC",
+    "broadcasting": "Difundiendo…",
+    "tracking": "Rastreando tu depósito",
+    "statusBroadcast": "Difundido — esperando el mempool",
+    "statusNotified": "Firmantes notificados — esperando acuñación",
+    "statusMinted": "Acuñado ✓",
+    "noWallet": "Conecta una billetera compatible con BTC (Leather o Xverse) para depositar.",
+    "unsupported": "Tu billetera no puede enviar BTC aquí. Usa el puente en su lugar.",
+    "close": "Cerrar",
+    "error": "Algo salió mal. Por favor intenta de nuevo."
   }
 }

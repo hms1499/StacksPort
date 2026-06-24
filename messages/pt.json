@@ -1629,5 +1629,27 @@
       "resumeP": "Retomar (P)",
       "pauseP": "Pausar (P)"
     }
+  },
+  "sbtc": {
+    "modalTitle": "Obter sBTC",
+    "stepAmount": "Valor",
+    "stepReview": "Revisar",
+    "stepTrack": "Rastrear",
+    "amountLabel": "Valor a depositar (sats)",
+    "youReceive": "Você receberá ≈",
+    "signerFee": "Taxa do assinante",
+    "belowMin": "O mínimo é {min} sats (poeira + taxa do assinante).",
+    "depositAddress": "Envie BTC para",
+    "eta": "A cunhagem leva ~30+ min (3 confirmações do Bitcoin).",
+    "sign": "Assinar e enviar BTC",
+    "broadcasting": "Transmitindo…",
+    "tracking": "Rastreando seu depósito",
+    "statusBroadcast": "Transmitido — aguardando o mempool",
+    "statusNotified": "Assinantes notificados — aguardando cunhagem",
+    "statusMinted": "Cunhado ✓",
+    "noWallet": "Conecte uma carteira compatível com BTC (Leather ou Xverse) para depositar.",
+    "unsupported": "Sua carteira não consegue enviar BTC aqui. Use a ponte em vez disso.",
+    "close": "Fechar",
+    "error": "Algo deu errado. Por favor, tente novamente."
   }
 }

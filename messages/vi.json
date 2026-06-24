@@ -1629,5 +1629,27 @@
       "resumeP": "Tiếp tục (P)",
       "pauseP": "Tạm dừng (P)"
     }
+  },
+  "sbtc": {
+    "modalTitle": "Nhận sBTC",
+    "stepAmount": "Số lượng",
+    "stepReview": "Xem lại",
+    "stepTrack": "Theo dõi",
+    "amountLabel": "Số lượng nạp (sats)",
+    "youReceive": "Bạn nhận được ≈",
+    "signerFee": "Phí người ký",
+    "belowMin": "Tối thiểu là {min} sats (bụi + phí người ký).",
+    "depositAddress": "Gửi BTC đến",
+    "eta": "Đúc tiền mất ~30+ phút (3 xác nhận Bitcoin).",
+    "sign": "Ký & gửi BTC",
+    "broadcasting": "Đang phát sóng…",
+    "tracking": "Đang theo dõi khoản nạp của bạn",
+    "statusBroadcast": "Đã phát sóng — đang chờ mempool",
+    "statusNotified": "Đã thông báo người ký — đang chờ đúc",
+    "statusMinted": "Đã đúc ✓",
+    "noWallet": "Kết nối ví hỗ trợ BTC (Leather hoặc Xverse) để nạp tiền.",
+    "unsupported": "Ví của bạn không thể gửi BTC ở đây. Hãy dùng cầu nối thay thế.",
+    "close": "Đóng",
+    "error": "Đã xảy ra lỗi. Vui lòng thử lại."
   }
 }

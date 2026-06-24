@@ -1,6 +1,6 @@
 // src/lib/sbtc-deposit.test.ts
 import { describe, it, expect, afterEach } from "vitest";
-import { getSbtcNetwork, validateDepositAmount, SBTC_DUST_SATS, DEFAULT_MAX_SIGNER_FEE_SATS } from "./sbtc-deposit";
+import { getSbtcNetwork, validateDepositAmount, SBTC_DUST_SATS, DEFAULT_MAX_SIGNER_FEE_SATS, buildDepositParams } from "./sbtc-deposit";
 
 describe("getSbtcNetwork", () => {
   const orig = process.env.SBTC_NETWORK;
@@ -43,5 +43,19 @@ describe("validateDepositAmount", () => {
 
   it("uses a custom signer fee in the minimum", () => {
     expect(validateDepositAmount(SBTC_DUST_SATS + 5_000, 5_000).ok).toBe(true);
+  });
+});
+
+describe("buildDepositParams", () => {
+  it("builds a deposit address using the signers key", async () => {
+    const fakeClient = { fetchSignersPublicKey: async () => "02".padEnd(66, "a") };
+    const out = await buildDepositParams({
+      stacksAddress: "SP3FGQ8Z7JY9BWYZ5WM53E0M9NK7WHJF0691NZ159",
+      reclaimPublicKey: "03".padEnd(66, "b"),
+      client: fakeClient,
+    });
+    expect(out.address).toMatch(/^(bc1|tb1)/);
+    expect(typeof out.depositScript).toBe("string");
+    expect(typeof out.reclaimScript).toBe("string");
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useReducer } from "react";
+import { useCallback, useLayoutEffect, useReducer, useRef } from "react";
 import { trackTx } from "@/lib/tx-tracker";
 import type { TxState, TxAction, UseTxFlowOptions } from "./types";
 
@@ -23,7 +23,14 @@ export function txReducer(state: TxState, action: TxAction): TxState {
 export function useTxFlow(opts: UseTxFlowOptions) {
   const [state, dispatch] = useReducer(txReducer, { phase: "form", txId: null });
 
+  // Keep a stable `submit` identity while always reading the latest opts.
+  const optsRef = useRef(opts);
+  useLayoutEffect(() => {
+    optsRef.current = opts;
+  }, [opts]);
+
   const submit = useCallback(() => {
+    const opts = optsRef.current;
     dispatch({ type: "SUBMIT" });
     opts.driver(
       ({ txId }) => {
@@ -43,7 +50,7 @@ export function useTxFlow(opts: UseTxFlowOptions) {
       },
       () => dispatch({ type: "CANCEL" }),
     );
-  }, [opts]);
+  }, []);
 
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 

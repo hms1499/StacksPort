@@ -36,9 +36,11 @@ export default function WithdrawZestModal({ open, onClose, suppliedSbtc }: Props
   const tx = useTxFlow({
     driver: (onFinish, onCancel) => {
       if (!isConnected || !stxAddress) { onCancel(); return; }
-      readUserCollateralReserves(stxAddress).then((reserves) => {
-        withdrawZestSbtc(amountSats, stxAddress, reserves, onFinish, onCancel);
-      });
+      readUserCollateralReserves(stxAddress)
+        .then((reserves) => {
+          withdrawZestSbtc(amountSats, stxAddress, reserves, onFinish, onCancel);
+        })
+        .catch(() => onCancel());
     },
     label: t("zest.withdrawCta"),
     category: "wallet",

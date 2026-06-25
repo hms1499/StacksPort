@@ -1117,6 +1117,15 @@
     "opportunities": {
       "activeTitle": "진행 중인 전략",
       "exploreTitle": "둘러보기"
+    },
+    "tx": {
+      "reviewTitle": "확인",
+      "confirmInWallet": "지갑에서 확인…",
+      "submitted": "제출됨",
+      "confirmed": "온체인 확인됨",
+      "failed": "온체인 실패",
+      "viewOnExplorer": "익스플로러에서 보기",
+      "nextEarn": "포지션 보기"
     }
   },
   "notifications": {

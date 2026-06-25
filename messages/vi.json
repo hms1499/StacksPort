@@ -1117,6 +1117,15 @@
     "opportunities": {
       "activeTitle": "Chiến lược đang chạy",
       "exploreTitle": "Khám phá"
+    },
+    "tx": {
+      "reviewTitle": "Xem lại",
+      "confirmInWallet": "Xác nhận trong ví…",
+      "submitted": "Đã gửi",
+      "confirmed": "Đã xác nhận on-chain",
+      "failed": "Thất bại on-chain",
+      "viewOnExplorer": "Xem trên Explorer",
+      "nextEarn": "Xem vị thế"
     }
   },
   "notifications": {

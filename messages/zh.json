@@ -1117,6 +1117,15 @@
     "opportunities": {
       "activeTitle": "进行中的策略",
       "exploreTitle": "探索"
+    },
+    "tx": {
+      "reviewTitle": "确认",
+      "confirmInWallet": "在钱包中确认…",
+      "submitted": "已提交",
+      "confirmed": "已上链确认",
+      "failed": "上链失败",
+      "viewOnExplorer": "在浏览器中查看",
+      "nextEarn": "查看持仓"
     }
   },
   "notifications": {

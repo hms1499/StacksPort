@@ -1117,6 +1117,15 @@
     "opportunities": {
       "activeTitle": "Suas estratégias ativas",
       "exploreTitle": "Explorar"
+    },
+    "tx": {
+      "reviewTitle": "Revisar",
+      "confirmInWallet": "Confirme na carteira…",
+      "submitted": "Enviada",
+      "confirmed": "Confirmada on-chain",
+      "failed": "Falhou on-chain",
+      "viewOnExplorer": "Ver no Explorer",
+      "nextEarn": "Ver posição"
     }
   },
   "notifications": {

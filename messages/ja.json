@@ -1117,6 +1117,15 @@
     "opportunities": {
       "activeTitle": "実行中の戦略",
       "exploreTitle": "探索"
+    },
+    "tx": {
+      "reviewTitle": "確認",
+      "confirmInWallet": "ウォレットで確認…",
+      "submitted": "送信済み",
+      "confirmed": "オンチェーンで確認",
+      "failed": "オンチェーンで失敗",
+      "viewOnExplorer": "エクスプローラーで表示",
+      "nextEarn": "ポジションを見る"
     }
   },
   "notifications": {

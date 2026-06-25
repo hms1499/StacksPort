@@ -17,6 +17,10 @@ test.describe("Earn — liquid stacking", () => {
 
     // StakeStxModal title — messages → assets.stake.title
     await expect(page.getByText("Stake STX").first()).toBeVisible();
+
+    // The sheet renders the shared AmountField (input + Max).
+    await expect(page.getByRole("textbox").first()).toBeVisible();
+    await expect(page.getByText(/^Max$/i).first()).toBeVisible();
   });
 
   test("the earn page is reachable", async ({ page }) => {

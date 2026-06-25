@@ -45,11 +45,14 @@ export interface TrackTxOptions {
   // the UI sees the new balance/plan state immediately instead of waiting
   // for the SWR refresh interval.
   address?: string | null;
+  // Optional: invoked once when the tx resolves, so an open UI (e.g. TxSheet)
+  // can upgrade its state. Fires after the notification + invalidate.
+  onResolved?: (status: 'success' | 'failed') => void;
 }
 
 // Fire-and-forget — gọi sau openContractCall/openSTXTransfer onFinish.
 // Không block UI, không throw.
-export function trackTx({ txId, label, category, context, addNotification, address }: TrackTxOptions): void {
+export function trackTx({ txId, label, category, context, addNotification, address, onResolved }: TrackTxOptions): void {
   let attempts = 0;
 
   const poll = async () => {
@@ -74,6 +77,7 @@ export function trackTx({ txId, label, category, context, addNotification, addre
         { ...context, txId, action: 'confirmed' },
       );
       invalidatePortfolio(address);
+      onResolved?.('success');
     } else {
       // abort_by_response hoặc abort_by_post_condition — STX fee was still
       // burned, so the balance moved even though the action didn't take.
@@ -85,6 +89,7 @@ export function trackTx({ txId, label, category, context, addNotification, addre
         { ...context, txId, action: 'failed' },
       );
       invalidatePortfolio(address);
+      onResolved?.('failed');
     }
   };
 

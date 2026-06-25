@@ -63,7 +63,7 @@ export default function TxSheet({
                 )}
               </div>
             </div>
-            <Dialog.Close aria-label="Close">
+            <Dialog.Close type="button" aria-label="Close">
               <X size={18} style={{ color: "var(--text-muted)" }} />
             </Dialog.Close>
           </div>
@@ -86,7 +86,7 @@ export default function TxSheet({
                 <div className="flex flex-col gap-2 pt-1">
                   {nextActions.map((a) => (
                     <Link key={a.href + a.label} href={a.href}
-                          className="w-full rounded-xl py-2.5 text-sm font-semibold text-center"
+                          className="block w-full rounded-xl py-2.5 text-sm font-semibold text-center"
                           style={{ background: "var(--accent)", color: "#04130d" }}>
                       {a.label}
                     </Link>

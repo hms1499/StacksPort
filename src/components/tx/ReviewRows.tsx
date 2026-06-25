@@ -14,8 +14,8 @@ export default function ReviewRows({ title, rows }: Props) {
       <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "var(--text-muted)" }}>
         {title}
       </p>
-      {rows.map(([label, val]) => (
-        <div key={label} className="flex items-center justify-between text-xs">
+      {rows.map(([label, val], i) => (
+        <div key={`${label}-${i}`} className="flex items-center justify-between text-xs">
           <span style={{ color: "var(--text-muted)" }}>{label}</span>
           <span className="font-semibold font-data" style={{ color: "var(--text-primary)" }}>{val}</span>
         </div>

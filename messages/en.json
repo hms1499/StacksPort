@@ -1076,6 +1076,11 @@
   },
   "earn": {
     "title": "Earn",
+    "connect": {
+      "title": "Connect to start earning",
+      "body": "See your stacking, DeFi positions and projected yield in one place.",
+      "cta": "Connect Wallet"
+    },
     "summary": {
       "header": "Your Yield",
       "atWork": "Value at work",

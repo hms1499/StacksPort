@@ -1076,6 +1076,11 @@
   },
   "earn": {
     "title": "赚取",
+    "connect": {
+      "title": "连接钱包开始赚取收益",
+      "body": "在一处查看您的 Stacking、DeFi 持仓和预期收益。",
+      "cta": "连接钱包"
+    },
     "summary": {
       "header": "您的收益",
       "atWork": "运作中的资产",

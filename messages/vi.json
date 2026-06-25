@@ -1076,6 +1076,11 @@
   },
   "earn": {
     "title": "Kiếm lời",
+    "connect": {
+      "title": "Kết nối để bắt đầu kiếm lời",
+      "body": "Xem stacking, vị thế DeFi và lợi suất dự kiến của bạn ở cùng một nơi.",
+      "cta": "Kết nối ví"
+    },
     "summary": {
       "header": "Lợi nhuận của bạn",
       "atWork": "Giá trị đang hoạt động",

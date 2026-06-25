@@ -1076,6 +1076,11 @@
   },
   "earn": {
     "title": "Ganar",
+    "connect": {
+      "title": "Conéctate para empezar a generar rendimiento",
+      "body": "Consulta tu stacking, posiciones DeFi y rendimiento previsto en un solo lugar.",
+      "cta": "Conectar billetera"
+    },
     "summary": {
       "header": "Tu rendimiento",
       "atWork": "Valor en trabajo",

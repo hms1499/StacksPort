@@ -1076,6 +1076,11 @@
   },
   "earn": {
     "title": "Ganhar",
+    "connect": {
+      "title": "Conecte-se para começar a render",
+      "body": "Veja seu stacking, posições DeFi e rendimento previsto em um só lugar.",
+      "cta": "Conectar carteira"
+    },
     "summary": {
       "header": "Seu rendimento",
       "atWork": "Valor em trabalho",

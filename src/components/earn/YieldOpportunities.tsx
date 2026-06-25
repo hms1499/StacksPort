@@ -221,7 +221,7 @@ function YieldOpportunities() {
           {o.id === "stacking" ? (
             <button
               onClick={() => setStakeOpen(true)}
-              className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline"
+              className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
               style={{ color: "var(--accent)" }}
             >
               {o.actionLabel}
@@ -232,7 +232,7 @@ function YieldOpportunities() {
               {zest && (
                 <button
                   onClick={() => setWithdrawOpen(true)}
-                  className="text-xs font-semibold transition-colors hover:underline"
+                  className="text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
                   style={{ color: "var(--text-muted)" }}
                 >
                   {tz("zest.withdrawCta")}
@@ -240,7 +240,7 @@ function YieldOpportunities() {
               )}
               <button
                 onClick={() => setSupplyOpen(true)}
-                className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline"
+                className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
                 style={{ color: "var(--accent)" }}
               >
                 {tz("zest.supplyCta")}
@@ -252,7 +252,7 @@ function YieldOpportunities() {
               href={o.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline"
+              className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
               style={{ color: "var(--accent)" }}
             >
               {o.actionLabel}
@@ -261,7 +261,7 @@ function YieldOpportunities() {
           ) : (
             <Link
               href={o.href}
-              className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline"
+              className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
               style={{ color: "var(--accent)" }}
             >
               {o.actionLabel}

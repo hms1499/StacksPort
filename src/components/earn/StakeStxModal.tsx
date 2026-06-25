@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Lock } from "lucide-react";
+import { Lock, ArrowUpRight } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { useWalletStore } from "@/store/walletStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { stakeStx, fetchStxPerStStx } from "@/lib/stacking-dao";
@@ -89,16 +90,32 @@ export default function StakeStxModal({ open, onClose, availableStx, stStxStaked
         />
       ) : null}
     >
-      <AmountField
-        value={amount}
-        onChange={setAmount}
-        onMax={() => setAmount(String(microToSTX(availableUstx)))}
-        maxLabel={t("max")}
-        label={t("amountLabel")}
-        balanceLabel={t("balance", { balance: microToSTX(availableUstx).toFixed(2) })}
-        error={errorText}
-        placeholder="0.00"
-      />
+      <>
+        {stStxStakedStx > 0 && (
+          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            {t("currentPosition", { amount: stStxStakedStx.toFixed(2) })}
+          </p>
+        )}
+        <AmountField
+          value={amount}
+          onChange={setAmount}
+          onMax={() => setAmount(String(microToSTX(availableUstx)))}
+          maxLabel={t("max")}
+          label={t("amountLabel")}
+          balanceLabel={t("balance", { balance: microToSTX(availableUstx).toFixed(2) })}
+          error={errorText}
+          placeholder="0.00"
+        />
+        {stStxStakedStx > 0 && (
+          <Link
+            href="/trade"
+            className="text-[11px] font-semibold text-center flex items-center justify-center gap-1"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {t("unstake")} <ArrowUpRight size={11} />
+          </Link>
+        )}
+      </>
     </TxSheet>
   );
 }

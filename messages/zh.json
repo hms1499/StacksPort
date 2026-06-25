@@ -1113,6 +1113,10 @@
       "pending": "请在钱包中确认…",
       "submitted": "交易已提交",
       "estimateNote": "估算值 — 实际收益会有所不同"
+    },
+    "opportunities": {
+      "activeTitle": "进行中的策略",
+      "exploreTitle": "探索"
     }
   },
   "notifications": {

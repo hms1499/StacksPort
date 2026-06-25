@@ -1113,6 +1113,10 @@
       "pending": "Confirma en tu billetera…",
       "submitted": "Transacción enviada",
       "estimateNote": "Estimado — el rendimiento real varía"
+    },
+    "opportunities": {
+      "activeTitle": "Tus estrategias activas",
+      "exploreTitle": "Explorar"
     }
   },
   "notifications": {

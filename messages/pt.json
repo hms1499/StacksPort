@@ -1113,6 +1113,10 @@
       "pending": "Confirme na sua carteira…",
       "submitted": "Transação enviada",
       "estimateNote": "Estimado — o rendimento real varia"
+    },
+    "opportunities": {
+      "activeTitle": "Suas estratégias ativas",
+      "exploreTitle": "Explorar"
     }
   },
   "notifications": {

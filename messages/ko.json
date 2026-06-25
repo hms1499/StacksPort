@@ -1113,6 +1113,10 @@
       "pending": "지갑에서 확인해 주세요…",
       "submitted": "트랜잭션이 제출되었습니다",
       "estimateNote": "추정값 — 실제 수익률은 다를 수 있습니다"
+    },
+    "opportunities": {
+      "activeTitle": "진행 중인 전략",
+      "exploreTitle": "둘러보기"
     }
   },
   "notifications": {

@@ -1113,6 +1113,10 @@
       "pending": "ウォレットで確認してください…",
       "submitted": "トランザクションが送信されました",
       "estimateNote": "推定値 — 実際の利回りは変動します"
+    },
+    "opportunities": {
+      "activeTitle": "実行中の戦略",
+      "exploreTitle": "探索"
     }
   },
   "notifications": {

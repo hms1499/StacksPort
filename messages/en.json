@@ -1113,6 +1113,10 @@
       "pending": "Confirm in your wallet…",
       "submitted": "Transaction submitted",
       "estimateNote": "Estimated — actual yield varies"
+    },
+    "opportunities": {
+      "activeTitle": "Your active strategies",
+      "exploreTitle": "Explore"
     }
   },
   "notifications": {

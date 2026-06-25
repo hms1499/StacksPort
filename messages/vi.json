@@ -1113,6 +1113,10 @@
       "pending": "Xác nhận trong ví của bạn…",
       "submitted": "Giao dịch đã được gửi",
       "estimateNote": "Ước tính — lợi suất thực tế có thể khác"
+    },
+    "opportunities": {
+      "activeTitle": "Chiến lược đang chạy",
+      "exploreTitle": "Khám phá"
     }
   },
   "notifications": {

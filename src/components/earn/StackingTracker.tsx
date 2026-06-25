@@ -38,15 +38,18 @@ function StatCard({
   iconBg: string;
 }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
+    <div className="rounded-xl p-4" style={{ backgroundColor: "var(--bg-elevated)" }}>
       <div className="flex items-center gap-2 mb-2">
-        <div className={`w-7 h-7 rounded-lg ${iconBg} flex items-center justify-center`}>
-          <Icon size={14} className={iconColor} />
+        <div
+          className="w-7 h-7 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: iconBg, color: iconColor }}
+        >
+          <Icon size={14} />
         </div>
-        <p className="text-xs text-gray-400 font-medium">{label}</p>
+        <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label}</p>
       </div>
-      <p className="text-xl font-bold text-gray-900">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      <p className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{value}</p>
+      {sub && <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{sub}</p>}
     </div>
   );
 }
@@ -64,64 +67,70 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
           value={`${formatSTXAmount(s.lockedSTX)} STX`}
           sub={formatUSD(s.lockedUsd)}
           icon={Lock}
-          iconColor="text-[#285A48]"
-          iconBg="bg-[#B0E4CC]/20"
+          iconColor="#408A71"
+          iconBg="rgba(64, 138, 113, 0.14)"
         />
         <StatCard
           label={t("cyclesRemaining")}
           value={t("cyclesValue", { count: s.cyclesRemaining })}
           sub={t("unlocksIn", { days: s.estimatedUnlockDays })}
           icon={Layers}
-          iconColor="text-indigo-500"
-          iconBg="bg-indigo-50"
+          iconColor="#6366F1"
+          iconBg="rgba(99, 102, 241, 0.12)"
         />
         <StatCard
           label={t("unlockBlock")}
           value={`#${s.burnchainUnlockHeight.toLocaleString()}`}
           sub={t("btcBlocksLeft", { count: s.blocksUntilUnlock.toLocaleString() })}
           icon={Unlock}
-          iconColor="text-orange-500"
-          iconBg="bg-orange-50"
+          iconColor="#F59E0B"
+          iconBg="rgba(245, 158, 11, 0.12)"
         />
       </div>
 
       {/* Cycle progress */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <p className="text-xs font-medium text-gray-600">
+          <p className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
             {t("rewardPhase", { id: s.currentCycleId })}
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
             {t("blocksProgress", { elapsed: blocksElapsed.toLocaleString(), total: s.rewardPhaseLength.toLocaleString() })}
-            <span className="ml-1.5 font-semibold text-gray-600">
+            <span className="ml-1.5 font-semibold" style={{ color: "var(--text-secondary)" }}>
               ({s.cycleProgress.toFixed(1)}%)
             </span>
           </p>
         </div>
-        <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          className="w-full h-2.5 rounded-full overflow-hidden"
+          style={{ backgroundColor: "var(--border-subtle)" }}
+        >
           <div
             className="h-full bg-gradient-to-r from-[#B0E4CC] to-[#408A71] rounded-full transition-all duration-500"
             style={{ width: `${s.cycleProgress}%` }}
           />
         </div>
-        <div className="flex justify-between mt-1.5 text-[10px] text-gray-400">
+        <div className="flex justify-between mt-1.5 text-[10px]" style={{ color: "var(--text-muted)" }}>
           <span>{t("cycleStart")}</span>
           <span>{t("blocksUntilPrepare", { count: s.blocksUntilCycleEnd.toLocaleString() })}</span>
         </div>
       </div>
 
       {/* Network info row */}
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-400">
+      <div
+        className="flex items-center justify-between pt-3 text-xs"
+        style={{ borderTop: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}
+      >
         <div className="flex items-center gap-4">
           <span>
             {t("networkShare")}{" "}
-            <span className="font-semibold text-gray-600">
+            <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>
               {s.networkShare < 0.001 ? "<0.001" : s.networkShare.toFixed(3)}%
             </span>
           </span>
           <span>
             {t("totalStacked")}{" "}
-            <span className="font-semibold text-gray-600">
+            <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>
               {formatLargeSTX(s.totalStackedUstx)}
             </span>
           </span>
@@ -131,7 +140,8 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
             href={`https://explorer.hiro.so/txid/${s.lockTxId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[#408A71] hover:text-[#285A48] transition-colors"
+            className="flex items-center gap-1 transition-colors hover:underline"
+            style={{ color: "var(--accent)" }}
           >
             {t("viewTx")} <ExternalLink size={10} />
           </a>
@@ -144,13 +154,18 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
 function NotStacking({ s }: { s: StackingStatus }) {
   const t = useTranslations("assets.stacking");
   const nextCycleDays = Math.round((s.blocksUntilNextCycle * 10) / (60 * 24));
-  const bold = (c: React.ReactNode) => <span className="font-semibold text-gray-700">{c}</span>;
+  const bold = (c: React.ReactNode) => (
+    <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>{c}</span>
+  );
 
   return (
     <div className="space-y-4">
-      <div className="bg-gray-50 rounded-xl p-4 flex items-start gap-3">
-        <Info size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
-        <div className="text-sm text-gray-500 space-y-1">
+      <div
+        className="rounded-xl p-4 flex items-start gap-3"
+        style={{ backgroundColor: "var(--bg-elevated)" }}
+      >
+        <Info size={16} className="flex-shrink-0 mt-0.5" style={{ color: "var(--text-muted)" }} />
+        <div className="text-sm space-y-1" style={{ color: "var(--text-secondary)" }}>
           <p>{t.rich("minToStack", { amount: s.minThresholdSTX.toLocaleString(), b: bold })}</p>
           <p>
             {t.rich("nextCycle", {
@@ -169,16 +184,18 @@ function NotStacking({ s }: { s: StackingStatus }) {
           href="https://stacking.club"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-[#285A48] font-medium hover:text-[#285A48] transition-colors"
+          className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:underline"
+          style={{ color: "var(--accent)" }}
         >
           {t("explorePools")} <ExternalLink size={13} />
         </a>
-        <span className="text-gray-200">·</span>
+        <span style={{ color: "var(--border-default)" }}>·</span>
         <a
           href="https://docs.stacks.co/concepts/stacking"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+          className="flex items-center gap-1.5 text-sm transition-colors hover:underline"
+          style={{ color: "var(--text-muted)" }}
         >
           {t("learnStacking")} <ExternalLink size={13} />
         </a>
@@ -189,19 +206,23 @@ function NotStacking({ s }: { s: StackingStatus }) {
 
 function SkeletonLoader() {
   return (
-    <div className="space-y-4 animate-pulse">
+    <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-gray-50 rounded-xl p-4 space-y-2">
-            <div className="h-3 bg-gray-200 rounded w-20" />
-            <div className="h-6 bg-gray-200 rounded w-32" />
-            <div className="h-3 bg-gray-200 rounded w-24" />
+          <div
+            key={i}
+            className="rounded-xl p-4 space-y-2"
+            style={{ backgroundColor: "var(--bg-elevated)" }}
+          >
+            <div className="h-3 w-20 rounded skeleton" />
+            <div className="h-6 w-32 rounded skeleton" />
+            <div className="h-3 w-24 rounded skeleton" />
           </div>
         ))}
       </div>
       <div className="space-y-2">
-        <div className="h-3 bg-gray-100 rounded w-40" />
-        <div className="h-2.5 bg-gray-100 rounded-full" />
+        <div className="h-3 w-40 rounded skeleton" />
+        <div className="h-2.5 rounded-full skeleton" />
       </div>
     </div>
   );
@@ -216,24 +237,34 @@ function LiquidStacking({
 }) {
   const t = useTranslations("assets.stacking");
   return (
-    <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between gap-3">
+    <div
+      className="rounded-xl p-4 flex items-center justify-between gap-3"
+      style={{ backgroundColor: "var(--bg-elevated)" }}
+    >
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-[#B0E4CC]/20 flex items-center justify-center">
-          <Lock size={14} className="text-[#285A48]" />
+        <div
+          className="w-7 h-7 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: "rgba(64, 138, 113, 0.14)", color: "#408A71" }}
+        >
+          <Lock size={14} />
         </div>
         <div>
-          <p className="text-xs text-gray-400 font-medium">{t("liquidTitle")}</p>
-          <p className="text-sm font-bold text-gray-900">
+          <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{t("liquidTitle")}</p>
+          <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
             {t("liquidStaked", { amount: formatSTXAmount(stStx) })}
           </p>
           {valueStx !== null && (
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
               {t("liquidValue", { stx: formatSTXAmount(valueStx) })}
             </p>
           )}
         </div>
       </div>
-      <span className="text-[11px] font-semibold text-gray-300 cursor-not-allowed" aria-disabled="true">
+      <span
+        className="text-[11px] font-semibold cursor-not-allowed"
+        style={{ color: "var(--text-muted)" }}
+        aria-disabled="true"
+      >
         {t("unstakeSoon")}
       </span>
     </div>
@@ -276,30 +307,33 @@ export default function StackingTracker() {
   );
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="glass-card no-hover-lift rounded-2xl p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <h2 className="font-semibold text-gray-700">{t("title")}</h2>
+          <h2 className="font-semibold" style={{ color: "var(--text-secondary)" }}>{t("title")}</h2>
           {!loading && status && (
             <span
-              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
+              className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
+              style={
                 summary.isEarning
-                  ? "bg-[#B0E4CC]/20 text-[#285A48]"
-                  : "bg-gray-100 text-gray-500"
-              }`}
+                  ? { backgroundColor: "var(--accent-dim)", color: "var(--accent)" }
+                  : { backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }
+              }
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  summary.isEarning ? "bg-[#408A71]" : "bg-gray-400"
-                }`}
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: summary.isEarning ? "var(--accent)" : "var(--text-muted)" }}
               />
               {summary.isEarning ? t("active") : t("notStacking")}
             </span>
           )}
         </div>
         {!loading && status && (
-          <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg font-medium">
+          <span
+            className="text-xs px-2 py-1 rounded-lg font-medium"
+            style={{ color: "var(--text-muted)", backgroundColor: "var(--bg-elevated)" }}
+          >
             {t("cycle", { id: status.currentCycleId })}
           </span>
         )}
@@ -308,8 +342,8 @@ export default function StackingTracker() {
       {/* Content */}
       {!isConnected ? (
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Lock size={32} className="text-gray-200 mb-3" />
-          <p className="text-sm text-gray-400">{t("connect")}</p>
+          <Lock size={32} className="mb-3" style={{ color: "var(--border-default)" }} />
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("connect")}</p>
         </div>
       ) : loading ? (
         <SkeletonLoader />

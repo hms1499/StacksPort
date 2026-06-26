@@ -141,7 +141,7 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 transition-colors hover:underline"
-            style={{ color: "var(--accent)" }}
+            style={{ color: "var(--accent-text)" }}
           >
             {t("viewTx")} <ExternalLink size={10} />
           </a>
@@ -185,7 +185,7 @@ function NotStacking({ s }: { s: StackingStatus }) {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:underline"
-          style={{ color: "var(--accent)" }}
+          style={{ color: "var(--accent-text)" }}
         >
           {t("explorePools")} <ExternalLink size={13} />
         </a>
@@ -317,7 +317,7 @@ export default function StackingTracker() {
               className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
               style={
                 summary.isEarning
-                  ? { backgroundColor: "var(--accent-dim)", color: "var(--accent)" }
+                  ? { backgroundColor: "var(--accent-dim)", color: "var(--accent-text)" }
                   : { backgroundColor: "var(--border-subtle)", color: "var(--text-muted)" }
               }
             >

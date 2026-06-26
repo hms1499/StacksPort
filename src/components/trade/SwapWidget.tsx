@@ -396,7 +396,7 @@ export default function SwapWidget() {
                   onClick={() => setPercent(pct)}
                   disabled={!fromBalance}
                   className="px-2 py-0.5 text-[11px] font-semibold rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: 'var(--accent-dim)', color: 'var(--accent)' }}
+                  style={{ backgroundColor: 'var(--accent-dim)', color: 'var(--accent-text)' }}
                 >
                   {pct === 1 ? "MAX" : `${pct * 100}%`}
                 </button>
@@ -604,7 +604,7 @@ export default function SwapWidget() {
           href="https://bitflow.finance"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: 'var(--accent)' }}
+          style={{ color: 'var(--accent-text)' }}
         >
           Bitflow Pools
         </a>

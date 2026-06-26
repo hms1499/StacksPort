@@ -54,8 +54,8 @@ export default function LanguageSwitcher({
         className={cn(
           "w-full flex items-center px-3 py-2 rounded-xl text-sm font-medium outline-none",
           "text-[var(--text-secondary)] transition-colors",
-          "hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]",
-          "data-[state=open]:bg-[var(--accent-dim)] data-[state=open]:text-[var(--accent)]",
+          "hover:bg-[var(--accent-dim)] hover:text-[var(--accent-text)]",
+          "data-[state=open]:bg-[var(--accent-dim)] data-[state=open]:text-[var(--accent-text)]",
           collapsed ? "justify-center" : "gap-2",
           isPending && "opacity-60",
         )}
@@ -88,7 +88,7 @@ export default function LanguageSwitcher({
             <Flag locale={loc} />
             <span className="truncate">{t(labelKey[loc] ?? loc)}</span>
             {loc === locale && (
-              <Check size={15} className="ml-auto shrink-0 text-[var(--accent)]" />
+              <Check size={15} className="ml-auto shrink-0 text-[var(--accent-text)]" />
             )}
           </DropdownMenuItem>
         ))}

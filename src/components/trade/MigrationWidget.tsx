@@ -257,7 +257,7 @@ export default function MigrationWidget() {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-sm underline"
-          style={{ color: 'var(--accent)' }}
+          style={{ color: 'var(--accent-text)' }}
         >
           View on Explorer <ExternalLink size={12} />
         </a>
@@ -321,7 +321,7 @@ export default function MigrationWidget() {
                 <button
                   onClick={() => setPercent(1)}
                   className="font-medium transition-colors"
-                  style={{ color: 'var(--accent)' }}
+                  style={{ color: 'var(--accent-text)' }}
                 >
                   {formatAmount(fromBalance)} {fromSymbol}
                 </button>
@@ -366,7 +366,7 @@ export default function MigrationWidget() {
                 key={pct}
                 onClick={() => setPercent(pct)}
                 className="px-2 py-0.5 text-[11px] font-semibold rounded-lg transition-colors"
-                style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' }}
+                style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent-text)' }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = '0.75')}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = '1')}
               >
@@ -454,7 +454,7 @@ export default function MigrationWidget() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 transition-colors"
-              style={{ color: 'var(--accent)' }}
+              style={{ color: 'var(--accent-text)' }}
             >
               aeUSDC-USDCx-LP <ExternalLink size={10} />
             </a>

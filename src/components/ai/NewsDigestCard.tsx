@@ -161,7 +161,7 @@ function NewsItem({ item }: { item: NewsDigestItem }) {
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
-                style={{ color: "var(--accent)" }}
+                style={{ color: "var(--accent-text)" }}
               >
                 {t("readMore")}
                 <ExternalLink size={12} />

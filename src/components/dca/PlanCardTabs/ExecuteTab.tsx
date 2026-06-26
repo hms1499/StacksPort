@@ -102,7 +102,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
   return (
     <div className="gradient-border-dca-in rounded-xl p-3 flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <Zap size={13} style={{ color: "var(--accent)" }} />
+        <Zap size={13} style={{ color: "var(--accent-text)" }} />
         <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>{t("readyToExecute")}</span>
         <span className="ml-auto text-[11px]" style={{ color: "var(--text-muted)" }}>{t("protocolFee")}</span>
       </div>
@@ -122,7 +122,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
                 style={
                   slippage === s
                     ? { background: "var(--accent)", color: "#fff" }
-                    : { background: "var(--accent-dim)", color: "var(--accent)" }
+                    : { background: "var(--accent-dim)", color: "var(--accent-text)" }
                 }
               >
                 {s}%
@@ -160,7 +160,7 @@ export default function ExecuteTab({ plan, currentBlock, onRefresh }: ExecuteTab
             type="button"
             onClick={() => setShowAdvanced((v) => !v)}
             className="text-[10px] font-semibold focus:outline-none focus:underline"
-            style={{ color: "var(--accent)" }}
+            style={{ color: "var(--accent-text)" }}
           >
             {showAdvanced ? t("hide") : t("advanced")}
           </button>

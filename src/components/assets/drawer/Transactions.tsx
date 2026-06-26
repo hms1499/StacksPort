@@ -128,7 +128,7 @@ export default function Transactions({
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-0.5 text-[11px]"
-            style={{ color: "var(--accent)" }}
+            style={{ color: "var(--accent-text)" }}
           >
             {t("all")} <ExternalLink size={10} />
           </a>

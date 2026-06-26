@@ -29,7 +29,7 @@ export function SwapSuccess({
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-1.5 text-sm underline"
-        style={{ color: 'var(--accent)' }}
+        style={{ color: 'var(--accent-text)' }}
       >
         View on Explorer <ExternalLink size={13} />
       </a>

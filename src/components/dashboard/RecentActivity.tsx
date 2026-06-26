@@ -242,7 +242,7 @@ function RecentActivity() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-0.5 text-xs transition-colors"
-            style={{ color: 'var(--accent)' }}
+            style={{ color: 'var(--accent-text)' }}
           >
             See all <ExternalLink size={11} />
           </a>
@@ -252,7 +252,7 @@ function RecentActivity() {
       <div className="flex-1 min-h-0 overflow-y-auto">
         {!isConnected ? (
           <EmptyState
-            icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
+            icon={<Wallet size={28} style={{ color: 'var(--accent-text)' }} />}
             title={tr("connectTitle")}
             description={tr("connectDesc")}
             action={<ConnectWalletCTA />}

@@ -80,7 +80,7 @@ export default function PoxCycleCard() {
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs font-medium hidden sm:flex items-center gap-1"
-          style={{ color: 'var(--accent)' }}
+          style={{ color: 'var(--accent-text)' }}
         >
           Learn more <ArrowUpRight size={12} />
         </Link>

@@ -58,7 +58,7 @@ export default function MobileCollapsibleForm({ children, title, openOnEvent }: 
             className="w-7 h-7 rounded-lg flex items-center justify-center"
             style={{ backgroundColor: "var(--accent-dim)" }}
           >
-            <Plus size={14} style={{ color: "var(--accent)" }} />
+            <Plus size={14} style={{ color: "var(--accent-text)" }} />
           </span>
           <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
             {title}

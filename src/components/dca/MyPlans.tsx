@@ -211,7 +211,7 @@ export default function MyPlans({ address, onPlansLoaded }: Props) {
             className="w-12 h-12 rounded-2xl flex items-center justify-center"
             style={{ background: "var(--accent-dim)" }}
           >
-            <Inbox size={22} style={{ color: "var(--accent)" }} />
+            <Inbox size={22} style={{ color: "var(--accent-text)" }} />
           </div>
           <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{t("noPlans")}</p>
           <p className="text-xs max-w-xs" style={{ color: "var(--text-muted)" }}>

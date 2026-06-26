@@ -242,7 +242,7 @@ export default function DashboardGrid() {
                       {hidden.size > 0 && (
                         <span
                           className="ml-0.5 px-1 rounded text-[10px] font-bold tabular-nums"
-                          style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                          style={{ color: "var(--accent-text)", backgroundColor: "var(--accent-dim)" }}
                         >
                           {hidden.size}
                         </span>
@@ -322,7 +322,7 @@ export default function DashboardGrid() {
                     onClick={toggleEdit}
                     className={`inline-flex items-center gap-1.5 text-xs transition-colors px-2 py-1 rounded-md ${
                       isEditing
-                        ? "text-[var(--accent)] hover:bg-muted/50"
+                        ? "text-[var(--accent-text)] hover:bg-muted/50"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     } ${showHint && !isEditing ? "ring-2 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-base)]" : ""}`}
                     title={isEditing ? t("finishEditing") : t("customizeLayout")}

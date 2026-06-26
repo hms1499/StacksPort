@@ -35,7 +35,7 @@ export default function IdleStxNudge() {
   return (
     <div className="glass-card rounded-2xl p-4 flex items-center gap-3" style={{ boxShadow: "var(--shadow-card)" }}>
       <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--accent-dim)" }}>
-        <Sparkles size={16} style={{ color: "var(--accent)" }} />
+        <Sparkles size={16} style={{ color: "var(--accent-text)" }} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>

@@ -41,7 +41,7 @@ export default function InfoFooter({ tab }: InfoFooterProps) {
             className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
             style={{ background: "var(--accent-dim)" }}
           >
-            <Icon size={18} style={{ color: "var(--accent)" }} />
+            <Icon size={18} style={{ color: "var(--accent-text)" }} />
           </div>
           <p className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>{t(titleKey)}</p>
           <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>{t(descKey)}</p>

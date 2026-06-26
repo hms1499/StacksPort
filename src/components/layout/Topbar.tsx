@@ -112,7 +112,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
               style={{
                 backgroundColor: 'var(--accent-dim)',
                 border: '1px solid var(--border-active)',
-                color: 'var(--accent)',
+                color: 'var(--accent-text)',
               }}
             >
               {/* Avatar dot */}
@@ -152,7 +152,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     </p>
                     <p
                       className="text-xs font-semibold truncate font-data"
-                      style={{ color: 'var(--accent)' }}
+                      style={{ color: 'var(--accent-text)' }}
                     >
                       {stxAddress}
                     </p>
@@ -167,7 +167,7 @@ export default function Topbar({ title = "Dashboard" }: TopbarProps) {
                     )}
                   >
                     {copied
-                      ? <Check size={14} style={{ color: 'var(--accent)' }} />
+                      ? <Check size={14} style={{ color: 'var(--accent-text)' }} />
                       : <Copy size={14} />
                     }
                     {copied ? t("copied") : t("copyAddress")}

@@ -95,8 +95,8 @@ export default function Sidebar() {
                 "relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium",
                 "transition-[background-color,color] duration-200",
                 active
-                  ? "text-[var(--accent)] bg-[var(--accent-dim)]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]",
+                  ? "text-[var(--accent-text)] bg-[var(--accent-dim)]"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent-text)]",
               )}
               style={active ? { boxShadow: 'inset 0 0 0 1px var(--border-active)' } : undefined}
             >

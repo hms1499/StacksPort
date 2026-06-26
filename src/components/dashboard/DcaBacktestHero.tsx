@@ -52,7 +52,7 @@ export default function DcaBacktestHero({ backtest }: Props) {
       style={{ borderColor: "var(--border-subtle)" }}
     >
       <div className="flex items-center gap-2 mb-3">
-        <TrendingUp size={15} style={{ color: "var(--accent)" }} />
+        <TrendingUp size={15} style={{ color: "var(--accent-text)" }} />
         <span
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--text-muted)" }}

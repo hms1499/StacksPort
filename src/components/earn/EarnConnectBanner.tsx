@@ -32,7 +32,7 @@ export default function EarnConnectBanner() {
     <div className="glass-card rounded-2xl p-6 md:p-8 flex flex-col items-center text-center gap-4 shadow-sm">
       <div
         className="w-14 h-14 rounded-2xl flex items-center justify-center"
-        style={{ backgroundColor: "var(--accent-dim)", color: "var(--accent)" }}
+        style={{ backgroundColor: "var(--accent-dim)", color: "var(--accent-text)" }}
       >
         <Sprout size={26} />
       </div>

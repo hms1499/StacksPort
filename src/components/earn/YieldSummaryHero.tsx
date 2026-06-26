@@ -31,7 +31,7 @@ export default function YieldSummaryHero() {
     <div className="glass-card rounded-2xl p-5 shadow-sm flex items-start gap-4">
       <div
         className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-        style={{ backgroundColor: "var(--accent-dim)", color: "var(--accent)" }}
+        style={{ backgroundColor: "var(--accent-dim)", color: "var(--accent-text)" }}
       >
         <Sprout size={22} />
       </div>
@@ -59,7 +59,7 @@ export default function YieldSummaryHero() {
               <div className="flex flex-col items-end gap-0.5">
                 <span
                   className="flex items-center gap-1 text-xs font-bold font-data px-2 py-1 rounded-lg"
-                  style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                  style={{ color: "var(--accent-text)", backgroundColor: "var(--accent-dim)" }}
                 >
                   <TrendingUp size={12} />
                   <AnimatedCounter

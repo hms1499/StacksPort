@@ -185,7 +185,7 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
     return (
       <div className="glass-card rounded-2xl shadow-sm">
         <EmptyState
-          icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
+          icon={<Wallet size={28} style={{ color: 'var(--accent-text)' }} />}
           title={t("connectTitle")}
           description={t("connectDesc")}
           action={<ConnectWalletCTA />}

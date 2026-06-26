@@ -133,7 +133,7 @@ export default function SendModal({ token, onClose }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs underline"
-              style={{ color: 'var(--accent)' }}
+              style={{ color: 'var(--accent-text)' }}
             >
               View on Explorer
             </a>
@@ -178,7 +178,7 @@ export default function SendModal({ token, onClose }: Props) {
                   <button
                     onClick={() => setAmount(String(Number(token.rawBalance) / Math.pow(10, token.decimals)))}
                     className="text-xs font-medium"
-                    style={{ color: 'var(--accent)' }}
+                    style={{ color: 'var(--accent-text)' }}
                   >
                     MAX
                   </button>

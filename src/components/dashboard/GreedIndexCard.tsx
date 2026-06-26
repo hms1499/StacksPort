@@ -120,7 +120,7 @@ export default function GreedIndexCard() {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-xs transition-colors"
-          style={{ color: 'var(--accent)' }}
+          style={{ color: 'var(--accent-text)' }}
         >
           See all <ExternalLink size={11} />
         </a>

@@ -163,7 +163,7 @@ export default function WelcomeSteps() {
                   <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                     {allDone ? t("allSet") : nextStep ? t("next", { step: nextStep.label }) : t("gettingStarted")}
                   </h3>
-                  <p className="text-xs leading-relaxed mt-0.5" style={{ color: allDone ? 'var(--accent)' : 'var(--text-muted)' }}>
+                  <p className="text-xs leading-relaxed mt-0.5" style={{ color: allDone ? 'var(--accent-text)' : 'var(--text-muted)' }}>
                     {allDone
                       ? t("allDoneDesc")
                       : nextStep
@@ -242,7 +242,7 @@ export default function WelcomeSteps() {
                     <p
                       className="text-xs font-semibold transition-all"
                       style={{
-                        color: step.done ? 'var(--accent)' : 'var(--text-primary)',
+                        color: step.done ? 'var(--accent-text)' : 'var(--text-primary)',
                         textDecorationLine: step.done ? 'line-through' : 'none',
                         textDecorationColor: 'color-mix(in srgb, var(--accent) 50%, transparent)',
                         opacity: step.done ? 0.85 : 1,
@@ -255,7 +255,7 @@ export default function WelcomeSteps() {
                         {step.description}
                       </p>
                       {!step.done && step.id === nextStep?.id && (
-                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>
+                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent-text)' }}>
                           {t("recommended")}
                         </span>
                       )}

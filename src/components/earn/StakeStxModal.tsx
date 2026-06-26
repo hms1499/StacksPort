@@ -68,7 +68,7 @@ export default function StakeStxModal({ open, onClose, availableStx, stStxStaked
     <TxSheet
       open={open}
       onOpenChange={(o) => { if (!o) onClose(); }}
-      header={{ icon: Lock, iconBg: "var(--accent-dim)", iconColor: "var(--accent)", title: t("title"), subtitle: t("subtitle") }}
+      header={{ icon: Lock, iconBg: "var(--accent-dim)", iconColor: "var(--accent-text)", title: t("title"), subtitle: t("subtitle") }}
       phase={tx.phase}
       txId={tx.txId}
       canSubmit={validation.ok}

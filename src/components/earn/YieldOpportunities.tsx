@@ -194,7 +194,7 @@ function YieldOpportunities() {
               <span
                 className="flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-md"
                 style={{
-                  color: "var(--accent)",
+                  color: "var(--accent-text)",
                   backgroundColor: "var(--accent-dim)",
                 }}
               >
@@ -222,7 +222,7 @@ function YieldOpportunities() {
             <button
               onClick={() => setStakeOpen(true)}
               className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
-              style={{ color: "var(--accent)" }}
+              style={{ color: "var(--accent-text)" }}
             >
               {o.actionLabel}
               <ArrowUpRight size={11} />
@@ -241,7 +241,7 @@ function YieldOpportunities() {
               <button
                 onClick={() => setSupplyOpen(true)}
                 className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
-                style={{ color: "var(--accent)" }}
+                style={{ color: "var(--accent-text)" }}
               >
                 {tz("zest.supplyCta")}
                 <ArrowUpRight size={11} />
@@ -253,7 +253,7 @@ function YieldOpportunities() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
-              style={{ color: "var(--accent)" }}
+              style={{ color: "var(--accent-text)" }}
             >
               {o.actionLabel}
               <ExternalLink size={11} />
@@ -262,7 +262,7 @@ function YieldOpportunities() {
             <Link
               href={o.href}
               className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline py-1 -my-1 touch-manipulation"
-              style={{ color: "var(--accent)" }}
+              style={{ color: "var(--accent-text)" }}
             >
               {o.actionLabel}
               <ArrowUpRight size={11} />

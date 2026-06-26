@@ -53,7 +53,7 @@ function AlertsPanel() {
             <span
               className="text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-md"
               style={{
-                color: "var(--accent)",
+                color: "var(--accent-text)",
                 backgroundColor: "rgba(0, 229, 160, 0.12)",
               }}
             >
@@ -64,7 +64,7 @@ function AlertsPanel() {
         <Link
           href="/notifications"
           className="flex items-center gap-1 text-xs font-semibold transition-colors hover:underline"
-          style={{ color: "var(--accent)" }}
+          style={{ color: "var(--accent-text)" }}
         >
           Manage
           <ArrowRight size={12} />

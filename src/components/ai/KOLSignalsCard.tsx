@@ -30,7 +30,7 @@ export default function KOLSignalsCard({ data }: { data: KOLSignalsData | undefi
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Radio size={16} style={{ color: "var(--accent)" }} />
+          <Radio size={16} style={{ color: "var(--accent-text)" }} />
           <h3 className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
             {t("title")}
           </h3>

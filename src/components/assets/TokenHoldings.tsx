@@ -347,7 +347,7 @@ export default function TokenHoldings({ stx, tokens, totalUsd, loading }: Props)
             })
           ) : allTokens.length === 0 ? (
             <EmptyState
-              icon={<Wallet size={28} style={{ color: 'var(--accent)' }} />}
+              icon={<Wallet size={28} style={{ color: 'var(--accent-text)' }} />}
               title={t("noTokens")}
               description={t("noTokensDesc")}
               action={<ConnectWalletCTA />}

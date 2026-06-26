@@ -40,7 +40,7 @@ export default function DCASummaryCard() {
         <Link
           href="/dca"
           className="flex items-center gap-0.5 text-xs font-medium transition-colors"
-          style={{ color: "var(--accent)" }}
+          style={{ color: "var(--accent-text)" }}
         >
           {t("manage")} <ChevronRight size={13} />
         </Link>
@@ -67,7 +67,7 @@ export default function DCASummaryCard() {
                 border: "1px solid color-mix(in srgb, var(--accent) 28%, transparent)",
               }}
             >
-              <Repeat2 size={20} style={{ color: "var(--accent)" }} />
+              <Repeat2 size={20} style={{ color: "var(--accent-text)" }} />
             </div>
           </div>
           <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
@@ -132,7 +132,7 @@ export default function DCASummaryCard() {
               >
                 <div className="flex items-center gap-2">
                   {plan.active ? (
-                    <Zap size={13} style={{ color: "var(--accent)" }} />
+                    <Zap size={13} style={{ color: "var(--accent-text)" }} />
                   ) : (
                     <PauseCircle size={13} style={{ color: "var(--text-muted)" }} />
                   )}

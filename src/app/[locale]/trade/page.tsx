@@ -35,7 +35,7 @@ export default async function TradePage() {
                 className="w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{ backgroundColor: 'var(--accent-dim)' }}
               >
-                <ArrowLeftRight size={15} style={{ color: 'var(--accent)' }} />
+                <ArrowLeftRight size={15} style={{ color: 'var(--accent-text)' }} />
               </div>
               <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("swapTitle")}</h2>
             </div>
@@ -51,7 +51,7 @@ export default async function TradePage() {
                 className="w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{ backgroundColor: 'var(--accent-dim)' }}
               >
-                <Target size={15} style={{ color: 'var(--accent)' }} />
+                <Target size={15} style={{ color: 'var(--accent-text)' }} />
               </div>
               <div>
                 <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{t("limitTitle")}</h2>
@@ -69,7 +69,7 @@ export default async function TradePage() {
           {/* Recent Swaps */}
           <MotionCard className="glass-card rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
-              <History size={15} style={{ color: 'var(--accent)' }} />
+              <History size={15} style={{ color: 'var(--accent-text)' }} />
               <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{t("recentSwaps")}</h3>
             </div>
             <RecentSwaps />
@@ -97,7 +97,7 @@ export default async function TradePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="glass-card rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap size={15} style={{ color: 'var(--accent)' }} />
+                  <Zap size={15} style={{ color: 'var(--accent-text)' }} />
                   <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{t("routingTitle")}</h3>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>

@@ -551,7 +551,7 @@ export default function DCAOutPanel({
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
           <EmptyState
-            icon={<Wallet size={28} style={{ color: "var(--accent)" }} />}
+            icon={<Wallet size={28} style={{ color: "var(--accent-text)" }} />}
             title={tr("common.connectTitle")}
             description={tr("out.connectDesc")}
             action={<ConnectWalletCTA />}
@@ -672,7 +672,7 @@ function SbtcPlanRow({ plan, perf, btcUsd }:
         <Link href={`https://explorer.hiro.so/txid/${perf.successfulEvents[perf.successfulEvents.length - 1].txId}?chain=mainnet`}
           target="_blank" rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
-          style={{ color: "var(--accent)" }}>
+          style={{ color: "var(--accent-text)" }}>
           {tr("common.latestExecution")} <ExternalLink size={10} />
         </Link>
       )}
@@ -728,7 +728,7 @@ function StxPlanRow({ plan, perf, stxUsd }:
         <Link href={`https://explorer.hiro.so/txid/${perf.successfulEvents[perf.successfulEvents.length - 1].txId}?chain=mainnet`}
           target="_blank" rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
-          style={{ color: "var(--accent)" }}>
+          style={{ color: "var(--accent-text)" }}>
           {tr("common.latestExecution")} <ExternalLink size={10} />
         </Link>
       )}

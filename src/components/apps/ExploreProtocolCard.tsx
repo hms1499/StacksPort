@@ -106,7 +106,7 @@ export default function ExploreProtocolCard({
             className="inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5"
             style={{
               backgroundColor: "var(--accent-dim)",
-              color: "var(--accent)",
+              color: "var(--accent-text)",
             }}
           >
             {category}
@@ -124,7 +124,7 @@ export default function ExploreProtocolCard({
           className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg transition-opacity hover:opacity-80"
           style={{
             backgroundColor: "var(--accent-dim)",
-            color: "var(--accent)",
+            color: "var(--accent-text)",
           }}
         >
           {t("card.tryIt")} <ExternalLink size={11} />

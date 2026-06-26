@@ -86,7 +86,7 @@ function PositionRow({ position }: { position: ProtocolPosition | null | "loadin
           <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
             {position.totalUsd >= 0 ? t("total") : t("net")}
           </span>
-          <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>
+          <span className="text-xs font-semibold" style={{ color: "var(--accent-text)" }}>
             ${Math.abs(position.totalUsd).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
@@ -125,7 +125,7 @@ export default function ProtocolCard({
             className="inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5"
             style={{
               backgroundColor: "var(--accent-dim)",
-              color: "var(--accent)",
+              color: "var(--accent-text)",
             }}
           >
             {category}
@@ -146,7 +146,7 @@ export default function ProtocolCard({
           className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg transition-opacity hover:opacity-80"
           style={{
             backgroundColor: "var(--accent-dim)",
-            color: "var(--accent)",
+            color: "var(--accent-text)",
           }}
         >
           {t("open")} <ExternalLink size={11} />

@@ -57,7 +57,7 @@ export default function RecentSwaps() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 inline-flex items-center"
-                style={{ color: "var(--accent)" }}
+                style={{ color: "var(--accent-text)" }}
                 aria-label="View swap on explorer"
               >
                 <ExternalLink size={12} />

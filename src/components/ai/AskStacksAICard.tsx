@@ -28,7 +28,7 @@ export default function AskStacksAICard({ address }: { address?: string }) {
   return (
     <div className="glass-card rounded-2xl p-5 shadow-sm flex flex-col">
       <div className="flex items-center gap-2 mb-1">
-        <Sparkles size={16} style={{ color: "var(--accent)" }} />
+        <Sparkles size={16} style={{ color: "var(--accent-text)" }} />
         <h3 className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>{t("title")}</h3>
       </div>
       <p className="text-[11px] mb-3" style={{ color: "var(--text-muted)" }}>{t("disclaimer")}</p>

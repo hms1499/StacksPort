@@ -171,7 +171,7 @@ export default function NotificationCard({
                   className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-mono transition-opacity hover:opacity-75"
                   style={{
                     backgroundColor: 'color-mix(in srgb, var(--accent) 12%, transparent)',
-                    color: 'var(--accent)',
+                    color: 'var(--accent-text)',
                     border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
                   }}
                   title={notification.context.txId}

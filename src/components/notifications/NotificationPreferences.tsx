@@ -42,7 +42,7 @@ export default function NotificationPreferences() {
           <button
             onClick={resetPreferences}
             className="text-xs font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--accent)' }}
+            style={{ color: 'var(--accent-text)' }}
           >
             {t('prefs.resetAll')}
           </button>

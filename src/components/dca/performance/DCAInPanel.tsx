@@ -192,7 +192,7 @@ export default function DCAInPanel({
       <MotionCard disableHover>
         <div className="glass-card rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
           <EmptyState
-            icon={<Wallet size={28} style={{ color: "var(--accent)" }} />}
+            icon={<Wallet size={28} style={{ color: "var(--accent-text)" }} />}
             title={tr("common.connectTitle")}
             description={tr("in.connectDesc")}
             action={<ConnectWalletCTA />}
@@ -254,7 +254,7 @@ export default function DCAInPanel({
             accent="#F7931A" />
           <SummaryCard icon={<BarChart3 size={13} />} label={tr("in.avgCostBasis")}
             primary={`${formatStx(totals.avgStxPerSbtc, 1)} STX`}
-            secondary={tr("in.per1Sbtc")} accent="#A78BFA" />
+            secondary={tr("in.per1Sbtc")} accent="var(--accent-2)" />
         </div>
       </MotionCard>
 

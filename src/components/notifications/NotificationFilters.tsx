@@ -56,7 +56,7 @@ export default function NotificationFilters({
             <button
               onClick={() => clearFilters()}
               className="text-xs font-medium transition-colors"
-              style={{ color: 'var(--accent)' }}
+              style={{ color: 'var(--accent-text)' }}
             >
               {t('filterPanel.clear')}
             </button>

@@ -137,7 +137,7 @@ export default function QuickSend({
               target="_blank"
               rel="noopener noreferrer"
               className="text-[11px] underline truncate block"
-              style={{ color: "var(--accent)" }}
+              style={{ color: "var(--accent-text)" }}
             >
               {t("viewExplorer")}
             </a>

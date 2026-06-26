@@ -72,7 +72,7 @@ export default function AppsPageContent() {
               className="text-xs px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
               style={{
                 backgroundColor: "var(--accent-dim)",
-                color: "var(--accent)",
+                color: "var(--accent-text)",
               }}
             >
               {t("retry")}
@@ -154,7 +154,7 @@ export default function AppsPageContent() {
                   <button
                     onClick={() => setShowAllContracts((v) => !v)}
                     className="mt-2 text-xs font-medium transition-opacity hover:opacity-80"
-                    style={{ color: "var(--accent)" }}
+                    style={{ color: "var(--accent-text)" }}
                   >
                     {showAllContracts
                       ? t("showLess")

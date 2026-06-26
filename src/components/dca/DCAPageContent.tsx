@@ -73,7 +73,7 @@ export default function DCAPageContent() {
             {!isConnected ? (
               <div className="glass-card rounded-2xl" style={{ boxShadow: "var(--shadow-card)" }}>
                 <EmptyState
-                  icon={<Wallet size={28} style={{ color: "var(--accent)" }} />}
+                  icon={<Wallet size={28} style={{ color: "var(--accent-text)" }} />}
                   title={t("connectTitle")}
                   description={t("connectDesc")}
                   action={<ConnectWalletCTA />}

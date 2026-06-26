@@ -132,7 +132,7 @@ export default function CreatePlanForm({ onCreated, existingPlanCount = 0 }: Pro
           className="w-10 h-10 rounded-full flex items-center justify-center"
           style={{ background: "var(--accent-dim)" }}
         >
-          <PlusCircle size={18} style={{ color: "var(--accent)" }} />
+          <PlusCircle size={18} style={{ color: "var(--accent-text)" }} />
         </div>
         <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{t("submitted")}</p>
         <p className="text-xs break-all" style={{ color: "var(--text-muted)" }}>{t("submittedTx", { txId })}</p>
@@ -265,7 +265,7 @@ export default function CreatePlanForm({ onCreated, existingPlanCount = 0 }: Pro
                 className="px-2 py-1 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40"
                 style={{
                   background: "var(--accent-dim)",
-                  color: "var(--accent)",
+                  color: "var(--accent-text)",
                   border: "1px solid var(--border-subtle)",
                 }}
               >

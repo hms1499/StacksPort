@@ -55,7 +55,7 @@ export default function EarnSummaryCard() {
           </p>
         </div>
       </div>
-      <span className="flex items-center gap-1 text-[11px] font-semibold shrink-0" style={{ color: "var(--accent)" }}>
+      <span className="flex items-center gap-1 text-[11px] font-semibold shrink-0" style={{ color: "var(--accent-text)" }}>
         {t("cta")} <ArrowUpRight size={12} />
       </span>
     </Link>

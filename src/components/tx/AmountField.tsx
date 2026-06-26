@@ -22,7 +22,7 @@ export default function AmountField({
           type="button"
           onClick={onMax}
           className="text-xs font-semibold py-1 -my-1 touch-manipulation"
-          style={{ color: "var(--accent)" }}
+          style={{ color: "var(--accent-text)" }}
         >
           {maxLabel}
         </button>

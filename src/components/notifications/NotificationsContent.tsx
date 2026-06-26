@@ -168,7 +168,7 @@ export default function NotificationsContent() {
                   className="px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap shrink-0"
                   style={{
                     borderBottomColor: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-                    color: activeTab === tab.key ? 'var(--accent)' : 'var(--text-muted)',
+                    color: activeTab === tab.key ? 'var(--accent-text)' : 'var(--text-muted)',
                   }}
                 >
                   {t(`tabs.${tab.key}`)}
@@ -196,7 +196,7 @@ export default function NotificationsContent() {
               className="lg:hidden flex items-center gap-1.5 px-3 py-2 border rounded-lg transition-colors text-sm font-medium shrink-0"
               style={{
                 borderColor: activeFilterCount > 0 ? 'var(--accent)' : 'var(--border-default)',
-                color: activeFilterCount > 0 ? 'var(--accent)' : 'var(--text-secondary)',
+                color: activeFilterCount > 0 ? 'var(--accent-text)' : 'var(--text-secondary)',
                 backgroundColor: activeFilterCount > 0 ? 'var(--accent-dim)' : 'transparent',
               }}
             >
@@ -249,7 +249,7 @@ export default function NotificationsContent() {
                           className="w-full text-left px-4 py-2 text-sm transition-colors"
                           style={{
                             backgroundColor: filters.sortBy === sort ? 'var(--accent-dim)' : 'transparent',
-                            color: filters.sortBy === sort ? 'var(--accent)' : 'var(--text-secondary)',
+                            color: filters.sortBy === sort ? 'var(--accent-text)' : 'var(--text-secondary)',
                             fontWeight: filters.sortBy === sort ? 500 : 400,
                           }}
                         >
@@ -279,7 +279,7 @@ export default function NotificationsContent() {
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {filteredNotifications.length === 0 ? (
             <EmptyState
-              icon={<Bell size={28} style={{ color: 'var(--accent)' }} />}
+              icon={<Bell size={28} style={{ color: 'var(--accent-text)' }} />}
               title={t('empty.title')}
               description={t('empty.desc')}
             />

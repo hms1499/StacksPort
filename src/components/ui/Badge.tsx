@@ -8,7 +8,7 @@ const variants: Record<string, VariantConfig> = {
   warning: { className: "bg-yellow-50 text-yellow-600" },
   danger:  { className: "bg-red-50 text-red-600" },
   info:    { className: "bg-blue-50 text-blue-600" },
-  brand:   { className: "", style: { backgroundColor: 'var(--accent-glow)', color: 'var(--accent)' } },
+  brand:   { className: "", style: { backgroundColor: 'var(--accent-glow)', color: 'var(--accent-text)' } },
 } as const;
 
 type Variant = keyof typeof variants;

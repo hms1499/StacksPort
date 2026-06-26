@@ -185,7 +185,7 @@ export default function STXChip() {
               onClick={() => setOpen(false)}
               className="flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold transition-colors duration-150 hover:bg-[var(--border-subtle)]"
               style={{
-                color: 'var(--accent)',
+                color: 'var(--accent-text)',
                 borderTop: '1px solid var(--border-subtle)',
               }}
             >

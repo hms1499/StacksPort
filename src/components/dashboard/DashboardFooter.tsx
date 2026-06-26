@@ -29,7 +29,7 @@ export default function DashboardFooter() {
         href="https://www.stacks.co"
         target="_blank"
         rel="noopener noreferrer"
-        className="font-semibold transition-colors hover:text-[var(--accent)]"
+        className="font-semibold transition-colors hover:text-[var(--accent-text)]"
       >
         Stacks
       </Link>
@@ -40,7 +40,7 @@ export default function DashboardFooter() {
         href={`https://explorer.hiro.so/txid/${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}?chain=mainnet`}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-data transition-colors hover:text-[var(--accent)]"
+        className="font-data transition-colors hover:text-[var(--accent-text)]"
         title={`${DCA_CONTRACT_ADDRESS}.${DCA_CONTRACT_NAME}`}
       >
         {t("contract")} {shortenAddress(DCA_CONTRACT_ADDRESS)}
@@ -49,7 +49,7 @@ export default function DashboardFooter() {
         type="button"
         onClick={handleCopy}
         aria-label={t("copyContract")}
-        className="inline-flex items-center transition-colors hover:text-[var(--accent)]"
+        className="inline-flex items-center transition-colors hover:text-[var(--accent-text)]"
       >
         {copied ? <Check size={11} /> : <Copy size={11} />}
       </button>

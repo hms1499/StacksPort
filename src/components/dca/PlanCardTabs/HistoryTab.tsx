@@ -114,7 +114,7 @@ export default function HistoryTab({ planId }: Props) {
           className="w-10 h-10 rounded-xl flex items-center justify-center"
           style={{ background: "var(--accent-dim)" }}
         >
-          <History size={18} style={{ color: "var(--accent)" }} />
+          <History size={18} style={{ color: "var(--accent-text)" }} />
         </div>
         <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
           {t("noExecutions")}

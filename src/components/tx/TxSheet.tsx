@@ -30,7 +30,7 @@ export default function TxSheet({
   const isDone = phase === "submitted" || phase === "confirmed" || phase === "failed";
 
   const statusLine =
-    phase === "confirmed" ? { text: statusCopy.confirmed, color: "var(--accent)", icon: CheckCircle2 }
+    phase === "confirmed" ? { text: statusCopy.confirmed, color: "var(--accent-text)", icon: CheckCircle2 }
     : phase === "failed" ? { text: statusCopy.failed, color: "var(--negative)", icon: XCircle }
     : { text: statusCopy.submitted, color: "var(--text-primary)", icon: CheckCircle2 };
   const StatusIcon = statusLine.icon;
@@ -76,7 +76,7 @@ export default function TxSheet({
               </div>
               {txId && (
                 <a className="text-xs font-semibold flex items-center gap-1 py-1 -my-1 touch-manipulation"
-                   style={{ color: "var(--accent)" }}
+                   style={{ color: "var(--accent-text)" }}
                    href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`}
                    target="_blank" rel="noopener noreferrer">
                   {statusCopy.viewOnExplorer} <ArrowUpRight size={11} />

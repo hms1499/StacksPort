@@ -226,7 +226,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:underline break-all"
-                        style={{ color: 'var(--accent)' }}
+                        style={{ color: 'var(--accent-text)' }}
                       >
                         {result.txId.slice(0, 20)}...
                       </a>
@@ -348,7 +348,7 @@ export default function MultisendModal({ rawStxBalance, onClose }: Props) {
           </div>
           <div className="flex items-center justify-between text-xs pt-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             <span style={{ color: 'var(--text-muted)' }}>Remaining balance</span>
-            <span className={`font-semibold ${maxSTX - totalSTX < 0 ? "text-red-500" : ""}`} style={maxSTX - totalSTX < 0 ? undefined : { color: 'var(--accent)' }}>
+            <span className={`font-semibold ${maxSTX - totalSTX < 0 ? "text-red-500" : ""}`} style={maxSTX - totalSTX < 0 ? undefined : { color: 'var(--accent-text)' }}>
               {(maxSTX - totalSTX).toFixed(6)} STX
             </span>
           </div>

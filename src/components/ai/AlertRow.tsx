@@ -22,7 +22,7 @@ const typeConfig: Record<
   opportunity: {
     icon: Zap,
     rowStyle: { borderLeftColor: "var(--accent)", backgroundColor: "var(--accent-dim)" },
-    iconStyle: { color: "var(--accent)" },
+    iconStyle: { color: "var(--accent-text)" },
   },
   warning: {
     icon: AlertTriangle,

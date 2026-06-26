@@ -72,7 +72,7 @@ export default function UnknownContractRow({
                 className="inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0"
                 style={{
                   backgroundColor: "var(--accent-dim)",
-                  color: "var(--accent)",
+                  color: "var(--accent-text)",
                 }}
               >
                 {t("openSource")}

@@ -278,7 +278,7 @@ export default function GetSbtcModal({ open, onOpenChange }: Props) {
               {txid && (
                 <a
                   className="text-[11px] font-semibold flex items-center gap-1"
-                  style={{ color: "var(--accent)" }}
+                  style={{ color: "var(--accent-text)" }}
                   href={`https://mempool.space/tx/${txid}`}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -129,7 +129,7 @@ export default function TrendingTokens() {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-0.5 text-sm transition-colors font-medium"
-          style={{ color: 'var(--accent)' }}
+          style={{ color: 'var(--accent-text)' }}
         >
           See all <ChevronRight size={15} />
         </a>

@@ -163,7 +163,7 @@ export function NotificationDrawer({ isOpen, onClose, anchorRef }: NotificationD
           onClick={onClose}
           className="flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium border-t transition-opacity hover:opacity-80"
           style={{
-            color: 'var(--accent)',
+            color: 'var(--accent-text)',
             borderColor: 'var(--border-subtle)',
           }}
         >

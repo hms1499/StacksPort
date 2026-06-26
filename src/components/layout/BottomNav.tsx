@@ -79,7 +79,7 @@ export default function BottomNav() {
                     onClick={() => setMoreOpen(false)}
                     className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors"
                     style={{
-                      color: active ? 'var(--accent)' : 'var(--text-secondary)',
+                      color: active ? 'var(--accent-text)' : 'var(--text-secondary)',
                       backgroundColor: active ? 'var(--accent-dim)' : 'transparent',
                     }}
                   >
@@ -111,7 +111,7 @@ export default function BottomNav() {
               href={href}
               className={itemClass}
               style={{
-                color: active ? 'var(--accent)' : 'var(--text-muted)',
+                color: active ? 'var(--accent-text)' : 'var(--text-muted)',
               }}
               onClick={() => setMoreOpen(false)}
             >
@@ -137,7 +137,7 @@ export default function BottomNav() {
           type="button"
           className={itemClass}
           style={{
-            color: moreActive || moreOpen ? 'var(--accent)' : 'var(--text-muted)',
+            color: moreActive || moreOpen ? 'var(--accent-text)' : 'var(--text-muted)',
           }}
           aria-haspopup="menu"
           aria-expanded={moreOpen}

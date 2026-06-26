@@ -97,7 +97,7 @@ export default function STXMarketStatsCard() {
 
       {/* Market Cap */}
       <div className="glass-card rounded-2xl p-4 shadow-sm">
-        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Market Cap</p>
+        <p className="font-data text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--text-muted)' }}>Market Cap</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
           <p className={`font-data text-lg font-bold ${mcapFlash}`} style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
@@ -120,7 +120,7 @@ export default function STXMarketStatsCard() {
 
       {/* Volume 24h */}
       <div className="glass-card rounded-2xl p-4 shadow-sm">
-        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Volume 24h</p>
+        <p className="font-data text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--text-muted)' }}>Volume 24h</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
           <p className="font-data text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             <span className={volFlash}>{stats ? formatLargeNumber(stats.volume24h) : "—"}</span>

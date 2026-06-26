@@ -80,7 +80,7 @@ export default function YieldPositions() {
                       {typeof zestApy === "number" && zestApy >= MIN_DISPLAY_APY && (
                         <span
                           className="text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-md shrink-0"
-                          style={{ color: "var(--accent)", backgroundColor: "var(--accent-dim)" }}
+                          style={{ color: "var(--accent-2)", backgroundColor: "var(--accent-2-dim)" }}
                         >
                           {t("apy", { value: zestApy.toFixed(2) })}
                         </span>

@@ -48,7 +48,7 @@ export default function AIPageContent() {
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <Sparkles size={18} style={{ color: 'var(--accent)' }} />
+            <Sparkles size={18} style={{ color: 'var(--accent-2)' }} />
             <h2 className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
               {t("marketIntel")}
             </h2>

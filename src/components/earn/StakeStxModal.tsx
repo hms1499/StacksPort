@@ -110,7 +110,7 @@ export default function StakeStxModal({ open, onClose, availableStx, stStxStaked
           <Link
             href="/trade"
             className="text-[11px] font-semibold text-center flex items-center justify-center gap-1"
-            style={{ color: "var(--text-muted)" }}
+            style={{ color: "var(--accent-2)" }}
           >
             {t("unstake")} <ArrowUpRight size={11} />
           </Link>

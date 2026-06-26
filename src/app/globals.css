@@ -85,34 +85,31 @@
 }
 
 .dark {
-  --bg-base:     #060C18;
-  --bg-surface:  #0A1525;
-  --bg-card:     #0E1E30;
-  --bg-elevated: #142538;
+  --bg-base:     #14110D;
+  --bg-surface:  #1B1712;
+  --bg-card:     #221D16;
+  --bg-elevated: #2A241C;
 
-  --border-subtle:  #152338;
-  --border-default: #1C3150;
-  --border-active:  rgba(0, 229, 160, 0.30);
+  --border-subtle:  #2A241C;
+  --border-default: #3A3228;
+  --border-active:  rgba(247, 147, 26, 0.35);
 
-  --accent:       #00E5A0;
-  --accent-bright:#00FFB3;
-  --accent-dim:   rgba(0, 229, 160, 0.08);
-  --accent-glow:  rgba(0, 229, 160, 0.18);
+  --accent:       #F7931A;
+  --accent-bright:#FFA733;
+  --accent-dim:   rgba(247, 147, 26, 0.10);
+  --accent-glow:  rgba(247, 147, 26, 0.20);
 
-  --text-primary:   #DDE8F8;
-  --text-secondary: #5A82B0;
-  /* #5E7798 clears WCAG AA-large (>=3:1) on every dark surface while staying
-     below --text-secondary in prominence. The previous #2A4060 sat at ~1.6:1
-     (failing) — muted captions/timestamps were near-invisible in dark mode. */
-  --text-muted:     #5E7798;
+  --text-primary:   #F2EBDF;
+  --text-secondary: #9A8E7C;
+  --text-muted:     #6E6356;
 
-  --positive: #00E5A0;
-  --negative: #FF5B6E;
+  --positive: #3FB950;
+  --negative: #F0506E;
   --warning:  #FBBF24;
 
-  --positive-soft: rgba(0, 229, 160, 0.10);
-  --negative-soft: rgba(255, 91, 110, 0.10);
-  --brand-soft:    rgba(0, 229, 160, 0.12);
+  --positive-soft: rgba(63, 185, 80, 0.12);
+  --negative-soft: rgba(240, 80, 110, 0.12);
+  --brand-soft:    rgba(247, 147, 26, 0.12);
 
   /* DCA dual-gradient tokens — dark overrides */
   --dca-in-from:   #00E5A0;

@@ -32,7 +32,7 @@ export default function AmountField({
         value={value}
         onChange={(e) => onChange(e.target.value.replace(/[^0-9.]/g, ""))}
         placeholder={placeholder}
-        className="w-full rounded-xl px-3 py-2.5 text-sm bg-transparent border"
+        className="font-data w-full rounded-xl px-3 py-2.5 text-base bg-transparent border"
         style={{ borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}
       />
       <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{balanceLabel}</p>

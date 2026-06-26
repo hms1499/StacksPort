@@ -94,7 +94,7 @@ export default function DCAHeroStats({
               <Link
                 href="/dca/performance"
                 className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors group"
-                style={{ color: 'var(--accent)' }}
+                style={{ color: 'var(--accent-2)' }}
               >
                 <BarChart3 size={12} />
                 {t("viewPerformance")}

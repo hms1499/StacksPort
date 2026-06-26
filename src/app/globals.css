@@ -40,6 +40,8 @@
   --accent-dim:   rgba(247, 147, 26, 0.12);
   --accent-glow:  rgba(247, 147, 26, 0.22);
   --accent-text:  #B45F09;
+  --accent-2:     #6D4FE0;
+  --accent-2-dim: rgba(109, 79, 224, 0.12);
 
   --text-primary:   #1A140D;
   --text-secondary: #6E6356;
@@ -100,6 +102,8 @@
   --accent-dim:   rgba(247, 147, 26, 0.10);
   --accent-glow:  rgba(247, 147, 26, 0.20);
   --accent-text:  #F7931A;
+  --accent-2:     #8A6BFF;
+  --accent-2-dim: rgba(138, 107, 255, 0.12);
 
   --text-primary:   #F2EBDF;
   --text-secondary: #9A8E7C;
@@ -171,6 +175,9 @@
   --color-surface:      var(--bg-card);
   --color-sunken:       var(--border-subtle);
   --color-edge:         var(--border-default);
+  --color-accent-2:     var(--accent-2);
+  --color-accent-2-dim: var(--accent-2-dim);
+  --color-accent-text:  var(--accent-text);
 }
 
 /* ══════════════════════════════════════════════════════

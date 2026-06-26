@@ -74,7 +74,7 @@ export default function STXMarketStatsCard() {
     <div className="grid grid-cols-3 gap-2 sm:gap-4">
       {/* STX Price */}
       <div className="glass-card rounded-2xl p-4 shadow-sm">
-        <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>STX Price</p>
+        <p className="font-data text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--text-muted)' }}>STX Price</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
           <p className={`font-data text-lg font-bold ${priceFlash}`} style={{ color: 'var(--text-primary)' }}>
             {stats ? `$${stats.price.toFixed(4)}` : "—"}

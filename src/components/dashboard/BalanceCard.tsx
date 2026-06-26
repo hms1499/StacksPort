@@ -123,7 +123,7 @@ function BalanceCard() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold tracking-[0.1em] uppercase text-fg-muted">
+          <span className="font-data text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--text-muted)" }}>
             {t("title")}
           </span>
           {isConnected && (

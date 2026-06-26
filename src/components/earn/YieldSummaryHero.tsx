@@ -36,7 +36,7 @@ export default function YieldSummaryHero() {
         <Sprout size={22} />
       </div>
       <div className="flex-1">
-        <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "var(--text-muted)" }}>
+        <p className="font-data text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--text-muted)" }}>
           {t("header")}
         </p>
         {!isConnected ? (

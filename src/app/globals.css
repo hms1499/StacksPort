@@ -26,33 +26,34 @@
    DESIGN TOKENS — StacksPort "Deep Cosmos"
 ══════════════════════════════════════════════════════ */
 :root {
-  --bg-base:     #F0F4FA;
-  --bg-surface:  #FFFFFF;
+  --bg-base:     #F5F0E8;
+  --bg-surface:  #FFFDFA;
   --bg-card:     #FFFFFF;
-  --bg-elevated: #F7FAFF;
+  --bg-elevated: #FBF7F0;
 
-  --border-subtle:  #E2EAF4;
-  --border-default: #C8D6E8;
-  --border-active:  rgba(0, 194, 122, 0.45);
+  --border-subtle:  #ECE3D4;
+  --border-default: #DCCFBA;
+  --border-active:  rgba(217, 122, 15, 0.40);
 
-  --accent:       #00C27A;
-  --accent-bright:#00E5A0;
-  --accent-dim:   rgba(0, 194, 122, 0.12);
-  --accent-glow:  rgba(0, 194, 122, 0.22);
+  --accent:       #F7931A;
+  --accent-bright:#FFA733;
+  --accent-dim:   rgba(247, 147, 26, 0.12);
+  --accent-glow:  rgba(247, 147, 26, 0.22);
+  --accent-text:  #B45F09;
 
-  --text-primary:   #0A1628;
-  --text-secondary: #4A5E7C;
-  --text-muted:     #8AA0BE;
+  --text-primary:   #1A140D;
+  --text-secondary: #6E6356;
+  --text-muted:     #9A8E7C;
 
-  --positive: #00C27A;
-  --negative: #F04A6E;
-  --warning:  #F59E0B;
+  --positive: #1F9D45;
+  --negative: #D63B5C;
+  --warning:  #B45309;
 
   /* Soft (low-alpha) fills for pill backgrounds — per-theme so consumers
      don't branch on isDark inline. */
-  --positive-soft: rgba(0, 194, 122, 0.10);
-  --negative-soft: rgba(240, 74, 110, 0.10);
-  --brand-soft:    rgba(0, 194, 122, 0.12);
+  --positive-soft: rgba(31, 157, 69, 0.10);
+  --negative-soft: rgba(214, 59, 92, 0.10);
+  --brand-soft:    rgba(247, 147, 26, 0.12);
 
   /* DCA dual-gradient tokens */
   --dca-in-from:   #00C27A;
@@ -98,6 +99,7 @@
   --accent-bright:#FFA733;
   --accent-dim:   rgba(247, 147, 26, 0.10);
   --accent-glow:  rgba(247, 147, 26, 0.20);
+  --accent-text:  #F7931A;
 
   --text-primary:   #F2EBDF;
   --text-secondary: #9A8E7C;

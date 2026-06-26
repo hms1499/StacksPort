@@ -153,7 +153,7 @@ const AllocationDonut = memo(function AllocationDonut({ stx, tokens, totalUsd }:
               style={{ backgroundColor: s.color }}
             />
             <span className="font-medium truncate" style={{ color: 'var(--text-secondary)' }}>{s.label}</span>
-            <span className="ml-auto" style={{ color: 'var(--text-muted)' }}>{s.pct.toFixed(1)}%</span>
+            <span className="font-data ml-auto" style={{ color: 'var(--text-muted)' }}>{s.pct.toFixed(1)}%</span>
           </div>
         ))}
       </div>
@@ -219,7 +219,7 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
             <AnimatedCounter
               value={totalUsd}
               formatFn={formatUSD}
-              className="text-4xl font-bold"
+              className="font-data text-4xl font-bold"
               style={{ color: 'var(--text-primary)' }}
             />
             <span
@@ -228,7 +228,7 @@ export default function PortfolioSummary({ stx, tokens, totalUsd, loading }: Pro
               }`}
             >
               {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-              {formatPercent(change24h)}
+              <span className="font-data">{formatPercent(change24h)}</span>
               <span
                 className="font-normal text-xs ml-0.5"
                 style={{ color: 'var(--text-muted)' }}

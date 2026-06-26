@@ -62,7 +62,7 @@ export default function MarketStats({ geckoId }: { geckoId: string }) {
             {c.label}
           </p>
           <p
-            className="text-sm font-semibold font-mono"
+            className="font-data text-sm font-semibold font-mono"
             style={{ color: "var(--text-primary)" }}
           >
             {c.value}

@@ -48,8 +48,8 @@ function StatCard({
         </div>
         <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label}</p>
       </div>
-      <p className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{value}</p>
-      {sub && <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{sub}</p>}
+      <p className="font-data text-xl font-bold" style={{ color: "var(--text-primary)" }}>{value}</p>
+      {sub && <p className="font-data text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{sub}</p>}
     </div>
   );
 }
@@ -96,7 +96,7 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
           </p>
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>
             {t("blocksProgress", { elapsed: blocksElapsed.toLocaleString(), total: s.rewardPhaseLength.toLocaleString() })}
-            <span className="ml-1.5 font-semibold" style={{ color: "var(--text-secondary)" }}>
+            <span className="font-data ml-1.5 font-semibold" style={{ color: "var(--text-secondary)" }}>
               ({s.cycleProgress.toFixed(1)}%)
             </span>
           </p>
@@ -124,13 +124,13 @@ function ActiveStacking({ s }: { s: StackingStatus }) {
         <div className="flex items-center gap-4">
           <span>
             {t("networkShare")}{" "}
-            <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>
+            <span className="font-data font-semibold" style={{ color: "var(--text-secondary)" }}>
               {s.networkShare < 0.001 ? "<0.001" : s.networkShare.toFixed(3)}%
             </span>
           </span>
           <span>
             {t("totalStacked")}{" "}
-            <span className="font-semibold" style={{ color: "var(--text-secondary)" }}>
+            <span className="font-data font-semibold" style={{ color: "var(--text-secondary)" }}>
               {formatLargeSTX(s.totalStackedUstx)}
             </span>
           </span>

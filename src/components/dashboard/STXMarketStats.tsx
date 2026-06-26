@@ -76,12 +76,12 @@ export default function STXMarketStatsCard() {
       <div className="glass-card rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>STX Price</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className={`text-lg font-bold ${priceFlash}`} style={{ color: 'var(--text-primary)' }}>
+          <p className={`font-data text-lg font-bold ${priceFlash}`} style={{ color: 'var(--text-primary)' }}>
             {stats ? `$${stats.price.toFixed(4)}` : "—"}
           </p>
           {stats && (
             <span
-              className={`flex items-center gap-0.5 text-xs font-medium ${
+              className={`font-data flex items-center gap-0.5 text-xs font-medium ${
                 isPositive ? "text-green-500" : "text-red-500"
               }`}
             >
@@ -99,12 +99,12 @@ export default function STXMarketStatsCard() {
       <div className="glass-card rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Market Cap</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className={`text-lg font-bold ${mcapFlash}`} style={{ color: 'var(--text-primary)' }}>
+          <p className={`font-data text-lg font-bold ${mcapFlash}`} style={{ color: 'var(--text-primary)' }}>
             {stats ? formatLargeNumber(stats.marketCap) : "—"}
           </p>
           {mcapPct !== null && (
             <span
-              className={`flex items-center gap-0.5 text-xs font-medium ${
+              className={`font-data flex items-center gap-0.5 text-xs font-medium ${
                 mcapIsPositive ? "text-green-500" : "text-red-500"
               }`}
             >
@@ -122,12 +122,12 @@ export default function STXMarketStatsCard() {
       <div className="glass-card rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Volume 24h</p>
         <div className="mt-1 flex items-center gap-2 flex-wrap">
-          <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+          <p className="font-data text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             <span className={volFlash}>{stats ? formatLargeNumber(stats.volume24h) : "—"}</span>
           </p>
           {volPct !== null && (
             <span
-              className={`flex items-center gap-0.5 text-xs font-medium ${
+              className={`font-data flex items-center gap-0.5 text-xs font-medium ${
                 volIsPositive ? "text-green-500" : "text-red-500"
               }`}
             >
